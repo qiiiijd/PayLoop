@@ -10,7 +10,7 @@ self.addEventListener('push', function (e) {
     cs.forEach(function (c) { try { c.postMessage({ type: 'push', go: d.go || null }); } catch (x) {} });
     if (cs.some(function (c) { return c.visibilityState === 'visible'; })) return;   // التطبيق مفتوح أمام المستخدم: الجرس داخل التطبيق يكفي
     await self.registration.showNotification(String(d.title || 'PayLoop').slice(0, 100), {
-      body: String(d.body || '').slice(0, 200), tag: d.tag || undefined, icon: 'icon-192.png', badge: 'icon-192.png',
+      body: String(d.body || '').slice(0, 200), tag: d.tag || undefined, icon: 'icon-192.png', badge: 'badge-96.png',
       data: { go: d.go || null }, dir: 'auto'
     });
   })());
