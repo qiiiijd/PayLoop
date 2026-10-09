@@ -2693,6 +2693,10 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
       <span id="push-st" style="font-size:12px;color:var(--muted);flex:1"></span>
       <button id="push-test" onclick="Push.test()" style="padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-family:inherit;font-size:12px"></button>
     </div>
+    <div class="set-row" id="push-diagrow" style="display:none;gap:10px">
+      <span id="push-diag" style="font-size:11px;color:var(--muted);flex:1;line-height:1.8"></span>
+      <button id="push-local" onclick="Push.local()" style="padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-family:inherit;font-size:12px"></button>
+    </div>
     <div class="set-row">
       <span class="sl"><i>🌙</i><span data-i18n="set.auto">توفير البطارية</span></span>
       <label class="sw"><input type="checkbox" id="sw-saver"><i></i></label>
@@ -6559,6 +6563,27 @@ const Push={
     else if(Notification.permission==='denied') msg=L('الإذن مرفوض — فعّله من إعدادات المتصفح للموقع','Permission denied — allow it in the browser’s site settings','Autorisation refusée — activez-la dans les réglages du navigateur');
     else { const s=await this.current(); on=!!(s&&this.want()&&Notification.permission==='granted'); msg=on?L('مفعّلة على هذا الهاتف ✅','Enabled on this phone ✅','Activées sur ce téléphone ✅'):L('غير مفعّلة','Off','Désactivées'); }
     if(sw) sw.checked=on; if(st) st.textContent=msg; if(sub) sub.style.display=(msg?'flex':'none'); if(tb) tb.style.display=on?'':'none';
+    try{ const dr=document.getElementById('push-diagrow'), dt=document.getElementById('push-diag'), lb=document.getElementById('push-local');
+      if(dr){ dr.style.display=on?'flex':'none'; if(on){ if(lb) lb.textContent=L('اختبار العرض على هذا الهاتف','Local display test','Test d’affichage'); if(dt) dt.textContent=await this.diag(); } } }catch(e){}
+  },
+  /* تشخيص صادق: هل وصل إشعار فعلًا إلى هذا الهاتف (سجّله sw.js)، وهل نجح عرضه؟ */
+  diag:async function(){
+    try{
+      if(!window.caches) return '';
+      const c=await caches.open('pl-diag'); const a=await c.match('/last-push'), b=await c.match('/last-show');
+      if(!a) return L('🔎 لم يصل أي إشعار من الخادم إلى هذا الهاتف بعد','🔎 No push has reached this phone yet','🔎 Aucune notification reçue pour l’instant');
+      const t=new Date(+(await a.text())), hh=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0');
+      const sh=b?(await b.text()):'?';
+      return L('🔎 آخر إشعار وصل هاتفك: '+hh+' — العرض: '+(sh==='ok'?'تم ✅':'فشل ❌ ('+sh+')'),'🔎 Last push received: '+hh+' — display: '+(sh==='ok'?'ok ✅':'failed ❌ ('+sh+')'),'🔎 Dernière notification : '+hh+' — affichage : '+(sh==='ok'?'ok ✅':'échec ❌ ('+sh+')'));
+    }catch(e){ return ''; }
+  },
+  /* يعرض إشعارًا محليًا من الهاتف نفسه (دون خادم) ليتبيّن هل نظام الهاتف يسمح بعرض إشعارات هذا الموقع */
+  local:async function(){
+    try{
+      const reg=await navigator.serviceWorker.ready;
+      await reg.showNotification('🔔 '+L('اختبار العرض','Display test','Test d’affichage'),{body:L('إن رأيت هذا في أعلى الشاشة فعرض الإشعارات يعمل في هاتفك','If you see this at the top, notifications can be displayed on your phone','Si vous voyez ceci, l’affichage fonctionne'),icon:'icon-192.png',badge:'badge-96.png',vibrate:[200,100,200],silent:false,tag:'local-test'});
+      toast(L('✅ طُلب العرض — انظر إلى أعلى الشاشة','✅ Requested — look at the top of the screen','✅ Demandé — regardez en haut'));
+    }catch(e){ toast('⚠️ '+((e&&e.name)||'')+' '+((e&&e.message)||'')); }
   },
   toggle:async function(on){
     if(this._busy) return; this._busy=true; const sw=document.getElementById('sw-push');
@@ -6613,7 +6638,7 @@ const Push={
 let _pendingGo=null;
 function pushGo(g){ if(!g) return; if(!SESSION){ _pendingGo=g; return; } try{ ntfNavigate(g); }catch(e){} }
 try{ const _m=String(location.hash||'').match(/^#go=([a-z_]{2,24})$/); if(_m){ _pendingGo=_m[1]; history.replaceState(null,'',location.pathname+location.search); } }catch(e){}
-try{ if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',function(ev){ const d=ev&&ev.data||{}; if(d.type==='go') pushGo(d.go); else if(d.type==='push'){ try{ SRV.cycle(true); }catch(e){} } }); }catch(e){}
+try{ if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',function(ev){ const d=ev&&ev.data||{}; if(d.type==='go') pushGo(d.go); else if(d.type==='push'){ try{ SRV.cycle(true); }catch(e){} try{ setTimeout(function(){ Push.render(); },800); }catch(e){} } }); }catch(e){}
 
 function doLogout(){
   RealAuth.signOut();   /* لا ينتظر الشبكة */
