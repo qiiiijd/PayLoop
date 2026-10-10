@@ -868,6 +868,61 @@ body.gated{overflow:hidden;}
 .ct-cell b{font-size:13.5px;}
 .ct-cell span{font-size:10.5px;}
 .ct-btn{font-size:15px; padding:13px;}
+/* ===== مسابقات فاخرة (جديد) ===== */
+.ct-load{display:flex; align-items:center; justify-content:center; gap:10px; padding:34px 16px; color:var(--muted); font-size:13px; font-weight:800;}
+.ct-load i{width:18px; height:18px; border-radius:50%; border:3px solid rgba(245,158,11,.25); border-top-color:#f59e0b; animation:ctSpin .8s linear infinite;}
+@keyframes ctSpin{to{transform:rotate(360deg)}}
+.ct-card.ct2{padding:16px 15px 15px; border-radius:20px; background:linear-gradient(160deg,color-mix(in srgb,var(--card) 92%,#f59e0b 8%),var(--card)); box-shadow:0 18px 40px -26px rgba(0,0,0,.65);}
+.ct-card.ct2.live{border-color:rgba(245,158,11,.45);}
+.ct-card.ct2.ended{opacity:.92;}
+.ct-card.ct2.won{border-color:#f59e0b; box-shadow:0 0 0 1px rgba(245,158,11,.5), 0 22px 50px -22px rgba(245,158,11,.55);}
+.ct-card.ct2 .ct-top{justify-content:space-between; flex-wrap:wrap;}
+.ct-cd{margin-inline-start:auto; display:flex; align-items:center; gap:7px; padding:5px 10px; border-radius:10px; background:rgba(245,158,11,.13); border:1px solid rgba(245,158,11,.35);}
+.ct-cd span{font-size:10.5px; font-weight:800; color:var(--muted);}
+.ct-cd b{font-size:13px; font-weight:900; color:#f59e0b; font-variant-numeric:tabular-nums; letter-spacing:.3px;}
+.ct-cd.soon{background:rgba(56,189,248,.10); border-color:rgba(56,189,248,.35);} .ct-cd.soon b{color:#38bdf8;}
+.ct-prize{display:flex; align-items:center; gap:12px; margin:2px 0 12px; padding:12px; border-radius:16px; background:linear-gradient(135deg,rgba(245,158,11,.20),rgba(167,139,250,.14)); border:1px solid rgba(245,158,11,.40);}
+.ct-pic{width:46px; height:46px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:24px; border-radius:14px; background:linear-gradient(135deg,#f59e0b,#fbbf24); box-shadow:0 10px 22px -10px rgba(245,158,11,.9);}
+.ct-pt{min-width:0;} .ct-pt span{display:block; font-size:10.5px; font-weight:800; color:var(--muted); margin-bottom:2px;}
+.ct-pt b{display:block; font-size:19px; font-weight:900; color:#f59e0b; line-height:1.35; word-break:break-word;}
+.ct-meta{display:flex; flex-wrap:wrap; gap:6px 14px; margin:0 0 8px; font-size:12px; color:var(--muted); font-weight:800;} .ct-meta b{color:var(--text);}
+.ct-bar{height:8px; border-radius:99px; background:rgba(148,163,184,.18); overflow:hidden; margin:0 0 12px;}
+.ct-bar i{display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,#f59e0b,#ef4444); transition:width .5s;}
+.ct-ticket{display:flex; align-items:center; justify-content:space-between; margin:0 0 12px; padding:10px 14px; border-radius:14px; border:2px dashed rgba(74,222,128,.55); background:rgba(34,197,94,.08);}
+.ct-ticket span{font-size:12px; font-weight:800; color:var(--muted);} .ct-ticket b{font-size:20px; font-weight:900; color:#4ade80; letter-spacing:1.5px;}
+.ct-wins{margin:0 0 12px; padding:10px 12px; border-radius:14px; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.30);}
+.ct-wins.none{font-size:12.5px; color:var(--muted); font-weight:800; text-align:center;}
+.ct-wh{font-size:12.5px; font-weight:900; color:#f59e0b; margin-bottom:6px;}
+.ct-wr{display:flex; align-items:center; gap:10px; padding:7px 4px; border-top:1px dashed rgba(245,158,11,.25); font-size:13.5px;} .ct-wr:first-of-type{border-top:none;}
+.ct-wr span{width:26px; text-align:center; font-size:18px;} .ct-wr b{flex:1; font-weight:900; color:var(--text);} .ct-wr em{font-style:normal; font-size:11.5px; font-weight:900; color:#f59e0b;}
+.ct-wr.me{background:rgba(245,158,11,.14); border-radius:10px;}
+.ct-wonb{width:100%; text-align:center; padding:13px 14px; border-radius:13px; font-size:14.5px; font-weight:900; color:#1a1200; background:linear-gradient(135deg,#fbbf24,#f59e0b); box-shadow:0 12px 26px -12px rgba(245,158,11,.9);}
+.ct-btn:disabled{opacity:.6; cursor:default;}
+.ct-btn{background:linear-gradient(135deg,#f59e0b,#ea580c); box-shadow:0 14px 28px -14px rgba(245,158,11,.9);}
+.ct-chips{display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px;}
+.ct-chipb{padding:6px 11px; border-radius:99px; border:1px solid var(--border); background:rgba(255,255,255,.05); color:var(--text); font:inherit; font-size:11.5px; font-weight:800; cursor:pointer;}
+.ct-chk{display:flex; align-items:center; gap:8px; margin:0 0 10px; font-size:12.5px; font-weight:800; color:var(--text);} .ct-chk input{width:18px; height:18px;}
+/* احتفال الفوز */
+.ctw-ov{position:fixed; inset:0; z-index:2147483200; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(2,6,23,.80); animation:atFade .25s ease; overflow:hidden;}
+.ctw-conf{position:absolute; inset:0; pointer-events:none; overflow:hidden;}
+.ctw-conf i{position:absolute; top:-14px; width:9px; height:15px; border-radius:2px; opacity:.95; animation:ctFall 3s linear infinite;}
+@keyframes ctFall{to{top:110%; transform:translateX(30px) rotate(540deg);}}
+.ctw-card{position:relative; width:min(360px,100%); text-align:center; padding:26px 20px 20px; border-radius:26px; background:linear-gradient(160deg,#1c1530,#12101f); border:2px solid #f59e0b; box-shadow:0 0 60px -10px rgba(245,158,11,.7); animation:ctPop .45s cubic-bezier(.2,1.4,.4,1);}
+@keyframes ctPop{from{transform:scale(.6); opacity:0}to{transform:none; opacity:1}}
+.ctw-ic{font-size:64px; line-height:1; filter:drop-shadow(0 8px 18px rgba(245,158,11,.7)); animation:ctBounce 1.4s ease-in-out infinite;}
+@keyframes ctBounce{50%{transform:translateY(-8px) scale(1.06)}}
+.ctw-h{margin-top:10px; font-size:22px; font-weight:900; color:#fbbf24;}
+.ctw-t{margin-top:6px; font-size:15px; font-weight:800; color:#e2e8f0;}
+.ctw-p{margin:14px 0 10px; padding:12px; border-radius:16px; background:rgba(245,158,11,.14); border:1px solid rgba(245,158,11,.45);} .ctw-p span{display:block; font-size:11px; font-weight:800; color:#94a3b8;} .ctw-p b{display:block; font-size:22px; font-weight:900; color:#f59e0b; word-break:break-word;}
+.ctw-s{font-size:12.5px; line-height:1.8; color:#94a3b8; font-weight:700; margin-bottom:14px;}
+.ctw-b{width:100%; padding:13px; border:none; border-radius:14px; background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#1a1200; font:inherit; font-size:15px; font-weight:900; cursor:pointer;}
+@media (prefers-reduced-motion:reduce){.ctw-conf i,.ctw-ic,.ctw-card{animation:none}}
+/* زر حذف الإشعار */
+.nc-card.hasx{padding-inline-end:48px;}
+.nc-card.hasx.unread::before{display:none;}
+.nc-del{position:absolute; top:10px; inset-inline-end:10px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:none; border-radius:50%; background:rgba(148,163,184,.16); color:var(--muted); font-size:13px; font-weight:900; font-family:inherit; cursor:pointer; z-index:3;}
+.nc-del:active{background:rgba(239,68,68,.35); color:#fff;}
+.nc-card.nc-out{transition:opacity .2s, transform .2s; opacity:0; transform:translateX(-24px) scale(.97);}
 /* ===== النظام الذكي ===== */
 .smart-card,.smart-card{position:relative;}
 #home-smart{display:none; position:relative; overflow:hidden; margin:12px 16px 0; padding:14px; background:var(--card); border:1px solid rgba(56,189,248,.35); border-radius:18px;}
@@ -2315,7 +2370,7 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
     <div class="promo art" id="art-promo-usdt" onclick="go('withdraw')" style="height:96px; padding:0;"><div class="pshade"></div><h4>USDT</h4></div>
     <div class="promo art" id="art-promo-ccp" onclick="go('withdraw')" style="height:96px; padding:0;"><div class="pshade"></div><h4>CCP</h4></div>
     <div class="promo art" id="art-promo-games" onclick="go('tasks')" style="height:96px; padding:0;"><div class="pshade"></div><h4>بطاقات ألعاب</h4></div>
-    <div class="promo art" id="art-promo-contest" onclick="toast('المسابقات قريبًا')" style="height:96px; padding:0;"><div class="pshade"></div><h4>مسابقات</h4></div>
+    <div class="promo art" id="art-promo-contest" onclick="go('contests')" style="height:96px; padding:0;"><div class="pshade"></div><h4>مسابقات</h4></div>
   </div>
 
   <div class="section"><div class="section-title" data-i18n="sec.ways">طرق الربح</div></div>
@@ -3236,8 +3291,9 @@ function ntfRender(){
   const ov=document.getElementById('ntf-center'); if(!ov) return;
   const all=ntfItems(), unread=all.filter(function(i){ return !i.read; }).length;
   const list=NTF_FILTER==='unread'?all.filter(function(i){ return !i.read; }):all;
+  const canDel=(NTF_MODE==='user'&&SRV.on());
   const card=function(i,k){ const m=ntfIcon(i.ty); const id=String(i.id).replace(/'/g,'');
-    return '<div class="nc-card'+(i.read?'':' unread')+'" style="--nc:'+m[1]+';animation-delay:'+Math.min(k,8)*40+'ms" onclick="ntfTap(\''+id+'\')">'+
+    return '<div class="nc-card'+(i.read?'':' unread')+(canDel?' hasx':'')+'" data-id="'+id+'" style="--nc:'+m[1]+';animation-delay:'+Math.min(k,8)*40+'ms" onclick="ntfTap(\''+id+'\')">'+(canDel?'<button class="nc-del" aria-label="'+L('حذف الإشعار','Delete notification','Supprimer')+'" onclick="event.stopPropagation();ntfDel(\''+id+'\')">✕</button>':'')+
       '<div class="nc-ic">'+m[0]+'</div><div class="nc-bd"><div class="nc-tp"><b>'+esc(i.t)+'</b>'+(i.read?'':'<span class="nc-new">'+L('جديد','New','Nouveau')+'</span>')+'</div>'+
       (i.m?'<p>'+esc(i.m)+'</p>':'')+
       '<div class="nc-ft"><span class="nc-ty">'+L(m[2][0],m[2][1],m[2][2])+'</span><span class="nc-tm">🕒 '+ntfClock(i.at)+' · '+ntfAgo(i.at)+'</span>'+(i.go||i.nav||i.tab?'<span class="nc-go">'+L('فتح','Open','Ouvrir')+' ‹</span>':(i.read?'<span class="nc-rs">✓ '+L('مقروء','Read','Lu')+'</span>':''))+'</div></div></div>'; };
@@ -3247,6 +3303,12 @@ function ntfRender(){
   ov.innerHTML='<div class="nc-sheet"><div class="nc-grip"></div><div class="nc-hd"><button class="nc-x" onclick="ntfClose()" aria-label="close">✕</button><div class="nc-tt"><b>'+(NTF_MODE==='admin'?L('إشعارات الإدارة','Admin alerts','Alertes admin'):L('الإشعارات','Notifications','Notifications'))+'</b>'+(unread?'<span class="nc-cnt">'+unread+'</span>':'')+'</div><button class="nc-all" onclick="ntfAllRead()"'+(unread?'':' disabled')+'>✓ '+L('قراءة الكل','Read all','Tout lire')+'</button></div>'+
     '<div class="nc-tabs"><button class="'+(NTF_FILTER==='all'?'on':'')+'" onclick="NTF_FILTER=\'all\';ntfRender()">'+L('الكل','All','Tout')+' <i>'+all.length+'</i></button><button class="'+(NTF_FILTER==='unread'?'on':'')+'" onclick="NTF_FILTER=\'unread\';ntfRender()">'+L('غير المقروءة','Unread','Non lus')+' <i>'+unread+'</i></button></div>'+
     '<div class="nc-list">'+(list.length?body+(NTF_MODE==='user'&&SRV.on()&&SRV.nf.more&&NTF_FILTER==='all'?'<button class="nc-more" style="margin:10px auto;display:block;padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-family:inherit" onclick="SRV.pullNotifs(true)">'+L('عرض المزيد','Load more','Voir plus')+'</button>':''):'<div class="nc-empty"><div>🔔</div><b>'+(NTF_FILTER==='unread'?L('لا توجد إشعارات غير مقروءة','You are all caught up','Tout est lu'):L('لا توجد إشعارات','No notifications','Aucune notification'))+'</b><span>'+L('كل جديد سيظهر هنا','New items will appear here','Les nouveautés apparaîtront ici')+'</span></div>')+'</div></div>';
+}
+function ntfDel(id){
+  if(NTF_MODE!=='user'||!SRV.on()) return;
+  const el=document.querySelector('.nc-card[data-id="'+id+'"]');
+  const fin=function(){ SRV.nfDel(id); newsBellRefresh(); ntfRender(); };
+  if(el){ el.classList.add('nc-out'); setTimeout(fin,200); } else fin();
 }
 function ntfTap(id){
   const it=ntfItems().find(function(i){ return String(i.id).replace(/'/g,'')===id; }); if(!it) return;
@@ -4059,6 +4121,7 @@ function nfText(it){
     case 'tk_reply': return {t:L('💬 تم الرد على طلب الدعم الخاص بك','💬 Your support request got a reply','💬 Réponse à votre demande')+id, m:L('اضغط لفتح طلب الدعم ومشاهدة الرد.','Tap to open the request and read the reply.','Touchez pour lire la réponse.')};
     case 'tk_done': return {t:L('✅ تم حل مشكلتك','✅ Your problem is solved','✅ Problème résolu')+id, m:L('يمكنك فتح طلب الدعم لمشاهدة التفاصيل.','Open the request to see the details.','Ouvrez la demande pour voir les détails.')};
     case 'tk_rejected': return {t:L('❌ تم رفض طلب الدعم','❌ Support request rejected','❌ Demande rejetée')+id, m:L('افتح الطلب لمشاهدة السبب.','Open the request to see why.','Ouvrez la demande pour voir pourquoi.')};
+    case 'ct_won': return {t:L('🎉 مبروك! فزت في المسابقة','🎉 Congratulations! You won a contest','🎉 Félicitations ! Vous avez gagné'), m:L('فزت في «'+String(p.title||'').slice(0,80)+'» — الجائزة: '+String(p.prize||'').slice(0,100),'You won “'+String(p.title||'').slice(0,80)+'” — Prize: '+String(p.prize||'').slice(0,100),'Vous avez gagné « '+String(p.title||'').slice(0,80)+' » — Prix : '+String(p.prize||'').slice(0,100))};
     case 'push_test': return {t:L('🔔 إشعار تجريبي','🔔 Test notification','🔔 Notification de test'), m:L('إشعارات الهاتف تعمل ✅','Phone notifications are working ✅','Les notifications du téléphone fonctionnent ✅')};
     case 'sec_reset': return {t:L('🔐 إجراء أمني على حسابك','🔐 Security action on your account','🔐 Action de sécurité'), m:L('أرسلت لك الإدارة رابط إعادة تعيين كلمة المرور إلى بريدك.','Admin sent a password reset link to your email.','Un lien de réinitialisation a été envoyé à votre e-mail.')};
   }
@@ -5848,6 +5911,7 @@ const SRV={
     BAL=Math.round((Number(s.balance)||0)*100)/100; PTS=Math.max(0,Math.floor(Number(s.pts)||0)); TODAY=Math.round((Number(s.today)||0)*100)/100; DONE=Math.max(0,Math.floor(Number(s.done)||0)); EARNED=Math.max(0,Number(s.earned)||0);
     try{ saveState(); }catch(e){}
     try{ if(typeof s.notif_unread==='number') this.nfNoteUnread(s.notif_unread); }catch(e){}
+    try{ if(Date.now()-CT.at>300000) ctLoad(); }catch(e){}
     try{
       const u=curUser(); if(u){ let ch=false, nowBlocked=false;
         if(!!s.blocked!==!!u.blocked){ u.blocked=!!s.blocked; ch=true; nowBlocked=true; }
@@ -5879,9 +5943,9 @@ const SRV={
   _wdExtra:{},
   _ackWait:{},
   /* ---------- الإشعارات المركزية (من الخادم) ---------- */
-  nf:{uid:'',items:[],unread:0,loaded:false,more:false,busy:false,srv:-1},
+  nf:{uid:'',items:[],unread:0,loaded:false,more:false,busy:false,srv:-1,gone:{}},
   nfAdm:{rows:[],at:0,busy:false},
-  nfReset(){ this.nf={uid:SESSION||'',items:[],unread:0,loaded:false,more:false,busy:false,srv:-1}; },
+  nfReset(){ this.nf={uid:SESSION||'',items:[],unread:0,loaded:false,more:false,busy:false,srv:-1,gone:{}}; },
   nfFeed(uid){
     if(this.nf.uid!==uid) return [];
     return this.nf.items.map(function(i){ const tx=i.code?nfText(i):{t:i.title,m:i.body}; return {id:i.id, t:tx.t, m:tx.m, ty:i.kind, at:i.at, read:i.read, nav:i.go||''}; });
@@ -5903,7 +5967,7 @@ const SRV={
       const items=nf.items; const before=(more&&items.length)?new Date(items[items.length-1].at).toISOString():null;
       const r=await this.rpc('my_notifications',{p_limit:30,p_before:before});
       if(!Array.isArray(r)||this.nf!==nf) return;
-      const page=this.nfClean(r);
+      const page=this.nfClean(r).filter(function(i){ return !nf.gone[i.id]; });
       if(more){ const have={}; items.forEach(function(i){ have[i.id]=1; }); page.forEach(function(i){ if(!have[i.id]) items.push(i); }); nf.more=r.length>=30; }
       else {
         const oldest=page.length?page[page.length-1].at:0;
@@ -5924,6 +5988,13 @@ const SRV={
     nf.items.forEach(function(i){ if(ids.indexOf(i.id)>=0&&!i.read){ i.read=true; d++; } });
     nf.unread=Math.max(0,nf.unread-d); nf.srv=nf.unread;
     this.rpc('notif_mark_read',{p_ids:ids.slice(0,100)}).catch(function(){});
+  },
+  nfDel(id){
+    const nf=this.nf, i=nf.items.findIndex(function(x){ return x.id===id; }); if(i<0) return;
+    const it=nf.items[i]; nf.items.splice(i,1); nf.gone[id]=1;
+    if(!it.read){ nf.unread=Math.max(0,nf.unread-1); nf.srv=nf.unread; }
+    const undo=function(){ delete nf.gone[id]; SRV.pullNotifs(); };
+    this.rpc('notif_delete',{p_ids:[id]}).then(function(r){ if(!r||r.ok===false) undo(); }).catch(undo);
   },
   nfReadAll(){
     const nf=this.nf; nf.items.forEach(function(i){ i.read=true; }); nf.unread=0; nf.srv=0;
@@ -7305,7 +7376,7 @@ function renderAdmStats(){
     '<div class="adm-card blue"><b>'+tk+'</b><span>'+L('تذاكر جديدة','New tickets','Tickets')+'</span></div>'+
     '<div class="adm-card green"><b>'+(SRV.stats&&typeof SRV.stats.refs==='number'?SRV.stats.refs:refs)+'</b><span>'+L('إحالات','Referrals','Parrainages')+'</span></div>'+
     '<div class="adm-card blue"><b>'+getNews().length+'</b><span>'+L('أخبار','News','Actualités')+'</span></div>'+
-    '<div class="adm-card warn"><b>'+getContests().filter(function(c){ return cSt(c)==='live'; }).length+'</b><span>'+L('مسابقات نشطة','Live contests','Concours en cours')+'</span></div>'+
+    '<div class="adm-card warn"><b>'+ctAdmLiveN()+'</b><span>'+L('مسابقات نشطة','Live contests','Concours en cours')+'</span></div>'+
     '<div class="adm-card gold"><b>'+(ADM_EARN.total>=0?('$'+Number(ADM_EARN.total).toFixed(2)):'…')+'</b><span>'+L('إجمالي الأرباح','Total earnings','Gains totaux')+'</span></div>'+
     '<div class="adm-card green"><b>'+(ADM_EARN.totalToday>=0?('$'+Number(ADM_EARN.totalToday).toFixed(2)):'…')+'</b><span>'+L('دخل اليوم','Today\'s earnings','Gains du jour')+'</span></div>';
   const ib=document.getElementById('adm-insight'); if(ib) ib.innerHTML=AdmInsight();
@@ -9451,10 +9522,83 @@ function ncMeta(k){ for(var i=0;i<NCATS.length;i++){ if(NCATS[i][0]===k) return 
 function ncStyle(k){ const m=ncMeta(k); return 'background:'+m[3]+'; color:'+m[4]; }
 function getNews(){ let a=[]; try{ a=JSON.parse(LS.get('r7-news')||'[]'); }catch(e){ a=[]; } return Array.isArray(a)?a:[]; }
 function saveNews(a){ return LS.set('r7-news', JSON.stringify(a)); }
-function getContests(){ let a=[]; try{ a=JSON.parse(LS.get('r7-contests')||'[]'); }catch(e){ a=[]; } return Array.isArray(a)?a:[]; }
-function saveContests(a){ return LS.set('r7-contests', JSON.stringify(a)); }
-function cSt(c){ const n=Date.now(); if(n<(c.s||0)) return 'soon'; if(n>(c.e||0)) return 'ended'; return 'live'; }
+/* ===== المسابقات: كل شيء على الخادم (اشتراك، مقاعد، سحب الفائزين، الإشعارات). الواجهة تعرض فقط. ===== */
+const CT={rows:[],loaded:false,busy:false,off:0,fail:false,at:0,joining:{},adm:{rows:[],loaded:false,busy:false,at:0,fail:false},pe:null};
+function ctNow(){ return Date.now()+CT.off; }
+function cSt(c){ const n=ctNow(); if(n<c.s) return 'soon'; if(n>=c.e) return 'ended'; return 'live'; }
 function cStTxt(st){ return st==='live'?L('🟢 جارية الآن','Live now','En cours'):(st==='soon'?L('⏳ قريبة','Upcoming','À venir'):L('🔴 منتهية','Ended','Terminée')); }
+function getContests(){ return CT.rows; }
+function ctMap(x){
+  return {id:Number(x.id), t:String(x.title||''), d:String(x.descr||''), prize:String(x.prize||''), s:Date.parse(x.starts)||0, e:Date.parse(x.ends)||0,
+    cap:Number(x.cap)||0, n:Number(x.entries)||0, wn:Number(x.winners_n)||1, drawn:!!x.drawn, joined:!!x.joined, tk:Number(x.ticket)||0, won:!!x.me_won,
+    w:(Array.isArray(x.winners)?x.winners:[]).map(function(w){ return {p:Number(w.place)||0, l:String(w.label||''), me:!!w.me}; })};
+}
+function ctMapAdm(x){
+  return {id:Number(x.id), t:String(x.title||''), d:String(x.descr||''), prize:String(x.prize||''), s:Date.parse(x.starts)||0, e:Date.parse(x.ends)||0,
+    cap:Number(x.cap)||0, n:Number(x.entries)||0, wn:Number(x.winners_n)||1, auto:x.auto!==false, drawn:!!x.drawn,
+    w:(Array.isArray(x.winners)?x.winners:[]).map(function(w){ return {uid:String(w.uid||''), p:Number(w.place)||0, name:String(w.name||'—'), pid:String(w.pid||'')}; })};
+}
+function ctPage(){ const p=document.getElementById('page-contests'); return !!(p&&p.classList.contains('active')); }
+async function ctLoad(){
+  if(CT.busy) return;
+  if(!SRV.on()){ CT.loaded=true; CT.fail=true; ctPaint(); return; }
+  CT.busy=true; CT.at=Date.now();
+  try{
+    const r=await SRV.rpc('contests_list',{});
+    if(r&&Array.isArray(r.rows)){ const t=Date.parse(r.server_time); if(t) CT.off=t-Date.now(); CT.rows=r.rows.map(ctMap); CT.loaded=true; CT.fail=false; }
+    else if(!CT.loaded) CT.fail=true;
+  }catch(e){ if(!CT.loaded) CT.fail=true; }
+  CT.busy=false; ctPaint();
+  try{ ctWonCheck(); }catch(e){}
+}
+function ctPaint(){ if(ctPage()){ try{ renderContests0(); }catch(e){} } }
+function ctErr(why){
+  const M={soon:L('المسابقة لم تبدأ بعد','This contest has not started yet','Pas encore commencé'), ended:L('انتهت المسابقة','Contest ended','Concours terminé'),
+    full:L('اكتملت المقاعد — حظًا أوفر في المسابقة القادمة','All seats are taken','Places complètes'), blocked:L('⛔ حسابك غير مؤهل للمشاركة','⛔ Your account cannot join','⛔ Compte non éligible'),
+    missing:L('المسابقة غير موجودة','Contest not found','Concours introuvable'), auth:L('انتهت الجلسة — سجّل الدخول من جديد','Session expired — log in again','Session expirée')};
+  return M[why]||L('تعذّر الاتصال بالخادم — حاول مرة أخرى','Could not reach the server — try again','Serveur injoignable');
+}
+async function contestJoin(id){
+  id=Number(id); if(!id||CT.joining[id]) return;
+  if(!SESSION){ toast(L('سجّل الدخول أولًا','Log in first','Connectez-vous d\'abord')); return; }
+  if(!SRV.on()){ toast(ctErr('net')); return; }
+  CT.joining[id]=1; ctPaint();
+  try{
+    const r=await SRV.rpc('contest_join',{p_id:id});
+    if(r&&r.ok===true) toast(r.already?L('أنت مشارك بالفعل ✓','Already joined ✓','Déjà inscrit ✓'):L('🎉 تم تسجيلك — تذكرتك رقم #'+r.ticket,'🎉 You are in — ticket #'+r.ticket,'🎉 Inscrit — ticket n° '+r.ticket));
+    else toast(ctErr(r&&r.why));
+  }catch(e){ toast(ctErr('net')); }
+  delete CT.joining[id]; CT.busy=false; await ctLoad();
+}
+/* عدّاد تنازلي حيّ (بوقت الخادم) — يُحدَّث كل ثانية دون إعادة رسم الصفحة */
+function ctFmt(ms){
+  if(ms<0) ms=0; const s=Math.floor(ms/1000), d=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), x=s%60, p=function(v){ return (v<10?'0':'')+v; };
+  return (d>0?(d+L(' يوم ',' d ',' j ')):'')+p(h)+':'+p(m)+':'+p(x);
+}
+setInterval(function(){
+  try{
+    if(document.hidden) return;
+    const els=document.querySelectorAll('[data-cd]'); if(!els.length) return;
+    let flip=false; const n=ctNow();
+    els.forEach(function(el){ const t=Number(el.getAttribute('data-cd'))||0, left=t-n; el.textContent=ctFmt(left); if(left<=0&&!el.getAttribute('data-z')){ el.setAttribute('data-z','1'); flip=true; } });
+    if(flip) setTimeout(function(){ CT.busy=false; ctLoad(); },1200);
+  }catch(e){}
+},1000);
+/* احتفال الفوز: يظهر مرة واحدة فقط لكل مسابقة فاز بها هذا المستخدم */
+function ctSeenWin(id,set){ try{ const k='pl-ctw-'+id; if(set){ localStorage.setItem(k,'1'); return true; } return localStorage.getItem(k)==='1'; }catch(e){ return false; } }
+function ctWonCheck(){
+  if(document.getElementById('ct-win')) return;
+  const c=CT.rows.find(function(x){ return x.won&&!ctSeenWin(x.id); }); if(!c) return;
+  ctSeenWin(c.id,true);
+  let conf=''; const cl=['#f59e0b','#fbbf24','#a78bfa','#38bdf8','#4ade80','#f472b6'];
+  for(let i=0;i<28;i++) conf+='<i style="left:'+(Math.random()*100).toFixed(1)+'%;background:'+cl[i%cl.length]+';animation-delay:'+(Math.random()*1.4).toFixed(2)+'s;animation-duration:'+(2.2+Math.random()*1.8).toFixed(2)+'s;transform:rotate('+Math.floor(Math.random()*180)+'deg)"></i>';
+  const ov=document.createElement('div'); ov.id='ct-win'; ov.className='ctw-ov';
+  ov.innerHTML='<div class="ctw-conf">'+conf+'</div><div class="ctw-card"><div class="ctw-ic">🏆</div><div class="ctw-h">'+L('مبروك! أنت من الفائزين','Congratulations! You won','Félicitations ! Vous avez gagné')+'</div>'+
+    '<div class="ctw-t">'+esc(c.t)+'</div><div class="ctw-p"><span>🎁 '+L('جائزتك','Your prize','Votre prix')+'</span><b>'+esc(c.prize)+'</b></div>'+
+    '<div class="ctw-s">'+L('ستتواصل معك الإدارة لتسليم الجائزة. شكرًا لمشاركتك!','The team will contact you to deliver the prize. Thanks for joining!','L’équipe vous contactera pour la remise du prix.')+'</div>'+
+    '<button class="ctw-b" onclick="var o=document.getElementById(\'ct-win\'); if(o) o.remove(); try{ go(\'contests\'); }catch(e){}">'+L('رائع!','Awesome!','Super !')+'</button></div>';
+  document.body.appendChild(ov);
+}
 function newsBack(){ if(NEWS_TI!=null){ NEWS_TI=null; renderNews(); } else go('more'); }
 function newsFilter(k){ NEWS_F=k; NEWS_TI=null; renderNews(); }
 function newsOpen(i){ NEWS_TI=i; renderNews(); if(window.scrollY) window.scrollTo(0,0); }
@@ -9506,66 +9650,69 @@ function renderNews(){
     '</div>';
   }).join('');
 }
-function contestJoin(id){
-  if(!SESSION){ toast(L('سجّل الدخول أولًا','Log in first','Connectez-vous d\'abord')); return; }
-  const cs=getContests(); const c=cs.find(function(x){ return x.id===id; }); if(!c) return;
-  const st=cSt(c);
-  if(st==='ended'){ toast(L('انتهت المسابقة','Contest ended','Concours terminé')); return; }
-  if(!Array.isArray(c.p)) c.p=[];
-  if(c.p.some(function(x){ return x.uid===SESSION; })){ toast(L('أنت مشارك بالفعل ✓','Already joined ✓','Déjà inscrit ✓')); return; }
-  if(c.cap>0 && c.p.length>=c.cap){ toast(L('اكتمل عدد المقاعد','All seats are taken','Places complètes')); return; }
-  c.p.push({uid:SESSION, at:Date.now()});
-  if(!saveContests(cs)){ toast(L('⚠️ مساحة التخزين ممتلئة — تعذر الحفظ','⚠️ Storage full — could not save','⚠️ Stockage plein — enregistrement impossible')); return; }
-  renderContests();
-  toast(L('🎉 تم تسجيلك في المسابقة — حظًا موفقًا!','🎉 You joined the contest — good luck!','🎉 Inscription réussite — bonne chance !'));
-}
 async function lbLoad(){
-  const box=document.getElementById('lb-box'); if(!box) return;
   let d=null; try{ if(SRV.on()) d=await SRV.rpc('weekly_leaderboard',{}); }catch(e){}
-  if(!d||d.ok!==true){ box.innerHTML=''; return; }
+  if(!d||d.ok!==true){ CT.lbh=''; const e0=document.getElementById('lb-box'); if(e0) e0.innerHTML=''; return; }
   const med=['🥇','🥈','🥉'];
   const rows=(d.rows||[]).map(function(r){
     return '<div class="lb-r'+(r.me?' me':'')+'"><span class="lb-n">'+(med[r.rank-1]||r.rank)+'</span><b dir="ltr">'+esc(String(r.label))+(r.me?' · '+L('أنت','You','Vous'):'')+'</b><em>$'+Number(r.usd).toFixed(2)+'</em></div>';
   }).join('');
   const inTop=(d.rows||[]).some(function(r){ return r.me; });
-  box.innerHTML='<div class="lb-card"><div class="lb-h">🏅 '+L('الصدارة الأسبوعية','Weekly leaderboard','Classement hebdomadaire')+'</div>'+
+  CT.lbh='<div class="lb-card"><div class="lb-h">🏅 '+L('الصدارة الأسبوعية','Weekly leaderboard','Classement hebdomadaire')+'</div>'+
     '<div class="lb-s">'+L('أعلى الأرباح هذا الأسبوع — تتجدد كل يوم اثنين','Top earners this week — resets every Monday','Meilleurs gains de la semaine — remise à zéro chaque lundi')+'</div>'+
     (rows||'<div class="lb-e">'+L('لا أرباح بعد هذا الأسبوع — كن الأول!','No earnings yet this week — be the first!','Aucun gain cette semaine — soyez le premier !')+'</div>')+
     (inTop?'':'<div class="lb-me">'+L('أرباحك هذا الأسبوع','Your earnings this week','Vos gains cette semaine')+': <b>$'+Number(d.me_usd||0).toFixed(2)+'</b></div>')+'</div>';
+  const box=document.getElementById('lb-box'); if(box) box.innerHTML=CT.lbh;
 }
-function renderContests(){ renderContests0(); try{ const b=document.getElementById('contests-body'); if(b){ b.insertAdjacentHTML('afterbegin','<div id="lb-box"></div>'); lbLoad(); } }catch(e){} }
+function renderContests(){
+  const box=document.getElementById('contests-body'); if(!box) return;
+  if(!box.querySelector('.ct-hero')) box.innerHTML='<div class="ct-load"><i></i><span>'+L('جارٍ تحميل المسابقات…','Loading contests…','Chargement…')+'</span></div>';
+  renderContests0();
+  CT.busy=false; ctLoad();
+  try{ lbLoad(); }catch(e){}
+}
 function renderContests0(){
   const box=document.getElementById('contests-body'); if(!box) return;
   const ord={live:0, soon:1, ended:2};
-  const cs=getContests().slice().sort(function(a,b){ const d=ord[cSt(a)]-ord[cSt(b)]; return d!==0?d:(a.s||0)-(b.s||0); });
+  const cs=CT.rows.slice().sort(function(a,b){ const d=ord[cSt(a)]-ord[cSt(b)]; return d!==0?d:(cSt(a)==='ended'?b.e-a.e:a.e-b.e); });
   const liveN=cs.filter(function(c){ return cSt(c)==='live'; }).length;
-  const hero='<div class="ct-hero"><div class="ct-hic">🏆</div><div class="ct-hit"><h2>'+L('مسابقات PayLoop','PayLoop Contests','Concours PayLoop')+'</h2><p>'+L('جوائز حقيقية تُسحب على أشخاص حقيقيين — شارك الآن.','Real prizes for real people — join now.','Des prix réels — participer !')+'</p></div><div class="ct-hn"><b>'+liveN+'</b><span>'+L('جارية الآن','Live now','En cours')+'</span></div></div>';
+  const hero='<div class="ct-hero"><div class="ct-hic">🏆</div><div class="ct-hit"><h2>'+L('مسابقات PayLoop','PayLoop Contests','Concours PayLoop')+'</h2><p>'+L('اشترك بنقرة واحدة، واحصل على تذكرتك، وانتظر السحب العلني — الفائزون يُختارون عشوائيًا من الخادم.','Join in one tap, get your ticket and wait for the draw — winners are picked randomly by the server.','Participez en un clic — le tirage est fait par le serveur.')+'</p></div><div class="ct-hn"><b>'+liveN+'</b><span>'+L('جارية الآن','Live now','En cours')+'</span></div></div>';
+  let html='<div id="lb-box">'+(CT.lbh||'')+'</div>'+hero;
+  if(!CT.loaded){ box.innerHTML=html+'<div class="ct-load"><i></i><span>'+L('جارٍ تحميل المسابقات…','Loading contests…','Chargement…')+'</span></div>'; return; }
+  if(CT.fail&&!cs.length){ box.innerHTML=html+'<div class="nw-empty"><div class="nw-eic">📡</div><b>'+L('تعذّر تحميل المسابقات','Could not load contests','Chargement impossible')+'</b><span>'+L('تحقق من الاتصال ثم أعد المحاولة.','Check your connection and retry.','Vérifiez la connexion.')+'</span><button class="ct-btn" style="margin-top:12px;max-width:220px" onclick="CT.busy=false;CT.fail=false;CT.loaded=false;renderContests()">'+L('إعادة المحاولة','Retry','Réessayer')+'</button></div>'; return; }
   if(!cs.length){
-    box.innerHTML=hero+'<div class="nw-empty"><div class="nw-eic">🏆</div><b>'+L('لا توجد مسابقات حالياً','No contests right now','Aucun concours')+'</b><span>'+L('عد قريبًا — مسابقات جديدة بجوائز حقيقية!','Come back soon — new contests with real prizes!','Revenez bientôt — de nouveaux concours !')+'</span></div>';
+    box.innerHTML=html+'<div class="nw-empty"><div class="nw-eic">🏆</div><b>'+L('لا توجد مسابقات حالياً','No contests right now','Aucun concours')+'</b><span>'+L('عد قريبًا — مسابقات جديدة بجوائز حقيقية!','Come back soon — new contests with real prizes!','Revenez bientôt — de nouveaux concours !')+'</span></div>';
     return;
   }
-  box.innerHTML=hero+cs.map(function(c){
-    const st=cSt(c); const p=Array.isArray(c.p)?c.p:[];
-    const joined=SESSION?p.some(function(x){ return x.uid===SESSION; }):false;
-    const full=c.cap>0 && p.length>=c.cap;
-    let wname='';
-    if(c.winner){ const u=USERS.find(function(x){ return x.id===c.winner; }); wname=u?u.name:'—'; }
+  const med=['🥇','🥈','🥉'];
+  box.innerHTML=html+cs.map(function(c){
+    const st=cSt(c), busy=!!CT.joining[c.id], left=c.cap>0?Math.max(0,c.cap-c.n):0, full=c.cap>0&&c.n>=c.cap;
+    const pct=c.cap>0?Math.min(100,Math.round(c.n*100/c.cap)):0;
+    let cd='';
+    if(st==='live') cd='<div class="ct-cd"><span>⏳ '+L('ينتهي بعد','Ends in','Se termine dans')+'</span><b data-cd="'+c.e+'">'+ctFmt(c.e-ctNow())+'</b></div>';
+    else if(st==='soon') cd='<div class="ct-cd soon"><span>🔔 '+L('تبدأ بعد','Starts in','Commence dans')+'</span><b data-cd="'+c.s+'">'+ctFmt(c.s-ctNow())+'</b></div>';
     let act='';
-    if(st==='ended'){ act='<span class="ct-end">'+L('🏁 انتهت المسابقة','Contest finished','Concours terminé')+'</span>'; }
-    else if(joined){ act='<span class="ct-joined">✓ '+L('أنت مشارك','You joined','Inscrit')+'</span>'; }
-    else if(st==='soon'){ act='<span class="ct-soon">'+L('⏳ التسجيل يفتح قريبًا','Registration opens soon','Ouverture prochaine')+'</span>'; }
-    else if(full){ act='<span class="ct-full">🪑 '+L('اكتمل عدد المقاعد','All seats are taken','Places complètes')+'</span>'; }
-    else { act='<button class="ct-btn" onclick="contestJoin(\''+c.id+'\')">'+L('✅ اشترك الآن','Join now','Participer')+'</button>'; }
-    return '<div class="ct-card">'+
-      '<div class="ct-top"><span class="ct-st '+st+'">'+cStTxt(st)+'</span><span class="ct-date">🕐 '+fmtDate(c.s||0)+'</span></div>'+
-      '<h3 class="ct-title">🏆 '+esc(c.t)+'</h3>'+
+    if(c.won) act='<span class="ct-wonb">🎉 '+L('مبروك — أنت من الفائزين!','Congratulations — you won!','Félicitations — vous avez gagné !')+'</span>';
+    else if(st==='ended') act='<span class="ct-end">'+(c.drawn?L('🏁 انتهت المسابقة وتم السحب','🏁 Finished — draw completed','🏁 Terminé — tirage effectué'):L('🎲 انتهت — جارٍ سحب الفائزين…','🎲 Ended — drawing winners…','🎲 Tirage en cours…'))+'</span>';
+    else if(c.joined) act='<span class="ct-joined">✓ '+L('أنت مشارك — حظًا موفقًا!','You are in — good luck!','Inscrit — bonne chance !')+'</span>';
+    else if(st==='soon') act='<span class="ct-soon">⏳ '+L('التسجيل يفتح عند البداية','Registration opens at the start','Ouverture au début')+'</span>';
+    else if(full) act='<span class="ct-full">🪑 '+L('اكتملت المقاعد','All seats are taken','Places complètes')+'</span>';
+    else act='<button class="ct-btn" '+(busy?'disabled':'')+' onclick="contestJoin('+c.id+')">'+(busy?L('جارٍ التسجيل…','Joining…','Inscription…'):L('✅ اشترك الآن','Join now','Participer'))+'</button>';
+    let wins='';
+    if(c.drawn&&c.w.length){
+      wins='<div class="ct-wins"><div class="ct-wh">🏆 '+L('الفائزون','Winners','Gagnants')+'</div>'+c.w.map(function(w){
+        return '<div class="ct-wr'+(w.me?' me':'')+'"><span>'+(med[w.p-1]||('#'+w.p))+'</span><b dir="ltr">'+esc(w.l)+'</b>'+(w.me?'<em>'+L('أنت','You','Vous')+' 🎉</em>':'')+'</div>';
+      }).join('')+'</div>';
+    } else if(c.drawn){ wins='<div class="ct-wins none">'+L('تم السحب — لم يكن هناك مشاركون مؤهلون.','Draw done — no eligible entries.','Tirage effectué — aucun participant éligible.')+'</div>'; }
+    return '<div class="ct-card ct2 '+st+(c.won?' won':'')+'">'+
+      '<div class="ct-top"><span class="ct-st '+st+'">'+cStTxt(st)+'</span>'+cd+'</div>'+
+      '<h3 class="ct-title">'+esc(c.t)+'</h3>'+
+      '<div class="ct-prize"><div class="ct-pic">🎁</div><div class="ct-pt"><span>'+L('الجائزة','Prize','Prix')+(c.wn>1?' · '+L(c.wn+' فائزين',c.wn+' winners',c.wn+' gagnants'):'')+'</span><b>'+esc(c.prize||'—')+'</b></div></div>'+
       (c.d?'<p class="ct-desc">'+esc(c.d)+'</p>':'')+
-      '<div class="ct-grid">'+
-        '<div class="ct-cell"><span>🎁 '+L('الجائزة','Prize','Prix')+'</span><b>'+esc(c.prize||'—')+'</b></div>'+
-        '<div class="ct-cell"><span>👥 '+L('المشاركون','Participants','Participants')+'</span><b>'+p.length+(c.cap>0?'/'+c.cap:'')+'</b></div>'+
-        '<div class="ct-cell"><span>📅 '+L('النهاية','Ends','Fin')+'</span><b>'+(c.e?fmtDate(c.e):'—')+'</b></div>'+
-      '</div>'+
-      (c.winner?'<div class="ct-win">🏆 '+L('الفائز','Winner','Gagnant')+': <b>'+esc(wname)+'</b></div>':'')+
+      '<div class="ct-meta"><span>👥 <b>'+c.n+'</b> '+L('مشارك','joined','participants')+'</span>'+(c.cap>0?'<span>🪑 '+(full?L('اكتملت المقاعد','Full','Complet'):L('متبقٍّ <b>'+left+'</b> مقعد','<b>'+left+'</b> seats left','<b>'+left+'</b> places'))+'</span>':'')+'<span>📅 '+fmtDate(c.e)+'</span></div>'+
+      (c.cap>0?'<div class="ct-bar"><i style="width:'+pct+'%"></i></div>':'')+
+      (c.joined?'<div class="ct-ticket"><span>🎟️ '+L('تذكرتك','Your ticket','Votre ticket')+'</span><b dir="ltr">#'+String(c.tk).padStart(5,'0')+'</b></div>':'')+
+      wins+
       '<div class="ct-act">'+act+'</div>'+
     '</div>';
   }).join('');
@@ -9632,117 +9779,160 @@ function renderAdmNews(){
   box.innerHTML=html;
 }
 function dtVal(ms){ const d=new Date(ms); const p=function(x){ return ('0'+x).slice(-2); }; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes()); }
+function ctAdmErr(r){
+  const m=String((r&&r.msg)||'');
+  const M={forbidden:L('غير مسموح','Not allowed','Non autorisé'), bad_input:L('بيانات غير صالحة — راجع الحقول','Invalid input','Données invalides'), bad_time:L('وقت النهاية يجب أن يكون بعد البداية','End must be after start','La fin doit suivre le début'),
+    closed:L('تم سحب هذه المسابقة — لا يمكن تعديلها','This contest was already drawn','Déjà tiré'), cap_low:L('عدد المقاعد أقل من المشاركين الحاليين','Seats are fewer than current entries','Moins de places que de participants'), missing:L('المسابقة غير موجودة','Contest not found','Introuvable')};
+  for(const k in M){ if(m.indexOf(k)>=0) return M[k]; }
+  return L('تعذّر تنفيذ العملية — حاول مرة أخرى','Operation failed — try again','Échec — réessayez');
+}
+async function ctAdmLoad(){
+  if(CT.adm.busy) return;
+  if(!SRV.on()||!isAdmin()){ CT.adm.loaded=true; CT.adm.fail=true; ctAdmPaintList(); return; }
+  CT.adm.busy=true; CT.adm.at=Date.now();
+  try{
+    const r=await SRV.rpc('admin_contests',{});
+    if(r&&Array.isArray(r.rows)){ const t=Date.parse(r.server_time); if(t) CT.off=t-Date.now(); CT.adm.rows=r.rows.map(ctMapAdm); CT.adm.loaded=true; CT.adm.fail=false; }
+    else if(!CT.adm.loaded) CT.adm.fail=true;
+  }catch(e){ if(!CT.adm.loaded) CT.adm.fail=true; }
+  CT.adm.busy=false; ctAdmPaintList();
+  try{ renderAdmStats(); }catch(e){}
+}
+function ctAdmLiveN(){ return CT.adm.loaded?CT.adm.rows.filter(function(c){ return cSt(c)==='live'; }).length:'…'; }
+function ctAdmPaintList(){ const el=document.getElementById('ac-list'); if(el&&ADM_TAB==='contests') el.innerHTML=ctAdmListHtml(); }
 function admCtsCancel(){ ADM_CE=null; renderAdmContests(); }
-function admCtsEdit(id){ if(!getContests().some(function(x){ return x.id===id; })) return; ADM_CE=id; renderAdmContests(); }
-function admCtsSave(){
-  const t=(((document.getElementById('ac-t')||{}).value)||'').trim();
-  const prize=(((document.getElementById('ac-prize')||{}).value)||'').trim();
-  const sv=((document.getElementById('ac-s')||{}).value)||'';
-  const ev=((document.getElementById('ac-e')||{}).value)||'';
-  const dsc=(((document.getElementById('ac-d')||{}).value)||'').trim();
-  const capN=Math.max(0, Math.min(99999, parseInt(((document.getElementById('ac-cap')||{}).value)||'0',10)||0));
+function admCtsEdit(id){ const c=CT.adm.rows.find(function(x){ return x.id===id; }); if(!c||c.drawn) return; ADM_CE=id; renderAdmContests(); try{ window.scrollTo(0,0); }catch(e){} }
+function ctPreset(ms){ const s=new Date((document.getElementById('ac-s')||{}).value||'').getTime(); const b=isNaN(s)?ctNow():s; const e=document.getElementById('ac-e'); if(e) e.value=dtVal(b+ms); }
+function ctStartNow(){ const s=document.getElementById('ac-s'); if(s) s.value=dtVal(ctNow()); }
+async function admCtsSave(){
+  const g=function(i){ return ((document.getElementById(i)||{}).value)||''; };
+  const t=g('ac-t').trim(), prize=g('ac-prize').trim(), dsc=g('ac-d').trim();
+  const sm=new Date(g('ac-s')).getTime(), em=new Date(g('ac-e')).getTime();
+  const capN=Math.max(0, Math.min(10000000, parseInt(g('ac-cap')||'0',10)||0)), wn=Math.max(1, Math.min(100, parseInt(g('ac-w')||'1',10)||1));
+  const auto=!!(document.getElementById('ac-auto')||{}).checked, ann=!!(document.getElementById('ac-an')||{}).checked;
   if(t.length<3){ toast(L('اكتب عنوانًا للمسابقة (3 أحرف على الأقل)','Write a contest title (3+ characters)','Titre requis')); return; }
   if(!prize){ toast(L('اكتب الجائزة','Write the prize','Prix requis')); return; }
-  const sm=new Date(sv).getTime(), em=new Date(ev).getTime();
-  if(!sv || isNaN(sm)){ toast(L('حدد وقت البداية','Set the start time','Date de début requise')); return; }
-  if(!ev || isNaN(em)){ toast(L('حدد وقت النهاية','Set the end time','Date de fin requise')); return; }
+  if(isNaN(sm)){ toast(L('حدد وقت البداية','Set the start time','Date de début requise')); return; }
+  if(isNaN(em)){ toast(L('حدد وقت النهاية','Set the end time','Date de fin requise')); return; }
   if(em<=sm){ toast(L('وقت النهاية يجب أن يكون بعد البداية','End time must be after start','La fin doit suivre le début')); return; }
-  const a=getContests();
-  if(ADM_CE){
-    const i=a.findIndex(function(x){ return x.id===ADM_CE; });
-    if(i<0){ ADM_CE=null; renderAdmContests(); return; }
-    a[i].t=t; a[i].d=dsc.slice(0,1000); a[i].prize=prize; a[i].s=sm; a[i].e=em; a[i].cap=capN;
-  } else {
-    a.unshift({id:'CT-'+Date.now(), t:t, d:dsc.slice(0,1000), prize:prize, s:sm, e:em, cap:capN, at:Date.now(), p:[], winner:null});
-  }
-  if(!saveContests(a)){ toast(L('⚠️ مساحة التخزين ممتلئة — تعذر الحفظ','⚠️ Storage full — could not save','⚠️ Stockage plein — enregistrement impossible')); return; }
-  ADM_CE=null; renderAdmContests();
-  toast(L('تم حفظ المسابقة ✓','Contest saved ✓','Concours enregistré ✓'));
+  if(!SRV.on()){ toast(ctAdmErr(null)); return; }
+  const btn=document.getElementById('ac-save'); if(btn) btn.disabled=true;
+  let r=null; try{ r=await SRV.rpc('admin_contest_save',{p_id:ADM_CE||null,p_title:t,p_descr:dsc,p_prize:prize,p_starts:new Date(sm).toISOString(),p_ends:new Date(em).toISOString(),p_cap:capN,p_winners:wn,p_auto:auto,p_announce:ADM_CE?false:ann}); }catch(e){}
+  if(btn) btn.disabled=false;
+  if(r&&typeof r!=='object'&&Number(r)>0){
+    toast(ADM_CE?L('تم حفظ التعديل ✓','Changes saved ✓','Modifications enregistrées ✓'):(ann?L('تم إنشاء المسابقة وإرسال إشعار للجميع ✓','Contest created and everyone notified ✓','Concours créé et notification envoyée ✓'):L('تم إنشاء المسابقة ✓','Contest created ✓','Concours créé ✓')));
+    ADM_CE=null; CT.rows=[]; CT.loaded=false; CT.adm.busy=false; await ctAdmLoad(); renderAdmContests();
+  } else toast(ctAdmErr(r));
 }
 function admCtsDel(id){
-  const a=getContests().filter(function(x){ return x.id!==id; });
-  saveContests(a);
-  if(ADM_CE===id) ADM_CE=null;
-  renderAdmContests();
-  toast(L('تم حذف المسابقة','Contest deleted','Concours supprimé'));
+  const c=CT.adm.rows.find(function(x){ return x.id===id; }); if(!c) return;
+  ntfConfirm('🗑️ '+L('حذف المسابقة','Delete contest','Supprimer'), L('سيتم حذف «'+esc(c.t)+'» مع كل المشاركات والفائزين نهائيًا. هل أنت متأكد؟','“'+esc(c.t)+'” will be deleted with all entries and winners. Are you sure?','Supprimer définitivement ?'), L('نعم، احذف','Yes, delete','Oui, supprimer'), true, async function(){
+    let r=null; try{ r=await SRV.rpc('admin_contest_delete',{p_id:id}); }catch(e){}
+    if(r===true){ toast(L('تم حذف المسابقة','Contest deleted','Concours supprimé')); if(ADM_CE===id) ADM_CE=null; CT.rows=[]; CT.loaded=false; CT.adm.busy=false; await ctAdmLoad(); renderAdmContests(); }
+    else toast(ctAdmErr(r));
+  });
 }
-function admCtsPeople(id){
-  const c=getContests().find(function(x){ return x.id===id; }); if(!c) return;
-  const p=Array.isArray(c.p)?c.p:[];
-  const st=cSt(c);
-  let rows='<div class="mm-row"><span>'+L('المسابقة','Contest','Concours')+'</span><b>'+esc(c.t)+'</b></div>'+
+function admCtsEnd(id){
+  const c=CT.adm.rows.find(function(x){ return x.id===id; }); if(!c) return;
+  ntfConfirm('⏹️ '+L('إنهاء المسابقة الآن','End contest now','Terminer maintenant'), L('ستنتهي «'+esc(c.t)+'» فورًا'+(c.auto?' ويُسحب الفائزون تلقائيًا خلال دقيقة.':'. بعدها اضغط «سحب الفائزين».'),'“'+esc(c.t)+'” will end immediately.','Terminer immédiatement.'), L('إنهاء','End','Terminer'), true, async function(){
+    let r=null; try{ r=await SRV.rpc('admin_contest_end_now',{p_id:id}); }catch(e){}
+    if(r===true){ toast(L('تم إنهاء المسابقة ✓','Contest ended ✓','Concours terminé ✓')); CT.adm.busy=false; await ctAdmLoad(); }
+    else toast(ctAdmErr(r));
+  });
+}
+function admCtsDraw(id){
+  const c=CT.adm.rows.find(function(x){ return x.id===id; }); if(!c) return;
+  ntfConfirm('🎲 '+L('سحب الفائزين','Draw winners','Tirer les gagnants'), L('سيُسحب '+c.wn+' فائز عشوائيًا من '+c.n+' مشارك ويصل كل فائز إشعار «مبروك». لا يمكن التراجع عن السحب.','Randomly draws '+c.wn+' winner(s) from '+c.n+' entries. This cannot be undone.','Tirage aléatoire — irréversible.'), L('سحب الآن','Draw now','Tirer'), false, async function(){
+    let r=null; try{ r=await SRV.rpc('admin_contest_draw',{p_id:id}); }catch(e){}
+    if(r&&r.ok===true){ toast(L('🏆 تم السحب — '+r.winners+' فائز','🏆 Draw done — '+r.winners+' winner(s)','🏆 Tirage effectué')); CT.adm.busy=false; await ctAdmLoad(); }
+    else toast(r&&r.why==='not_ready'?L('المسابقة لم تنتهِ أو سُحبت سابقًا','Not ended yet or already drawn','Pas prêt'):ctAdmErr(r));
+  });
+}
+/* المشاركون: بحث + ترقيم + تعيين فائز يدويًا (بعد انتهاء المسابقة) */
+async function admCtsPeople(id,off,q){
+  const c=CT.adm.rows.find(function(x){ return x.id===id; }); if(!c) return;
+  const pe=CT.pe=(CT.pe&&CT.pe.id===id&&off===undefined&&q===undefined)?CT.pe:{id:id,off:0,q:'',total:0,rows:[],busy:false};
+  if(off!==undefined) pe.off=off; if(q!==undefined){ pe.q=q; pe.off=0; }
+  pe.busy=true; ctPeopleDraw();
+  let r=null; try{ r=await SRV.rpc('admin_contest_entries',{p_id:id,p_q:pe.q||null,p_limit:20,p_offset:pe.off}); }catch(e){}
+  if(CT.pe!==pe) return;
+  pe.busy=false; if(r&&Array.isArray(r.rows)){ pe.rows=r.rows; pe.total=Number(r.total)||0; } else toast(ctAdmErr(r));
+  ctPeopleDraw();
+}
+function ctPeopleDraw(){
+  const pe=CT.pe; if(!pe) return; const c=CT.adm.rows.find(function(x){ return x.id===pe.id; }); if(!c) return;
+  const st=cSt(c), ended=st==='ended';
+  const rows=pe.rows.map(function(x){
+    const btn=ended?'<button class="mm-btn" onclick="admCtsWinner('+c.id+',\''+x.uid+'\','+(x.win?'false':'true')+')">'+(x.win?'✕ '+L('إزالة','Remove','Retirer'):'🏆 '+L('فائز','Winner','Gagnant'))+'</button>':'';
+    return '<div class="mm-row"><span>#'+x.no+' · '+esc(x.name)+' <i style="font-style:normal;color:var(--muted);font-size:10.5px" dir="ltr">'+esc(x.pid||'')+'</i></span><b>'+(x.win?'👑 ':'')+btn+'</b></div>';
+  }).join('')||'<div class="mm-row"><span>'+(pe.busy?L('جارٍ التحميل…','Loading…','Chargement…'):L('لا مشاركين','No participants','Aucun participant'))+'</span></div>';
+  const pages=Math.max(1,Math.ceil(pe.total/20)), pg=Math.floor(pe.off/20)+1;
+  let ov=document.getElementById('adm-modal'); if(!ov){ ov=document.createElement('div'); ov.id='adm-modal'; document.body.appendChild(ov); }
+  ov.className='adm-modal'; ov.style.display='flex';
+  const qv=document.getElementById('ct-pq'); const keep=qv&&document.activeElement===qv;
+  ov.innerHTML='<div class="mm-card"><div class="mm-h"><b>👥 '+esc(c.t)+'</b><button class="mm-x" onclick="CT.pe=null;admModalClose()">✕</button></div>'+
     '<div class="mm-row"><span>'+L('الحالة','Status','Statut')+'</span><b>'+cStTxt(st)+'</b></div>'+
-    '<div class="mm-row"><span>'+L('المشاركون','Participants','Participants')+'</span><b>'+p.length+(c.cap>0?'/'+c.cap:'')+'</b></div>'+
-    '<div class="mm-row"><span>'+L('الجائزة','Prize','Prix')+'</span><b>'+esc(c.prize||'—')+'</b></div>';
-  if(!p.length){
-    rows+='<div class="mm-row"><span>'+L('القائمة','List','Liste')+'</span><b>'+L('لا مشاركين بعد','No participants yet','Aucun participant')+'</b></div>';
-  } else {
-    rows+=p.map(function(x){
-      const u=USERS.find(function(k){ return k.id===x.uid; });
-      const nm=u?u.name:L('مستخدم','User','Utilisateur');
-      const win=(c.winner===x.uid);
-      const btn=(st==='ended'?' <button class="mm-btn" onclick="admCtsWinner(\''+c.id+'\',\''+String(x.uid||'')+'\')">'+(win?'✕ '+L('إزالة التتويج','Uncrown','Retirer'):'🏆 '+L('تعيين فائز','Set winner','Désigner'))+'</button>':'');
-      return '<div class="mm-row"><span>'+esc(nm)+' <i style="font-style:normal;color:var(--muted);font-size:11px" dir="ltr">'+esc(String(x.uid||''))+'</i></span><b dir="ltr" style="font-size:11.5px">'+fmtDate(x.at||0)+'</b>'+(win?' 👑':'')+btn+'</div>';
-    }).join('');
-  }
-  let ov=document.getElementById('adm-modal');
-  if(!ov){ ov=document.createElement('div'); ov.id='adm-modal'; document.body.appendChild(ov); }
-  ov.className='adm-modal';
-  ov.innerHTML='<div class="mm-card">'+
-    '<div class="mm-h"><b>👥 '+L('مشاركو المسابقة','Contest participants','Participants')+'</b><button class="mm-x" onclick="admModalClose()">✕</button></div>'+
+    '<div class="mm-row"><span>'+L('المشاركون','Participants','Participants')+'</span><b>'+c.n+(c.cap>0?'/'+c.cap:'')+'</b></div>'+
+    '<div class="au-f" style="margin:8px 0"><input id="ct-pq" value="'+esc(pe.q||'').replace(/"/g,'&quot;')+'" placeholder="'+L('بحث بالاسم أو رقم الحساب…','Search name or account ID…','Rechercher…')+'" oninput="clearTimeout(window.__ctq); var v=this.value; window.__ctq=setTimeout(function(){ admCtsPeople('+c.id+',undefined,v); },350)"></div>'+
     rows+
-  '</div>';
-  ov.style.display='flex';
-  ov.onclick=function(e){ if(e.target===ov) admModalClose(); };
+    '<div class="adm-acts2" style="margin-top:10px"><button class="adm-new sm" '+(pe.off<=0||pe.busy?'disabled':'')+' onclick="admCtsPeople('+c.id+','+Math.max(0,pe.off-20)+')">‹</button><span style="align-self:center;font-size:12px">'+pg+' / '+pages+'</span><button class="adm-new sm" '+(pg>=pages||pe.busy?'disabled':'')+' onclick="admCtsPeople('+c.id+','+(pe.off+20)+')">›</button></div></div>';
+  ov.onclick=function(e){ if(e.target===ov){ CT.pe=null; admModalClose(); } };
+  if(keep){ const n=document.getElementById('ct-pq'); if(n){ n.focus(); try{ n.setSelectionRange(n.value.length,n.value.length); }catch(e){} } }
 }
-function admCtsWinner(cid, uid){
-  const a=getContests(); const c=a.find(function(x){ return x.id===cid; }); if(!c) return;
-  c.winner=(c.winner===uid?null:uid);
-  saveContests(a);
-  renderAdmContests();
-  admCtsPeople(cid);
-  toast(c.winner?L('🏆 تم تعيين الفائز','Winner selected','Gagnant désigné'):L('تم إلغاء التتويج','Crown removed','Désignation annulée'));
+async function admCtsWinner(cid,uid,on){
+  let r=null; try{ r=await SRV.rpc('admin_contest_winner',{p_id:cid,p_user:uid,p_on:!!on}); }catch(e){}
+  if(r===true){ toast(on?L('🏆 تم تعيين الفائز وإشعاره','🏆 Winner set and notified','🏆 Gagnant désigné'):L('تم إلغاء التتويج','Winner removed','Désignation annulée')); CT.adm.busy=false; await ctAdmLoad(); if(CT.pe) admCtsPeople(cid,CT.pe.off); }
+  else toast(L('تعذّر التنفيذ — يجب أن تنتهي المسابقة ويكون المستخدم مشاركًا','Failed — the contest must be over and the user must be a participant','Échec'));
+}
+function ctAdmListHtml(){
+  const a=CT.adm.rows;
+  if(!CT.adm.loaded) return '<div class="ct-load"><i></i><span>'+L('جارٍ التحميل…','Loading…','Chargement…')+'</span></div>';
+  if(CT.adm.fail&&!a.length) return '<div class="nw-empty"><div class="nw-eic">📡</div><b>'+L('تعذّر تحميل المسابقات','Could not load contests','Chargement impossible')+'</b><span>'+L('تأكد أنك شغّلت ملف 19a في Supabase ثم أعد المحاولة.','Make sure SQL file 19a was run, then retry.','Vérifiez le fichier SQL 19a.')+'</span></div>';
+  if(!a.length) return '<div class="nw-empty"><div class="nw-eic">🏆</div><b>'+L('لا توجد مسابقات بعد','No contests yet','Aucun concours')+'</b><span>'+L('أنشئ أول مسابقة من النموذج أعلاه.','Create your first contest above.','Créez votre premier concours.')+'</span></div>';
+  return a.map(function(c){
+    const st=cSt(c), ed=(ADM_CE===c.id), stCls=st==='live'?'grn':(st==='soon'?'blu':'red');
+    const ended=st==='ended';
+    const wl=c.w.length?(' · 🏆 '+c.w.map(function(w){ return esc(w.name); }).join('، ')):'';
+    return '<div class="adm-row'+(ed?' off':'')+'">'+
+      '<div class="adm-rowi"><b>'+esc(c.t)+'</b><span>🎁 '+esc(c.prize||'—')+' · 📅 '+fmtDate(c.s)+' → '+fmtDate(c.e)+' · 👥 '+c.n+(c.cap>0?'/'+c.cap:'')+' · 🎯 '+c.wn+(c.drawn?' · ✅ '+L('سُحبت','drawn','tirée'):'')+wl+'</span></div>'+
+      '<span class="adm-badges"><span class="adm-badge '+stCls+'">'+cStTxt(st)+'</span></span>'+
+      '<div class="adm-acts">'+
+        '<button title="'+L('المشاركون','Participants','Participants')+'" onclick="CT.pe=null;admCtsPeople('+c.id+')">👥</button>'+
+        (!c.drawn?'<button title="'+L('تعديل','Edit','Modifier')+'" onclick="admCtsEdit('+c.id+')">✏️</button>':'')+
+        (st==='live'?'<button title="'+L('إنهاء الآن','End now','Terminer')+'" onclick="admCtsEnd('+c.id+')">⏹️</button>':'')+
+        (ended&&!c.drawn?'<button title="'+L('سحب الفائزين','Draw winners','Tirer')+'" onclick="admCtsDraw('+c.id+')">🎲</button>':'')+
+        '<button title="'+L('حذف','Delete','Supprimer')+'" onclick="admCtsDel('+c.id+')">🗑️</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
 }
 function renderAdmContests(){
   const box=document.getElementById('adm-body'); if(!box) return;
-  const a=getContests();
-  const cur=ADM_CE?a.find(function(x){ return x.id===ADM_CE; }):null;
+  const cur=ADM_CE?CT.adm.rows.find(function(x){ return x.id===ADM_CE; }):null;
+  if(ADM_CE&&!cur&&CT.adm.loaded) ADM_CE=null;
   const vv=function(x){ return String(x==null?'':x).replace(/"/g,'&quot;'); };
-  const now=Date.now();
-  let html='<div class="adm-form">'+
-    '<div class="adm-ms-h">'+(cur?L('تعديل المسابقة','Edit contest','Modifier le concours'):L('مسابقة جديدة','New contest','Nouveau concours'))+' <span>'+L('تظهر فورًا في صفحة المسابقات','Appears immediately on the contests page','Visible aussitôt')+'</span></div>'+
-    '<div class="au-f"><label>'+L('عنوان المسابقة','Contest title','Titre')+'</label><input id="ac-t" value="'+vv(cur?cur.t:'')+'" placeholder="'+L('مثال: سباق أوّل 20 مشاركًا','e.g. Race for the first 20 participants','Ex : course')+'"></div>'+
+  const now=ctNow(), pr=function(l,ms){ return '<button type="button" class="ct-chipb" onclick="ctPreset('+ms+')">'+l+'</button>'; };
+  const html='<div class="adm-form">'+
+    '<div class="adm-ms-h">'+(cur?L('تعديل المسابقة','Edit contest','Modifier le concours'):L('مسابقة جديدة','New contest','Nouveau concours'))+' <span>'+L('تظهر فورًا ويصل إشعار للجميع','Appears at once and everyone is notified','Visible aussitôt, notification à tous')+'</span></div>'+
+    '<div class="au-f"><label>'+L('عنوان المسابقة','Contest title','Titre')+'</label><input id="ac-t" maxlength="80" value="'+vv(cur?cur.t:'')+'" placeholder="'+L('مثال: جائزة الأسبوع الكبرى','e.g. Weekly grand prize','Ex : grand prix')+'"></div>'+
     '<div class="au-row2">'+
-      '<div class="au-f"><label>'+L('الجائزة','Prize','Prix')+'</label><input id="ac-prize" value="'+vv(cur?cur.prize:'')+'" placeholder="'+L('$10 رصيد + شارة','e.g. $10 + badge','$10 + badge')+'"></div>'+
-      '<div class="au-f"><label>'+L('الحد الأقصى للمشاركين (0 = بلا حد)','Max participants (0 = unlimited)','Participants max (0 = illimité)')+'</label><input id="ac-cap" type="number" min="0" max="99999" value="'+(cur?Number(cur.cap||0):0)+'"></div>'+
+      '<div class="au-f"><label>'+L('الجائزة','Prize','Prix')+'</label><input id="ac-prize" maxlength="120" value="'+vv(cur?cur.prize:'')+'" placeholder="'+L('مثال: 10$ رصيد','e.g. $10 credit','$10')+'"></div>'+
+      '<div class="au-f"><label>'+L('عدد الفائزين','Winners','Gagnants')+'</label><input id="ac-w" type="number" min="1" max="100" value="'+(cur?cur.wn:1)+'"></div>'+
     '</div>'+
+    '<div class="au-f"><label>'+L('الحد الأقصى للمشاركين (0 = بلا حد)','Max participants (0 = unlimited)','Participants max (0 = illimité)')+'</label><input id="ac-cap" type="number" min="0" max="10000000" value="'+(cur?cur.cap:0)+'"></div>'+
     '<div class="au-row2">'+
       '<div class="au-f"><label>'+L('وقت البداية','Starts at','Début')+'</label><input id="ac-s" type="datetime-local" value="'+(cur?dtVal(cur.s):dtVal(now))+'"></div>'+
       '<div class="au-f"><label>'+L('وقت النهاية','Ends at','Fin')+'</label><input id="ac-e" type="datetime-local" value="'+(cur?dtVal(cur.e):dtVal(now+7*86400000))+'"></div>'+
     '</div>'+
-    '<div class="au-f"><label>'+L('وصف المسابقة','Contest description','Description')+'</label><textarea id="ac-d" class="adm-ta" rows="4" placeholder="'+L('اشرح شروط المسابقة وكيفية الفوز...','Explain the rules and how to win...','Expliquez les règles...')+'">'+(cur?esc(String(cur.d||'')):'')+'</textarea></div>'+
-    '<div class="adm-acts2"><button class="au-btn" onclick="admCtsSave()">💾 '+(cur?L('حفظ التعديل','Save changes','Enregistrer'):L('إنشاء المسابقة','Create contest','Créer'))+'</button>'+(cur?'<button class="adm-new sm" onclick="admCtsCancel()">✕ '+L('إلغاء','Cancel','Annuler')+'</button>':'')+'</div>'+
-  '</div>';
-  html+='<div class="adm-ms-h">'+L('قائمة المسابقات','Contests list','Liste des concours')+' <span>'+a.length+'</span></div>';
-  if(!a.length){
-    html+='<div class="nw-empty"><div class="nw-eic">🏆</div><b>'+L('لا توجد مسابقات بعد','No contests yet','Aucun concours')+'</b><span>'+L('أنشئ أول مسابقة من النموذج أعلاه.','Create your first contest above.','Créez votre premier concours.')+'</span></div>';
-  } else {
-    html+=a.map(function(c){
-      const st=cSt(c); const p=Array.isArray(c.p)?c.p:[];
-      const ed=(ADM_CE===c.id);
-      const stCls=st==='live'?'grn':(st==='soon'?'blu':'red');
-      return '<div class="adm-row'+(ed?' off':'')+'">'+
-        '<div class="adm-rowi"><b>'+esc(c.t)+'</b><span>🎁 '+esc(c.prize||'—')+' · 📅 '+fmtDate(c.s||0)+' → '+fmtDate(c.e||0)+' · 👥 '+p.length+(c.cap>0?'/'+c.cap:'')+(c.winner?' · 🏆':'')+'</span></div>'+
-        '<span class="adm-badges"><span class="adm-badge '+stCls+'">'+cStTxt(st)+'</span></span>'+
-        '<div class="adm-acts">'+
-          '<button title="'+L('المشاركون','Participants','Participants')+'" onclick="admCtsPeople(\''+c.id+'\')">👥</button>'+
-          '<button title="'+L('تعديل','Edit','Modifier')+'" onclick="admCtsEdit(\''+c.id+'\')">✏️</button>'+
-          '<button title="'+L('حذف','Delete','Supprimer')+'" onclick="admCtsDel(\''+c.id+'\')">🗑️</button>'+
-        '</div>'+
-      '</div>';
-    }).join('');
-  }
+    '<div class="ct-chips"><button type="button" class="ct-chipb" onclick="ctStartNow()">'+L('ابدأ الآن','Start now','Démarrer')+'</button>'+pr(L('+ساعة','+1h','+1h'),3600000)+pr(L('+24 ساعة','+24h','+24h'),86400000)+pr(L('+3 أيام','+3d','+3j'),3*86400000)+pr(L('+7 أيام','+7d','+7j'),7*86400000)+'</div>'+
+    '<div class="au-f"><label>'+L('وصف المسابقة وشروطها','Description & rules','Description')+'</label><textarea id="ac-d" class="adm-ta" rows="4" maxlength="1500" placeholder="'+L('اشرح شروط المسابقة وكيفية الفوز...','Explain the rules and how to win...','Expliquez les règles...')+'">'+(cur?esc(cur.d):'')+'</textarea></div>'+
+    '<label class="ct-chk"><input id="ac-auto" type="checkbox" '+(!cur||cur.auto?'checked':'')+'> '+L('سحب الفائزين تلقائيًا عند الانتهاء (وإشعارهم)','Draw winners automatically at the end (and notify them)','Tirage automatique à la fin')+'</label>'+
+    (cur?'':'<label class="ct-chk"><input id="ac-an" type="checkbox" checked> '+L('أرسل إشعارًا للجميع بالمسابقة الجديدة','Notify everyone about the new contest','Notifier tout le monde')+'</label>')+
+    '<div class="adm-acts2"><button id="ac-save" class="au-btn" onclick="admCtsSave()">💾 '+(cur?L('حفظ التعديل','Save changes','Enregistrer'):L('إنشاء المسابقة','Create contest','Créer'))+'</button>'+(cur?'<button class="adm-new sm" onclick="admCtsCancel()">✕ '+L('إلغاء','Cancel','Annuler')+'</button>':'')+'</div>'+
+  '</div>'+
+  '<div class="adm-ms-h">'+L('قائمة المسابقات','Contests list','Liste des concours')+' <span>'+(CT.adm.loaded?CT.adm.rows.length:'…')+'</span></div><div id="ac-list">'+ctAdmListHtml()+'</div>';
   box.innerHTML=html;
+  if(!CT.adm.busy&&(!CT.adm.loaded||Date.now()-CT.adm.at>3000)) ctAdmLoad();
 }
 
 function copyText(t){
