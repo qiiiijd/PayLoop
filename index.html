@@ -10476,5 +10476,52 @@ async function openCpx(){
   }catch(e){ try{ document.getElementById('cpx-ov').classList.remove('on'); }catch(_){} try{ toast(L('حدث خطأ','Error','Erreur')); }catch(_){} }
 }
 </script>
+
+<style>
+.cpx-banner{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,#0b86b0,#1747a6);color:#fff;cursor:pointer;box-shadow:0 6px 18px rgba(23,71,166,.35)}
+.cpx-banner .cb-ic{font-size:28px}
+.cpx-banner b{display:block;font-size:16px}
+.cpx-banner small{opacity:.85;font-size:12.5px}
+.cpx-banner .cb-go{margin-inline-start:auto;background:#fff;color:#0b3d91;border-radius:12px;padding:8px 14px;font-weight:800;font-size:14px}
+</style>
+<script>
+(function(){
+  /* ===== إعدادات ظاهرية لبطاقة الاستطلاعات (عدّلها كما تشاء) ===== */
+  var CPX_UI={ max:'5.00', time:['5–15 د','5–15 min','5–15 min'] };
+  var _rt0=window.renderTasks; if(typeof _rt0!=='function') return;
+  window.renderTasks=function(cat){
+    _rt0.apply(this,arguments);
+    try{
+      if((cat==='survey'||cat==='all') && !window.__cpxTaskExists()){
+        var box=document.getElementById('tlist');
+        if(box && !box.querySelector('.cpx-row')){
+          var art=''; try{ art=artHTML('survey'); }catch(e){}
+          var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+          var card='<div class="trow cpx-row" onclick="openCpx()">'
+            +'<div class="t-icon art">'+art+'</div>'
+            +'<div class="t-info"><div class="t-head"><b class="t-amt">$'+CPX_UI.max+'</b><span class="t-amtl">'+L('حتى','Up to','Jusqu\'à')+'</span></div>'
+            +'<h4>'+L('استطلاعات مدفوعة','Paid surveys','Sondages rémunérés')+'</h4>'
+            +'<div class="meta"><span>⏱ '+L(CPX_UI.time[0],CPX_UI.time[1],CPX_UI.time[2])+'</span><span>🔓 '+L('فتح الاستطلاعات','Open surveys','Ouvrir les sondages')+'</span></div></div>'
+            +go+'</div>';
+          box.insertAdjacentHTML('afterbegin','<div class="t-sec">📋 '+L('الاستطلاعات','Surveys','Sondages')+' <i>∞</i></div>'+card);
+        }
+      }
+    }catch(e){}
+  };
+})();
+</script>
+
+<script>
+(function(){
+  var RX=/cpx-research\.com|^cpx:/i;
+  function urlOf(t){ try{ return String((t&&((t.adv&&t.adv.url)||t.link))||''); }catch(e){ return ''; } }
+  window.__cpxTaskExists=function(){ try{ return TASKS.some(function(t){ return RX.test(urlOf(t)); }); }catch(e){ return false; } };
+  var _ot0=window.openTask; if(typeof _ot0!=='function') return;
+  window.openTask=function(ti){
+    try{ var t=TASKS[ti]; if(t && RX.test(urlOf(t))){ openCpx(); return; } }catch(e){}
+    return _ot0.apply(this,arguments);
+  };
+})();
+</script>
 </body>
 </html>
