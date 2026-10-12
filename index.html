@@ -34,7 +34,7 @@
 .fx-sum b{font-size:13px; font-weight:800; line-height:1.6;}
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.11-r8';
+window.PL_BUILD='2026.10.12-r14';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -2914,7 +2914,7 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
     </div>
     <div class="set-row" id="push-sub" style="display:none;gap:10px">
       <span id="push-st" style="font-size:12px;color:var(--muted);flex:1"></span>
-      <button id="push-test" onclick="Push.test()" style="padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-family:inherit;font-size:12px"></button>
+      <button id="push-test" onclick="Push.test()" style="display:none;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-family:inherit;font-size:12px"></button>
     </div>
     <div class="set-row" id="push-diagrow" style="display:none;gap:10px">
       <span id="push-diag" style="font-size:11px;color:var(--muted);flex:1;line-height:1.8"></span>
@@ -3754,6 +3754,7 @@ function taskBuckets(cat){
 }
 function renderGsub(){
   const box=document.getElementById('gsub'); if(!box) return;
+  if(curCat==='ads'||curCat==='survey'){ box.innerHTML=''; return; }   /* إعلانات/استطلاعات: لا «جديد/إكمال/مكتمل» — لا مستويات ولا استئناف، فقط قائمة واحدة */
   if(taskTab!=='new'&&taskTab!=='started'&&taskTab!=='done') taskTab='new';
   const B=taskBuckets(curCat);
   const opts=[['new','جديد','New','Nouveau'],['started','إكمال','Continue','Reprendre'],['done','مكتمل','Completed','Terminé']];
@@ -3889,14 +3890,17 @@ function tabEmptyHTML(tab){
 function renderTasks(cat){
   const box=document.getElementById('tlist');
   const B=taskBuckets(cat);
-  if(taskTab==='started'){ box.innerHTML=B.started.length?B.started.map(function(t){ return startedCardHTML(t,TASKS.indexOf(t)); }).join(''):tabEmptyHTML('started'); return; }
-  if(taskTab==='done'){ box.innerHTML=B.done.length?B.done.map(function(t){ return doneCardHTML(t,TASKS.indexOf(t)); }).join(''):tabEmptyHTML('done'); return; }
+  const _flat=(cat==='ads'||cat==='survey');
+  if(_flat){ const _dn=B.done.map(function(t){ return doneCardHTML(t,TASKS.indexOf(t)); }).join(''); B.new=B.new.concat(B.started); B.started=[]; B.done=[]; box.__dn=_dn; } else box.__dn='';
+  if(taskTab==='started'&&!_flat){ box.innerHTML=B.started.length?B.started.map(function(t){ return startedCardHTML(t,TASKS.indexOf(t)); }).join(''):tabEmptyHTML('started'); return; }
+  if(taskTab==='done'&&!_flat){ box.innerHTML=B.done.length?B.done.map(function(t){ return doneCardHTML(t,TASKS.indexOf(t)); }).join(''):tabEmptyHTML('done'); return; }
   const _hadDone = B.done.length>0 || B.started.length>0;
   let list=B.new;
   if(!list.length){
+    if(_flat&&box.__dn){ box.innerHTML='<div class="t-sec">✓ '+L('المكتملة','Completed','Terminées')+'</div>'+box.__dn; return; }
     if(_hadDone){
       box.innerHTML='<div class="te-wrap"><p class="te-msg">🎉 '+L('لا توجد مهام جديدة هنا حاليًا — ستظهر مهام جديدة قريبًا.','No new tasks here right now — new ones are coming soon.','Pas de nouvelles tâches pour le moment.')+'</p>'+
-        (B.started.length?'<button class="te-btn" onclick="setTaskTab(\'started\')">▶ '+L('تابع ما بدأته','Continue what you started','Reprendre')+'</button>':'')+'</div>';
+        '</div>';
       return;
     }
     box.innerHTML= (cat==='games'||cat==='all')
@@ -3933,7 +3937,7 @@ function renderTasks(cat){
       ${goBtn}
     </div>`;
     })();
-  }).join('');
+  }).join('') + ((_flat&&box.__dn)?'<div class="t-sec">✓ '+L('المكتملة','Completed','Terminées')+'</div>'+box.__dn:'');
 }
 function bigEmpty(cat){
   const M={
@@ -4394,6 +4398,7 @@ function nfText(it){
 }
 function ntfNavigate(g){
   if(g==='help'){ try{ openInfo('help'); go('info'); }catch(e){} return; }
+  if(g==='surveys'){ try{ go('tasks'); filterTasks('survey'); }catch(e){} return; }
   try{ go(g); }catch(e){}
 }
 
@@ -5704,13 +5709,12 @@ function isAdmin(){ const u=curUser(); return !!(u&&u.role==='admin'); }
 let _vt=0,_vtT=0;
 function verTap(){
   const now=Date.now(); if(now-_vtT>3000) _vt=0; _vtT=now; _vt++;
-  if(_vt<6) return; _vt=0;
+  if(_vt<10) return; _vt=0;
   if(DataGateway.config.DATA_MODE!=='local'){
     /* وضع الخادم: الدور يقرره الخادم فقط. النقرات الست تُظهر القائمة المخفية لمن دوره admin، ولا تمنح أحداً صلاحية. */
     const au=curUser(); if(!au||au.role!=='admin'){ try{ admLoginOpen(); }catch(e){} return; }
-    try{ localStorage.setItem('r7-adm-rev', String(au.id)); }catch(e){}
-    try{ renderMenu(); }catch(e){}
-    toast(L('✅ ظهرت لوحة التحكم في قائمة «المزيد»','✅ Control panel is now in “More”','✅ Panneau de contrôle visible dans « Plus »'));
+    try{ if(localStorage.getItem('r7-adm-rev')===String(au.id)){ toast(L('لوحة التحكم ظاهرة بالفعل في «المزيد»','The control panel is already in “More”','Le panneau est déjà dans « Plus »')); return; } }catch(e){}
+    admPassOpen(au);   /* مدير مسجّل دخوله: كلمة السر مطلوبة والتحقق في الخادم (Supabase Auth) — لا كلمة سر داخل الملف */
     return;
   }
   const u=curUser(); if(!u) return;
@@ -5720,6 +5724,41 @@ function verTap(){
 }
 
 
+/* كلمة سر المدير (مدير مسجّل دخوله أصلًا): تُتحقق بتسجيل دخول حقيقي في الخادم. الخطأ = لا شيء يظهر. */
+function admPassOpen(au){
+  if(document.getElementById('adm-pass')) return;
+  const w=document.createElement('div'); w.id='adm-pass';
+  w.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(2,6,15,.78);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(3px)';
+  w.innerHTML='<div style="width:100%;max-width:360px;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5)">'+
+    '<div style="font-size:16px;font-weight:900;margin-bottom:12px">🔐 '+L('كلمة سر الإدارة','Admin password','Mot de passe admin')+'</div>'+
+    '<div class="ax-field"><div class="ax-in"><input id="adp-pass" type="password" dir="ltr" placeholder="••••••••" autocomplete="off" style="padding-inline-start:14px" onkeydown="if(event.key===\'Enter\'){admPassGo()}"></div></div>'+
+    '<div id="adp-err" style="display:none;color:#f87171;font-size:12px;font-weight:800;margin:6px 0"></div>'+
+    '<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px"><button class="au-btn" id="adp-go" style="width:100%;margin:0" onclick="admPassGo()"><span class="ax-btn-t">'+L('دخول','Enter','Entrer')+'</span></button>'+
+    '<button type="button" style="width:100%;margin:0;padding:12px;border-radius:14px;background:transparent;border:1px solid var(--border);color:var(--muted);font:inherit;font-weight:800;cursor:pointer" onclick="admPassClose()">'+L('إلغاء','Cancel','Annuler')+'</button></div></div>';
+  document.body.appendChild(w);
+  setTimeout(function(){ try{ document.getElementById('adp-pass').focus(); }catch(e){} },80);
+}
+function admPassClose(){ const w=document.getElementById('adm-pass'); if(w) w.remove(); }
+async function admPassGo(){
+  if(DataGateway._admBusy) return; DataGateway._admBusy=true;
+  const err=function(m){ const e=document.getElementById('adp-err'); if(e){ e.textContent=m||''; e.style.display=m?'block':'none'; } };
+  const btn=document.getElementById('adp-go');
+  try{
+    err(''); const au=curUser(); const pw=(document.getElementById('adp-pass')||{}).value||'';
+    if(!au||au.role!=='admin'||!au.email){ err(L('غير مسموح','Not allowed','Non autorisé')); return; }
+    const rl=rlInfo(); if(rl.block){ err(L('محاولات كثيرة — انتظر '+rl.wait+' ثانية','Too many attempts — wait '+rl.wait+'s','Trop de tentatives — patientez '+rl.wait+'s')); return; }
+    if(!pw){ err(L('أدخل كلمة السر','Enter the password','Entrez le mot de passe')); return; }
+    if(btn) btn.disabled=true;
+    const si=await RealAuth.signIn(String(au.email).toLowerCase(), pw);
+    if(!si.ok){ rlFail(); err(L('كلمة السر غير صحيحة','Wrong password','Mot de passe incorrect')); return; }
+    rlOk();
+    try{ localStorage.setItem('r7-adm-rev', String(au.id)); }catch(e){}
+    admPassClose();
+    try{ renderMenu(); }catch(e){}
+    toast(L('✅ ظهرت لوحة التحكم في قائمة «المزيد»','✅ Control panel is now in “More”','✅ Panneau de contrôle visible dans « Plus »'));
+  }catch(e){ err(L('حدث خطأ غير متوقع','Unexpected error','Erreur inattendue')); }
+  finally{ DataGateway._admBusy=false; if(btn) btn.disabled=false; }
+}
 /* ===== دخول الإدارة من أي هاتف/حساب: 6 نقرات على «إصدار التطبيق» ← نافذة إيميل وكلمة سر المدير.
    التحقق كله في الخادم: نجاح الدخول + دور admin في قاعدة البيانات. أي شخص آخر لا يحصل على شيء. ===== */
 function admLoginOpen(){
@@ -5774,7 +5813,7 @@ async function admLoginGo(){
 }
 (function(){ let n=0,t=0; document.addEventListener('click',function(e){ try{
   const lg=e.target&&e.target.closest&&e.target.closest('.ax-logo-wrap'); if(!lg) return;
-  const now=Date.now(); if(now-t>3000) n=0; t=now; n++; if(n>=6){ n=0; if(DataGateway.config.DATA_MODE!=='local') admLoginOpen(); } }catch(_){ } }); })();
+  const now=Date.now(); if(now-t>3000) n=0; t=now; n++; if(n>=10){ n=0; if(DataGateway.config.DATA_MODE!=='local') admLoginOpen(); } }catch(_){ } }); })();
 function authMode(m){ AUTHM=m; AUTH_ERR=''; AU_OK=''; renderAuth(); }
 (function(){
   function g(){ return document.getElementById('auth-gate'); }
@@ -6274,7 +6313,7 @@ const SRV={
     return this.nf.items.map(function(i){ const tx=i.code?nfText(i):{t:i.title,m:i.body}; return {id:i.id, t:tx.t, m:tx.m, ty:i.kind, at:i.at, read:i.read, nav:i.go||''}; });
   },
   nfClean(r){
-    const GO={home:1,tasks:1,withdraw:1,ff:1,invite:1,profile:1,history:1,news:1,contests:1,info:1,help:1,settings:1};
+    const GO={home:1,tasks:1,withdraw:1,ff:1,invite:1,profile:1,history:1,news:1,contests:1,info:1,help:1,settings:1,surveys:1};
     const out=[]; (Array.isArray(r)?r:[]).forEach(function(x){
       if(!x||typeof x.id!=='string'||!/^[pa]:\d{1,15}$/.test(x.id)) return;
       const at=Date.parse(x.at); if(!at) return;
@@ -6481,7 +6520,7 @@ const SRV={
     try{ window.addEventListener('focus', function(){ self.cycle(false); }); }catch(e){}
     try{ document.addEventListener('visibilitychange', function(){ if(!document.hidden) self.cycle(false); }); }catch(e){}
   },
-  afterLogin(){ if(this.cfg()&&this.uid()){ this.cycle(true); try{ Push.sync(); }catch(e){} try{ if(_pendingGo){ const g=_pendingGo; _pendingGo=null; setTimeout(function(){ pushGo(g); },600); } }catch(e){} } },
+  afterLogin(){ if(this.cfg()&&this.uid()){ this.cycle(true); try{ setTimeout(function(){ if(typeof cpxWatch==='function') cpxWatch(); },6000); }catch(e){} try{ Push.sync(); }catch(e){} try{ if(_pendingGo){ const g=_pendingGo; _pendingGo=null; setTimeout(function(){ pushGo(g); },600); } }catch(e){} } },
   pushSoon(){ if(!this.on()) return; clearTimeout(this._pT); this._pT=setTimeout(function(){ try{ DataGateway.push(); }catch(e){} },2500); },
   /* ---------- المهام ---------- */
   async taskGate(ti,btn,fromDetail){
@@ -6975,9 +7014,9 @@ const Push={
     else if(!this.ok()) msg=L('هذا المتصفح لا يدعمها. على الآيفون: أضف التطبيق إلى الشاشة الرئيسية أولًا','Not supported by this browser. On iPhone: add the app to your Home Screen first','Non pris en charge. Sur iPhone : ajoutez d’abord l’app à l’écran d’accueil');
     else if(Notification.permission==='denied') msg=L('الإذن مرفوض — فعّله من إعدادات المتصفح للموقع','Permission denied — allow it in the browser’s site settings','Autorisation refusée — activez-la dans les réglages du navigateur');
     else { const s=await this.current(); on=!!(s&&this.want()&&Notification.permission==='granted'); msg=on?L('مفعّلة على هذا الهاتف ✅','Enabled on this phone ✅','Activées sur ce téléphone ✅'):L('غير مفعّلة','Off','Désactivées'); }
-    if(sw) sw.checked=on; if(st) st.textContent=msg; if(sub) sub.style.display=(msg?'flex':'none'); if(tb) tb.style.display=on?'':'none';
+    if(sw) sw.checked=on; if(st) st.textContent=msg; if(sub) sub.style.display=(msg?'flex':'none'); if(tb) tb.style.display=(on&&isAdmin())?'':'none';
     try{ const dr=document.getElementById('push-diagrow'), dt=document.getElementById('push-diag'), lb=document.getElementById('push-local');
-      if(dr){ dr.style.display=on?'flex':'none'; if(on){ if(lb) lb.textContent=L('اختبار العرض على هذا الهاتف','Local display test','Test d’affichage'); if(dt) dt.textContent=await this.diag(); } } }catch(e){}
+      if(dr){ dr.style.display=(on&&isAdmin())?'flex':'none'; if(on&&isAdmin()){ if(lb) lb.textContent=L('اختبار العرض على هذا الهاتف','Local display test','Test d’affichage'); if(dt) dt.textContent=await this.diag(); } } }catch(e){}
   },
   /* تشخيص صادق: هل وصل إشعار فعلًا إلى هذا الهاتف (سجّله sw.js)، وهل نجح عرضه؟ */
   diag:async function(){
@@ -7054,6 +7093,7 @@ try{ const _m=String(location.hash||'').match(/^#go=([a-z_]{2,24})$/); if(_m){ _
 try{ if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',function(ev){ const d=ev&&ev.data||{}; if(d.type==='go') pushGo(d.go); else if(d.type==='push'){ try{ SRV.cycle(true); }catch(e){} try{ setTimeout(function(){ Push.render(); },800); }catch(e){} } }); }catch(e){}
 
 function doLogout(){
+  try{ localStorage.removeItem('r7-adm-rev'); }catch(e){}   /* بعد الخروج تختفي لوحة التحكم حتى تُفتح من جديد بالنقرات + كلمة السر */
   RealAuth.signOut();   /* لا ينتظر الشبكة */
   SESSION=null; try{ LS.set('r12-session',''); }catch(e){}
   try{ localStorage.removeItem('r12-nr'); sessionStorage.removeItem('r12-nr-alive'); }catch(e){}
@@ -8604,6 +8644,8 @@ function net2Url(n, secret){
   Object.keys(P).forEach(function(k){ const nm=Array.isArray(P[k])?P[k][0]:P[k]; u+='&'+encodeURIComponent(nm)+'='+(M[k]||'MACRO_'+k.toUpperCase()); });
   const sg=cfg.signature||{mode:'shared_secret',param:'secret'};
   if((sg.mode||'shared_secret')==='shared_secret'&&sg.param) u+='&'+encodeURIComponent(sg.param)+'='+(secret||'SECRET');
+  /* md5 / hmac: الشبكة ترسل توقيعًا في وسيط (مثل hash). بدونه في الرابط يرفض الخادم كل طلباتها (bad_signature) — يُعرض هنا كماكرو تستبدله بماكرو التوقيع في وثائق الشبكة. */
+  else if(['md5','hmac'].indexOf(String(sg.mode))>=0&&sg.param) u+='&'+encodeURIComponent(sg.param)+'='+(M.signature||M[sg.param]||('MACRO_'+String(sg.param).toUpperCase()));
   return u;
 }
 function net2HTML(){
@@ -10457,6 +10499,24 @@ try{ setTimeout(function(){ autoLangFromIP(); },400); }catch(e){}
 </style>
 <div id="cpx-ov"><div class="cpx-bar"><span id="cpx-t"></span><button class="cpx-x" id="cpx-close" type="button"></button></div><div class="cpx-load" id="cpx-load"></div><iframe id="cpx-fr" allow="clipboard-write"></iframe></div>
 <script>
+/* ===== إشعار «استطلاعات جديدة»: يسأل الخادم (لا يقرر التطبيق شيئًا). الخادم يقارن بأرقام الاستطلاعات ويضيف الإشعار ===== */
+function cpxWatch(){
+  try{
+    if(window.__cpxBusy||document.hidden) return;
+    if(typeof SRV==='undefined'||!SRV||!SRV.on||!SRV.on()) return;
+    var now=Date.now(), last=0; try{ last=+localStorage.getItem('pl-cpx-at')||0; }catch(e){}
+    if(now-last<600000) return;
+    window.__cpxBusy=true;
+    try{ localStorage.setItem('pl-cpx-at',String(now)); }catch(e){}
+    Promise.resolve(SRV.tok()).then(function(t){
+      if(!t) return;
+      return fetch(RealAuth.base()+'/functions/v1/'+encodeURIComponent(net2Fn())+'?action=cpx_check',{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()}})
+        .then(function(r){ return r.ok?r.json():null; })
+        .then(function(j){ if(j&&j.notified){ try{ SRV.cycle(true); }catch(e){} } });
+    }).catch(function(){}).then(function(){ window.__cpxBusy=false; });
+  }catch(e){ window.__cpxBusy=false; }
+}
+try{ document.addEventListener('visibilitychange',function(){ if(!document.hidden) setTimeout(cpxWatch,1500); }); }catch(e){}
 async function openCpx(){
   try{
     var ov=document.getElementById('cpx-ov'), fr=document.getElementById('cpx-fr'), ld=document.getElementById('cpx-load');
@@ -10468,9 +10528,9 @@ async function openCpx(){
     ld.textContent=L('جارٍ التحميل…','Loading…','Chargement…'); ld.style.display='block';
     ov.classList.add('on'); fr.src='about:blank';
     try{ await RealAuth.ensureFresh(); s=RealAuth.getSession()||s; }catch(e){}
-    var r=await fetch(RealAuth.base()+'/functions/v1/super-worker?action=cpx_link',{headers:{'Authorization':'Bearer '+s.access_token,'apikey':RealAuth.key()}});
+    var r=await fetch(RealAuth.base()+'/functions/v1/'+encodeURIComponent((typeof net2Fn==='function'?net2Fn():'super-worker'))+'?action=cpx_link',{headers:{'Authorization':'Bearer '+s.access_token,'apikey':RealAuth.key()}});
     var j=await r.json().catch(function(){ return {}; });
-    if(!r.ok||!j.ok||!j.url){ ov.classList.remove('on'); toast(L('تعذّر فتح الاستطلاعات الآن','Could not open surveys now','Impossible d\'ouvrir les sondages')); return; }
+    if(!r.ok||!j.ok||typeof j.url!=='string'||!/^https:\/\/offers\.cpx-research\.com\//.test(j.url)){ ov.classList.remove('on'); toast(L('تعذّر فتح الاستطلاعات الآن','Could not open surveys now','Impossible d\'ouvrir les sondages')); return; }
     fr.onload=function(){ ld.style.display='none'; };
     fr.src=j.url;
   }catch(e){ try{ document.getElementById('cpx-ov').classList.remove('on'); }catch(_){} try{ toast(L('حدث خطأ','Error','Erreur')); }catch(_){} }
@@ -10499,10 +10559,10 @@ async function openCpx(){
           var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
           var card='<div class="trow cpx-row" onclick="openCpx()">'
             +'<div class="t-icon art">'+art+'</div>'
-            +'<div class="t-info"><div class="t-head"><b class="t-amt">$'+CPX_UI.max+'</b><span class="t-amtl">'+L('حتى','Up to','Jusqu\'à')+'</span></div>'
-            +'<h4>'+L('استطلاعات مدفوعة','Paid surveys','Sondages rémunérés')+'</h4>'
-            +'<div class="meta"><span>⏱ '+L(CPX_UI.time[0],CPX_UI.time[1],CPX_UI.time[2])+'</span><span>🔓 '+L('فتح الاستطلاعات','Open surveys','Ouvrir les sondages')+'</span></div></div>'
+            +'<div class="t-info"><h4>'+L('استطلاعات مدفوعة','Paid surveys','Sondages rémunérés')+'</h4>'
+            +'<div class="meta"><span>🔓 '+L('فتح الاستطلاعات','Open surveys','Ouvrir les sondages')+'</span><span>'+L('المكافأة تظهر داخل كل استطلاع','Reward shown inside each survey','Récompense affichée dans chaque sondage')+'</span></div></div>'
             +go+'</div>';
+          try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
           box.insertAdjacentHTML('afterbegin','<div class="t-sec">📋 '+L('الاستطلاعات','Surveys','Sondages')+' <i>∞</i></div>'+card);
         }
       }
