@@ -34,7 +34,7 @@
 .fx-sum b{font-size:13px; font-weight:800; line-height:1.6;}
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.12-r14';
+window.PL_BUILD='2026.10.12-r15';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -10580,6 +10580,56 @@ async function openCpx(){
   window.openTask=function(ti){
     try{ var t=TASKS[ti]; if(t && RX.test(urlOf(t))){ openCpx(); return; } }catch(e){}
     return _ot0.apply(this,arguments);
+  };
+})();
+</script>
+<style>
+#ow-ov{position:fixed;inset:0;z-index:99999;background:#0b1220;display:none;flex-direction:column}
+#ow-ov.on{display:flex}
+#ow-ov .ow-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top,0px));background:#111a2e;color:#fff;font-weight:700}
+#ow-ov .ow-x{border:0;border-radius:10px;padding:8px 14px;background:#1e2a47;color:#fff;font-size:15px}
+#ow-ov iframe{flex:1;width:100%;border:0;background:#0b1220}
+#ow-ov .ow-load{position:absolute;top:60px;left:0;right:0;text-align:center;color:#9fb3d9;padding:20px;pointer-events:none}
+</style>
+<div id="ow-ov"><div class="ow-bar"><span id="ow-t"></span><button class="ow-x" id="ow-close" type="button"></button></div><div class="ow-load" id="ow-load"></div><iframe id="ow-fr" allow="clipboard-write"></iframe></div>
+<script>
+/* ===== Offerwall.GG: جدار ألعاب ومهام. المفتاح العام فقط هنا (مكانه الطبيعي في الرابط). السرّ لا يغادر الخادم أبدًا.
+   المكافأة لا تُمنح من هنا: تصل فقط عبر postback موقَّع إلى الخادم. ===== */
+var OW_PUB='ea3c00c9aed2289c6260a5ed35c098d3';
+function owUid(){ try{ var s=RealAuth.getSession(); var u=s&&s.uid; return (typeof u==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(u))?u:''; }catch(e){ return ''; } }
+function openOfferwall(){
+  try{
+    var ov=document.getElementById('ow-ov'), fr=document.getElementById('ow-fr'), ld=document.getElementById('ow-load');
+    document.getElementById('ow-t').textContent=L('ألعاب ومهام','Games & offers','Jeux et offres');
+    var cb=document.getElementById('ow-close'); cb.textContent=L('إغلاق','Close','Fermer');
+    cb.onclick=function(){ ov.classList.remove('on'); fr.src='about:blank'; try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} try{ if(SRV&&SRV.cycle) SRV.cycle(true); }catch(e){} };
+    var uid=owUid();
+    if(!uid){ toast(L('سجّل الدخول أولاً','Please sign in first','Connectez-vous d\'abord')); return; }
+    ld.textContent=L('جارٍ التحميل…','Loading…','Chargement…'); ld.style.display='block';
+    ov.classList.add('on');
+    fr.onload=function(){ ld.style.display='none'; };
+    fr.src='https://offerwall.gg/wall/'+OW_PUB+'?userId='+encodeURIComponent(uid);
+  }catch(e){ try{ document.getElementById('ow-ov').classList.remove('on'); }catch(_){} try{ toast(L('حدث خطأ','Error','Erreur')); }catch(_){} }
+}
+(function(){
+  var _rt1=window.renderTasks; if(typeof _rt1!=='function') return;
+  window.renderTasks=function(cat){
+    _rt1.apply(this,arguments);
+    try{
+      if(cat==='games'||cat==='all'){
+        var box=document.getElementById('tlist');
+        if(box && !box.querySelector('.ow-row')){
+          var art=''; try{ art=artHTML('games'); }catch(e){}
+          var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+          var card='<div class="trow ow-row" onclick="openOfferwall()">'
+            +'<div class="t-icon art">'+art+'</div>'
+            +'<div class="t-info"><h4>'+L('ألعاب ومهام مدفوعة','Paid games & offers','Jeux et offres rémunérés')+'</h4>'
+            +'<div class="meta"><span>🎮 '+L('افتح الجدار','Open the wall','Ouvrir le mur')+'</span><span>'+L('المكافأة تظهر داخل كل عرض','Reward shown inside each offer','Récompense affichée dans chaque offre')+'</span></div></div>'
+            +go+'</div>';
+          box.insertAdjacentHTML('afterbegin',card);
+        }
+      }
+    }catch(e){}
   };
 })();
 </script>
