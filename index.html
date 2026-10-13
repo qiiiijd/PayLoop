@@ -34,7 +34,7 @@
 .fx-sum b{font-size:13px; font-weight:800; line-height:1.6;}
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.12-r15';
+window.PL_BUILD='2026.10.13-r16';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -10621,16 +10621,176 @@ function openOfferwall(){
         if(box && !box.querySelector('.ow-row')){
           var art=''; try{ art=artHTML('games'); }catch(e){}
           var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
-          var card='<div class="trow ow-row" onclick="openOfferwall()">'
+          var card='<div class="trow ow-row" onclick="openOwGames()">'
             +'<div class="t-icon art">'+art+'</div>'
             +'<div class="t-info"><h4>'+L('ألعاب ومهام مدفوعة','Paid games & offers','Jeux et offres rémunérés')+'</h4>'
-            +'<div class="meta"><span>🎮 '+L('افتح الجدار','Open the wall','Ouvrir le mur')+'</span><span>'+L('المكافأة تظهر داخل كل عرض','Reward shown inside each offer','Récompense affichée dans chaque offre')+'</span></div></div>'
+            +'<div class="meta"><span>🎮 '+L('قائمة الألعاب','Games list','Liste des jeux')+'</span><span>'+L('مكافأة لكل مرحلة تصلك تلقائيًا','A reward for each level, paid automatically','Une récompense par niveau, versée automatiquement')+'</span></div></div>'
             +go+'</div>';
           box.insertAdjacentHTML('afterbegin',card);
         }
       }
     }catch(e){}
   };
+})();
+</script>
+<style>
+#owg-ov{position:fixed;inset:0;z-index:99998;background:#0b1220;display:none;flex-direction:column;color:#e8eefc}
+#owg-ov.on{display:flex}
+#owg-ov .g-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top,0px));background:#111a2e;font-weight:700}
+#owg-ov .g-bar button{border:0;border-radius:10px;padding:8px 12px;background:#1e2a47;color:#fff;font-size:14px}
+#owg-ov .g-body{flex:1;overflow:auto;padding:12px 12px 90px;-webkit-overflow-scrolling:touch}
+#owg-ov .g-msg{text-align:center;color:#9fb3d9;padding:28px 12px;line-height:1.8}
+#owg-ov .g-card{display:flex;gap:12px;align-items:center;background:#131f38;border:1px solid #22304f;border-radius:16px;padding:10px;margin-bottom:10px}
+#owg-ov .g-img{width:64px;height:64px;border-radius:14px;background:#1e2a47;flex:none;display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden}
+#owg-ov .g-img img{width:100%;height:100%;object-fit:cover}
+#owg-ov .g-in{flex:1;min-width:0}
+#owg-ov .g-in h4{margin:0 0 4px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#owg-ov .g-meta{font-size:12px;color:#9fb3d9;display:flex;gap:6px;flex-wrap:wrap}
+#owg-ov .g-rw{flex:none;background:#0f3d2a;color:#5df0a0;border-radius:12px;padding:6px 10px;font-weight:800;font-size:14px}
+#owg-ov .g-rw.v{background:#2a2f45;color:#cfd8f5}
+#owg-ov .g-more{display:block;width:100%;border:0;border-radius:12px;padding:12px;background:#1e2a47;color:#fff;font-size:15px;margin-top:6px}
+#owg-ov .g-sheet{position:absolute;inset:0;background:#0b1220;display:none;flex-direction:column;overflow:auto;-webkit-overflow-scrolling:touch}
+#owg-ov .g-sheet.on{display:flex}
+#owg-ov .g-h{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+#owg-ov .g-h .g-img{width:80px;height:80px}
+#owg-ov .g-sec{background:#131f38;border:1px solid #22304f;border-radius:14px;padding:12px;margin-bottom:10px;font-size:14px;line-height:1.8}
+#owg-ov .g-sec b{display:block;margin-bottom:4px;color:#9fb3d9;font-size:12px}
+#owg-ov .g-step{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid #22304f}
+#owg-ov .g-step:first-of-type{border-top:0}
+#owg-ov .g-ck{flex:none;width:24px;height:24px;border-radius:50%;background:#1e2a47;display:flex;align-items:center;justify-content:center;font-size:13px}
+#owg-ov .g-step.done .g-ck{background:#16a05f}
+#owg-ov .g-step .g-d{flex:1}
+#owg-ov .g-step .g-r{flex:none;font-weight:800;color:#5df0a0}
+#owg-ov .g-start{position:sticky;bottom:0;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,#0b1220 30%)}
+#owg-ov .g-start button{width:100%;border:0;border-radius:14px;padding:14px;background:#16a05f;color:#fff;font-size:16px;font-weight:800}
+</style>
+<div id="owg-ov">
+  <div class="g-bar"><span id="owg-t"></span><span><button id="owg-wall" type="button"></button> <button id="owg-x" type="button"></button></span></div>
+  <div class="g-body" id="owg-body"></div>
+  <div class="g-sheet" id="owg-sheet"></div>
+</div>
+<script>
+/* ===== قائمة ألعاب Offerwall.GG (عرض فقط). الخادم (super-worker) يجلب العروض ويخفي المفتاح السري.
+   لا تُمنح أي مكافأة من هنا إطلاقًا: المكافأة تصل فقط عبر postback موقَّع، و«أين وصلت» تُقرأ من سجلّ المعاملات. ===== */
+(function(){
+  var S={items:[],page:0,pages:1,prog:null,share:1,busy:false,cur:null};
+  function $(i){ return document.getElementById(i); }
+  function money(v){ return (v==null)?L('يختلف','Varies','Variable'):('$'+Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})); }
+  function call(q){
+    return Promise.resolve(SRV.tok()).then(function(t){
+      if(!t) return {ok:false,why:'no_token'};
+      return fetch(RealAuth.base()+'/functions/v1/'+encodeURIComponent(net2Fn())+'?'+q,{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()}})
+        .then(function(r){ return r.json().catch(function(){ return {ok:false,why:'bad_reply'}; }); })
+        .catch(function(){ return {ok:false,why:'net'}; });
+    });
+  }
+  function why(w){
+    if(w==='busy') return L('الخدمة مشغولة الآن، حاول بعد دقيقة','Service busy, try again in a minute','Service occupé, réessayez dans une minute');
+    if(w==='network_off'||w==='api_denied') return L('قائمة الألعاب غير متاحة حاليًا','The games list is not available right now','La liste des jeux est indisponible');
+    return L('تعذّر تحميل الألعاب، تأكد من الاتصال وحاول مجددًا','Could not load games. Check your connection and retry','Chargement impossible. Vérifiez la connexion');
+  }
+  function loadProg(){
+    return Promise.resolve(SRV.rpc('ow_my_progress',{})).then(function(r){
+      if(r&&r.ok===true&&Array.isArray(r.rows)){ var m={}; r.rows.forEach(function(x){ var k=String(x.offer_id||''); (m[k]=m[k]||{})[String(x.event_id||'')]=Number(x.reward)||0; }); S.prog=m; if(Number(r.share)>0) S.share=Number(r.share); }
+      else S.prog=null;
+    }).catch(function(){ S.prog=null; });
+  }
+  function doneOf(o){ var m=S.prog&&S.prog[o.ext]; return m?Object.keys(m):[]; }
+  function cardHTML(o,i){
+    var d=doneOf(o), meta=[];
+    meta.push(o.type==='multistep'?L('🪜 عدة مراحل','🪜 Multi-level','🪜 Plusieurs niveaux'):L('🎯 مهمة واحدة','🎯 Single task','🎯 Une tâche'));
+    if(d.length){ meta.push(o.type==='multistep'?('✅ '+L('أنجزت '+d.length,'Done '+d.length,'Fait '+d.length)):('✅ '+L('مكتملة','Completed','Terminé'))); }
+    var img=o.img?'<img src="'+esc(o.img)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':'🎮';
+    return '<div class="g-card" data-i="'+i+'"><div class="g-img">'+img+'</div><div class="g-in"><h4>'+esc(o.name)+'</h4><div class="g-meta">'+meta.map(function(x){return '<span>'+esc(x)+'</span>';}).join('')+'</div></div><div class="g-rw'+(o.reward==null?' v':'')+'">'+esc(money(o.reward))+'</div></div>';
+  }
+  function paint(msg){
+    var b=$('owg-body'); if(!b) return;
+    var h='';
+    if(msg) h+='<div class="g-msg">'+esc(msg)+'</div>';
+    else if(!S.items.length) h+='<div class="g-msg">'+esc(L('لا توجد ألعاب متاحة لك الآن. عُد لاحقًا.','No games available for you right now. Check back later.','Aucun jeu disponible pour le moment.'))+'</div>';
+    else h+=S.items.map(cardHTML).join('');
+    if(!msg&&S.page<S.pages) h+='<button class="g-more" id="owg-more" type="button">'+esc(L('عرض المزيد','Show more','Voir plus'))+'</button>';
+    b.innerHTML=h;
+    var mb=$('owg-more'); if(mb) mb.onclick=function(){ more(); };
+  }
+  function more(){
+    if(S.busy) return; S.busy=true;
+    var mb=$('owg-more'); if(mb) mb.textContent='…';
+    call('action=ow_offers&category=games&page='+(S.page+1)).then(function(j){
+      S.busy=false;
+      if(!j||!j.ok){ if(!S.items.length) paint(why(j&&j.why)); else { try{ toast(why(j&&j.why)); }catch(e){} paint(); } return; }
+      S.page=j.page; S.pages=j.pages; if(j.share>0) S.share=j.share;
+      var seen={}; S.items.forEach(function(x){ seen[x.id]=1; });
+      (j.offers||[]).forEach(function(x){ if(!seen[x.id]) S.items.push(x); });
+      paint();
+    });
+  }
+  function sheet(o){
+    S.cur=o; var sh=$('owg-sheet'); sh.classList.add('on'); sh.scrollTop=0;
+    var img=o.img?'<img src="'+esc(o.img)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':'🎮';
+    var head='<div class="g-bar"><span>'+esc(o.name)+'</span><button type="button" id="owg-back">'+esc(L('رجوع','Back','Retour'))+'</button></div>';
+    sh.innerHTML=head+'<div class="g-body"><div class="g-h"><div class="g-img">'+img+'</div><div class="g-in"><h4 style="white-space:normal">'+esc(o.name)+'</h4><div class="g-meta"><span>'+esc(L('المكافأة','Reward','Récompense'))+': '+esc(money(o.reward))+'</span></div></div></div><div class="g-msg" id="owg-dl">'+esc(L('جارٍ تحميل المراحل…','Loading levels…','Chargement des niveaux…'))+'</div></div>';
+    $('owg-back').onclick=function(){ sh.classList.remove('on'); S.cur=null; paint(); };
+    Promise.all([call('action=ow_offer&id='+o.id),loadProg()]).then(function(r){
+      if(S.cur!==o) return;
+      var j=r[0], body=sh.querySelector('.g-body');
+      if(!j||!j.ok||!j.offer){ var dl=$('owg-dl'); if(dl) dl.textContent=why(j&&j.why); return; }
+      var f=j.offer, goals=f.goals||[], done=S.prog&&S.prog[f.ext]||{}, h='';
+      var earned=0; Object.keys(done).forEach(function(k){ earned+=done[k]; });
+      if(f.desc) h+='<div class="g-sec"><b>'+esc(L('الوصف','About','Description'))+'</b>'+esc(f.desc)+'</div>';
+      if(f.req) h+='<div class="g-sec"><b>'+esc(L('الشروط','Requirements','Conditions'))+'</b>'+esc(f.req)+'</div>';
+      (function(){
+        var cs=f.countries||[], ds=f.devices||[];
+        var ct=(!cs.length||cs.indexOf('*')>=0)?L('كل الدول','All countries','Tous les pays'):(cs.indexOf('DZ')>=0?L('الجزائر مدعومة ✅','Algeria supported ✅','Algérie prise en charge ✅'):cs.join(' ، '));
+        var dt=ds.length?ds.map(function(x){ return ({android:'Android',ios:'iPhone',desktop:L('كمبيوتر','Desktop','Ordinateur'),mobile:L('هاتف','Mobile','Mobile'),tablet:L('لوحي','Tablet','Tablette')})[x]||x; }).join(' ، '):L('كل الأجهزة','All devices','Tous les appareils');
+        h+='<div class="g-sec"><b>'+esc(L('الدول والأجهزة','Countries & devices','Pays et appareils'))+'</b>'+esc(L('الدول: ','Countries: ','Pays : ')+ct)+'<br>'+esc(L('الأجهزة: ','Devices: ','Appareils : ')+dt)+'</div>';
+        var tot=0, has=false; goals.forEach(function(g){ if(g.r!=null){ tot+=g.r; has=true; } });
+        if(!goals.length&&f.reward!=null){ tot=f.reward; has=true; }
+        if(has) h+='<div class="g-sec"><b>'+esc(L('مجموع المكافآت الممكنة','Total possible rewards','Total des récompenses possibles'))+'</b><span style="font-size:20px;font-weight:800;color:#5df0a0">'+esc(money(Math.round(tot*100)/100))+'</span><br><small style="color:#9fb3d9">'+esc(L('لا يُمنح كاملًا إلا بعد إكمال كل المراحل والشروط، وتصلك كل مرحلة فقط بعد تأكيد الشبكة لها.','Not paid in full until every level and condition is completed; each level is paid only after the network confirms it.','Versé en totalité seulement après tous les niveaux; chaque niveau est payé après confirmation du réseau.'))+'</small></div>';
+      })();
+      if(goals.length){
+        var nd=goals.filter(function(g){ return done[g.id]!==undefined; }).length;
+        h+='<div class="g-sec"><b>'+esc(L('المراحل','Levels','Niveaux'))+' — '+esc(L('أنجزت '+nd+' من '+goals.length,nd+' of '+goals.length+' done',nd+' sur '+goals.length))+'</b>';
+        goals.forEach(function(g,n){
+          var dn=done[g.id]!==undefined;
+          h+='<div class="g-step'+(dn?' done':'')+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+esc(g.d||('#'+(n+1)))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+'</div><div class="g-r">'+esc(money(g.r))+'</div></div>';
+        });
+        h+='</div>';
+      } else {
+        var one=done['']!==undefined;
+        h+='<div class="g-sec"><b>'+esc(L('الحالة','Status','Statut'))+'</b>'+(one?'✅ '+esc(L('أنجزتها','Completed','Terminé')):esc(L('لم تُنجز بعد','Not completed yet','Pas encore terminé')))+'</div>';
+      }
+      if(earned>0) h+='<div class="g-sec"><b>'+esc(L('ما وصلك من هذه اللعبة','Received from this game','Reçu pour ce jeu'))+'</b>'+esc(money(earned))+'</div>';
+      h+='<div class="g-sec" style="font-size:13px;color:#9fb3d9">'+esc(L('المكافأة تصل تلقائيًا إلى رصيدك بعد أن تؤكد الشبكة إنجاز المرحلة (قد يستغرق دقائق، وأحيانًا أكثر). لا تحذف اللعبة قبل إنهاء المراحل.','The reward is added to your balance automatically once the network confirms each level (can take minutes, sometimes longer). Do not uninstall the game before finishing.','La récompense est ajoutée automatiquement après confirmation du réseau (quelques minutes, parfois plus). Ne désinstallez pas le jeu avant la fin.'))+'</div>';
+      var dl2=$('owg-dl'); if(dl2) dl2.remove();
+      body.insertAdjacentHTML('beforeend',h);
+      var used=f.multi===false&&!goals.length&&done['']!==undefined;
+      var bar=document.createElement('div'); bar.className='g-start';
+      bar.innerHTML='<button type="button">'+esc(used?L('أنجزتها','Completed','Terminé'):(Object.keys(done).length?L('تابع اللعب','Continue','Continuer'):L('ابدأ المهمة','Start task','Commencer')))+'</button>';
+      var btn=bar.firstChild; if(used){ btn.disabled=true; btn.style.opacity='.5'; }
+      btn.onclick=function(){ try{ var w=window.open(f.url,'_blank','noopener'); if(!w) location.href=f.url; }catch(e){ location.href=f.url; } };
+      sh.appendChild(bar);
+    });
+  }
+  window.openOwGames=function(){
+    try{
+      var ov=$('owg-ov'); if(!owUid()){ toast(L('سجّل الدخول أولاً','Please sign in first','Connectez-vous d\'abord')); return; }
+      $('owg-t').textContent=L('🎮 الألعاب','🎮 Games','🎮 Jeux');
+      var x=$('owg-x'); x.textContent=L('إغلاق','Close','Fermer');
+      x.onclick=function(){ ov.classList.remove('on'); $('owg-sheet').classList.remove('on'); S.cur=null; try{ SRV.pullState(); }catch(e){} try{ SRV.cycle(true); }catch(e){} };
+      var w=$('owg-wall'); w.textContent=L('كل العروض','All offers','Toutes les offres'); w.onclick=function(){ openOfferwall(); };
+      ov.classList.add('on');
+      S.items=[]; S.page=0; S.pages=1; S.busy=false; paint(L('جارٍ التحميل…','Loading…','Chargement…'));
+      loadProg().then(function(){ more(); });
+    }catch(e){ try{ toast(L('حدث خطأ','Error','Erreur')); }catch(_){} }
+  };
+  $('owg-body').addEventListener('click',function(e){
+    var c=e.target.closest&&e.target.closest('.g-card'); if(!c) return;
+    var o=S.items[+c.getAttribute('data-i')]; if(o) sheet(o);
+  });
+  document.addEventListener('visibilitychange',function(){
+    try{ if(!document.hidden&&$('owg-ov').classList.contains('on')){ loadProg().then(function(){ if(S.cur) sheet(S.cur); else paint(); }); } }catch(e){}
+  });
 })();
 </script>
 </body>
