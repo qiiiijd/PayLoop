@@ -34,7 +34,7 @@
 .fx-sum b{font-size:13px; font-weight:800; line-height:1.6;}
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.14-r18';
+window.PL_BUILD='2026.10.14-r19';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -10805,15 +10805,27 @@ function openOfferwall(){
   function why(w){
     var m={forbidden:L('ليست لديك صلاحية','Not allowed','Non autorisé'),bad_offer:L('رقم اللعبة غير صحيح','Invalid game number','Numéro invalide'),bad_image:L('الصورة غير صالحة (رابط https أو صورة مرفوعة)','Invalid image','Image invalide'),
       duplicate_offer:L('هذه اللعبة مضافة من قبل','This game is already added','Déjà ajoutée'),not_found:L('غير موجودة عند الشبكة أو متوقفة','Not found at the network or inactive','Introuvable'),
-      busy:L('الخدمة مشغولة، حاول بعد دقيقة','Busy, retry in a minute','Occupé'),network_off:L('شبكة Offerwall.GG غير مفعّلة','Offerwall.GG is off','Réseau inactif'),bad_id:L('رقم غير صحيح','Invalid number','Numéro invalide')};
+      busy:L('الخدمة مشغولة، حاول بعد دقيقة','Busy, retry in a minute','Occupé'),network_off:L('شبكة Offerwall.GG غير مفعّلة','Offerwall.GG is off','Réseau inactif'),bad_id:L('رقم غير صحيح','Invalid number','Numéro invalide'),old_server:L('الخادم لم يُحدَّث بعد: ارفع ملف super-worker الجديد في Supabase (Edge Functions ← super-worker ← Deploy) ثم أعد المحاولة','Server not updated: deploy the new super-worker','Serveur non mis à jour'),api_denied:L('Offerwall.GG رفض الطلب. تأكد أن موقعك «مفعّل» في لوحة Offerwall.GG وأن المفتاح السري صحيح','Offerwall.GG denied the request','Refusé par Offerwall.GG'),api_error:L('ردّ Offerwall.GG غير متوقع، حاول بعد قليل','Unexpected network reply, retry later','Réponse inattendue'),exception:L('خطأ في الخادم، حاول مرة أخرى','Server error, retry','Erreur serveur'),net:L('لا يوجد اتصال بالإنترنت أو الخادم لا يستجيب','No connection or server not responding','Pas de connexion'),timeout:L('الخادم تأخر في الرد (أكثر من 20 ثانية). حاول مرة أخرى','Server timed out, retry','Délai dépassé'),no_token:L('انتهت الجلسة، سجّل الدخول من جديد','Session expired, log in again','Session expirée'),bad_token:L('انتهت الجلسة، سجّل الدخول من جديد','Session expired, log in again','Session expirée'),not_allowed:L('الحساب غير مسموح','Account not allowed','Compte non autorisé'),no_fn:L('ملف 27 لم يُشغَّل في Supabase (SQL Editor). شغّله ثم أعد المحاولة','SQL file 27 not run','Fichier 27 non exécuté'),bad_steps:L('بيانات المراحل غير صالحة','Invalid steps','Étapes invalides')};
     return m[w]||L('تعذّر التنفيذ','Failed','Échec');
   }
   function call(q){
     return Promise.resolve(SRV.tok()).then(function(t){
       if(!t) return {ok:false,why:'no_token'};
-      return fetch(RealAuth.base()+'/functions/v1/'+encodeURIComponent(net2Fn())+'?'+q,{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()}})
-        .then(function(r){ return r.json().catch(function(){ return {ok:false,why:'bad_reply'}; }); }).catch(function(){ return {ok:false,why:'net'}; });
+      var ac=(typeof AbortController!=='undefined')?new AbortController():null, tm=ac?setTimeout(function(){ try{ ac.abort(); }catch(e){} },20000):0;
+      return fetch(RealAuth.base()+'/functions/v1/'+encodeURIComponent(net2Fn())+'?'+q,{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()},signal:ac?ac.signal:undefined})
+        .then(function(r){ clearTimeout(tm); return r.text().then(function(tx){ var j=null; try{ j=JSON.parse(tx); }catch(e){}
+          if(j&&typeof j==='object') return j;
+          return {ok:false,why:'old_server',http:r.status}; }); })
+        .catch(function(e){ clearTimeout(tm); return {ok:false,why:(e&&e.name==='AbortError')?'timeout':'net'}; });
     });
+  }
+  function rpcWhy(r){
+    if(r&&r.why) return r.why;
+    var m=String((r&&(r.msg||r.message||r.error))||'');
+    if(r&&(r.http===404||/could not find|does not exist|PGRST202|42883/i.test(m))) return 'no_fn';
+    if(r&&r.http===401) return 'no_token';
+    if(r&&(r.http===403||/forbidden/i.test(m))) return 'forbidden';
+    return 'exception';
   }
   function parseId(s){
     s=String(s||'').trim().replace(/[٠-٩]/g,function(d){ return String(d.charCodeAt(0)-0x0660); });
@@ -10930,21 +10942,23 @@ function openOfferwall(){
   };
   window.owAdmSave=function(){
     readForm(); var g=A.g;
+    var typed=parseId($('owa-id')&&$('owa-id').value); if(typed) g.offer_id=Number(typed);
     if(!g.offer_id){ A.err=why('bad_id'); owAdmFormDraw(); return; }
     if(!g.name_ar){ A.err=L('اكتب اسم اللعبة','Write the game name','Nom requis'); owAdmFormDraw(); return; }
     Promise.resolve(SRV.rpc('ow_game_save',saveArgs(g))).then(function(r){
       if(r&&r.ok){ toast(L('تم الحفظ','Saved','Enregistré')); owAdmOpen(); }
-      else { A.err=why(r&&r.why); owAdmFormDraw(); }
-    });
+      else { A.err=why(rpcWhy(r)); owAdmFormDraw(); }
+    }).catch(function(){ A.err=why('net'); owAdmFormDraw(); });
   };
   /* ---------- تصفّح ألعاب الشبكة ---------- */
   window.owAdmPick=function(first){
-    if(first){ readForm(); A.pick={items:[],q:'',page:0,pages:1,busy:false}; }
+    if(first){ readForm(); A.pick={items:[],q:'',page:0,pages:1,busy:false,err:''}; }
     owAdmPickDraw();
     if(first) owAdmPickMore();
   };
   function owAdmPickDraw(){
     var P=A.pick, h='<div style="display:flex;gap:8px;margin-bottom:10px"><input id="owa-q" value="'+v(P.q)+'" placeholder="'+L('ابحث بالاسم (إنجليزي)','Search by name','Rechercher')+'" style="flex:1 1 auto;min-width:0;width:auto;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none" dir="ltr"><button class="adm-new" style="flex:none;width:auto;padding:10px 16px" onclick="owAdmPickSearch()">'+L('بحث','Search','OK')+'</button></div>';
+    if(P.err) h+='<div style="color:#f87171;margin:6px 0 10px;font-weight:700;line-height:1.7">'+v(P.err)+'</div>';
     P.items.forEach(function(x,i){
       h+='<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--border)"><div style="width:44px;height:44px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.06);flex:none">'+(x.img?'<img src="'+v(x.img)+'" style="width:100%;height:100%;object-fit:cover" referrerpolicy="no-referrer">':'')+'</div>'+
         '<div style="flex:1;min-width:0"><div dir="ltr" style="font-weight:700;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(x.name)+'</div><div style="font-size:12px;color:var(--muted)">#'+x.id+' · '+(x.type==='multistep'?L('عدة مراحل','multi-level','multi'):L('مهمة واحدة','single','simple'))+' · '+mon(x.reward)+'</div></div>'+
@@ -10959,11 +10973,11 @@ function openOfferwall(){
   window.owAdmFormDraw=owAdmFormDraw;
   window.owAdmPickSearch=function(){ var P=A.pick; P.q=($('owa-q').value||'').trim().slice(0,80); P.items=[]; P.page=0; P.pages=1; owAdmPickMore(); };
   window.owAdmPickMore=function(){
-    var P=A.pick; if(P.busy) return; P.busy=true; owAdmPickDraw();
+    var P=A.pick; if(P.busy) return; P.busy=true; P.err=''; owAdmPickDraw();
     call('action=ow_offers&category=games&page='+(P.page+1)+(P.q?'&search='+encodeURIComponent(P.q):'')).then(function(j){
       P.busy=false;
       if(j&&j.ok){ P.page=j.page; P.pages=j.pages; var seen={}; P.items.forEach(function(x){ seen[x.id]=1; }); (j.offers||[]).forEach(function(x){ if(!seen[x.id]) P.items.push(x); }); }
-      else toast(why(j&&j.why));
+      else P.err=why(j&&j.why);
       owAdmPickDraw();
     });
   };
