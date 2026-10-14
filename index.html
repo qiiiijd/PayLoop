@@ -34,7 +34,7 @@
 .fx-sum b{font-size:13px; font-weight:800; line-height:1.6;}
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.13-r17';
+window.PL_BUILD='2026.10.14-r18';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -10875,17 +10875,17 @@ function openOfferwall(){
   function owAdmFormDraw(){
     var g=A.g, o=A.off, h='';
     h+='<div class="au-f full"><label>'+L('رقم اللعبة أو رابطها من Offerwall.GG','Game number or link from Offerwall.GG','Numéro ou lien')+'</label>'+
-       '<div style="display:flex;gap:8px"><input id="owa-id" dir="ltr" inputmode="text" spellcheck="false" value="'+v(g.offer_id||'')+'" placeholder="4021  /  .../click/4021?userId=..." style="flex:1">'+
-       '<button class="adm-new" type="button" onclick="owAdmFetch()">'+L('جلب','Fetch','Charger')+'</button></div>'+
+       '<div style="display:flex;gap:8px"><input id="owa-id" dir="ltr" inputmode="text" spellcheck="false" value="'+v(g.offer_id||'')+'" placeholder="4021" style="flex:1 1 auto;min-width:0;width:auto">'+
+       '<button class="adm-new" type="button" onclick="owAdmFetch()" style="flex:none;width:auto;min-width:80px;padding:10px 18px">'+L('جلب','Fetch','Charger')+'</button></div>'+
        '<button class="adm-new" type="button" style="margin-top:8px;width:100%" onclick="owAdmPick(true)">🔎 '+L('تصفّح ألعاب الشبكة واختر منها','Browse network games','Parcourir')+'</button>'+
-       '<span class="sec-cap">'+L('بعد الجلب تظهر المراحل والمبالغ الحقيقية من الشبكة، وأنت تكتب أسماءها بالعربية.','After fetching, the real levels and amounts appear; you write their Arabic names.','Les niveaux réels apparaissent.')+'</span></div>';
+       '<span class="sec-cap">'+L('الأسهل: اضغط «تصفّح ألعاب الشبكة» واختر لعبة، ولا حاجة لرابط. (أو اكتب رقم اللعبة هنا ثم «جلب»). معرّف المستخدم يُضاف تلقائيًا. بعد الجلب تظهر المراحل والمبالغ الحقيقية، وأنت تكتب أسماءها بالعربية.','Easiest: tap Browse and pick a game, no link needed. The user id is added automatically.','Le plus simple : Parcourir.')+'</span></div>';
     if(A.err) h+='<div style="color:#f87171;margin:6px 0;font-weight:700">'+v(A.err)+'</div>';
     if(o) h+='<div class="au-f full" style="background:rgba(14,165,233,.08);border-radius:12px;padding:10px;font-size:13px">✅ <b dir="ltr">'+esc(o.name)+'</b> · '+(o.goals&&o.goals.length?o.goals.length+' '+L('مراحل','levels','niveaux'):L('مهمة واحدة','single task','une tâche'))+' · '+L('المجموع','total','total')+' '+mon(o.reward)+'<br>'+L('الدول','Countries','Pays')+': '+esc((o.countries&&o.countries.length?o.countries.join(' ، '):'*'))+'</div>';
     h+='<div class="au-f full"><label>'+L('اسم اللعبة (بالعربية، أنت تكتبه)','Game name (you write it)','Nom du jeu')+'</label><input id="owa-name" value="'+v(g.name_ar)+'" maxlength="120" placeholder="'+v(o?o.name:L('مثال: فقاعات الأساطير','e.g. Bubble Legends','ex'))+'"></div>'+
        '<div class="au-f full"><label>'+L('الصورة: ارفع صورة أو ضع رابطها (https)','Image: upload or paste https link','Image')+'</label><div style="display:flex;align-items:center;gap:10px"><span id="owa-imgp">'+(A.img?'<img class="at-prev" src="'+v(A.img)+'" alt="">':(o&&o.img?'<img class="at-prev" src="'+v(o.img)+'" alt="" style="opacity:.55">':''))+'</span><input type="file" accept="image/*" onchange="owAdmImg(this)" style="max-width:210px"></div>'+
        '<input id="owa-imgurl" dir="ltr" placeholder="https://..." value="'+v(/^https:/.test(A.img)?A.img:'')+'" style="margin-top:8px"><span class="sec-cap">'+L('إن تركتها فارغة تُستعمل صورة الشبكة.','If empty, the network image is used.','Image du réseau par défaut.')+'</span></div>'+
-       '<div class="au-f full"><label>'+L('وصف اللعبة (بالعربية)','Description (Arabic)','Description')+'</label><textarea id="owa-desc" rows="2" maxlength="600">'+esc(g.desc_ar)+'</textarea></div>'+
-       '<div class="au-f full"><label>'+L('المهمة المطلوبة (مثال: صِل إلى المستوى 10)','Required task','Tâche')+'</label><textarea id="owa-task" rows="2" maxlength="400">'+esc(g.task_ar)+'</textarea></div>';
+       '<div class="au-f full"><label>'+L('وصف اللعبة (بالعربية)','Description (Arabic)','Description')+'</label><textarea id="owa-desc" rows="3" style="width:100%;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none;resize:vertical" maxlength="600">'+esc(g.desc_ar)+'</textarea></div>'+
+       '<div class="au-f full"><label>'+L('المهمة المطلوبة (مثال: صِل إلى المستوى 10)','Required task','Tâche')+'</label><textarea id="owa-task" rows="3" style="width:100%;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none;resize:vertical" maxlength="400">'+esc(g.task_ar)+'</textarea></div>';
     if(o&&o.goals&&o.goals.length){
       h+='<div class="au-f full"><label>'+L('مراحل اللعبة (اكتب اسم كل مرحلة بالعربية)','Levels: write each Arabic name','Niveaux')+'</label>';
       o.goals.forEach(function(x,n){
@@ -10944,11 +10944,11 @@ function openOfferwall(){
     if(first) owAdmPickMore();
   };
   function owAdmPickDraw(){
-    var P=A.pick, h='<div style="display:flex;gap:8px;margin-bottom:10px"><input id="owa-q" value="'+v(P.q)+'" placeholder="'+L('ابحث بالاسم (إنجليزي)','Search by name','Rechercher')+'" style="flex:1" dir="ltr"><button class="adm-new" onclick="owAdmPickSearch()">'+L('بحث','Search','OK')+'</button></div>';
+    var P=A.pick, h='<div style="display:flex;gap:8px;margin-bottom:10px"><input id="owa-q" value="'+v(P.q)+'" placeholder="'+L('ابحث بالاسم (إنجليزي)','Search by name','Rechercher')+'" style="flex:1 1 auto;min-width:0;width:auto;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none" dir="ltr"><button class="adm-new" style="flex:none;width:auto;padding:10px 16px" onclick="owAdmPickSearch()">'+L('بحث','Search','OK')+'</button></div>';
     P.items.forEach(function(x,i){
       h+='<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--border)"><div style="width:44px;height:44px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.06);flex:none">'+(x.img?'<img src="'+v(x.img)+'" style="width:100%;height:100%;object-fit:cover" referrerpolicy="no-referrer">':'')+'</div>'+
         '<div style="flex:1;min-width:0"><div dir="ltr" style="font-weight:700;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(x.name)+'</div><div style="font-size:12px;color:var(--muted)">#'+x.id+' · '+(x.type==='multistep'?L('عدة مراحل','multi-level','multi'):L('مهمة واحدة','single','simple'))+' · '+mon(x.reward)+'</div></div>'+
-        '<button class="adm-new" onclick="owAdmPickUse('+i+')">'+L('اختيار','Select','Choisir')+'</button></div>';
+        '<button class="adm-new" style="flex:none;width:auto;padding:10px 14px" onclick="owAdmPickUse('+i+')">'+L('اختيار','Select','Choisir')+'</button></div>';
     });
     if(P.busy) h+='<div style="text-align:center;padding:12px;color:var(--muted)">…</div>';
     else if(P.page<P.pages) h+='<button class="adm-new" style="width:100%;margin-top:8px" onclick="owAdmPickMore()">'+L('عرض المزيد','Show more','Plus')+'</button>';
