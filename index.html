@@ -34,7 +34,7 @@
 .fx-sum b{font-size:13px; font-weight:800; line-height:1.6;}
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.14-r22';
+window.PL_BUILD='2026.10.14-r23';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -3141,7 +3141,7 @@ const DataGateway=(function(){
   const SHAREDKV={'r12-add':1,'r12-tov':1,'r7-news':1,'r7-contests':1,'r15-tasks':1};
   function kvBase(nk){ const m=/^u:[^:]+:(.+)$/.exec(String(nk)); return m?m[1]:String(nk); }
   let KVREADY='';
-  function dirtyAdd(k){ if(C.DATA_MODE!=='supabase') return; if(k==='r12-users') return; { let _me=''; try{ _me=SRV.uid(); }catch(e){} if(!_me||KVREADY!==_me) return; } { const b=kvBase(k); if(!USERKV[b]&&!SHAREDKV[b]) return; } try{ const a=dirtyRead(); if(a.indexOf(k)<0){ a.push(k); localStorage.setItem(DIRTY, JSON.stringify(a.slice(-300))); } }catch(e){} try{ SRV.pushSoon(); }catch(e){} }
+  function dirtyAdd(k){ if(C.DATA_MODE!=='supabase') return; if(k==='r12-users') return; { let _me=''; try{ _me=SRV.uid(); }catch(e){} if(!_me) return; if(KVREADY!==_me){ const _b0=kvBase(k); let _kv=''; try{ _kv=localStorage.getItem('r7-kvuser')||''; }catch(e){} if(!(SHAREDKV[_b0]&&_kv===_me)) return; } } { const b=kvBase(k); if(!USERKV[b]&&!SHAREDKV[b]) return; } try{ const a=dirtyRead(); if(a.indexOf(k)<0){ a.push(k); localStorage.setItem(DIRTY, JSON.stringify(a.slice(-300))); } }catch(e){} try{ SRV.pushSoon(); }catch(e){} }
   const MEMO={};
   /* عزل بيانات كل حساب على الجهاز (الوضع المحلي): الرصيد والمعاملات وحالة المهام لا تنتقل من حساب إلى آخر.
      بيانات الحساب الأول القديمة (قبل هذا الإصدار) تُنسب له تلقائيًا فلا يضيع شيء. */
@@ -3194,7 +3194,7 @@ const DataGateway=(function(){
     if(!ready()) return {skipped:true, reason:'local'};
     let me=''; try{ me=SRV.uid(); }catch(e){} if(!me) return {skipped:true, reason:'noauth'};
     try{
-      if(KVREADY!==me){ try{ localStorage.setItem(DIRTY,'[]'); }catch(e){} }
+      if(KVREADY!==me){ let _ku=''; try{ _ku=localStorage.getItem('r7-kvuser')||''; }catch(e){} if(_ku!==me){ try{ localStorage.setItem(DIRTY,'[]'); }catch(e){} } } /* نفس الحساب: نُبقي تعديلاتك التي لم تُرفع بعد حتى لا تُمحى بنسخة الخادم القديمة */
       const first=(KVREADY!==me);
       const meta=kvMeta(); const dirty=dirtyRead(); let applied=0, ok=true;
       const jobs=[['user_kv',USERKV,'u:'+me,'&user_id=eq.'+me],['shared_kv',SHAREDKV,'s','']];
@@ -3220,7 +3220,7 @@ const DataGateway=(function(){
         meta[mk]=since;
       }
       localStorage.setItem(META, JSON.stringify(meta));
-      if(ok){ KVREADY=me; if(first&&applied>0){ try{ const l=localStorage.getItem('r7-lang'); if(l&&typeof LANG!=='undefined'&&l!==LANG&&typeof setLang==='function') setLang(l,true); const th=localStorage.getItem('r7-theme'); if(th&&typeof THEME!=='undefined'&&th!==THEME&&typeof setTheme==='function') setTheme(th,true); const nm=LS.get('r7-name'); if(nm){ NAME=nm; applyName(); } }catch(e){} } }
+      if(ok){ KVREADY=me; try{ localStorage.setItem('r7-kvuser',me); }catch(e){} if(first&&applied>0){ try{ const l=localStorage.getItem('r7-lang'); if(l&&typeof LANG!=='undefined'&&l!==LANG&&typeof setLang==='function') setLang(l,true); const th=localStorage.getItem('r7-theme'); if(th&&typeof THEME!=='undefined'&&th!==THEME&&typeof setTheme==='function') setTheme(th,true); const nm=LS.get('r7-name'); if(nm){ NAME=nm; applyName(); } }catch(e){} } }
       return {ok:ok, applied:applied};
     }catch(e){ return {ok:false, error:String(e)}; }
   }
@@ -7619,6 +7619,20 @@ function applyTaskCustom(){
   });
   try{ if(typeof renderFeatured==='function') renderFeatured(); }catch(e){}
 }
+/* بعد حفظ مهمة: نتحقق فعلًا أنها وصلت إلى الخادم (shared_kv) ونخبر المدير بالحقيقة */
+async function admPubCheck(id){
+  try{
+    if(!id||!SRV.cfg()) return;
+    await new Promise(function(r){ setTimeout(r,2500); });
+    try{ await DataGateway.push(); }catch(e){}
+    const tk=await SRV.tok(); if(!tk) return;
+    const r=await fetch(DataGateway.config.SUPABASE_URL+'/rest/v1/shared_kv?select=v&k=eq.r12-add',{headers:{'apikey':DataGateway.config.SUPABASE_KEY,'Authorization':'Bearer '+tk}});
+    if(!r.ok){ toast(L('⚠️ حُفظت على جهازك فقط — تعذّر التحقق من الخادم (رمز '+r.status+')','⚠️ Saved on this device only (code '+r.status+')','⚠️ Local seulement ('+r.status+')')); return; }
+    const j=await r.json(); let arr=[]; try{ arr=JSON.parse((j&&j[0]&&j[0].v)||'[]'); }catch(e){ arr=[]; }
+    if(Array.isArray(arr)&&arr.some(function(t){ return t&&t.id===id; })) toast(L('✅ تأكدتُ: المهمة وصلت للخادم وسيراها المستخدمون','✅ Verified: the task reached the server','✅ Vérifié : la tâche est sur le serveur'));
+    else toast(L('⚠️ حُفظت على جهازك فقط ولم تصل للمستخدمين. افتح «🎮 ألعاب Offerwall» ثم «🩺 فحص» ثم «نشر»','⚠️ Saved on this device only. Use Check → Publish','⚠️ Local seulement'));
+  }catch(e){}
+}
 function saveTaskCustom(kind, val){ const _r=LS.set(kind, JSON.stringify(val)); try{ SRV.catalogSoon(); }catch(e){} return _r; }
 function loadTaskCustom(kind){ try{ return JSON.parse(LS.get(kind)||'null'); }catch(e){ return null; } }
 function admBaseN(){ for(var i=0;i<TASKS.length;i++){ if(TASKS[i]._add) return i; } return TASKS.length; }
@@ -9124,7 +9138,8 @@ function admTaskSave(i){
   applyTaskCustom(); renderAdmTasks(); renderTasks(curCat); admModalClose();
   toast(hid
     ? L('✅ تم الحفظ — المهمة متوقفة ولن تظهر للمستخدمين','✅ Saved — task is paused and hidden from users','✅ Enregistré — en pause')
-    : L('✅ تم الحفظ — المهمة ظاهرة الآن في صفحة المهام','✅ Saved — the task is now live on the Tasks page','✅ Enregistré — visible'));
+    : L('✅ تم الحفظ — جارٍ التحقق من وصولها للمستخدمين…','✅ Saved — verifying it reached users…','✅ Enregistré — vérification…'));
+  if(!hid){ try{ admPubCheck(id); }catch(e){} }
 }
 function admTDel(i){
   const N=admBaseN();
@@ -10636,6 +10651,7 @@ function openOfferwall(){
   function inject(cat){
     try{
       var box=document.getElementById('tlist'); if(!box||!G||!G.length) return;
+      try{ if(typeof taskTab!=='undefined'&&taskTab!=='new') return; }catch(e){}
       var show=G.filter(function(g){ return cat==='all'||String(g.place||'games')===cat; });
       if(!show.length) return;
       var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
