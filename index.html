@@ -34,7 +34,7 @@
 .fx-sum b{font-size:13px; font-weight:800; line-height:1.6;}
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.15-r28';
+window.PL_BUILD='2026.10.15-r29';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -10710,6 +10710,7 @@ function openOfferwall(){
       var lines=[];
       if(!R.ok){ lines.push('❌ '+(W[R.why]||('الخادم لم يردّ بشكل صحيح ('+String(R.why||'?')+')'))); }
       else if(R.dbg&&Array.isArray(R.dbg.items)){
+        R.dbg.items.forEach(function(x){ if(x.over) lines.push('<b dir="ltr">'+esc(x.name||('#'+x.offer))+'</b> — ⚠️ مرحلة مكافأتها <b dir="ltr">$'+x.over+'</b> أكبر من الحد الأقصى للدفع <b dir="ltr">$'+x.cap+'</b> في إعداد الشبكة: <b>لن تُدفع للمستخدم</b>. ارفع <code>max_usd</code> (شغّل ملف 31).'); });
         R.dbg.items.forEach(function(x){ if(T[x.why]) lines.push('<b dir="ltr">'+esc(x.name||('#'+x.offer))+'</b> — '+T[x.why]+(x.countries&&x.countries.length&&x.countries.indexOf('*')<0?' <span style="opacity:.85">('+x.countries.length+' دولة، الجزائر '+(x.countries.indexOf('DZ')>=0?'✅':'❌')+')</span>':'')); });
         if(lines.length&&R.dbg.country) lines.push('بلدك المكتشف: <b dir="ltr">'+esc(R.dbg.country)+'</b>');
       }
