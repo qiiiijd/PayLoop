@@ -34,7 +34,7 @@
 .fx-sum b{font-size:13px; font-weight:800; line-height:1.6;}
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.15-r27';
+window.PL_BUILD='2026.10.15-r28';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -3735,6 +3735,8 @@ function taskAfter(t){ return (t&&t.adv&&t.adv.after)||'hide'; }
    عند اعتماد الشبكة وربطها: احذف اسمها من هذه القائمة. المدير يرى ويفتح كل شيء للتجربة. */
 const BLOCKED_HOSTS=/(^|\.)lootably\.com$/i;
 function urlBlocked(u){ try{ if(isAdmin()) return false; const m=String(u||'').match(/^https?:\/\/([^\/?#:@]+)/i); return !!(m&&BLOCKED_HOSTS.test(m[1])); }catch(e){ return false; } }
+function urlBlockedOpen(u){ try{ const m=String(u||'').match(/^https?:\/\/([^\/?#:@]+)/i); return !!(m&&BLOCKED_HOSTS.test(m[1])); }catch(e){ return false; } }
+function lootMsg(){ toast(L('رابط Lootably معطّل: الشبكة غير مفعّلة بعد ولن تصل أي مكافأة. احذف هذه المهمة من إدارة المهام.','Lootably link disabled: network not connected yet, no reward would arrive. Delete this task in Task management.','Lien Lootably désactivé.')); }
 function taskBlocked(t){ try{ return urlBlocked(String((t&&((t.adv&&t.adv.url)||(t.prov&&t.prov.url)||t.link))||'')); }catch(e){ return false; } }
 function taskListed(t){
   if(t._hid||t._del||taskExpired(t)||taskBlocked(t)) return false;
@@ -5505,7 +5507,7 @@ function taskReopen(ti){
   }catch(e){}
 }
 function openTaskUrl(u){
-  if(urlBlocked(u)){ toast(L('هذا الرابط غير متاح حاليًا','This link is not available right now','Lien indisponible')); return; }
+  if(urlBlockedOpen(u)){ lootMsg(); return; }
   try{ const w2=window.open(u,'_blank','noopener'); if(w2) return true; }catch(e){}
   try{ window.location.href=u; return true; }catch(e){}
   try{ const a2=document.createElement('a'); a2.href=u; a2.target='_blank'; a2.rel='noopener'; document.body.appendChild(a2); a2.click(); a2.remove(); return true; }catch(e){}
@@ -6556,6 +6558,7 @@ const SRV={
     return '';
   },
   async openOffer(ti,url){
+    if(urlBlockedOpen(url)){ lootMsg(); return; }
     /* Offerwall.GG: التتبع يعتمد على معرّف المستخدم الحقيقي (userId = UUID حسابك) لأن الـ Postback يرجع به. لا نستعمل معرّف نقرة عشوائي هنا. */
     try{
       const t0=TASKS[ti]; const net0=String((t0&&t0.prov&&t0.prov.net)||'').toLowerCase();
