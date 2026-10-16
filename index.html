@@ -34,7 +34,7 @@
 .fx-sum b{font-size:13px; font-weight:800; line-height:1.6;}
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.16-r32';
+window.PL_BUILD='2026.10.16-r33';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -11037,13 +11037,6 @@ function openOfferwall(){
       bar.innerHTML='<button type="button">'+esc(used?L('أنجزتها','Completed','Terminé'):(Object.keys(done).length?L('تابع اللعب','Continue','Continuer'):L('ابدأ اللعب','Start playing','Jouer')))+'</button>';
       var btn=bar.firstChild; if(used){ btn.disabled=true; btn.style.opacity='.5'; }
       btn.onclick=function(){ try{ window.owMarkStarted(o.ext); }catch(e){} try{ var w=window.open(o.url,'_blank','noopener'); if(!w) location.href=o.url; }catch(e){ location.href=o.url; } };
-      if(!used){
-        var b2=document.createElement('button'); b2.type='button'; b2.className='g-alt';
-        b2.style.cssText='margin-top:8px;width:100%;padding:11px;border-radius:12px;border:1px solid #3a4a6e;background:transparent;color:#cfe0ff;font-size:13.5px;cursor:pointer';
-        b2.textContent=L('لا يفتح؟ افتح عبر الجدار الرسمي','Not opening? Open via the official wall','Ne s\'ouvre pas ? Ouvrir via le mur officiel');
-        b2.onclick=function(){ try{ window.owMarkStarted(o.ext); }catch(e){} var u='https://offerwall.gg/wall/'+OW_PUB+'?userId='+encodeURIComponent(owUid()); try{ var w=window.open(u,'_blank','noopener'); if(!w) location.href=u; }catch(e){ location.href=u; } };
-        bar.appendChild(b2);
-      }
       sh.appendChild(bar);
     }
   }
