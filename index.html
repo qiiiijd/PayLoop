@@ -34,7 +34,7 @@
 .fx-sum b{font-size:13px; font-weight:800; line-height:1.6;}
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.16-r30';
+window.PL_BUILD='2026.10.16-r32';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -2479,6 +2479,18 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
 .n2-empty{text-align:center;padding:18px 8px}
 .n2-empty b{font-size:15px}
 .n2-empty p{font-size:12px;color:var(--muted);line-height:1.8;margin:8px 0 12px}
+
+.pfx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 4px}
+.pfx-grid div{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px 6px;text-align:center}
+.pfx-grid b{display:block;font-size:15px}
+.pfx-grid span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.pfx-inv{margin:10px 16px 4px;padding:14px;border-radius:18px;background:linear-gradient(135deg,rgba(59,130,246,.16),rgba(139,92,246,.14));border:1px solid var(--border)}
+.pfx-inv h5{margin:0 0 8px;font-size:14px}
+.pfx-code{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.18);border-radius:12px;padding:10px 12px;font-weight:800;letter-spacing:.5px;direction:ltr;justify-content:space-between}
+.pfx-btns{display:flex;gap:8px;margin-top:10px}
+.pfx-btns button{flex:1;border:0;border-radius:12px;padding:10px;font-weight:800;font-size:13px;background:#2563eb;color:#fff;cursor:pointer}
+.pfx-btns button.alt{background:rgba(255,255,255,.1);color:inherit}
+.pfx-st{margin-top:8px;font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -2853,6 +2865,7 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
     <div class="stat"><b style="direction:ltr" id="pf-pid">—</b><span>ID</span></div>
     <div class="stat"><b id="pf-year">—</b><span data-i18n="pf.since2">سنة الانضمام</span></div>
   </div>
+  <div id="pf-extra"></div>
   <div class="pf-sec"><h4 id="pf-acc-h">معلومات الحساب</h4></div>
   <div class="pf-block pf-acc" id="pf-acc"></div>
   <div class="pf-sec"><h4 data-i18n="pf.ach">الإنجازات</h4></div>
@@ -5467,6 +5480,38 @@ function pfAccount(){
     row('🎁',L('رمز الدعوة','Invite code','Code d’invitation'),u.code||'—',!!u.code)+
     '<div class="pf-ar"><span>🛡 '+L('حالة الحساب','Status','Statut')+'</span><b style="direction:inherit"><span class="pf-chip">✓ '+L('نشط','Active','Actif')+'</span>'+(u.role==='admin'?' <span class="pf-chip adm">★ '+L('مدير','Admin','Admin')+'</span>':'')+'</b></div>';
 }
+
+/* تحسينات الملف الشخصي: متوسط ربح المهمة، مدة العضوية، الشارات، بطاقة الدعوة (نسخ/مشاركة)، المتبقي للمستوى التالي، روابط سريعة */
+function pfShareInvite(){
+  try{ const u=curUser(); if(!u||!u.code) return; const link=inviteLink(u.code);
+    const txt=L('انضم إلى PayLoop واكسب من المهام. رمز دعوتي: ','Join PayLoop and earn from tasks. My invite code: ','Rejoins PayLoop et gagne avec les tâches. Mon code : ')+u.code;
+    if(navigator.share){ navigator.share({title:'PayLoop',text:txt,url:link}).catch(function(){}); } else { copyText(txt+'\n'+link); }
+  }catch(e){}
+}
+function pfExtra(){
+  const box=document.getElementById('pf-extra'); if(!box) return;
+  const u=curUser(); if(!u){ box.innerHTML=''; return; }
+  const earn=(typeof earnTotal==='function')?earnTotal():0;
+  const avg=(DONE>0)?(earn/DONE):0;
+  const d=u.created?new Date(u.created):null; const days=(d&&!isNaN(d.getTime()))?Math.max(0,Math.floor((Date.now()-d.getTime())/86400000)):null;
+  let on=0; try{ on=BADGES.filter(function(b){ return !!b[3](); }).length; }catch(e){}
+  let ri=null; try{ ri=SRV.refInfo; }catch(e){}
+  const friends=(ri&&typeof ri.count==='number')?ri.count:(u.refn||0);
+  let rEarn=0; try{ rEarn=(ri&&Number(ri.earned))||parseFloat(LS.get('r7-refseen')||'0')||0; }catch(e){}
+  box.innerHTML=
+    '<div class="pfx-grid">'+
+      '<div><b>$'+avg.toFixed(2)+'</b><span>'+L('متوسط ربح المهمة','Avg per task','Moy. par tâche')+'</span></div>'+
+      '<div><b>'+(days==null?'—':days)+'</b><span>'+L('يومًا منذ الانضمام','days since joining','jours depuis l\'inscription')+'</span></div>'+
+      '<div><b>'+on+'/'+BADGES.length+'</b><span>'+L('الشارات','Badges','Badges')+'</span></div>'+
+    '</div>'+
+    '<div class="pfx-inv"><h5>🎁 '+L('ادعُ أصدقاءك واربح 10% من أرباحهم','Invite friends and earn 10% of their earnings','Invitez vos amis et gagnez 10 % de leurs gains')+'</h5>'+
+      '<div class="pfx-code"><span>'+esc(u.code||'—')+'</span><span style="cursor:pointer" onclick="copyText(\''+esc(u.code||'')+'\')">⧉</span></div>'+
+      '<div class="pfx-btns"><button onclick="pfShareInvite()">📤 '+L('مشاركة','Share','Partager')+'</button><button class="alt" onclick="go(\'invite\')">👥 '+L('صفحة الدعوة','Invite page','Page d\'invitation')+'</button></div>'+
+      '<div class="pfx-st">'+L('الأصدقاء: ','Friends: ','Amis : ')+friends+' · '+L('أرباح الإحالات: ','Referral earnings: ','Gains de parrainage : ')+'$'+rEarn.toFixed(2)+'</div></div>';
+  /* المتبقي للمستوى التالي */
+  try{ const li=levelInfo(earn), n=document.getElementById('pf-next');
+    if(n&&li.nextMin!=null){ const rem=Math.max(0,li.nextMin-earn); n.textContent=L('تبقّى $'+rem.toFixed(2)+' للمستوى القادم','$'+rem.toFixed(2)+' to next level','Encore '+rem.toFixed(2)+' $ pour le niveau suivant'); } }catch(e){}
+}
 function renderProfile(){
   if(!document.getElementById('page-profile')) return;
   try{ const u0=curUser(), e0=document.getElementById('pf-id'); if(e0) e0.innerHTML='🆔 '+L('رقم حسابك','Your ID','Votre ID')+': <b dir="ltr">'+esc((u0&&u0.pid)||'—')+'</b> ⧉'; }catch(e){}
@@ -5483,6 +5528,7 @@ function renderProfile(){
     const on=!!b[3]();
     return '<div class="badge '+(on?'on':'off')+'"><i>'+b[1]+'</i><span>'+L(b[2][0],b[2][1],b[2][2])+'</span>'+(on?'<em>✓</em>':'')+'</div>';
   }).join('');
+  try{ pfExtra(); }catch(e){}
 }
 function celebrate(){
   const colors=['#f59e0b','#22c55e','#3b82f6','#ec4899','#8b5cf6','#f43f5e','#14b8a6','#eab308'];
@@ -7249,6 +7295,7 @@ function applySession(){
   try{ SRV.afterLogin(); }catch(e){}
 }
 function renderInviteStats(){
+  try{ pfExtra(); }catch(e){}
   const u=curUser();
   const c=document.getElementById('inv-code'); if(c) c.textContent=u?u.code:'—';
   const l=document.getElementById('inv-link'); if(l) l.textContent=u?inviteLink(u.code):'—';
@@ -10990,6 +11037,13 @@ function openOfferwall(){
       bar.innerHTML='<button type="button">'+esc(used?L('أنجزتها','Completed','Terminé'):(Object.keys(done).length?L('تابع اللعب','Continue','Continuer'):L('ابدأ اللعب','Start playing','Jouer')))+'</button>';
       var btn=bar.firstChild; if(used){ btn.disabled=true; btn.style.opacity='.5'; }
       btn.onclick=function(){ try{ window.owMarkStarted(o.ext); }catch(e){} try{ var w=window.open(o.url,'_blank','noopener'); if(!w) location.href=o.url; }catch(e){ location.href=o.url; } };
+      if(!used){
+        var b2=document.createElement('button'); b2.type='button'; b2.className='g-alt';
+        b2.style.cssText='margin-top:8px;width:100%;padding:11px;border-radius:12px;border:1px solid #3a4a6e;background:transparent;color:#cfe0ff;font-size:13.5px;cursor:pointer';
+        b2.textContent=L('لا يفتح؟ افتح عبر الجدار الرسمي','Not opening? Open via the official wall','Ne s\'ouvre pas ? Ouvrir via le mur officiel');
+        b2.onclick=function(){ try{ window.owMarkStarted(o.ext); }catch(e){} var u='https://offerwall.gg/wall/'+OW_PUB+'?userId='+encodeURIComponent(owUid()); try{ var w=window.open(u,'_blank','noopener'); if(!w) location.href=u; }catch(e){ location.href=u; } };
+        bar.appendChild(b2);
+      }
       sh.appendChild(bar);
     }
   }
