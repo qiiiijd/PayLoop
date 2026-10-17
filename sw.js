@@ -1,6 +1,12 @@
-/* v6 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
+/* v7 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
+var SHELL = 'pl-shell-v1';
 self.addEventListener('install', function () { self.skipWaiting(); });
-self.addEventListener('activate', function (e) { e.waitUntil(self.clients.claim()); });
+self.addEventListener('activate', function (e) {
+  e.waitUntil((async function () {
+    try { var ks = await caches.keys(); await Promise.all(ks.filter(function (k) { return k.indexOf('pl-shell-') === 0 && k !== SHELL; }).map(function (k) { return caches.delete(k); })); } catch (x) {}
+    await self.clients.claim();
+  })());
+});
 
 /* فتح التطبيق بدون إنترنت: بدل صفحة المتصفح الرمادية تظهر شاشة PayLoop. لا يوجد أي تخزين: إن نجح الطلب يُمرَّر كما هو دون تدخل. */
 var OFFLINE_HTML = '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#05070d"><title>PayLoop</title>' +
@@ -11,12 +17,31 @@ var OFFLINE_HTML = '<!doctype html><html lang="ar" dir="rtl"><head><meta charset
   '<p>\u064a\u0628\u062f\u0648 \u0623\u0646 \u0627\u062a\u0635\u0627\u0644\u0643 \u0628\u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a \u0627\u0646\u0642\u0637\u0639.<br>\u064a\u0631\u062c\u0649 \u0627\u0644\u0627\u062a\u0635\u0627\u0644 \u0628\u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a \u0644\u0644\u0645\u062a\u0627\u0628\u0639\u0629.</p>' +
   '<button onclick="location.reload()">\ud83d\udd04 \u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629</button><small>\u0646\u062a\u062d\u0642\u0642 \u062a\u0644\u0642\u0627\u0626\u064a\u0627\u064b \u0648\u064a\u0639\u0648\u062f \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0641\u0648\u0631 \u0631\u062c\u0648\u0639 \u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a</small>' +
   '<script>setInterval(function(){fetch(location.href,{cache:"no-store"}).then(function(r){if(r.status!==503)location.reload();}).catch(function(){});},3000)<\/script></body></html>';
+/* فتح سريع حتى على إنترنت ضعيف: الشبكة أولًا بمهلة 2.5 ثانية؛ إن تأخرت (أو انقطعت) يُفتح التطبيق فورًا من النسخة المحفوظة في الهاتف،
+   وتتحدّث النسخة المحفوظة في الخلفية دائمًا. أول زيارة بلا نسخة محفوظة: تنتظر الشبكة كالمعتاد؛ وإن لم يوجد إنترنت أصلًا تظهر شاشة «لا يوجد اتصال».
+   لا تُخزَّن إلا صفحة التطبيق نفسها (200 وHTML)، ولا يُخزَّن أي طلب إلى الخادم أو الشبكات. */
 self.addEventListener('fetch', function (e) {
   var r = e.request;
-  if (r.mode !== 'navigate') return;
-  e.respondWith(fetch(r).catch(function () {
-    return new Response(OFFLINE_HTML, { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
-  }));
+  if (r.mode !== 'navigate' || r.method !== 'GET') return;
+  e.respondWith((async function () {
+    var key = self.registration.scope;
+    var cache = null, cached = null;
+    try { cache = await caches.open(SHELL); cached = await cache.match(key); } catch (x) {}
+    var net = fetch(r, { cache: 'no-cache' }).then(function (res) {
+      try {
+        var ct = (res.headers.get('content-type') || '').toLowerCase();
+        if (cache && res.status === 200 && ct.indexOf('text/html') >= 0) cache.put(key, res.clone());
+      } catch (x) {}
+      return res;
+    });
+    if (cached) {
+      e.waitUntil(net.catch(function () {}));
+      return await Promise.race([net, new Promise(function (ok) { setTimeout(function () { ok(cached); }, 2500); })]).catch(function () { return cached; });
+    }
+    try { return await net; } catch (x) {
+      return new Response(OFFLINE_HTML, { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
+    }
+  })());
 });
 
 /* تسجيل تشخيصي بسيط: متى وصل آخر إشعار وهل نجح عرضه (يقرؤه التطبيق في الإعدادات) */
