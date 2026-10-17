@@ -45,7 +45,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 @supports (-webkit-touch-callout:none){ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select{ font-size:16px!important } }
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.17-r38';
+window.PL_BUILD='2026.10.17-r39';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -11143,6 +11143,78 @@ async function openCpx(){
   window.openTask=function(ti){
     try{ var t=TASKS[ti]; if(t && RX.test(urlOf(t))){ openCpx(); return; } }catch(e){}
     return _ot0.apply(this,arguments);
+  };
+})();
+</script>
+<script>
+/* ===== TheoremReach: استبيانات إضافية. الرابط يُنشأ ويُوقَّع في الخادم (السرّ لا يصل التطبيق أبدًا).
+   المكافأة لا تُمنح من هنا: تصل فقط عبر callback موقَّع إلى الخادم ثم تظهر في رصيدك. ===== */
+(function(){
+  var KEY='pl-tr-on', TTL=30*60000;
+  function fnUrl(q){ return RealAuth.base()+'/functions/v1/'+encodeURIComponent((typeof net2Fn==='function'?net2Fn():'super-worker'))+'?action=theorem_link'+(q||''); }
+  function cached(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o&&typeof o.on==='boolean'&&Date.now()-o.t<TTL) return o; }catch(e){} return null; }
+  function again(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
+  /* هل الاستبيانات مفعّلة؟ تُسأل مرة كل 30 دقيقة لكل جهاز (لإظهار البطاقة فقط) */
+  window.trProbe=function(){
+    try{
+      var c=cached(); if(c){ window.__trOn=c.on; return; }
+      if(window.__trProbing||typeof SRV==='undefined'||!SRV||!SRV.on||!SRV.on()) return;
+      window.__trProbing=true;
+      Promise.resolve(SRV.tok()).then(function(t){
+        if(!t) return;
+        return fetch(fnUrl('&probe=1'),{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()}}).then(function(r){ return r.ok?r.json():null; }).then(function(j){
+          if(!j||j.ok!==true) return;
+          var was=!!window.__trOn; window.__trOn=j.on===true;
+          try{ localStorage.setItem(KEY,JSON.stringify({on:window.__trOn,t:Date.now()})); }catch(e){}
+          if(window.__trOn&&!was) again();
+        });
+      }).catch(function(){}).then(function(){ window.__trProbing=false; });
+    }catch(e){ window.__trProbing=false; }
+  };
+  window.openTheorem=async function(){
+    if(window.__trBusy) return; window.__trBusy=true;
+    var w=null; try{ w=window.open('about:blank','_blank'); }catch(e){}   /* نفتح التبويب فورًا (ضغطة المستخدم) كي لا يمنعه المتصفح */
+    var fail=function(m){ try{ if(w) w.close(); }catch(e){} toast(m||L('تعذّر فتح الاستبيانات الآن','Could not open surveys now','Impossible d\'ouvrir les sondages')); };
+    try{
+      var s=null; try{ s=RealAuth.getSession(); }catch(e){}
+      if(!s||!s.access_token){ fail(L('سجّل الدخول أولاً','Please sign in first','Connectez-vous d\'abord')); return; }
+      try{ await RealAuth.ensureFresh(); s=RealAuth.getSession()||s; }catch(e){}
+      var r=await fetch(fnUrl(),{headers:{'Authorization':'Bearer '+s.access_token,'apikey':RealAuth.key()}});
+      var j=await r.json().catch(function(){ return {}; });
+      if(j&&j.why==='network_off'){ try{ localStorage.setItem(KEY,JSON.stringify({on:false,t:Date.now()})); }catch(e){} window.__trOn=false; fail(L('الاستبيانات الإضافية غير متاحة الآن','Extra surveys are unavailable right now','Sondages indisponibles')); again(); return; }
+      if(!r.ok||!j||j.ok!==true||typeof j.url!=='string'||j.url.indexOf('https://theoremreach.com/respondent_entry/direct?')!==0){ fail(); return; }
+      window.__trAt=Date.now();
+      if(w){ try{ w.opener=null; }catch(e){} try{ w.location.href=j.url; return; }catch(e){} }
+      if(!openTaskUrl(j.url)) fail();
+    }catch(e){ fail(); }
+    finally{ window.__trBusy=false; }
+  };
+  /* عند العودة من الاستبيان: حدّث الرصيد (المكافأة تصل من الخادم، قد تتأخر ثوانٍ) */
+  try{ document.addEventListener('visibilitychange',function(){
+    if(document.hidden||!window.__trAt||Date.now()-window.__trAt>7200000) return;
+    if(Date.now()-(window.__trSync||0)<20000) return; window.__trSync=Date.now();
+    setTimeout(function(){ try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} try{ if(SRV&&SRV.cycle) SRV.cycle(true); }catch(e){} },2500);
+  }); }catch(e){}
+  var _rt1=window.renderTasks; if(typeof _rt1!=='function') return;
+  window.renderTasks=function(cat){
+    _rt1.apply(this,arguments);
+    try{
+      if(!(cat==='survey'||(cat==='all'&&(typeof taskTab==='undefined'||taskTab==='new')))) return;
+      window.trProbe();
+      if(!window.__trOn) return;
+      var box=document.getElementById('tlist'); if(!box||box.querySelector('.tr-row')) return;
+      var art=''; try{ art=artHTML('survey'); }catch(e){}
+      var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+      var card='<div class="trow tr-row" onclick="openTheorem()">'
+        +'<div class="t-icon art">'+art+'</div>'
+        +'<div class="t-info"><h4>'+L('استبيانات إضافية','More surveys','Plus de sondages')+'</h4>'
+        +'<div class="meta"><span>🔓 '+L('فتح الاستبيانات','Open surveys','Ouvrir les sondages')+'</span><span>'+L('التوفر والمكافأة حسب بلدك وملفك الشخصي','Availability and reward depend on your country and profile','Selon votre pays et profil')+'</span></div></div>'
+        +go+'</div>';
+      try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
+      var anchor=box.querySelector('.cpx-row');
+      if(anchor) anchor.insertAdjacentHTML('afterend',card);
+      else box.insertAdjacentHTML('afterbegin','<div class="t-sec">📋 '+L('الاستطلاعات','Surveys','Sondages')+' <i>∞</i></div>'+card);
+    }catch(e){}
   };
 })();
 </script>
