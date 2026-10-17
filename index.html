@@ -45,7 +45,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 @supports (-webkit-touch-callout:none){ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select{ font-size:16px!important } }
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.16-r35';
+window.PL_BUILD='2026.10.17-r38';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -2492,6 +2492,102 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
 .pfx-btns button{flex:1;border:0;border-radius:12px;padding:10px;font-weight:800;font-size:13px;background:#2563eb;color:#fff;cursor:pointer}
 .pfx-btns button.alt{background:rgba(255,255,255,.1);color:inherit}
 .pfx-st{margin-top:8px;font-size:12px;color:var(--muted)}
+
+.fr-set{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.07);font-size:12.5px}
+.fr-set input[type=number],.fr-set select{width:90px;padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:inherit;font-size:16px}
+.fr-set select{width:130px}.fr-set input[type=checkbox]{width:20px;height:20px}
+.in-row small{display:block;font-size:11px;opacity:.85;margin-top:2px}
+
+/* ===== r37: صفحة المهام — تنسيق احترافي (طبقة فوق الحالي؛ لا تغيّر أي منطق) ===== */
+#page-tasks .page-title{padding:12px 18px 2px;font-size:20px;font-weight:900;letter-spacing:-.2px}
+#page-tasks .tabs{gap:8px;padding:10px 16px 6px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%)}
+#page-tasks .tab{flex-direction:row;min-width:0;gap:8px;padding:9px 15px;border-radius:999px;scroll-snap-align:center;min-height:42px;white-space:nowrap}
+#page-tasks .tab .t-ic{font-size:18px}
+#page-tasks .tab .t-ic svg{width:19px;height:19px}
+#page-tasks .tab .t-lb{font-size:13px;font-weight:800}
+#page-tasks .tab.active{transform:none;box-shadow:0 8px 20px -10px var(--tc,#2563eb),inset 0 1px 0 rgba(255,255,255,.25)}
+#gsub{padding:2px 16px 10px}
+#gsub .gsub{padding:4px;border-radius:14px;gap:4px}
+#gsub .gseg{min-height:38px;border-radius:11px;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px}
+#page-tasks .tlist{padding:0 16px 8px;gap:10px}
+#page-tasks .trow{position:relative;padding:12px 14px;border-radius:20px;gap:13px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--card) 100%,#fff 3%),var(--card));
+  border:1px solid color-mix(in srgb,var(--border) 100%,transparent);
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 12px 26px -20px rgba(0,0,0,.7);
+  transition:transform .12s ease,border-color .15s ease;content-visibility:auto;contain-intrinsic-size:auto 96px}
+#page-tasks .trow:active{transform:scale(.985)}
+#page-tasks .trow:not(.advc):not(.tprog) .t-icon{width:58px;height:58px;border-radius:17px}
+#page-tasks .trow:not(.advc):not(.tprog) .t-info{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;min-width:0}
+#page-tasks .trow:not(.advc):not(.tprog) .t-info>h4{order:1;flex:1 1 100%;margin:0;font-size:15px;line-height:1.45}
+#page-tasks .trow:not(.advc):not(.tprog) .t-info>.t-head{order:2;gap:5px;flex-wrap:nowrap;align-items:center}
+#page-tasks .trow:not(.advc):not(.tprog) .t-info>.t-tag{order:3;margin:0}
+#page-tasks .trow:not(.advc):not(.tprog) .t-info>.meta{order:4;flex:1 1 100%;gap:4px 12px;font-size:11.5px;opacity:.9}
+#page-tasks .t-amt{font-size:14.5px;padding:3px 10px;border-radius:999px}
+#page-tasks .t-amtl{display:none}
+#page-tasks .t-tag{padding:2px 8px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap}
+#page-tasks .trow .go{width:38px;height:38px;background:linear-gradient(135deg,color-mix(in srgb,var(--acc,#2563eb) 100%,#fff 18%),var(--acc,#2563eb));box-shadow:0 8px 16px -9px var(--acc,#2563eb)}
+#page-tasks .trow .go.done{width:38px;height:38px}
+#page-tasks .t-sec{margin:8px 4px 8px;font-size:13px;font-weight:900;gap:9px}
+#page-tasks .t-sec:before{content:"";width:4px;height:16px;border-radius:4px;background:var(--acc,#2563eb)}
+#page-tasks .t-resume{border-radius:16px}
+@keyframes tkIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#page-tasks .trow:nth-child(-n+8){animation:tkIn .3s ease both}
+#page-tasks .trow:nth-child(2){animation-delay:.03s}#page-tasks .trow:nth-child(3){animation-delay:.06s}#page-tasks .trow:nth-child(4){animation-delay:.09s}
+#page-tasks .trow:nth-child(5){animation-delay:.12s}#page-tasks .trow:nth-child(6){animation-delay:.15s}#page-tasks .trow:nth-child(7){animation-delay:.18s}#page-tasks .trow:nth-child(8){animation-delay:.21s}
+@media (prefers-reduced-motion:reduce){#page-tasks .trow{animation:none!important;transition:none!important}}
+html.lite #page-tasks .trow{animation:none!important;box-shadow:none!important;transition:none!important}
+html.lite #page-tasks .tabs{-webkit-mask-image:none;mask-image:none}
+[data-theme=light] #page-tasks .trow{background:#fff;box-shadow:0 8px 22px -18px rgba(15,23,42,.35)}
+
+/* ===== r38: VIP — صفحة فاخرة، تاج متوهج، شارات ===== */
+@keyframes vipGlow{0%,100%{box-shadow:0 0 0 3px rgba(251,191,36,.35),0 0 22px rgba(251,191,36,.45)}50%{box-shadow:0 0 0 4px rgba(253,224,71,.5),0 0 36px rgba(251,191,36,.8)}}
+@keyframes vipShine{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes vipFloat{0%,100%{transform:translateX(-50%) translateY(0) rotate(-8deg)}50%{transform:translateX(-50%) translateY(-3px) rotate(-8deg)}}
+.vip-crown{display:none;position:absolute;top:-24px;left:50%;transform:translateX(-50%) rotate(-8deg);font-size:30px;z-index:3;filter:drop-shadow(0 4px 10px rgba(251,191,36,.7));animation:vipFloat 3s ease-in-out infinite}
+.pf-hero.vip #pf-crown{display:block}
+.pf-hero.vip .pf-av{border-color:#fbbf24!important;animation:vipGlow 2.6s ease-in-out infinite}
+.pf-hero.vip #pf-name{background:linear-gradient(90deg,#fde68a,#f59e0b,#fff7d6,#f59e0b,#fde68a);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:vipShine 3.5s linear infinite}
+.vip-chip{background:linear-gradient(135deg,#fde68a,#f59e0b)!important;color:#3a2a06!important;font-weight:900!important;border:0!important}
+.wv-chip.vipchip{background:linear-gradient(135deg,rgba(253,224,71,.25),rgba(245,158,11,.25));border-color:rgba(251,191,36,.6);color:#fcd34d}
+.vip-tag{display:inline-block;margin-inline-start:6px;padding:1px 8px;border-radius:999px;font-size:10.5px;font-weight:900;background:linear-gradient(135deg,#fde68a,#f59e0b);color:#3a2a06}
+.vip-mini{display:flex;align-items:center;gap:12px;margin:0 18px 12px;padding:13px 14px;border-radius:18px;cursor:pointer;background:linear-gradient(135deg,rgba(245,185,66,.16),rgba(245,158,11,.06));border:1px solid rgba(251,191,36,.4)}
+.vip-mini.on{background:linear-gradient(135deg,rgba(253,224,71,.22),rgba(245,158,11,.1));border-color:rgba(251,191,36,.7)}
+.vip-mini i{font-style:normal;font-size:26px}.vip-mini div{flex:1;min-width:0}.vip-mini b{display:block;font-size:14.5px;font-weight:900;color:#fcd34d}.vip-mini span{font-size:11.5px;color:var(--muted)}.vip-mini em{font-style:normal;font-size:22px;color:#fbbf24}
+.vip-hero{position:relative;margin:6px 18px 14px;padding:38px 18px 22px;border-radius:26px;text-align:center;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,#5b3a06 0%,#2a1a04 55%,#120b02 100%);border:1px solid rgba(251,191,36,.45);box-shadow:0 20px 40px -24px rgba(245,158,11,.6),inset 0 1px 0 rgba(255,255,255,.12)}
+.vip-hero:before{content:"";position:absolute;inset:-40% -20% auto;height:90%;background:conic-gradient(from 200deg,transparent,rgba(253,224,71,.22),transparent 40%);filter:blur(18px);pointer-events:none}
+.vip-hero>*{position:relative}.vip-hero h2{margin:8px 0 4px;font-size:24px;font-weight:900;color:#fff7d6}.vip-hero h2 b{background:linear-gradient(90deg,#fde68a,#f59e0b,#fde68a);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:vipShine 3.5s linear infinite}
+.vip-hero p{margin:0;color:#e9d9a8;font-size:13.5px;font-weight:700}.vip-hero small{display:block;margin-top:6px;color:#c9b27a;font-size:11.5px}
+.vip-hero .vip-crown.big{display:block;position:relative;top:auto;left:auto;transform:none;font-size:54px;animation:none;filter:drop-shadow(0 8px 18px rgba(251,191,36,.8))}
+.vip-ben{margin:0 18px 14px;display:grid;gap:10px}.vip-b{display:flex;gap:12px;align-items:center;padding:13px 14px;border-radius:18px;background:var(--card);border:1px solid var(--border)}
+.vip-b i{font-style:normal;font-size:24px;width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(245,185,66,.14);border:1px solid rgba(251,191,36,.35);flex:none}
+.vip-b b{display:block;font-size:14px;font-weight:900}.vip-b span{font-size:12px;color:var(--muted);line-height:1.6}
+.vip-h{margin:6px 22px 8px;font-size:14px;font-weight:900}.vip-h.s{margin:0 0 8px}
+.vip-plans{margin:0 18px 10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.vip-plan{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 10px;border-radius:18px;background:var(--card);border:1.5px solid var(--border);color:inherit;font-family:inherit;cursor:pointer;transition:transform .12s,border-color .15s}
+.vip-plan span{font-size:13px;font-weight:900}.vip-plan em{font-style:normal;font-size:11px;color:var(--muted)}.vip-plan b{font-size:20px;font-weight:900;color:#fbbf24}
+.vip-plan.sel{border-color:#fbbf24;background:linear-gradient(180deg,rgba(251,191,36,.16),rgba(251,191,36,.04));box-shadow:0 10px 24px -14px rgba(245,158,11,.8)}
+.vip-plan:active{transform:scale(.97)}
+.vip-bal{margin:0 22px 10px;font-size:12.5px;color:var(--muted)}.vip-bal b{color:var(--text)}
+.vip-acts,.vip-conf,.vip-man{margin:0 18px;display:flex;flex-direction:column;gap:10px}
+.vip-acts small{color:#f59e0b;font-size:11.5px;text-align:center}
+.vip-btn{min-height:50px;border:0;border-radius:16px;font:900 15px Tajawal,system-ui,sans-serif;color:#2a1a02;background:linear-gradient(135deg,#fde68a,#f59e0b);box-shadow:0 12px 24px -14px rgba(245,158,11,.9);cursor:pointer}
+.vip-btn:disabled{opacity:.45;box-shadow:none;cursor:not-allowed}.vip-btn:active:not(:disabled){transform:scale(.98)}
+.vip-btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border);box-shadow:none}
+.vip-conf p{margin:0;text-align:center;font-size:14px}.vip-conf b{color:#fbbf24}
+.vip-man label{font-size:12px;font-weight:800;color:var(--muted);margin-top:4px}
+.vip-man input,.vip-man textarea{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:inherit;font-size:16px;font-family:inherit}
+.vip-pay{white-space:pre-wrap;word-break:break-word;padding:12px;border-radius:14px;background:rgba(251,191,36,.08);border:1px dashed rgba(251,191,36,.45);font-size:13px;line-height:1.8}
+.vip-ms{display:flex;gap:8px;flex-wrap:wrap}.vip-ms button{padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:inherit;font:800 12.5px Tajawal,system-ui,sans-serif;cursor:pointer}.vip-ms button.on{background:#f59e0b;color:#2a1a02;border-color:transparent}
+.vip-pend{margin:0 18px;padding:16px;border-radius:18px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.45);display:flex;flex-direction:column;gap:6px}.vip-pend span{font-size:12px;color:var(--muted)}
+.vip-msg,.vip-note{margin:0 18px 12px;padding:12px 14px;border-radius:14px;font-size:13px;line-height:1.7;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.35)}.vip-note{background:var(--card);border-color:var(--border);text-align:center;color:var(--muted)}
+.vip-foot{margin:14px 22px 0;font-size:11.5px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:reduce){.vip-crown,.pf-hero.vip .pf-av,.pf-hero.vip #pf-name,.vip-hero h2 b{animation:none!important}}
+html.lite .vip-crown,html.lite .pf-hero.vip .pf-av,html.lite .pf-hero.vip #pf-name,html.lite .vip-hero h2 b{animation:none!important}
+html.lite .vip-hero:before{display:none}
+[data-theme=light] .vip-hero{background:radial-gradient(120% 90% at 50% 0%,#fde9a8 0%,#fbd877 60%,#f5c24a 100%)}[data-theme=light] .vip-hero h2{color:#3a2a06}[data-theme=light] .vip-hero p,[data-theme=light] .vip-hero small{color:#5d4410}
+
+.adm-pad{padding:4px 14px 12px}.adm-pad .hl-cards{align-items:stretch;grid-auto-rows:1fr}.adm-pad .hl-cards .adm-card{align-self:stretch;margin:0;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:76px}
 </style>
 </head>
 <body>
@@ -2605,6 +2701,7 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
     </div>
     <div class="wv-chips">
       <span class="wv-chip gold" title="الحد الأدنى للسحب"><b data-i18n="wd.min">الحد الأدنى للسحب</b>&nbsp;<b dir="ltr">$3.00</b></span>
+      <span class="wv-chip vipchip" id="wv-vipchip" style="display:none">👑 <b data-vip-l>VIP</b></span>
       <span class="wv-chip" title="تُراجع الطلبات قبل التحويل">⏱ 48–72h</span>
     </div>
   </div>
@@ -2821,12 +2918,14 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
   </div>
   <div class="pf-hero">
     <div class="pf-avwrap">
+      <span class="vip-crown" id="pf-crown" aria-hidden="true">👑</span>
       <button class="pf-av" id="pf-av" onclick="pickAvatar()">🅰</button>
       <span class="pf-cam" onclick="pickAvatar()">📷</span>
     </div>
     <h3 id="pf-name">—</h3>
     <div class="pfid" id="pf-id" onclick="pfCopyId()" style="cursor:pointer">ID: —</div>
     <div class="pf-chips">
+      <span class="lv-chip vip-chip" id="pf-vip" style="display:none">👑 VIP</span>
       <span class="lv-chip" id="pf-level">Lv.2 ⭐ ناشئ</span>
     </div>
     <div class="pf-prog">
@@ -2835,6 +2934,7 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
     </div>
   </div>
   <input type="file" id="av-file" accept="image/*" style="display:none">
+  <div id="pf-vipcard"></div>
   <div class="pf-card2">
     <div class="pf-actions">
       <button class="pf-btn primary" onclick="editName()"><span data-i18n="pf.edit">✏️ تعديل الاسم</span></button>
@@ -2974,6 +3074,15 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
 </section>
 
 <!-- ===== CONTESTS ===== -->
+<section class="page" id="page-vip">
+  <div class="sub-header">
+    <button class="back" onclick="go('more')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1 id="vip-title">👑 VIP</h1>
+  </div>
+  <div id="vip-body"></div>
+  <div style="height:24px"></div>
+</section>
+
 <section class="page" id="page-contests">
   <div class="sub-header">
     <button class="back" onclick="go('more')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
@@ -3027,6 +3136,8 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
     <button class="atb" data-t="news" onclick="admTab('news')">📰 الأخبار</button>
     <button class="atb" data-t="contests" onclick="admTab('contests')">🏆 المسابقات</button>
     <button class="atb" data-t="insights" onclick="admTab('insights')">🧠 رؤى ذكية</button>
+    <button class="atb" data-t="vip" onclick="admTab('vip')">👑 VIP</button>
+    <button class="atb" data-t="fraud" onclick="admTab('fraud')">🛡️ الحماية</button>
     <button class="atb" data-t="health" onclick="admTab('health')">🩺 صحة النظام</button>
     <button class="atb" data-t="logs" onclick="admTab('logs')">📋 سجلات</button>
   </div>
@@ -3362,7 +3473,7 @@ function artHTML(key){
 const _hero=document.getElementById('art-home');
 if(_hero && !_hero.querySelector('.card-artwork')){ _hero.insertAdjacentHTML('afterbegin', `<img class="card-artwork" src="${HERO_IMG}" alt="">`); }
 
-const NAVMAP={admin:'more',invite:'invite',ff:'withdraw',profile:'more',settings:'more',history:'more',news:'more',contests:'more',info:'more',home:'home',tasks:'tasks',task:'tasks',withdraw:'withdraw',more:'more'};
+const NAVMAP={vip:'more',admin:'more',invite:'invite',ff:'withdraw',profile:'more',settings:'more',history:'more',news:'more',contests:'more',info:'more',home:'home',tasks:'tasks',task:'tasks',withdraw:'withdraw',more:'more'};
 function _pg(f){ try{ f(); }catch(e){ try{ console.warn('[page-err]', e); }catch(_){} } }
 function go(p){
   if(p==='tasks'){ try{ taskAutoTab(); }catch(e){} }
@@ -3376,7 +3487,8 @@ function go(p){
   if(p==='history'){ _pg(function(){ renderHistory(); }); }
   if(p==='news'){ _pg(function(){ newsSeenMark(); renderNews(); }); }
   if(p==='contests'){ _pg(function(){ renderContests(); }); }
-  if(p==='profile'){ _pg(function(){ renderProfile(); }); }
+  if(p==='profile'){ _pg(function(){ renderProfile(); try{ vipApplyBadge(); vipLoad(); }catch(e){} }); }
+  if(p==='vip'){ _pg(function(){ renderVip(); }); }
   if(p==='admin'){ _pg(function(){ renderAdmin(ADM_TAB); try{ loadEarnings(); }catch(e){} }); }
   if(p==='withdraw'){ _pg(function(){ renderWDReq(); wrSeenMark('wd'); try{ renderWDHistory(); }catch(e){} try{ applyGrants(); }catch(e){} try{ wrSyncNotify(); }catch(e){} }); }
   if(p==='ff'){ _pg(function(){ renderFFReq(); wrSeenMark('ff'); }); }
@@ -3697,7 +3809,7 @@ function advCardHTML(t, ti){
       ? '<span class="go off">'+TICO.ban+'</span>'
       : '<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
   return '<div class="trow advc'+(dead?' is-exp':'')+'" data-ti="'+ti+'" onclick="openTask('+ti+')">'+
-    '<div class="t-icon art'+(t.img?' has-img':'')+'">'+(t.img?'<img class="card-artwork" src="'+t.img+'" alt="">':artHTML(t.c))+'</div>'+
+    '<div class="t-icon art'+(t.img?' has-img':'')+'">'+(t.img?'<img class="card-artwork" src="'+safeImg(t.img)+'" alt="">':artHTML(t.c))+'</div>'+
     '<div class="t-info">'+
       '<div class="t-head"><b class="t-amt">$'+(totalP/10000).toFixed(2)+'</b><span class="t-amtl">'+L('المجموع','Total','Total')+'</span></div>'+
       '<h4>'+esc(tr(t.title))+'</h4>'+
@@ -3878,7 +3990,7 @@ function tpInfo(t,ti){
   const next=(n&&cur<n)?t.ms[cur]:null;
   return {n:n,cur:cur,total:total,earned:earned,next:next};
 }
-function tpArt(t){ return '<div class="t-icon art'+(t.img?' has-img':'')+'">'+(t.img?'<img class="card-artwork" src="'+t.img+'" alt="">':artHTML(t.c))+'</div>'; }
+function tpArt(t){ return '<div class="t-icon art'+(t.img?' has-img':'')+'">'+(t.img?'<img class="card-artwork" src="'+safeImg(t.img)+'" alt="">':artHTML(t.c))+'</div>'; }
 function startedCardHTML(t,ti){
   const x=tpInfo(t,ti); const pct=x.n?Math.min(100,Math.round(x.cur/x.n*100)):8;
   let cd=''; try{ const e=t.adv&&t.adv.end?Date.parse(t.adv.end):0; if(e&&e>Date.now()) cd='<span class="t-cd">'+TICO.clock+' '+esc(TaskService.cdText(e))+'</span>'; }catch(e){}
@@ -3951,7 +4063,7 @@ function renderTasks(cat){
     const amtD='$'+(parseInt(String(t.pts).replace(/,/g,''),10)/10000).toFixed(2);
     return `
     <div class="trow" data-ti="${ti}" onclick="openTask(${ti})">
-      <div class="t-icon art${t.img?' has-img':''}">${t.img?`<img class="card-artwork" src="${t.img}" alt="">`:artHTML(t.c)}</div>
+      <div class="t-icon art${t.img?' has-img':''}">${t.img?`<img class="card-artwork" src="${safeImg(t.img)}" alt="">`:artHTML(t.c)}</div>
       <div class="t-info">
         <div class="t-head"><b class="t-amt">${amtD}</b><span class="t-amtl">${L('المجموع','Total','Total')}</span></div>
         <h4>${esc(tr(t.title))}</h4>${ti===_bi?'<span class="t-tag hot">⚡ '+L('موصى به','Picked','Recommandé')+'</span>':''}${(ti>=0&&_qk[ti])?'<span class="t-tag quick">⏱ '+L('سريع','Quick','Rapide')+'</span>':''}${t.type==='ext'?'<span class="t-tag ext">🌐 '+L('خارجية','External','Externe')+'</span>':'<span class="t-tag man">✏️ '+L('يدوية','Manual','Manuelle')+'</span>'}
@@ -4000,7 +4112,7 @@ function renderFeatured(){
   f.innerHTML = pick.map(t=>{
     const ti=TASKS.indexOf(t);
     return `<div class="task-card" onclick="openTask(${ti})">
-    <div class="task-banner art">${t.img?`<img class="card-artwork" src="${t.img}" alt="">`:artHTML(t.c)}</div>
+    <div class="task-banner art">${t.img?`<img class="card-artwork" src="${safeImg(t.img)}" alt="">`:artHTML(t.c)}</div>
     <div class="task-body"><h4>${esc(tr(t.title))}</h4><div class="reward">$${((parseInt(String(t.pts).replace(/,/g,''),10)||0)/10000).toFixed(2)}</div><button class="mini-btn" onclick="event.stopPropagation(); openTask(${ti})">${taskStarted(ti)?L('أكمل','Continue','Continuer'):L('ابدأ','Start','Start')}</button></div>
   </div>`; }).join('');
 }
@@ -4019,10 +4131,12 @@ const MENU=[
 ];
 function menuGo(a){ if(a.indexOf('info:')===0){ openInfo(a.slice(5)); } else if(a==='logout'){ doLogout(); } else if(a==='delacc'){ deleteMyAccountReal(); } else { go(a); } }
 function renderMenu(){
+  I.crown=I.crown||`<svg width="20" height="20" viewBox="0 0 24 24" ${S} stroke="#f5b942"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z"/><path d="M5 19h14"/></svg>`;
   I.news=I.news||`<svg width="20" height="20" viewBox="0 0 24 24" ${S} stroke="#38bdf8"><path d="M4 5h13v14H5.5A1.5 1.5 0 014 17.5V5z"/><path d="M17 8h3v9.5a1.5 1.5 0 01-3 0"/><path d="M7 9h7M7 12h7M7 15h4"/></svg>`;
   I.trophy=I.trophy||`<svg width="20" height="20" viewBox="0 0 24 24" ${S} stroke="#f59e0b"><path d="M7 4h10v5a5 5 0 01-10 0V4z"/><path d="M7 5.5H4.5V7a3.5 3.5 0 003.5 3.5M17 5.5h2.5V7a3.5 3.5 0 01-3.5 3.5"/><path d="M12 14v4M8.5 20h7"/></svg>`;
   I.shield=I.shield||`<svg width="20" height="20" viewBox="0 0 24 24" ${S} stroke="#f59e0b"><path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>`;
   let items=MENU.slice();
+  try{ if(VIP&&(VIP.enabled||vipActive())) items.splice(1,0,['crown','#f5b942',['VIP','VIP','VIP'],'vip']); }catch(e){}
   if(isAdmin() && (DataGateway.config.DATA_MODE==='local' || (function(){ try{ var u=curUser(); return !!u && localStorage.getItem('r7-adm-rev')===String(u.id); }catch(e){ return false; } })()))
     items=items.concat([['shield','#f59e0b',['لوحة التحكم','Control Panel','Panneau de contrôle'],'admin']]);
   items=items.concat([['user','#ef4444',['تسجيل الخروج','Log out','Déconnexion'],'logout']]);
@@ -5567,7 +5681,10 @@ function taskReopen(ti){
     if(/^https?:\/\//i.test(url)){ openTaskUrl(url); }
   }catch(e){}
 }
+/* صور المهام: نقبل فقط data:image أو http(s) أو مسارًا نسبيًا بسيطًا — ونهرّب القيمة قبل وضعها في السمة (دفاع إضافي ضد حقن HTML) */
+function safeImg(u){ u=String(u==null?'':u); if(/^data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+\/=]+$/.test(u)) return u; if(/^https?:\/\/[^\s"'<>`\\]+$/i.test(u)) return esc(u); if(/^[\w.\/-]+$/.test(u)) return esc(u); return ''; }
 function openTaskUrl(u){
+  if(!/^https?:\/\//i.test(String(u||''))) return false;
   if(urlBlockedOpen(u)){ lootMsg(); return; }
   try{ const w2=window.open(u,'_blank','noopener'); if(w2) return true; }catch(e){}
   try{ window.location.href=u; return true; }catch(e){}
@@ -5609,7 +5726,7 @@ function renderTaskDetail(){
   const ccol=(CATS.find(x=>x[0]===cc)||[])[3]||'#f59e0b';
   document.getElementById('page-task').style.setProperty('--tacc',ccol);
   b.innerHTML=
-    '<div class="td-hero"><div class="td-art art">'+(t.img?'<img class="card-artwork" src="'+t.img+'" alt="">':artHTML(t.c))+'</div>'+
+    '<div class="td-hero"><div class="td-art art">'+(t.img?'<img class="card-artwork" src="'+safeImg(t.img)+'" alt="">':artHTML(t.c))+'</div>'+
     '<div class="td-info"><div class="td-amt">'+dollar+' <span>'+L('المجموع','Total','Total')+'</span></div>'+
     '<h3>'+esc(tr(t.title))+'</h3>'+
     '<div class="td-meta"><span>⏱ '+esc(tr(t.time))+'</span><span>'+(isExt?'🔁 '+esc(String((t.prov&&t.prov.method)||'Link')):'📶 '+steps+' '+L('خطوات','steps','étapes'))+'</span><span>'+(isExt?'🌐 '+L('خارجية','External','Externe'):'✏️ '+L('يدوية','Manual','Manuelle'))+'</span></div></div></div>'+
@@ -5662,7 +5779,7 @@ function renderTaskDetailAdv(t, ti, st){
   else if(st===1) cta='<button class="td-cta done" disabled>⏳ '+(a.mode==='provider'?L('بانتظار تأكيد الشبكة','Awaiting network confirmation','En attente'):L('جارٍ التنفيذ','In progress','En cours'))+'</button>';
   else cta='<button class="td-cta" id="td-cta" onclick="startDetail()">'+TICO.play+' '+(taskStarted(ti)?L('أكمل المهمة','Continue task','Continuer'):esc(TaskService.actionLbl(a, t)))+'</button>';
   b.innerHTML=
-    '<div class="td-hero"><div class="td-art art">'+(t.img?'<img class="card-artwork" src="'+t.img+'" alt="">':artHTML(t.c))+'</div>'+
+    '<div class="td-hero"><div class="td-art art">'+(t.img?'<img class="card-artwork" src="'+safeImg(t.img)+'" alt="">':artHTML(t.c))+'</div>'+
     '<div class="td-info"><div class="td-amt">$'+sumUsd.toFixed(2)+' <span>'+L('المجموع','Total','Total')+'</span></div>'+
     '<h3>'+esc(tr(t.title))+'</h3>'+
     '<div class="td-meta"><span>'+TICO.clock+' '+(e?'<b data-cdend="'+e+'">'+esc(TaskService.cdText(e))+'</b>':L('بدون مهلة','No limit','Sans limite'))+'</span><span>'+(hasUrl?'🔗 '+L('مهمة برابط','With link','Avec lien'):esc(taskTypeLbl(a.type||t.c)))+'</span></div></div></div>'+
@@ -6963,6 +7080,7 @@ async function doRegister(){
     try{ localStorage.removeItem('r12-nr'); sessionStorage.removeItem('r12-nr-alive'); }catch(e){}
     try{ const txPure=(TX.length===0)||(TX.length===2&&TX[0]&&TX[0].u===-5&&TX[1]&&+TX[1].p===1500);
       if(DONE<=27 && PTS<=0 && TODAY<=0 && txPure && BAL<=12.5){ BAL=0; PTS=0; TODAY=0; DONE=0; TX=[]; try{ LS.set('r16-led','[]'); }catch(e){} saveState(); } }catch(e){}
+    try{ window.__secKind='signup'; window.__secKindAt=Date.now(); }catch(e){}
     auBusy(false); applySession();
     toast(reactivated?L('♻️ تم تنشيط حسابك من جديد — مرحبًا '+n+'!','♻️ Account reactivated — welcome '+n+'!','♻️ Compte réactivé — bienvenue !'):L('🎉 تم إنشاء حسابك بنجاح — مرحبًا بك '+n+'!','🎉 Account created successfully — welcome '+n+'!','🎉 Compte créé — bienvenue !'), L('يمكنك الآن إنجاز المهام وسحب أرباحك','You can now complete tasks and withdraw','Vous pouvez gagner et retirer'));
     try{ if(u.code) DataGateway.claim(u.code); }catch(e){}
@@ -7048,6 +7166,7 @@ async function doLogin(){
     saveUSERS();
     SESSION=u.id; try{ LS.set('r12-session', u.id); }catch(e){}
     try{ profileUpdate(u.id, {last_seen:new Date().toISOString(), email:(sess.email||u.email||undefined)}, sess.access_token); }catch(e){}
+    try{ window.__secKind='login'; window.__secKindAt=Date.now(); }catch(e){}
     applySession();
     if(u.blocked){ try{ showBlocked(); }catch(e){} return; }
     toast(L('👋 أهلًا بعودتك '+u.name+'!','👋 Welcome back '+u.name+'!','👋 Bon retour !'));
@@ -7290,6 +7409,8 @@ function applySession(){
   const u=curUser();
   try{ const _uid=u?u.id:null; if(_uid!==_stateFor){ _stateFor=_uid; stateSwitch(_uid); } }catch(e){}
   if(!u){ if(document.documentElement.hasAttribute('data-r7')) return; try{ var _d0=document.documentElement; _d0.removeAttribute('data-hs'); _d0.setAttribute('data-nf','1'); document.querySelectorAll('.page.active').forEach(function(e){ e.classList.remove('active'); }); }catch(e){} g.style.display='flex'; document.body.classList.add('gated'); renderAuth(); return; }
+  try{ secTrack(); }catch(e){}
+  try{ vipBoot(); }catch(e){}
   if(u.blocked){
     /* وضع مقيد: يبقى في جلسته لتقديم شكوى، ويظهر له «تم حظرك» فقط */
     g.style.display='none'; document.body.classList.remove('gated');
@@ -7733,6 +7854,8 @@ function renderAdmin(t){
     else if(ADM_TAB==='contests') renderAdmContests();
     else if(ADM_TAB==='health') renderAdmHealth();
     else if(ADM_TAB==='insights') renderAdmInsights();
+    else if(ADM_TAB==='fraud') renderAdmFraud();
+    else if(ADM_TAB==='vip') renderAdmVip();
     else if(ADM_TAB==='logs') renderAdmLogs();
   }catch(e){ try{ console.warn('[adm-err]', e); }catch(_){} }
 }
@@ -8639,7 +8762,7 @@ function renderAdmTasks(){
     const sub= esc(ty)+' · '+((t.ms&&t.ms.length)?('⊞ '+t.ms.length+' '+L('محطة','milestones','paliers')+' · '):'')+(t.maxUsers>0?(L('حد أقصى','max','max')+' '+t.maxUsers+' · '):'')+esc(catLabel(t.c));
     html+='<div class="admt-r'+(t._hid?' off':'')+'" data-admt="'+i+'">'+
       '<span class="admt-num">'+seq+'</span>'+
-      '<span class="admt-name"><span class="admt-thumb">'+(t.img?'<img src="'+t.img+'" alt="">':artHTML(t.c))+'</span>'+
+      '<span class="admt-name"><span class="admt-thumb">'+(t.img?'<img src="'+safeImg(t.img)+'" alt="">':artHTML(t.c))+'</span>'+
       '<span class="admt-nm"><b>'+esc(tr(t.title))+'</b><i class="admt-sub">'+sub+'</i></span></span>'+
       '<span class="admt-badges">'+src+st+(function(){ try{ const u0=String((t.adv&&t.adv.url)||(t.prov&&t.prov.url)||t.link||''); const m0=u0.match(/^https?:\/\/([^\/?#:@]+)/i); return (m0&&BLOCKED_HOSTS.test(m0[1]))?'<span class="admt-st off" title="'+L('Lootably غير مفعّل: المهمة مخفية عن المستخدمين','Lootably not connected: hidden from users','Masquée')+'">🚫 '+L('مخفية عن المستخدمين','Hidden from users','Masquée')+'</span>':''; }catch(e){ return ''; } })()+'</span>'+
       '<span class="admt-usd">$'+usd.toFixed(2)+'</span>'+
@@ -8704,6 +8827,291 @@ const NET2_PK=[['user_id','معامل المستخدم *','User parameter *','Pa
   ['level','معامل المستوى (مهام المستويات)','Level parameter (level tasks)','Paramètre niveau'],['timestamp','معامل الوقت','Timestamp parameter','Paramètre temps']];
 const NET2_STS=['completed','pending','reversed','rejected','chargeback'];
 function net2CatLbl(k){ const c=NET2_CATS.filter(function(x){ return x[0]===k; })[0]; return c?(c[1]+' '+L(c[2],c[3],c[4])):esc(k); }
+
+/* ===== حماية: تسجيل IP الحقيقي والجهاز (الخادم يقرأ الـIP من ترويسة الشبكة، لا من التطبيق) ===== */
+var _secUid=null, _secBusy=false;
+function secDevId(){ try{ var d=localStorage.getItem('pl-dev'); if(!d){ d=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():('d'+Math.random().toString(36).slice(2)+Date.now().toString(36)); localStorage.setItem('pl-dev',d); } return d; }catch(e){ return ''; } }
+function secTrack(){
+  try{
+    if(_secBusy || !SRV.cfg()) return;
+    var s=RealAuth.getSession(); if(!s||!s.access_token||!s.uid) return;
+    var kind='';
+    if(window.__secKind && Date.now()-(window.__secKindAt||0)<60000){ kind=window.__secKind; }
+    window.__secKind=''; 
+    var first=(_secUid!==s.uid); var last=0; try{ last=Number(localStorage.getItem('pl-sec-'+s.uid)||0); }catch(e){}
+    if(!kind){ if(!first && Date.now()-last<6*3600000) return; if(Date.now()-last<6*3600000) { _secUid=s.uid; return; } kind='open'; }
+    _secUid=s.uid; _secBusy=true;
+    var go1=function(tries){
+      RealAuth.tok().then(function(tk){
+        if(!tk){ _secBusy=false; return; }
+        return fetch(RealAuth.base()+'/functions/v1/'+encodeURIComponent(net2Fn())+'?action=track&e='+kind+'&d='+encodeURIComponent(secDevId()),{headers:{'Authorization':'Bearer '+tk,'apikey':RealAuth.key()}})
+          .then(function(r){ return r.json().catch(function(){ return {}; }); })
+          .then(function(j){ if(j&&j.ok){ try{ localStorage.setItem('pl-sec-'+s.uid,String(Date.now())); }catch(e){} _secBusy=false; } else if(tries<2){ setTimeout(function(){ go1(tries+1); },6000); } else { _secBusy=false; } });
+      }).catch(function(){ if(tries<2){ setTimeout(function(){ go1(tries+1); },6000); } else { _secBusy=false; } });
+    };
+    go1(0);
+  }catch(e){ _secBusy=false; }
+}
+
+/* ===== لوحة الإدارة > الحماية: كل الأرقام حقيقية من قاعدة البيانات ===== */
+let ADM_FR=null, ADM_FR_AT=0, ADM_FR_BUSY=false, ADM_FR_U=null;
+const FR_LBL={
+  shared_ip:function(x){ return L('نفس الـIP مع '+x.n+' حساب آخر','Same IP as '+x.n+' other account(s)','Même IP que '+x.n+' autre(s) compte(s)'); },
+  shared_device:function(x){ return L('نفس الجهاز مع '+x.n+' حساب آخر','Same device as '+x.n+' other account(s)','Même appareil que '+x.n+' autre(s)'); },
+  vpn:function(){ return L('اتصال VPN مكتشف','VPN detected','VPN détecté'); },
+  proxy:function(){ return L('اتصال Proxy مكتشف','Proxy detected','Proxy détecté'); },
+  tor:function(){ return L('اتصال Tor مكتشف','Tor detected','Tor détecté'); },
+  hosting:function(){ return L('IP مركز بيانات','Datacenter IP','IP de datacenter'); },
+  country_change:function(x){ return L('تغيّرت الدولة ('+x.n+' دول خلال 7 أيام)','Country changed ('+x.n+' in 7 days)','Pays changé ('+x.n+' en 7 j)'); },
+  signup_burst:function(x){ return L(x.n+' تسجيلات من نفس الـIP خلال 24 ساعة','' +x.n+' signups from one IP in 24h',x.n+' inscriptions depuis la même IP en 24 h'); },
+  no_ip_record:function(){ return L('سحب بدون أي IP مسجّل','Withdrawal with no IP on record','Retrait sans IP enregistrée'); },
+  reversals:function(x){ return L(x.n+' عملية مُلغاة (Reversal/Chargeback)',x.n+' reversed/chargeback transaction(s)',x.n+' transaction(s) annulée(s)'); }
+};
+const FR_EVT={signup:'🆕',login:'🔑',risk_high:'🔴',risk_medium:'🟠',withdrawal_review:'💸',setting_changed:'⚙️',reviewed:'✅',ip_unreadable:'❓'};
+function frReasons(rs){ return (rs||[]).map(function(x){ const fn=FR_LBL[x.k]; return fn?'<small>⚠️ '+esc(fn(x))+' <i style="opacity:.6">(+'+(x.pts|0)+')</i></small>':''; }).join(''); }
+function frAgo(t){ const m=Math.max(0,Math.round((Date.now()-new Date(t).getTime())/60000)); return m<1?L('الآن','now','maintenant'):m<60?(m+' '+L('د','min','min')):m<1440?(Math.round(m/60)+' '+L('س','h','h')):(Math.round(m/1440)+' '+L('يوم','d','j')); }
+async function renderAdmFraud(force){
+  const box=document.getElementById('adm-body'); if(!box) return;
+  if(!SRV.on()){ box.innerHTML='<div class="adm-empty">'+L('هذه الصفحة تعمل مع قاعدة البيانات الحقيقية فقط','This page works with the live database only','Cette page nécessite la base de données réelle')+'</div>'; return; }
+  if(!ADM_FR_BUSY && (force||Date.now()-ADM_FR_AT>20000)){
+    ADM_FR_BUSY=true; if(!ADM_FR) box.innerHTML='<div class="adm-empty">⏳ '+L('جارٍ التحميل…','Loading…','Chargement…')+'</div>';
+    try{
+      const a=await Promise.all([SRV.rpc('admin_fraud_overview',{}),SRV.rpc('admin_fraud_users',{p_level:null,p_limit:60}),SRV.rpc('admin_fraud_wd',{p_limit:40}),SRV.rpc('admin_security_log',{p_limit:40}),SRV.rpc('admin_fraud_settings',{})]);
+      if(a[0]&&typeof a[0].tracked_users==='number'&&Array.isArray(a[1])){ ADM_FR={ov:a[0],users:a[1],wd:Array.isArray(a[2])?a[2]:[],log:Array.isArray(a[3])?a[3]:[],set:a[4]||{}}; ADM_FR_AT=Date.now(); }
+    }catch(e){}
+    ADM_FR_BUSY=false; if(ADM_TAB!=='fraud') return;
+  }
+  if(!ADM_FR){ box.innerHTML='<div class="adm-empty">'+L('تعذّر التحميل — شغّل ملف 39_fraud.sql في Supabase','Could not load — run 39_fraud.sql in Supabase','Chargement impossible — exécutez 39_fraud.sql')+'</div>'; return; }
+  if(ADM_FR_U){ renderAdmFraudUser(); return; }
+  const o=ADM_FR.ov, st=ADM_FR.set, f=function(n){ return Number(n||0).toLocaleString('en-US'); };
+  const rk=o.risk||{}, ev=o.events_24h||{};
+  const al=[]; const add=function(lv,t){ al.push('<div class="hl-al '+lv+'">'+(lv==='bad'?'🔴':lv==='warn'?'🟠':'🟢')+' '+t+'</div>'); };
+  if(o.unreviewed_high>0) add('bad',L(o.unreviewed_high+' حساب بخطر مرتفع لم تراجعه','' +o.unreviewed_high+' high-risk account(s) not reviewed yet',o.unreviewed_high+' compte(s) à risque élevé non vérifiés'));
+  if(o.wd_review_pending>0) add('warn',L(o.wd_review_pending+' طلب سحب معلّق عليه علامة مراجعة — راجعه قبل القبول','' +o.wd_review_pending+' pending withdrawal(s) flagged — review before approving',o.wd_review_pending+' retrait(s) en attente signalé(s)'));
+  const cover=o.total_users?Math.round(o.tracked_users/o.total_users*100):100;
+  if(o.total_users>=10 && cover<70) add('warn',L('الـIP مسجّل لـ '+cover+'% فقط من المستخدمين — الباقي لم يفتح التطبيق المحدَّث بعد','IP recorded for only '+cover+'% of users — the rest have not opened the updated app yet','IP enregistrée pour '+cover+'% seulement'));
+  if(st.intel_enabled===false) add('warn',L('فحص VPN متوقف من الإعدادات','VPN lookup is turned off in settings','Détection VPN désactivée'));
+  else if((o.vpn_users_7d|0)===0 && (o.intel_today|0)===0) add('warn',L('لا توجد بيانات VPN: فحص VPN الخارجي غير مفعّل بعد (اختياري) — الباقي يعمل بالـIP والجهاز','No VPN data: the external VPN lookup is not enabled yet (optional) — IP and device checks still work','Pas de données VPN : détection externe non activée'));
+  if(!al.length) add('ok',L('لا تنبيهات الآن','No alerts right now','Aucune alerte'));
+  const card=function(v,t,c){ return '<div class="adm-card '+(c||'')+'"><b>'+f(v)+'</b><span>'+t+'</span></div>'; };
+  const cards='<div class="hl-cards">'+
+    card(o.tracked_users,L('مستخدمون مسجّل IP لهم','Users with IP recorded','Utilisateurs avec IP'),'blue')+
+    card(o.signups_24h,L('تسجيلات 24س','Signups 24h','Inscriptions 24 h'))+
+    card(rk.high||0,L('خطر مرتفع','High risk','Risque élevé'),'warn')+
+    card(rk.medium||0,L('خطر متوسط','Medium risk','Risque moyen'),'gold')+
+    card(o.vpn_users_7d,L('مستخدمو VPN/Proxy (7 أيام)','VPN/Proxy users (7d)','VPN/Proxy (7 j)'))+
+    card(o.shared_ip_groups,L('IP مشترك (3+ حسابات)','Shared IPs (3+ accts)','IP partagées (3+)'))+
+    card(o.shared_device_groups,L('أجهزة مشتركة','Shared devices','Appareils partagés'))+
+    card(o.dup_txn_7d,L('معاملات مكررة (7 أيام)','Duplicate txns (7d)','Transactions en double'))+
+    card(o.reversals_7d,L('Reversal (7 أيام)','Reversals (7d)','Annulations (7 j)'))+
+    card(o.wd_review_pending,L('سحب يحتاج مراجعة','Withdrawals to review','Retraits à vérifier'),'warn')+'</div>';
+  const pb=Object.keys(o.pb_24h||{}).map(function(k){ return '<span class="rk-pill low" style="margin:2px">'+esc(k)+' · '+f(o.pb_24h[k])+'</span>'; }).join('')||'<span class="up-em">—</span>';
+  const urow=function(x){ return '<div class="in-row" onclick="admFrOpen(\''+esc(x.id)+'\')"><div><b>'+esc(x.full_name||x.email||'—')+(x.blocked?' 🚫':'')+(x.reviewed_at?' ✅':'')+'</b><em>'+esc(x.public_id||x.email||'')+'</em>'+frReasons(x.reasons)+'</div>'+riskPill(x.score)+'</div>'; };
+  const wdr=ADM_FR.wd.map(function(x){ return '<div class="in-row" onclick="admFrOpen(\''+esc(x.id)+'\')"><div><b>'+esc(x.full_name||x.email||'—')+'</b><em>'+L('سحب','Withdrawal','Retrait')+' '+usdF(x.usd_amount)+' · '+esc(x.wd_id)+'</em>'+frReasons(x.reasons)+'</div>'+riskPill(x.score)+'</div>'; }).join('')||'<div class="up-em">'+L('لا سحوبات معلّقة تحتاج مراجعة','No pending withdrawals need review','Aucun retrait à vérifier')+'</div>';
+  const usr=ADM_FR.users.map(urow).join('')||'<div class="up-em">'+L('لا حسابات مشبوهة','No suspicious accounts','Aucun compte suspect')+'</div>';
+  const lg=ADM_FR.log.map(function(g){ const d=g.detail||{}; const extra=g.kind==='signup'||g.kind==='login'?(' · '+esc(d.ip||'')+' '+esc(d.country||'')):g.kind==='setting_changed'?(' · '+esc(d.key||'')+'='+esc(String(d.value))):g.reasons?'':''; return '<div class="in-row" '+(g.uid&&g.kind!=='setting_changed'?'onclick="admFrOpen(\''+esc(g.uid)+'\')"':'')+'><div><b>'+(FR_EVT[g.kind]||'•')+' '+esc(g.kind)+'</b><em>'+esc(g.full_name||g.email||'')+extra+(g.action?' · '+esc(g.action):'')+'</em></div><em>'+frAgo(g.at)+'</em></div>'; }).join('')||'<div class="up-em">—</div>';
+  const tg=function(k,t){ return '<label class="fr-set"><span>'+t+'</span><input type="checkbox" '+(st[k]!==false?'checked':'')+' onchange="admFrSet(\''+k+'\',this.checked)"></label>'; };
+  const nm=function(k,t){ return '<label class="fr-set"><span>'+t+'</span><input type="number" min="0" max="100000" value="'+esc(String(st[k]==null?'':st[k]))+'" onchange="admFrSet(\''+k+'\',Number(this.value))"></label>'; };
+  const sett='<div class="up-box"><div class="up-h">⚙️ '+L('إعدادات الحماية (تُطبَّق فورًا)','Protection settings (applied instantly)','Paramètres (appliqués immédiatement)')+'</div>'+
+    tg('enabled',L('تفعيل نظام تقييم المخاطر','Enable risk scoring','Activer le scoring'))+tg('track_ip',L('تسجيل IP والجهاز','Record IP & device','Enregistrer IP et appareil'))+tg('intel_enabled',L('فحص VPN/Proxy/Tor الخارجي','External VPN/Proxy/Tor lookup','Détection VPN externe'))+
+    '<label class="fr-set"><span>'+L('وضع علامة مراجعة على السحب','Flag withdrawals at','Signaler les retraits dès')+'</span><select onchange="admFrSet(\'flag_wd_level\',this.value)">'+[['off',L('إيقاف','Off','Off')],['medium',L('متوسط فأعلى','Medium+','Moyen+')],['high',L('مرتفع فقط','High only','Élevé')]].map(function(x){ return '<option value="'+x[0]+'"'+(String(st.flag_wd_level||'medium')===x[0]?' selected':'')+'>'+x[1]+'</option>'; }).join('')+'</select></label>'+
+    nm('lvl_medium',L('حدّ الخطر المتوسط (نقاط)','Medium threshold (pts)','Seuil moyen'))+nm('lvl_high',L('حدّ الخطر المرتفع (نقاط)','High threshold (pts)','Seuil élevé'))+
+    nm('w_shared_ip',L('نقاط: IP مشترك (لكل حساب)','Pts: shared IP (per account)','Pts : IP partagée'))+nm('w_shared_device',L('نقاط: جهاز مشترك (لكل حساب)','Pts: shared device (per account)','Pts : appareil partagé'))+
+    nm('w_vpn',L('نقاط: VPN','Pts: VPN','Pts : VPN'))+nm('w_proxy',L('نقاط: Proxy','Pts: Proxy','Pts : Proxy'))+nm('w_tor',L('نقاط: Tor','Pts: Tor','Pts : Tor'))+nm('w_hosting',L('نقاط: مركز بيانات','Pts: datacenter','Pts : datacenter'))+
+    nm('w_country_change',L('نقاط: تغيّر الدولة','Pts: country change','Pts : changement de pays'))+nm('w_signup_burst',L('نقاط: موجة تسجيل','Pts: signup burst','Pts : vague d’inscriptions'))+nm('signup_burst_n',L('عدد التسجيلات التي تُعدّ موجة','Signups counted as a burst','Inscriptions = vague'))+
+    nm('w_reversal',L('نقاط: عملية مُلغاة (لكل واحدة)','Pts: reversal (each)','Pts : annulation'))+nm('w_no_ip_wd',L('نقاط: سحب بلا IP','Pts: withdrawal with no IP','Pts : retrait sans IP'))+nm('retention_days',L('مدة الاحتفاظ بالـIP (أيام)','IP retention (days)','Conservation IP (jours)'))+
+    '<button class="btn" style="margin-top:8px" onclick="admFrRecalc()">🔄 '+L('أعد حساب المخاطر للجميع الآن','Recalculate all risk now','Recalculer maintenant')+'</button>'+
+    '<div class="up-note">'+L('لا يوجد حظر تلقائي نهائي: النظام يعطي درجة وعلامة مراجعة فقط والقرار لك. الـIP وحده لا يكفي لاتخاذ قرار.','No automatic permanent ban: the system only scores and flags; you decide. IP alone is never enough.','Pas de bannissement automatique : le système note et signale seulement.')+'</div></div>';
+  box.innerHTML='<div class="hl-wrap adm-pad">'+al.join('')+cards+
+    '<div class="up-box"><div class="up-h">💸 '+L('سحوبات معلّقة تحتاج مراجعة','Pending withdrawals to review','Retraits à vérifier')+'</div>'+wdr+'</div>'+
+    '<div class="up-box"><div class="up-h">🧠 '+L('حسابات مشبوهة','Suspicious accounts','Comptes suspects')+'</div><div class="up-note">'+L('نقاط من عدة مؤشرات معًا (IP، جهاز، VPN، دولة، تسجيل جماعي، عمليات مُلغاة). ليست دليل إدانة: شبكة واحدة قد تضم أسرة حقيقية.','Points from several signals combined. Not proof: one network can be a real family.','Points issus de plusieurs signaux. Pas une preuve.')+'</div>'+usr+'</div>'+
+    '<div class="up-box"><div class="up-h">📨 '+L('إشعارات Postback آخر 24 ساعة','Postbacks last 24h','Postbacks 24 h')+'</div>'+pb+'</div>'+
+    '<div class="up-box"><div class="up-h">📋 '+L('السجل الأمني','Security log','Journal de sécurité')+'</div>'+lg+'</div>'+sett+
+    '<div class="hl-foot">'+L('بيانات حقيقية من قاعدة البيانات · لا يمكن كشف VPN أو الحسابات المتعددة بنسبة 100%','Real database data · VPN and multi-account detection is never 100%','Données réelles · détection jamais fiable à 100 %')+'</div></div>';
+}
+async function admFrOpen(id){
+  ADM_FR_U={id:id,d:null}; renderAdmFraudUser();
+  try{ const d=await SRV.rpc('admin_fraud_user',{p_user:id}); if(ADM_FR_U&&ADM_FR_U.id===id&&d&&d.ok){ ADM_FR_U.d=d; } }catch(e){}
+  if(ADM_FR_U&&ADM_TAB==='fraud') renderAdmFraudUser();
+}
+function admFrBack(){ ADM_FR_U=null; renderAdmFraud(true); }
+function renderAdmFraudUser(){
+  const box=document.getElementById('adm-body'); if(!box||!ADM_FR_U) return;
+  const d=ADM_FR_U.d; const back='<button class="btn" onclick="admFrBack()">← '+L('رجوع','Back','Retour')+'</button>';
+  if(!d){ box.innerHTML='<div class="hl-wrap adm-pad">'+back+'<div class="adm-empty">⏳</div></div>'; return; }
+  const pr=d.profile||{}; const rk=d.risk;
+  const ips=(d.ips||[]).map(function(x){ const bad=[x.is_tor?'Tor':'',x.is_vpn?'VPN':'',x.is_proxy?'Proxy':'',x.is_hosting?L('مركز بيانات','Datacenter','Datacenter'):''].filter(Boolean).join(' · ');
+    return '<div class="in-row" style="cursor:default"><div><b dir="ltr">'+esc(x.ip)+(x.country?' · '+esc(x.country):'')+'</b><em>'+esc(x.first_kind||'')+' · '+L('أول مرة','first','1re fois')+' '+frAgo(x.first_seen)+' · '+L('آخر مرة','last','dernière')+' '+frAgo(x.last_seen)+' · ×'+x.hits+'</em>'+(bad?'<small>⚠️ '+esc(bad)+'</small>':'')+(x.others>0?'<small>👥 '+L('ظهر عليه '+x.others+' حساب آخر','also used by '+x.others+' other account(s)','utilisée par '+x.others+' autre(s)')+'</small>':'')+'</div></div>'; }).join('')||'<div class="up-em">'+L('لا IP مسجّل لهذا الحساب بعد','No IP recorded for this account yet','Aucune IP enregistrée')+'</div>';
+  const lk=(d.linked||[]).map(function(x){ return '<div class="in-row" onclick="admFrOpen(\''+esc(x.id)+'\')"><div><b>'+esc(x.full_name||x.email||'—')+(x.blocked?' 🚫':'')+'</b><em>'+x.shared_ips+' IP '+L('مشتركة','shared','partagées')+(x.shared_device?' · 📱 '+L('نفس الجهاز','same device','même appareil'):'')+'</em></div></div>'; }).join('')||'<div class="up-em">'+L('لا حسابات مرتبطة','No linked accounts','Aucun compte lié')+'</div>';
+  const lg=(d.log||[]).map(function(g){ return '<div class="in-row" style="cursor:default"><div><b>'+(FR_EVT[g.kind]||'•')+' '+esc(g.kind)+'</b><em>'+(g.action?esc(g.action)+' · ':'')+esc(JSON.stringify(g.detail||{}).slice(0,140))+'</em></div><em>'+frAgo(g.at)+'</em></div>'; }).join('')||'<div class="up-em">—</div>';
+  box.innerHTML='<div class="hl-wrap adm-pad">'+back+
+    '<div class="up-box"><div class="up-h">👤 '+esc(pr.full_name||pr.email||'—')+'</div>'+(rk?riskPill(rk.score)+frReasons(rk.reasons):'<div class="up-em">'+L('لا تقييم بعد','Not scored yet','Pas encore évalué')+'</div>')+
+      '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn" onclick="admFrOpenAcct()">'+L('فتح الحساب (حظر/تفاصيل)','Open account (block/details)','Ouvrir le compte')+'</button>'+
+      '<button class="btn" onclick="admFrReview()">✅ '+L('تمت المراجعة','Mark reviewed','Marquer vérifié')+'</button></div></div>'+
+    '<div class="up-box"><div class="up-h">🌐 '+L('عناوين IP لهذا الحساب','IP addresses','Adresses IP')+'</div>'+ips+'</div>'+
+    '<div class="up-box"><div class="up-h">🔗 '+L('حسابات مرتبطة (نفس IP أو الجهاز)','Linked accounts (same IP/device)','Comptes liés')+'</div>'+lk+'</div>'+
+    '<div class="up-box"><div class="up-h">📋 '+L('سجل هذا الحساب','Account log','Journal du compte')+'</div>'+lg+'</div></div>';
+}
+function admFrOpenAcct(){ try{ const d=ADM_FR_U&&ADM_FR_U.d; if(!d||!d.profile) return; const row=d.profile; ADM_FR_U=null; admOpenRow(row); }catch(e){} }
+async function admFrReview(){ try{ if(!ADM_FR_U) return; const r=await SRV.rpc('admin_fraud_review',{p_user:ADM_FR_U.id,p_note:''}); if(r&&r.ok){ toast(L('تم تسجيل المراجعة','Review recorded','Vérification enregistrée')); ADM_FR_AT=0; admFrOpen(ADM_FR_U.id); } else toast(L('تعذّر الحفظ','Could not save','Échec')); }catch(e){} }
+async function admFrSet(k,v){
+  try{ const r=await SRV.rpc('admin_fraud_set',{p_key:k,p_value:v}); if(r&&r.ok){ if(ADM_FR) ADM_FR.set[k]=v; toast(L('✅ تم الحفظ','✅ Saved','✅ Enregistré')); }
+    else { toast(L('قيمة غير صالحة','Invalid value','Valeur invalide')); ADM_FR_AT=0; renderAdmFraud(true); } }catch(e){ toast(L('تعذّر الحفظ','Could not save','Échec')); }
+}
+async function admFrRecalc(){ try{ const r=await SRV.rpc('admin_fraud_recalc',{p_user:null}); toast(r&&r.ok?L('✅ أُعيد حساب '+r.n+' حساب','✅ Recalculated '+r.n,'✅ '+r.n+' recalculés'):L('تعذّر','Failed','Échec')); ADM_FR_AT=0; renderAdmFraud(true); }catch(e){} }
+
+/* ===== VIP: حالة المستخدم، الصفحة، الشراء ===== */
+var VIP={enabled:false,active:false,exp:null,plans:[],ok:false,at:0}, VIP_BUSY=false, VIP_ACT=false, VIP_SEL='', VIP_MODE='', VIP_METHOD='', VIP_NONCE='', VIP_MSG='';
+function vipActive(){ try{ return !!(VIP&&VIP.active&&VIP.exp&&new Date(VIP.exp).getTime()>Date.now()); }catch(e){ return false; } }
+function vipDaysLeft(){ try{ return Math.max(0,Math.ceil((new Date(VIP.exp).getTime()-Date.now())/86400000)); }catch(e){ return 0; } }
+function vipFmt(t){ try{ return new Date(t).toLocaleDateString('en-GB'); }catch(e){ return ''; } }
+function vipBoot(){ try{ if(!SRV.cfg()) return; var on=localStorage.getItem('pl-vip-on')==='1', last=Number(localStorage.getItem('pl-vip-chk')||0); if(!on&&Date.now()-last<1800000) return; localStorage.setItem('pl-vip-chk',String(Date.now())); vipLoad(true); }catch(e){} }
+async function vipLoad(force){
+  try{
+    if(!SRV.cfg()||!SRV.on()||VIP_BUSY) return VIP;
+    if(!force&&Date.now()-(VIP.at||0)<300000) return VIP;
+    VIP_BUSY=true; const was=!!(VIP.enabled||vipActive());
+    const r=await SRV.rpc('vip_status',{});
+    if(r&&r.ok){ VIP={ok:true,enabled:!!r.enabled,active:!!r.active,exp:r.expires_at||null,plan:r.plan||'',plans:Array.isArray(r.plans)?r.plans:[],pay_info:String(r.pay_info||''),methods:Array.isArray(r.methods)?r.methods:[],pending:r.pending||null,balance:Number(r.balance)||0,at:Date.now()};
+      try{ localStorage.setItem('pl-vip-on',(VIP.enabled||VIP.active)?'1':'0'); }catch(e){}
+      if(was!==!!(VIP.enabled||vipActive())){ try{ renderMenu(); }catch(e){} } }
+  }catch(e){}
+  VIP_BUSY=false; try{ vipApplyBadge(); }catch(e){} return VIP;
+}
+function vipApplyBadge(){
+  const act=vipActive();
+  const hero=document.querySelector('#page-profile .pf-hero'); if(hero) hero.classList.toggle('vip',act);
+  const ch=document.getElementById('pf-vip'); if(ch) ch.style.display=act?'':'none';
+  const wc=document.getElementById('wv-vipchip'); if(wc){ wc.style.display=act?'':'none'; const b=wc.querySelector('[data-vip-l]'); if(b) b.textContent=L('أولوية السحب VIP','VIP withdrawal priority','Retrait prioritaire VIP'); }
+  document.documentElement.classList.toggle('is-vip',act);
+  const c=document.getElementById('pf-vipcard'); if(!c) return;
+  if(!(VIP.enabled||act)){ c.innerHTML=''; return; }
+  c.innerHTML='<div class="vip-mini'+(act?' on':'')+'" onclick="go(\'vip\')"><i>👑</i><div><b>'+(act?L('عضو VIP فعّال','Active VIP member','Membre VIP actif'):L('ترقَّ إلى VIP','Upgrade to VIP','Passez à VIP'))+'</b><span>'+(act?(L('متبقي ','','')+vipDaysLeft()+' '+L('يومًا · ينتهي ','days left · ends ','jours · fin ')+vipFmt(VIP.exp)):L('أولوية في السحب وتاج متوهج على ملفك','Withdrawal priority and a glowing crown on your profile','Retrait prioritaire et couronne lumineuse'))+'</span></div><em>›</em></div>';
+}
+async function renderVip(){
+  const box=document.getElementById('vip-body'); if(!box) return;
+  if(!SRV.cfg()||!SRV.on()){ box.innerHTML='<div class="adm-empty">'+L('VIP يعمل مع الحساب الحقيقي فقط','VIP works with a live account only','VIP nécessite un compte réel')+'</div>'; return; }
+  if(!VIP.ok) box.innerHTML='<div class="adm-empty">⏳</div>';
+  await vipLoad(true); vipPaint();
+}
+function vipPaint(){
+  const box=document.getElementById('vip-body'); if(!box||!document.getElementById('page-vip').classList.contains('active')) return;
+  const act=vipActive(), money=function(v){ return '$'+Number(v||0).toFixed(2); };
+  let h='<div class="vip-hero'+(act?' on':'')+'"><div class="vip-crown big" aria-hidden="true">👑</div><h2>PayLoop <b>VIP</b></h2>'+
+    '<p>'+(act?(L('عضويتك فعّالة · متبقي ','Your membership is active · ','Abonnement actif · ')+vipDaysLeft()+' '+L('يومًا','days left','jours')):L('تميّز بين الجميع بعضوية VIP','Stand out with VIP membership','Démarquez-vous avec VIP'))+'</p>'+
+    (act?'<small>'+L('تنتهي في ','Ends on ','Fin le ')+vipFmt(VIP.exp)+'</small>':'')+'</div>';
+  h+='<div class="vip-ben"><div class="vip-b"><i>⚡</i><div><b>'+L('أولوية في معالجة السحب','Withdrawal priority','Retrait prioritaire')+'</b><span>'+L('تُراجَع طلبات سحبك قبل غيرها في قائمة الإدارة.','Your withdrawal requests are reviewed ahead of others.','Vos retraits sont examinés en premier.')+'</span></div></div>'+
+    '<div class="vip-b"><i>👑</i><div><b>'+L('تاج متوهج على ملفك','Glowing crown on your profile','Couronne lumineuse')+'</b><span>'+L('يميّز حسابك عن بقية الحسابات.','Makes your account stand out.','Distingue votre compte.')+'</span></div></div></div>';
+  if(!VIP.enabled && !act){ h+='<div class="vip-note">'+L('عضوية VIP غير متاحة حاليًا — ترقّب الإطلاق قريبًا.','VIP is not available right now — coming soon.','VIP n’est pas disponible pour le moment.')+'</div>'; box.innerHTML=h; return; }
+  if(VIP_MSG){ h+='<div class="vip-msg">'+esc(VIP_MSG)+'</div>'; }
+  if(VIP.pending){
+    h+='<div class="vip-pend"><b>⏳ '+L('طلبك قيد المراجعة','Your request is under review','Demande en cours')+'</b><span>'+esc(String(VIP.pending.plan||''))+' · '+esc(String(VIP.pending.method||''))+' · '+vipFmt(VIP.pending.at)+'</span><button class="vip-btn ghost" onclick="vipCancel()">'+L('إلغاء الطلب','Cancel request','Annuler')+'</button></div>';
+    box.innerHTML=h; return;
+  }
+  if(!VIP.plans.length){ h+='<div class="vip-note">'+L('لا توجد باقات متاحة الآن.','No plans available right now.','Aucune offre disponible.')+'</div>'; box.innerHTML=h; return; }
+  if(!VIP.plans.some(function(x){ return x.id===VIP_SEL; })) VIP_SEL=VIP.plans[0].id;
+  h+='<div class="vip-h">'+(act?L('جدّد عضويتك','Renew your membership','Renouveler'):L('اختر باقتك','Choose your plan','Choisissez votre offre'))+'</div><div class="vip-plans">'+
+    VIP.plans.map(function(x){ return '<button class="vip-plan'+(x.id===VIP_SEL?' sel':'')+'" onclick="vipSel(\''+esc(x.id)+'\')"><span>'+esc(x.name)+'</span><em>'+Number(x.days)+' '+L('يومًا','days','jours')+'</em><b dir="ltr">'+money(x.price)+'</b></button>'; }).join('')+'</div>';
+  const pl=VIP.plans.find(function(x){ return x.id===VIP_SEL; }), enough=pl&&VIP.balance+1e-9>=Number(pl.price);
+  h+='<div class="vip-bal">'+L('رصيدك الحالي','Your balance','Votre solde')+' <b dir="ltr">'+money(VIP.balance)+'</b></div>';
+  if(VIP_MODE==='confirm'){
+    h+='<div class="vip-conf"><p>'+L('سيُخصم ','','')+'<b dir="ltr">'+money(pl.price)+'</b> '+L('من رصيدك مقابل ','from your balance for ','de votre solde pour ')+esc(pl.name)+'</p><button class="vip-btn" '+(VIP_ACT?'disabled':'')+' onclick="vipBuy()">'+(VIP_ACT?'…':'✅ '+L('تأكيد الدفع','Confirm payment','Confirmer'))+'</button><button class="vip-btn ghost" onclick="vipMode(\'\')">'+L('رجوع','Back','Retour')+'</button></div>';
+  } else if(VIP_MODE==='manual'){
+    const ms=(VIP.methods||[]), mname={ccp:'CCP',baridimob:'BaridiMob',usdt:'USDT',paypal:'PayPal',flexy:'Flexy',other:L('أخرى','Other','Autre')};
+    if(!ms.some(function(x){ return x===VIP_METHOD; })) VIP_METHOD=ms[0]||'';
+    h+='<div class="vip-man"><div class="vip-h s">'+L('الدفع اليدوي','Manual payment','Paiement manuel')+'</div>'+
+      (VIP.pay_info?'<div class="vip-pay">'+esc(VIP.pay_info)+'</div>':'')+
+      '<div class="vip-ms">'+ms.map(function(x){ return '<button class="'+(x===VIP_METHOD?'on':'')+'" onclick="vipMethod(\''+esc(x)+'\')">'+esc(mname[x]||x)+'</button>'; }).join('')+'</div>'+
+      '<label>'+L('رقم العملية / المرجع','Transaction reference','Référence')+' *</label><input id="vip-ref" maxlength="120" autocomplete="off" dir="ltr">'+
+      '<label>'+L('ملاحظة أو رابط الإثبات (اختياري)','Note or proof link (optional)','Note ou lien (facultatif)')+'</label><textarea id="vip-proof" maxlength="500" rows="2"></textarea>'+
+      '<button class="vip-btn" '+(VIP_ACT?'disabled':'')+' onclick="vipSubmit()">'+(VIP_ACT?'…':L('إرسال الطلب','Submit request','Envoyer'))+'</button><button class="vip-btn ghost" onclick="vipMode(\'\')">'+L('رجوع','Back','Retour')+'</button></div>';
+  } else {
+    h+='<div class="vip-acts"><button class="vip-btn" '+(enough?'':'disabled')+' onclick="vipMode(\'confirm\')">💰 '+L('ادفع من رصيدك','Pay from balance','Payer avec le solde')+' · <span dir="ltr">'+money(pl.price)+'</span></button>'+
+      (enough?'':'<small>'+L('رصيدك لا يكفي لهذه الباقة','Your balance is not enough for this plan','Solde insuffisant')+'</small>')+
+      ((VIP.methods||[]).length?'<button class="vip-btn ghost" onclick="vipMode(\'manual\')">🧾 '+L('دفع يدوي بإثبات','Manual payment with proof','Paiement manuel')+'</button>':'')+'</div>';
+  }
+  h+='<div class="vip-foot">'+L('عند التجديد تُضاف المدة فوق المتبقي من عضويتك.','When you renew, the new period is added on top of what remains.','Au renouvellement, la durée s’ajoute au reste.')+'</div>';
+  box.innerHTML=h;
+}
+function vipSel(id){ VIP_SEL=id; VIP_MODE=''; VIP_MSG=''; VIP_NONCE=''; vipPaint(); }
+function vipMode(m){ VIP_MODE=m; VIP_MSG=''; vipPaint(); }
+function vipMethod(x){ VIP_METHOD=x; const r=(document.getElementById('vip-ref')||{}).value||'', p=(document.getElementById('vip-proof')||{}).value||''; vipPaint(); const a=document.getElementById('vip-ref'), b=document.getElementById('vip-proof'); if(a) a.value=r; if(b) b.value=p; }
+const VIP_ERR={disabled:['VIP غير متاح حاليًا','VIP is not available','VIP indisponible'],no_plan:['هذه الباقة غير متاحة','This plan is not available','Offre indisponible'],balance:['رصيدك لا يكفي','Your balance is not enough','Solde insuffisant'],price_changed:['تغيّر السعر — حدّثنا الصفحة','The price changed — refreshed','Le prix a changé'],blocked:['حسابك لا يسمح بهذه العملية','Your account cannot do this','Compte non autorisé'],pending_exists:['لديك طلب قيد المراجعة','You already have a pending request','Demande déjà en cours'],ref_short:['اكتب رقم العملية أو المرجع (4 أحرف على الأقل)','Enter the transaction reference (min 4 chars)','Référence trop courte'],method:['طريقة الدفع غير مسموحة','Payment method not allowed','Méthode non autorisée'],bad_nonce:['حاول مرة أخرى','Try again','Réessayez'],auth:['سجّل الدخول أولًا','Sign in first','Connectez-vous']};
+function vipErr(r){ const e=VIP_ERR[(r&&r.why)||'']; return e?L(e[0],e[1],e[2]):L('تعذّر تنفيذ العملية — حاول مرة أخرى','Could not complete — try again','Échec — réessayez'); }
+async function vipBuy(){
+  if(VIP_ACT) return; const pl=VIP.plans.find(function(x){ return x.id===VIP_SEL; }); if(!pl) return;
+  VIP_ACT=true; vipPaint();
+  if(!VIP_NONCE){ try{ VIP_NONCE=(crypto.randomUUID?crypto.randomUUID():('n'+Math.random().toString(36).slice(2)+Date.now().toString(36))).replace(/[^A-Za-z0-9_-]/g,''); }catch(e){ VIP_NONCE='n'+Date.now().toString(36)+Math.random().toString(36).slice(2); } }
+  let r=null; try{ r=await SRV.rpc('vip_buy_balance',{p_plan:pl.id,p_nonce:VIP_NONCE,p_expect:Number(pl.price)}); }catch(e){}
+  VIP_ACT=false;
+  if(r&&r.ok){ VIP_NONCE=''; VIP_MODE=''; VIP_MSG=''; try{ celebrate(); }catch(e){} toast('👑 '+L('تم تفعيل VIP — مبروك!','VIP activated — congrats!','VIP activé — bravo !')); await vipLoad(true); try{ await SRV.pullState(); refreshBAL(true); }catch(e){} }
+  else if(r&&r.why){ VIP_NONCE=''; VIP_MODE=''; VIP_MSG=vipErr(r); await vipLoad(true); }
+  else { VIP_MSG=L('تعذّر الاتصال — لم يُخصم شيء مؤكد، أعد المحاولة بأمان','Connection failed — try again safely (no double charge)','Connexion échouée — réessayez sans risque'); }
+  vipPaint();
+}
+async function vipSubmit(){
+  if(VIP_ACT) return; const ref=((document.getElementById('vip-ref')||{}).value||'').trim(), proof=((document.getElementById('vip-proof')||{}).value||'').trim();
+  if(ref.length<4){ VIP_MSG=vipErr({why:'ref_short'}); vipPaint(); return; }
+  VIP_ACT=true; vipPaint(); let r=null; try{ r=await SRV.rpc('vip_submit_order',{p_plan:VIP_SEL,p_method:VIP_METHOD,p_ref:ref,p_proof:proof}); }catch(e){}
+  VIP_ACT=false;
+  if(r&&r.ok){ VIP_MODE=''; VIP_MSG=L('وصل طلبك — ستراجعه الإدارة وتُفعَّل عضويتك فور التأكد من الدفع.','Request received — it will be activated once payment is verified.','Demande reçue — activation après vérification.'); await vipLoad(true); }
+  else VIP_MSG=vipErr(r);
+  vipPaint();
+}
+async function vipCancel(){ try{ const r=await SRV.rpc('vip_cancel_order',{}); if(r&&r.ok){ VIP_MSG=''; await vipLoad(true); } }catch(e){} vipPaint(); }
+
+/* ===== لوحة الإدارة > VIP ===== */
+var ADM_VIPSET=null, ADM_VIPAT=0, ADM_VP=null, ADM_VP_BUSY=false, ADM_VP_AT=0, ADM_VP_ARM='';
+function admVipLoad(){
+  try{ if(!SRV.on()||Date.now()-ADM_VIPAT<60000) return; ADM_VIPAT=Date.now();
+    SRV.rpc('admin_vip_ids',{}).then(function(a){ if(!Array.isArray(a)) return; const s={}; a.forEach(function(id){ s[String(id).toLowerCase()]=1; });
+      const ch=JSON.stringify(Object.keys(s).sort())!==JSON.stringify(Object.keys(ADM_VIPSET||{}).sort()); ADM_VIPSET=s; if(ch&&ADM_TAB==='wd'){ try{ renderAdmWd(); }catch(e){} } }).catch(function(){}); }catch(e){}
+}
+async function renderAdmVip(force){
+  const box=document.getElementById('adm-body'); if(!box) return;
+  if(!SRV.on()){ box.innerHTML='<div class="adm-empty">'+L('هذه الصفحة تعمل مع قاعدة البيانات الحقيقية فقط','This page works with the live database only','Cette page nécessite la base de données réelle')+'</div>'; return; }
+  if(!ADM_VP_BUSY&&(force||Date.now()-ADM_VP_AT>15000)){
+    ADM_VP_BUSY=true; if(!ADM_VP) box.innerHTML='<div class="adm-empty">⏳</div>';
+    try{ const a=await Promise.all([SRV.rpc('admin_vip_get',{}),SRV.rpc('admin_vip_orders',{p_status:null,p_limit:60}),SRV.rpc('admin_vip_members',{p_limit:80})]);
+      if(a[0]&&a[0].ok&&Array.isArray(a[1])){ ADM_VP={g:a[0],o:a[1],m:Array.isArray(a[2])?a[2]:[]}; ADM_VP_AT=Date.now(); } }catch(e){}
+    ADM_VP_BUSY=false; if(ADM_TAB!=='vip') return;
+  }
+  if(!ADM_VP){ box.innerHTML='<div class="adm-empty">'+L('تعذّر التحميل — شغّل ملفي 40a و40b في Supabase','Could not load — run 40a and 40b in Supabase','Chargement impossible — exécutez 40a et 40b')+'</div>'; return; }
+  const g=ADM_VP.g, st=g.settings||{}, f=function(n){ return Number(n||0).toLocaleString('en-US'); }, money=function(v){ return '$'+Number(v||0).toFixed(2); };
+  const card=function(v,t,c){ return '<div class="adm-card '+(c||'')+'"><b>'+v+'</b><span>'+t+'</span></div>'; };
+  const cards='<div class="hl-cards">'+card(f(g.active_members),L('أعضاء VIP فعّالون','Active VIP members','Membres VIP'),'gold')+card(f(g.expiring_7d),L('ينتهون خلال 7 أيام','Expiring in 7 days','Expirent sous 7 j'))+card(f(g.pending_orders),L('طلبات تنتظر قرارك','Orders to review','Demandes à traiter'),'warn')+card(money(g.revenue_30d),L('إيراد 30 يومًا','Revenue 30d','Revenu 30 j'),'green')+card(money(g.revenue_total),L('إجمالي الإيراد','Total revenue','Revenu total'))+'</div>';
+  const ord=ADM_VP.o.map(function(o){
+    const pend=o.status==='pending', stl={pending:'🟡',paid:'🟢',approved:'🟢',rejected:'🔴',refunded:'↩️'}[o.status]||'•';
+    const btns=pend?'<button class="waa ok" onclick="admVipDecide('+Number(o.id)+',true)">✅ '+L('قبول','Approve','Approuver')+'</button><button class="waa no" onclick="admVipDecide('+Number(o.id)+',false)">❌ '+L('رفض','Reject','Rejeter')+'</button>'
+      :(o.status==='paid'&&o.method==='balance'?'<button class="waa'+(ADM_VP_ARM==='r'+o.id?' armed':'')+'" onclick="admVipRefund('+Number(o.id)+')">'+(ADM_VP_ARM==='r'+o.id?'✓ '+L('تأكيد الاسترداد','Confirm refund','Confirmer'):'↩️ '+L('استرداد','Refund','Rembourser'))+'</button>':'');
+    return '<div class="wda-r"><div class="wda-top"><span class="wda-uname">'+stl+' '+esc(o.full_name||o.email||'—')+'</span><span class="wda-am big" dir="ltr">'+money(o.price_usd)+'</span></div>'+
+      '<span class="wda-email">📧 '+esc(o.email||'—')+'</span><div class="wda-meta"><span class="wda-m">'+esc(o.plan_id)+' · '+Number(o.days)+L('ي','d','j')+'</span><span class="wda-m">'+esc(o.method)+'</span><span class="wda-dt" dir="ltr">'+esc(String(o.created_at||'').slice(0,16).replace('T',' '))+'</span><em class="wda-rid">#'+Number(o.id)+'</em></div>'+
+      (o.reference?'<span class="wda-det">'+L('المرجع','Reference','Référence')+': <b dir="ltr">'+esc(o.reference)+'</b>'+(o.proof?' · '+esc(o.proof):'')+'</span>':'')+(btns?'<div class="wda-acts">'+btns+'</div>':'')+'</div>';
+  }).join('')||'<div class="up-em">'+L('لا طلبات','No orders','Aucune demande')+'</div>';
+  const mem=ADM_VP.m.map(function(m){ return '<div class="in-row" style="cursor:default"><div><b>'+(m.active?'👑 ':'⌛ ')+esc(m.full_name||m.email||'—')+'</b><em>'+esc(m.plan_id||'')+' · '+esc(m.source||'')+' · '+L('ينتهي','ends','fin')+' '+esc(String(m.expires_at||'').slice(0,10))+'</em></div><button class="waa'+(ADM_VP_ARM==='v'+m.user_id?' armed':'')+'" onclick="admVipRevoke(\''+esc(m.user_id)+'\')">'+(ADM_VP_ARM==='v'+m.user_id?'✓ '+L('تأكيد','Confirm','Confirmer'):'🗑️ '+L('إلغاء العضوية','Revoke','Révoquer'))+'</button></div>'; }).join('')||'<div class="up-em">—</div>';
+  const MS=['ccp','baridimob','usdt','paypal','flexy','other'], on=st.manual_methods||[];
+  const sett='<div class="up-box"><div class="up-h">⚙️ '+L('الإعدادات','Settings','Paramètres')+'</div>'+
+    '<label class="fr-set"><span>'+L('تفعيل VIP للمستخدمين','Enable VIP for users','Activer VIP')+'</span><input type="checkbox" '+(st.enabled===true?'checked':'')+' onchange="admVipSet(\'enabled\',this.checked)"></label>'+
+    '<div class="fr-set" style="flex-wrap:wrap"><span style="width:100%">'+L('طرق الدفع اليدوي المسموحة','Allowed manual methods','Méthodes manuelles')+'</span>'+MS.map(function(x){ return '<label style="display:inline-flex;gap:6px;align-items:center;margin:4px 10px 4px 0"><input type="checkbox" '+(on.indexOf(x)>=0?'checked':'')+' onchange="admVipMethods()" data-vm="'+x+'"> '+x+'</label>'; }).join('')+'</div>'+
+    '<label class="fr-set" style="flex-direction:column;align-items:stretch"><span>'+L('تعليمات الدفع التي تظهر للمستخدم (رقم الحساب…)','Payment instructions shown to users','Instructions de paiement')+'</span><textarea id="avp-pay" rows="3" maxlength="1000" style="width:100%;font-size:16px;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:inherit">'+esc(String(st.pay_info||''))+'</textarea></label>'+
+    '<button class="btn" onclick="admVipPay()">💾 '+L('حفظ التعليمات','Save instructions','Enregistrer')+'</button></div>';
+  const plans='<div class="up-box"><div class="up-h">💎 '+L('الباقات والأسعار','Plans & prices','Offres et prix')+'</div>'+(g.plans||[]).concat([{id:'',name:'',price_usd:'',days:'',active:false}]).map(function(p){
+    const nw=!p.id, k=esc(p.id||'new');
+    return '<div class="fr-set" style="flex-wrap:wrap;gap:6px"><input id="avp-'+k+'-id" placeholder="id" value="'+esc(p.id)+'" '+(nw?'':'disabled')+' style="width:90px"><input id="avp-'+k+'-name" placeholder="'+L('الاسم','Name','Nom')+'" value="'+esc(p.name)+'" style="width:120px"><input id="avp-'+k+'-price" type="number" step="0.01" min="0" placeholder="$" value="'+esc(String(p.price_usd))+'"><input id="avp-'+k+'-days" type="number" min="1" placeholder="'+L('أيام','days','jours')+'" value="'+esc(String(p.days))+'"><label style="display:inline-flex;gap:5px;align-items:center"><input type="checkbox" id="avp-'+k+'-act" '+(p.active?'checked':'')+'>'+L('مفعّلة','Active','Active')+'</label><button class="waa ok" onclick="admVipPlan(\''+k+'\')">💾</button></div>'; }).join('')+
+    '<div class="up-note">'+L('الباقة تظهر للمستخدمين فقط إذا فعّلتها وفعّلت VIP أعلاه.','A plan is visible only if both it and VIP are enabled.','Une offre n’est visible que si elle et VIP sont activés.')+'</div></div>';
+  const grant='<div class="up-box"><div class="up-h">🎁 '+L('منح عضوية يدويًا','Grant membership','Offrir une adhésion')+'</div><div class="fr-set"><input id="avp-gu" placeholder="UUID" dir="ltr" style="flex:1;font-size:16px"><input id="avp-gd" type="number" min="1" value="30"><button class="waa ok" onclick="admVipGrant()">👑</button></div></div>';
+  box.innerHTML='<div class="hl-wrap adm-pad">'+cards+'<div class="up-box"><div class="up-h">🧾 '+L('الطلبات','Orders','Demandes')+'</div>'+ord+'</div><div class="up-box"><div class="up-h">👑 '+L('الأعضاء','Members','Membres')+'</div>'+mem+'</div>'+plans+sett+grant+'</div>';
+}
+function admVipAfter(r,okMsg){ if(r&&r.ok){ toast(okMsg||L('✅ تم','✅ Done','✅ Fait')); } else toast(L('تعذّر: ','Failed: ','Échec : ')+esc(String((r&&r.why)||''))); ADM_VP_ARM=''; ADM_VP_AT=0; ADM_VIPAT=0; renderAdmVip(true); }
+async function admVipDecide(id,ok){ try{ admVipAfter(await SRV.rpc('admin_vip_decide',{p_id:id,p_approve:!!ok,p_note:''})); }catch(e){} }
+async function admVipRefund(id){ if(ADM_VP_ARM!=='r'+id){ ADM_VP_ARM='r'+id; renderAdmVip(); return; } try{ admVipAfter(await SRV.rpc('admin_vip_refund',{p_id:id})); }catch(e){} }
+async function admVipRevoke(u){ if(ADM_VP_ARM!=='v'+u){ ADM_VP_ARM='v'+u; renderAdmVip(); return; } try{ admVipAfter(await SRV.rpc('admin_vip_revoke',{p_user:u})); }catch(e){} }
+async function admVipSet(k,v){ try{ admVipAfter(await SRV.rpc('admin_vip_setting_set',{p_key:k,p_value:v})); }catch(e){} }
+async function admVipMethods(){ const a=[]; document.querySelectorAll('[data-vm]').forEach(function(c){ if(c.checked) a.push(c.getAttribute('data-vm')); }); try{ admVipAfter(await SRV.rpc('admin_vip_setting_set',{p_key:'manual_methods',p_value:a})); }catch(e){} }
+async function admVipPay(){ const v=(document.getElementById('avp-pay')||{}).value||''; try{ admVipAfter(await SRV.rpc('admin_vip_setting_set',{p_key:'pay_info',p_value:v})); }catch(e){} }
+async function admVipPlan(k){ const g=function(x){ return document.getElementById('avp-'+k+'-'+x); }; const id=k==='new'?String(g('id').value||'').trim():k;
+  try{ admVipAfter(await SRV.rpc('admin_vip_plan_set',{p_id:id,p_name:g('name').value,p_price:Number(g('price').value),p_days:parseInt(g('days').value,10),p_active:!!g('act').checked,p_sort:0})); }catch(e){} }
+async function admVipGrant(){ const u=String((document.getElementById('avp-gu')||{}).value||'').trim(), d=parseInt((document.getElementById('avp-gd')||{}).value,10)||0; if(!/^[0-9a-f-]{36}$/i.test(u)){ toast(L('UUID غير صالح','Invalid UUID','UUID invalide')); return; } try{ admVipAfter(await SRV.rpc('admin_vip_grant',{p_user:u,p_days:d})); }catch(e){} }
 function net2Fn(){ try{ return localStorage.getItem('r17-pbfn')||'super-worker'; }catch(e){ return 'super-worker'; } }
 function net2SetFn(){ const v=String((document.getElementById('n2-fn')||{}).value||'').trim().toLowerCase();
   if(!/^[a-z0-9_-]{1,40}$/.test(v)){ toast('⚠️ '+L('اسم الدالة: حروف إنجليزية صغيرة وأرقام و - _','Function name: lowercase letters, digits, - _','Nom invalide')); return; }
@@ -9336,6 +9744,7 @@ function admDelTask(i){
 }
 function renderAdmWd(){
   const box=document.getElementById('adm-body'); if(!box) return;
+  try{ admVipLoad(); }catch(e){}
   const money=function(v){ return '$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2}); };
   const umap={}; USERS.forEach(function(u){ umap[u.id]=u; });
   let sPend=0, sDone=0, sRej=0, sAll=0, sPaid=0, sPendAmt=0;
@@ -9393,6 +9802,7 @@ function renderAdmWd(){
   });
   list.sort(function(a,b){
     if(ADM_WOD) return (a.date||0)-(b.date||0); /* الأقدم أولًا في عرض المتأخرة */
+    if(ADM_VIPSET&&wrNormStatus(a.status)==='pending'&&wrNormStatus(b.status)==='pending'){ const va=ADM_VIPSET[String(a.uid||'').toLowerCase()]?1:0, vb=ADM_VIPSET[String(b.uid||'').toLowerCase()]?1:0; if(va!==vb) return vb-va; }
     const ra=(wrNormStatus(a.status)==='pending')? (a.seenAdm?1:0) : 2;
     const rb=(wrNormStatus(b.status)==='pending')? (b.seenAdm?1:0) : 2;
     if(ra!==rb) return ra-rb;
@@ -9451,7 +9861,7 @@ function renderAdmWd(){
       '<button class="waa clr'+(ADM_WCONF===r.id?' armed':'')+'" title="'+L('حذف نهائي','Delete permanently','Supprimer')+'" onclick="admWrClear(\''+r.id+'\')">'+(ADM_WCONF===r.id? '✓ '+L('تأكيد الحذف','Confirm delete','Confirmer') : '🗑️ '+L('حذف','Delete','Supprimer'))+'</button>' : '';
     const chk=(ADM_WBULK&&st!=='pending')? '<label class="wda-chkl"><input type="checkbox" class="wda-chk"'+(ADM_WSEL[r.id]?' checked':'')+' onchange="wdaSel(\''+r.id+'\',this.checked)"> '+L('تحديد','Select','Sélectionner')+'</label>' : '';
     rows+='<div class="wda-r'+(r.cleared?' clr':'')+sCls+(isNw?' isnew':'')+'" data-id="'+r.id+'">'+
-      '<div class="wda-top"><span class="wda-uname">'+(isNw?'<i class="adm-nd"></i> ':'')+'👤 '+uName+'</span><span class="wda-am big" dir="ltr">'+money(r.amount)+'</span></div>'+
+      '<div class="wda-top"><span class="wda-uname">'+(isNw?'<i class="adm-nd"></i> ':'')+'👤 '+uName+((ADM_VIPSET&&ADM_VIPSET[String(r.uid||'').toLowerCase()])?' <span class="vip-tag">👑 VIP · '+L('أولوية','Priority','Priorité')+'</span>':'')+'</span><span class="wda-am big" dir="ltr">'+money(r.amount)+'</span></div>'+
       '<span class="wda-email">📧 '+uEmail+'</span>'+
       '<div class="wda-meta">'+
         '<span class="wda-uid" dir="ltr">🆔 '+esc((u&&u.pid)||r.uid||'—')+'</span>'+
@@ -11057,8 +11467,7 @@ function openOfferwall(){
     }
     if(earned>0) h+='<div class="g-sec"><b>'+esc(L('ما وصلك من هذه اللعبة','Received from this game','Reçu pour ce jeu'))+'</b>'+esc(money(earned))+'</div>';
     h+='<div class="g-sec" style="font-size:13px;color:#9fb3d9">'+esc(L('المكافأة تصل تلقائيًا إلى رصيدك بعد أن تؤكد الشبكة إنجاز المرحلة (قد يستغرق دقائق، وأحيانًا أكثر). لا تحذف اللعبة قبل إنهاء المراحل.','The reward is added automatically once the network confirms each level (can take minutes, sometimes longer). Do not uninstall the game before finishing.','La récompense est ajoutée automatiquement après confirmation du réseau. Ne désinstallez pas le jeu avant la fin.'))+'</div></div>';
-    if(o.ready&&o.url) h+='<div class="g-sec" style="font-size:12.5px;color:#9fb3d9"><b>'+esc(L('ظهرت لك رسالة «غير مؤهل لهذا العرض»؟','Seeing “You are not eligible for this offer”?','Message « non éligible » ?'))+'</b>'+esc(L('هذه الرسالة تعرضها شبكة العروض نفسها: العرض انتهى أو امتلأ، أو فحص الأمان رفض الاتصال. جرّب: إيقاف VPN/Proxy، استعمال بيانات الجوال أو الواي فاي المباشر، عدم استعمال أكثر من حساب على نفس الجهاز، أو اختيار لعبة أخرى.','This message comes from the offer network: the offer ended or is full, or its security check declined the connection. Try: turning off VPN/proxy, using direct mobile data or Wi-Fi, not using several accounts on one device, or picking another game.','Ce message vient du réseau : offre terminée/complète ou contrôle de sécurité refusé. Essayez sans VPN/proxy, avec un seul compte par appareil, ou un autre jeu.'))+'</div>';
-    sh.innerHTML=h;
+        sh.innerHTML=h;
     $('owg-back').onclick=function(){ sh.classList.remove('on'); S.cur=null; paint(); };
     if(o.ready&&o.url){
       var used=!o.multi&&!goals.length&&done['']!==undefined;
