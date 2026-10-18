@@ -1,4 +1,4 @@
-/* v7 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
+/* v8 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
 var SHELL = 'pl-shell-v1';
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
@@ -23,6 +23,10 @@ var OFFLINE_HTML = '<!doctype html><html lang="ar" dir="rtl"><head><meta charset
 self.addEventListener('fetch', function (e) {
   var r = e.request;
   if (r.mode !== 'navigate' || r.method !== 'GET') return;
+  /* v8: نتعامل فقط مع صفحة التطبيق نفسها. الصفحات الأخرى (الشروط، الخصوصية) تُترك للمتصفح كما هي، فلا تُخزَّن مكان التطبيق ولا يُعرض التطبيق مكانها. */
+  var u0 = ''; try { u0 = String(r.url).split('#')[0].split('?')[0]; } catch (x) {}
+  var sc0 = self.registration.scope;
+  if (u0 !== sc0 && u0 !== sc0 + 'index.html') return;
   e.respondWith((async function () {
     var key = self.registration.scope;
     var cache = null, cached = null;
