@@ -2532,13 +2532,62 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
 #page-tasks .t-sec:before{content:"";width:4px;height:16px;border-radius:4px;background:var(--acc,#2563eb)}
 #page-tasks .t-resume{border-radius:16px}
 @keyframes tkIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-#page-tasks .trow:nth-child(-n+8){animation:tkIn .3s ease both}
-#page-tasks .trow:nth-child(2){animation-delay:.03s}#page-tasks .trow:nth-child(3){animation-delay:.06s}#page-tasks .trow:nth-child(4){animation-delay:.09s}
-#page-tasks .trow:nth-child(5){animation-delay:.12s}#page-tasks .trow:nth-child(6){animation-delay:.15s}#page-tasks .trow:nth-child(7){animation-delay:.18s}#page-tasks .trow:nth-child(8){animation-delay:.21s}
+#page-tasks.tk-in .trow:nth-child(-n+8){animation:tkIn .3s ease both}
+#page-tasks.tk-in .trow:nth-child(2){animation-delay:.03s}#page-tasks.tk-in .trow:nth-child(3){animation-delay:.06s}#page-tasks.tk-in .trow:nth-child(4){animation-delay:.09s}
+#page-tasks.tk-in .trow:nth-child(5){animation-delay:.12s}#page-tasks.tk-in .trow:nth-child(6){animation-delay:.15s}#page-tasks.tk-in .trow:nth-child(7){animation-delay:.18s}#page-tasks.tk-in .trow:nth-child(8){animation-delay:.21s}
 @media (prefers-reduced-motion:reduce){#page-tasks .trow{animation:none!important;transition:none!important}}
 html.lite #page-tasks .trow{animation:none!important;box-shadow:none!important;transition:none!important}
 html.lite #page-tasks .tabs{-webkit-mask-image:none;mask-image:none}
 [data-theme=light] #page-tasks .trow{background:#fff;box-shadow:0 8px 22px -18px rgba(15,23,42,.35)}
+
+/* ===== r40: بطاقات المهام أكبر وأفخم: صورة أوضح بعمق وإضاءة، مبلغ أكبر، عنوان حتى سطرين ===== */
+#page-tasks .trow:not(.tprog){padding:16px;border-radius:24px;gap:15px;contain-intrinsic-size:auto 136px;
+  background:radial-gradient(120% 100% at 100% 0%,color-mix(in srgb,var(--acc,#2563eb) 13%,transparent),transparent 58%),linear-gradient(180deg,color-mix(in srgb,var(--card) 100%,#fff 4%),var(--card));
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 18px 34px -22px rgba(0,0,0,.8)}
+[data-theme=light] #page-tasks .trow:not(.tprog){background:#fff;box-shadow:0 12px 28px -18px rgba(15,23,42,.35)}
+#page-tasks .trow:not(.advc):not(.tprog) .t-icon{width:76px;height:76px;border-radius:22px}
+#page-tasks .trow:not(.advc):not(.tprog) .t-icon.has-img{width:88px;height:88px;border-radius:24px}
+#page-tasks .trow.advc .t-icon.has-img{border-radius:26px}
+#page-tasks .trow:not(.tprog) .t-icon.has-img{box-shadow:0 18px 28px -14px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.14),inset 0 1px 0 rgba(255,255,255,.3)}
+#page-tasks .trow:not(.tprog) .t-icon.has-img:after{content:"";position:absolute;inset:0;z-index:2;border-radius:inherit;pointer-events:none;background:linear-gradient(155deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,0) 34%,rgba(0,0,0,.16) 100%)}
+#page-tasks .trow:not(.advc):not(.tprog) .t-info>h4,#page-tasks .trow.advc .t-info>h4{font-size:16px;font-weight:800;line-height:1.4;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#page-tasks .trow:not(.tprog) .t-amt{font-size:17px;padding:4px 13px}
+#page-tasks .trow:not(.advc):not(.tprog) .t-info>.meta,#page-tasks .trow.advc .meta{font-size:12.5px}
+#page-tasks .trow:not(.tprog) .go:not(.adv){width:46px;height:46px}
+@media (max-width:359px){#page-tasks .trow:not(.advc):not(.tprog) .t-icon.has-img{width:76px;height:76px}}
+/* ===== r41: لوحة VIP للأدمن أوضح: عناوين مرقّمة، حقول بأسمائها، مفاتيح تشغيل، شرح مختصر ===== */
+.vp-master{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;border:1.5px solid rgba(148,163,184,.32);background:var(--card);margin:10px 0}
+.vp-master.on{border-color:rgba(34,197,94,.55);background:linear-gradient(135deg,rgba(34,197,94,.13),var(--card))}
+.vp-mt{flex:1;min-width:0}.vp-mt b{display:block;font-size:15px;font-weight:900}.vp-mt small{display:block;margin-top:4px;font-size:12px;line-height:1.7;color:var(--muted)}
+.vp-tgl{-webkit-appearance:none;appearance:none;flex:none;width:54px;height:30px;min-width:54px;margin:0;padding:0;border:0;border-radius:99px;background:rgba(148,163,184,.45);position:relative;cursor:pointer;transition:background .2s}
+.vp-tgl:before{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:transform .2s}
+.vp-tgl:checked{background:#22c55e}.vp-tgl:checked:before{transform:translateX(24px)}
+.vp-guide{margin:10px 0;border-radius:14px;border:1px dashed rgba(148,163,184,.4);padding:10px 14px;background:rgba(56,189,248,.05)}
+.vp-guide summary{font-weight:800;font-size:13px;cursor:pointer}
+.vp-guide ol{margin:8px 0 2px;padding-inline-start:20px;font-size:12.5px;line-height:1.9;color:var(--muted)}
+.vp-sec{display:flex;gap:10px;align-items:center;margin:22px 2px 6px}
+.vp-sec i{font-style:normal;flex:none;width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;background:var(--acc,#2563eb);color:#fff}
+.vp-sec b{display:block;font-size:15px;font-weight:900}.vp-sec span{display:block;font-size:11.5px;color:var(--muted);line-height:1.6}
+.vp-plan{padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--border);margin:10px 0}
+.vp-plan.new{border-style:dashed;background:rgba(34,197,94,.04)}
+.vp-ph{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}.vp-ph b{font-size:15px;font-weight:900}
+.vp-id{font-style:normal;font-size:10.5px;padding:2px 8px;border-radius:99px;background:rgba(148,163,184,.18);color:var(--muted)}
+.vp-st{font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:99px}.vp-st.ok{background:rgba(34,197,94,.14);color:#34d399}.vp-st.off{background:rgba(148,163,184,.16);color:#94a3b8}
+.vp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vp-grid label{display:flex;flex-direction:column;gap:5px;min-width:0}.vp-grid .wide{grid-column:1/-1}
+.vp-grid label>span,.vp-lbl{font-size:11.5px;font-weight:800;color:var(--muted)}
+.vp-grid input,.vp-pay-ta{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:12px;border:1px solid rgba(148,163,184,.32);background:rgba(148,163,184,.08);color:inherit;font-size:16px;font-family:inherit}
+.vp-pf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
+.vp-sw{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:800}
+.vp-note{font-size:12px;line-height:1.8;color:var(--muted);margin:2px 0 10px}
+.vp-lbl{margin:10px 0 6px}
+.vp-chips{display:flex;flex-wrap:wrap;gap:8px}
+.vp-chip{position:relative;display:inline-flex;align-items:center;padding:9px 16px;border-radius:99px;border:1.5px solid rgba(148,163,184,.35);font-weight:800;font-size:13px;cursor:pointer}
+.vp-chip input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.vp-chip.on{border-color:#22c55e;background:rgba(34,197,94,.14);color:#34d399}
+.vp-gb{display:flex;align-items:flex-end}.vp-gb .waa{width:100%;min-height:44px}
+.vp-root .waa{color:var(--text)}.vp-root .waa.ok{color:#34d399}.vp-root .waa.no{color:#f87171}.vp-root .waa.armed{color:#fff}
+[data-theme=light] .vp-root .waa.ok{color:#047857}[data-theme=light] .vp-root .waa.no{color:#b91c1c}
+.vp-pf .waa{height:44px;padding:0 18px}
 
 /* ===== r38: VIP — صفحة فاخرة، تاج متوهج، شارات ===== */
 @keyframes vipGlow{0%,100%{box-shadow:0 0 0 3px rgba(251,191,36,.35),0 0 22px rgba(251,191,36,.45)}50%{box-shadow:0 0 0 4px rgba(253,224,71,.5),0 0 36px rgba(251,191,36,.8)}}
@@ -3475,8 +3524,10 @@ if(_hero && !_hero.querySelector('.card-artwork')){ _hero.insertAdjacentHTML('af
 
 const NAVMAP={vip:'more',admin:'more',invite:'invite',ff:'withdraw',profile:'more',settings:'more',history:'more',news:'more',contests:'more',info:'more',home:'home',tasks:'tasks',task:'tasks',withdraw:'withdraw',more:'more'};
 function _pg(f){ try{ f(); }catch(e){ try{ console.warn('[page-err]', e); }catch(_){} } }
+/* حركة ظهور البطاقات تُشغَّل فقط عند فتح الصفحة أو تغيير القسم؛ إعادة الرسم الصامتة (مزامنة/فحص شبكات) لا تعيدها فلا يحدث «رمش» */
+function tkAnim(){ try{ var pg=document.getElementById('page-tasks'); if(!pg) return; pg.classList.add('tk-in'); clearTimeout(window.__tkT); window.__tkT=setTimeout(function(){ try{ pg.classList.remove('tk-in'); }catch(e){} },700); }catch(e){} }
 function go(p){
-  if(p==='tasks'){ try{ taskAutoTab(); }catch(e){} }
+  if(p==='tasks'){ try{ taskAutoTab(); }catch(e){} try{ tkAnim(); }catch(e){} }
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
   const pg=document.getElementById('page-'+p); if(!pg) return;
   pg.classList.add('active');
@@ -4096,6 +4147,7 @@ function filterTasks(cat, el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   if(!el) el=document.querySelector('.tab[data-c="'+cat+'"]');
   if(el) el.classList.add('active');
+  try{ tkAnim(); }catch(e){}
   renderTasks(cat);
   const color=(CATS.find(c=>c[0]===cat)||[])[3]||'#2563eb';
   const pg=document.getElementById('page-tasks');
@@ -9089,27 +9141,58 @@ async function renderAdmVip(force){
   const g=ADM_VP.g, st=g.settings||{}, f=function(n){ return Number(n||0).toLocaleString('en-US'); }, money=function(v){ return '$'+Number(v||0).toFixed(2); };
   const card=function(v,t,c){ return '<div class="adm-card '+(c||'')+'"><b>'+v+'</b><span>'+t+'</span></div>'; };
   const cards='<div class="hl-cards">'+card(f(g.active_members),L('أعضاء VIP فعّالون','Active VIP members','Membres VIP'),'gold')+card(f(g.expiring_7d),L('ينتهون خلال 7 أيام','Expiring in 7 days','Expirent sous 7 j'))+card(f(g.pending_orders),L('طلبات تنتظر قرارك','Orders to review','Demandes à traiter'),'warn')+card(money(g.revenue_30d),L('إيراد 30 يومًا','Revenue 30d','Revenu 30 j'),'green')+card(money(g.revenue_total),L('إجمالي الإيراد','Total revenue','Revenu total'))+'</div>';
-  const ord=ADM_VP.o.map(function(o){
+  const ord=ADM_VP.o.slice().sort(function(x,y){ return (y.status==='pending')-(x.status==='pending'); }).map(function(o){
     const pend=o.status==='pending', stl={pending:'🟡',paid:'🟢',approved:'🟢',rejected:'🔴',refunded:'↩️'}[o.status]||'•';
+    const stt={pending:L('⏳ بانتظار قرارك','⏳ Waiting for you','⏳ En attente'),paid:L('✅ مدفوع من الرصيد','✅ Paid from balance','✅ Payé (solde)'),approved:L('✅ مقبول','✅ Approved','✅ Approuvé'),rejected:L('❌ مرفوض','❌ Rejected','❌ Rejeté'),refunded:L('↩️ مُسترد','↩️ Refunded','↩️ Remboursé')}[o.status]||esc(String(o.status||''));
     const btns=pend?'<button class="waa ok" onclick="admVipDecide('+Number(o.id)+',true)">✅ '+L('قبول','Approve','Approuver')+'</button><button class="waa no" onclick="admVipDecide('+Number(o.id)+',false)">❌ '+L('رفض','Reject','Rejeter')+'</button>'
       :(o.status==='paid'&&o.method==='balance'?'<button class="waa'+(ADM_VP_ARM==='r'+o.id?' armed':'')+'" onclick="admVipRefund('+Number(o.id)+')">'+(ADM_VP_ARM==='r'+o.id?'✓ '+L('تأكيد الاسترداد','Confirm refund','Confirmer'):'↩️ '+L('استرداد','Refund','Rembourser'))+'</button>':'');
     return '<div class="wda-r"><div class="wda-top"><span class="wda-uname">'+stl+' '+esc(o.full_name||o.email||'—')+'</span><span class="wda-am big" dir="ltr">'+money(o.price_usd)+'</span></div>'+
-      '<span class="wda-email">📧 '+esc(o.email||'—')+'</span><div class="wda-meta"><span class="wda-m">'+esc(o.plan_id)+' · '+Number(o.days)+L('ي','d','j')+'</span><span class="wda-m">'+esc(o.method)+'</span><span class="wda-dt" dir="ltr">'+esc(String(o.created_at||'').slice(0,16).replace('T',' '))+'</span><em class="wda-rid">#'+Number(o.id)+'</em></div>'+
+      '<span class="wda-email">📧 '+esc(o.email||'—')+'</span><div class="wda-meta"><span class="wda-m">'+esc(o.plan_id)+' · '+Number(o.days)+L('ي','d','j')+'</span><span class="wda-m">'+esc(o.method)+'</span><span class="wda-m"><b>'+stt+'</b></span><span class="wda-dt" dir="ltr">'+esc(String(o.created_at||'').slice(0,16).replace('T',' '))+'</span><em class="wda-rid">#'+Number(o.id)+'</em></div>'+
       (o.reference?'<span class="wda-det">'+L('المرجع','Reference','Référence')+': <b dir="ltr">'+esc(o.reference)+'</b>'+(o.proof?' · '+esc(o.proof):'')+'</span>':'')+(btns?'<div class="wda-acts">'+btns+'</div>':'')+'</div>';
   }).join('')||'<div class="up-em">'+L('لا طلبات','No orders','Aucune demande')+'</div>';
   const mem=ADM_VP.m.map(function(m){ return '<div class="in-row" style="cursor:default"><div><b>'+(m.active?'👑 ':'⌛ ')+esc(m.full_name||m.email||'—')+'</b><em>'+esc(m.plan_id||'')+' · '+esc(m.source||'')+' · '+L('ينتهي','ends','fin')+' '+esc(String(m.expires_at||'').slice(0,10))+'</em></div><button class="waa'+(ADM_VP_ARM==='v'+m.user_id?' armed':'')+'" onclick="admVipRevoke(\''+esc(m.user_id)+'\')">'+(ADM_VP_ARM==='v'+m.user_id?'✓ '+L('تأكيد','Confirm','Confirmer'):'🗑️ '+L('إلغاء العضوية','Revoke','Révoquer'))+'</button></div>'; }).join('')||'<div class="up-em">—</div>';
   const MS=['ccp','baridimob','usdt','paypal','flexy','other'], on=st.manual_methods||[];
-  const sett='<div class="up-box"><div class="up-h">⚙️ '+L('الإعدادات','Settings','Paramètres')+'</div>'+
-    '<label class="fr-set"><span>'+L('تفعيل VIP للمستخدمين','Enable VIP for users','Activer VIP')+'</span><input type="checkbox" '+(st.enabled===true?'checked':'')+' onchange="admVipSet(\'enabled\',this.checked)"></label>'+
-    '<div class="fr-set" style="flex-wrap:wrap"><span style="width:100%">'+L('طرق الدفع اليدوي المسموحة','Allowed manual methods','Méthodes manuelles')+'</span>'+MS.map(function(x){ return '<label style="display:inline-flex;gap:6px;align-items:center;margin:4px 10px 4px 0"><input type="checkbox" '+(on.indexOf(x)>=0?'checked':'')+' onchange="admVipMethods()" data-vm="'+x+'"> '+x+'</label>'; }).join('')+'</div>'+
-    '<label class="fr-set" style="flex-direction:column;align-items:stretch"><span>'+L('تعليمات الدفع التي تظهر للمستخدم (رقم الحساب…)','Payment instructions shown to users','Instructions de paiement')+'</span><textarea id="avp-pay" rows="3" maxlength="1000" style="width:100%;font-size:16px;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:inherit">'+esc(String(st.pay_info||''))+'</textarea></label>'+
-    '<button class="btn" onclick="admVipPay()">💾 '+L('حفظ التعليمات','Save instructions','Enregistrer')+'</button></div>';
-  const plans='<div class="up-box"><div class="up-h">💎 '+L('الباقات والأسعار','Plans & prices','Offres et prix')+'</div>'+(g.plans||[]).concat([{id:'',name:'',price_usd:'',days:'',active:false}]).map(function(p){
+  const MN={ccp:'CCP',baridimob:'BaridiMob',usdt:'USDT',paypal:'PayPal',flexy:'Flexy',other:L('أخرى','Other','Autre')};
+  const sec=function(n,t,d){ return '<div class="vp-sec"><i>'+n+'</i><div><b>'+t+'</b><span>'+d+'</span></div></div>'; };
+  const isOn=st.enabled===true;
+  const master='<div class="vp-master'+(isOn?' on':'')+'"><div class="vp-mt"><b>'+(isOn?'✅ ':'⛔ ')+L('VIP الآن: ','VIP is now: ','VIP est : ')+(isOn?L('شغّال للمستخدمين','ON for users','ACTIF'):L('متوقف','OFF','INACTIF'))+'</b><small>'+
+    (isOn?L('المستخدمون يرون صفحة VIP ويستطيعون الشراء من الباقات المفعّلة في القسم ②.','Users can see VIP and buy the active plans in ②.','Les utilisateurs voient VIP et peuvent acheter les offres actives (②).')
+         :L('غير المشتركين يرون «غير متاحة حاليًا». شغّله بعد أن تجهّز باقة واحدة على الأقل في القسم ②.','Non-members see "not available". Turn it on after preparing at least one plan in ②.','Les non-membres voient « indisponible ». Activez après avoir préparé une offre (②).'))+
+    ' '+L('(يُحفظ تلقائيًا عند الضغط)','(saved automatically)','(enregistré automatiquement)')+'</small></div>'+
+    '<input class="vp-tgl" type="checkbox" '+(isOn?'checked':'')+' aria-label="VIP" onchange="admVipSet(\'enabled\',this.checked)"></div>';
+  const guide='<details class="vp-guide"><summary>💡 '+L('كيف تعمل VIP؟ (اضغط للقراءة)','How VIP works (tap to read)','Comment fonctionne VIP ? (toucher)')+'</summary><ol>'+
+    '<li>'+L('أنت تضع الباقات وأسعارها في القسم ②.','You set plans and prices in ②.','Vous définissez les offres et prix en ②.')+'</li>'+
+    '<li>'+L('المستخدم يدفع من رصيده في التطبيق فتُفعَّل عضويته فورًا، أو يدفع يدويًا (CCP أو بريدي موب…) ويرسل رقم العملية.','The user pays from the app balance (instant) or pays manually and sends a reference.','L’utilisateur paie avec son solde (immédiat) ou manuellement avec une référence.')+'</li>'+
+    '<li>'+L('الدفع اليدوي يصلك في القسم ① كطلب: ✅ قبول يفعّل العضوية، ❌ رفض يلغي الطلب.','Manual payments arrive in ① as requests: ✅ approve activates, ❌ reject cancels.','Les paiements manuels arrivent en ① : ✅ approuver active, ❌ rejeter annule.')+'</li>'+
+    '<li>'+L('ماذا يربح العضو؟ أولوية في معالجة سحبه + تاج متوهج على ملفه.','What members get: withdrawal priority + a glowing crown on the profile.','Avantages : retrait prioritaire + couronne lumineuse.')+'</li></ol></details>';
+  const planCards=(g.plans||[]).concat([{id:'',name:'',price_usd:'',days:'',active:false}]).map(function(p){
     const nw=!p.id, k=esc(p.id||'new');
-    return '<div class="fr-set" style="flex-wrap:wrap;gap:6px"><input id="avp-'+k+'-id" placeholder="id" value="'+esc(p.id)+'" '+(nw?'':'disabled')+' style="width:90px"><input id="avp-'+k+'-name" placeholder="'+L('الاسم','Name','Nom')+'" value="'+esc(p.name)+'" style="width:120px"><input id="avp-'+k+'-price" type="number" step="0.01" min="0" placeholder="$" value="'+esc(String(p.price_usd))+'"><input id="avp-'+k+'-days" type="number" min="1" placeholder="'+L('أيام','days','jours')+'" value="'+esc(String(p.days))+'"><label style="display:inline-flex;gap:5px;align-items:center"><input type="checkbox" id="avp-'+k+'-act" '+(p.active?'checked':'')+'>'+L('مفعّلة','Active','Active')+'</label><button class="waa ok" onclick="admVipPlan(\''+k+'\')">💾</button></div>'; }).join('')+
-    '<div class="up-note">'+L('الباقة تظهر للمستخدمين فقط إذا فعّلتها وفعّلت VIP أعلاه.','A plan is visible only if both it and VIP are enabled.','Une offre n’est visible que si elle et VIP sont activés.')+'</div></div>';
-  const grant='<div class="up-box"><div class="up-h">🎁 '+L('منح عضوية يدويًا','Grant membership','Offrir une adhésion')+'</div><div class="fr-set"><input id="avp-gu" placeholder="UUID" dir="ltr" style="flex:1;font-size:16px"><input id="avp-gd" type="number" min="1" value="30"><button class="waa ok" onclick="admVipGrant()">👑</button></div></div>';
-  box.innerHTML='<div class="hl-wrap adm-pad">'+cards+'<div class="up-box"><div class="up-h">🧾 '+L('الطلبات','Orders','Demandes')+'</div>'+ord+'</div><div class="up-box"><div class="up-h">👑 '+L('الأعضاء','Members','Membres')+'</div>'+mem+'</div>'+plans+sett+grant+'</div>';
+    return '<div class="vp-plan'+(nw?' new':'')+'"><div class="vp-ph"><b>'+(nw?'➕ '+L('إضافة باقة جديدة','Add a new plan','Ajouter une offre'):esc(p.name||p.id))+'</b>'+
+      (nw?'':'<i class="vp-id" dir="ltr">'+esc(p.id)+'</i><span class="vp-st '+(p.active?'ok':'off')+'">'+(p.active?L('ظاهرة للمستخدمين','Visible','Visible'):L('مخفية','Hidden','Masquée'))+'</span>')+'</div>'+
+      '<div class="vp-grid">'+
+        (nw?'<label class="wide"><span>'+L('رمز الباقة (إنجليزي بلا مسافات، مثل weekly)','Plan code (English, no spaces, e.g. weekly)','Code (anglais, sans espace, ex. weekly)')+'</span><input id="avp-'+k+'-id" dir="ltr" maxlength="32" autocomplete="off" placeholder="weekly"></label>':'')+
+        '<label class="wide"><span>'+L('اسم الباقة (يراه المستخدم)','Plan name (shown to users)','Nom de l’offre (visible)')+'</span><input id="avp-'+k+'-name" maxlength="60" value="'+esc(p.name)+'"></label>'+
+        '<label><span>'+L('السعر بالدولار ($)','Price in USD ($)','Prix en $')+'</span><input id="avp-'+k+'-price" type="number" inputmode="decimal" step="0.01" min="0" value="'+esc(String(p.price_usd))+'"></label>'+
+        '<label><span>'+L('المدة (بالأيام)','Duration (days)','Durée (jours)')+'</span><input id="avp-'+k+'-days" type="number" inputmode="numeric" min="1" value="'+esc(String(p.days))+'"></label>'+
+      '</div><div class="vp-pf"><label class="vp-sw"><input class="vp-tgl" type="checkbox" id="avp-'+k+'-act" '+(p.active?'checked':'')+'><span>'+L('ظاهرة للمستخدمين','Visible to users','Visible')+'</span></label>'+
+      '<button class="waa ok" onclick="admVipPlan(\''+k+'\')">💾 '+(nw?L('إضافة الباقة','Add plan','Ajouter'):L('حفظ التعديل','Save changes','Enregistrer'))+'</button></div></div>'; }).join('');
+  const payBox='<div class="up-box"><div class="vp-note">'+L('الدفع من رصيد التطبيق متاح تلقائيًا ولا يحتاج إعدادًا. هنا تضبط فقط الدفع اليدوي: تحويل خارجي يرسل المستخدم إثباته.','Paying from the app balance works automatically. Here you only set manual payment: an external transfer the user proves.','Le paiement par solde fonctionne seul. Ici : uniquement le paiement manuel (virement externe avec preuve).')+'</div>'+
+    '<div class="vp-lbl">'+L('طرق الدفع اليدوي المسموحة (تُحفظ تلقائيًا عند الاختيار)','Allowed manual methods (saved on tap)','Méthodes manuelles autorisées (enregistrées au toucher)')+'</div>'+
+    '<div class="vp-chips">'+MS.map(function(x){ return '<label class="vp-chip'+(on.indexOf(x)>=0?' on':'')+'"><input type="checkbox" '+(on.indexOf(x)>=0?'checked':'')+' onchange="this.parentNode.classList.toggle(\'on\',this.checked);admVipMethods()" data-vm="'+x+'"><span>'+MN[x]+'</span></label>'; }).join('')+'</div>'+
+    '<div class="vp-note" style="margin-top:8px">'+L('إن لم تختر أي طريقة فلن يظهر خيار «الدفع اليدوي» للمستخدم.','If none is selected, users will not see the manual payment option.','Si aucune n’est choisie, le paiement manuel n’apparaît pas.')+'</div>'+
+    '<div class="vp-lbl">'+L('تعليمات الدفع التي تظهر للمستخدم (رقم الحساب، الاسم…)','Payment instructions shown to users (account number, name…)','Instructions de paiement visibles (numéro de compte, nom…)')+'</div>'+
+    '<textarea id="avp-pay" class="vp-pay-ta" rows="4" maxlength="1000">'+esc(String(st.pay_info||''))+'</textarea>'+
+    '<div class="vp-pf"><span></span><button class="waa ok" onclick="admVipPay()">💾 '+L('حفظ التعليمات','Save instructions','Enregistrer')+'</button></div></div>';
+  const grant='<div class="up-box"><div class="vp-note">'+L('امنح مستخدمًا عضوية مجانًا (هدية أو تعويض). تحتاج معرّفه الطويل (UUID).','Give a user a free membership (gift or compensation). You need his long ID (UUID).','Offrez une adhésion gratuite (cadeau ou compensation). Il faut son identifiant (UUID).')+'</div>'+
+    '<div class="vp-grid"><label class="wide"><span>'+L('معرّف المستخدم (UUID)','User ID (UUID)','Identifiant (UUID)')+'</span><input id="avp-gu" dir="ltr" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></label>'+
+    '<label><span>'+L('عدد الأيام','Days','Jours')+'</span><input id="avp-gd" type="number" inputmode="numeric" min="1" value="30"></label>'+
+    '<div class="vp-gb"><button class="waa ok" onclick="admVipGrant()">👑 '+L('منح العضوية','Grant','Offrir')+'</button></div></div></div>';
+  box.innerHTML='<div class="hl-wrap adm-pad vp-root">'+master+cards+guide+
+    sec('①',L('الطلبات','Orders','Demandes'),L('الجديدة تنتظر قرارك (✅ قبول أو ❌ رفض) وتظهر في الأعلى.','New ones wait for your decision and appear first.','Les nouvelles attendent votre décision et sont en haut.'))+'<div class="up-box">'+ord+'</div>'+
+    sec('②',L('الباقات والأسعار','Plans & prices','Offres et prix'),L('كل باقة: اسم + سعر + مدة. لا تظهر للمستخدمين إلا إذا فعّلتها وكان VIP شغّالًا.','Each plan: name + price + duration. Visible only if enabled and VIP is ON.','Chaque offre : nom + prix + durée. Visible seulement si activée et VIP actif.'))+planCards+
+    sec('③',L('الدفع اليدوي','Manual payment','Paiement manuel'),L('اختياري: لمن يدفع خارج التطبيق.','Optional: for users who pay outside the app.','Facultatif : pour ceux qui paient hors de l’app.'))+payBox+
+    sec('④',L('الأعضاء','Members','Membres'),L('المشتركون الآن، ويمكنك إلغاء عضوية أي منهم.','Current members; you can revoke any.','Membres actuels ; vous pouvez révoquer.'))+'<div class="up-box">'+mem+'</div>'+
+    sec('⑤',L('منح عضوية يدويًا','Grant a membership','Offrir une adhésion'),L('مجانًا لمستخدم تختاره.','Free, for a user you choose.','Gratuite, pour un utilisateur de votre choix.'))+grant+'</div>';
 }
 function admVipAfter(r,okMsg){ if(r&&r.ok){ toast(okMsg||L('✅ تم','✅ Done','✅ Fait')); } else toast(L('تعذّر: ','Failed: ','Échec : ')+esc(String((r&&r.why)||''))); ADM_VP_ARM=''; ADM_VP_AT=0; ADM_VIPAT=0; renderAdmVip(true); }
 async function admVipDecide(id,ok){ try{ admVipAfter(await SRV.rpc('admin_vip_decide',{p_id:id,p_approve:!!ok,p_note:''})); }catch(e){} }
@@ -9119,6 +9202,7 @@ async function admVipSet(k,v){ try{ admVipAfter(await SRV.rpc('admin_vip_setting
 async function admVipMethods(){ const a=[]; document.querySelectorAll('[data-vm]').forEach(function(c){ if(c.checked) a.push(c.getAttribute('data-vm')); }); try{ admVipAfter(await SRV.rpc('admin_vip_setting_set',{p_key:'manual_methods',p_value:a})); }catch(e){} }
 async function admVipPay(){ const v=(document.getElementById('avp-pay')||{}).value||''; try{ admVipAfter(await SRV.rpc('admin_vip_setting_set',{p_key:'pay_info',p_value:v})); }catch(e){} }
 async function admVipPlan(k){ const g=function(x){ return document.getElementById('avp-'+k+'-'+x); }; const id=k==='new'?String(g('id').value||'').trim():k;
+  { const nm=String(g('name').value||'').trim(), pr=Number(g('price').value), dy=parseInt(g('days').value,10); if(!id||!nm||!(pr>=0)||g('price').value===''||!(dy>=1)){ toast(L('أكمل الحقول: الرمز والاسم والسعر والمدة','Fill all fields: code, name, price, duration','Remplissez : code, nom, prix, durée')); return; } }
   try{ admVipAfter(await SRV.rpc('admin_vip_plan_set',{p_id:id,p_name:g('name').value,p_price:Number(g('price').value),p_days:parseInt(g('days').value,10),p_active:!!g('act').checked,p_sort:0})); }catch(e){} }
 async function admVipGrant(){ const u=String((document.getElementById('avp-gu')||{}).value||'').trim(), d=parseInt((document.getElementById('avp-gd')||{}).value,10)||0; if(!/^[0-9a-f-]{36}$/i.test(u)){ toast(L('UUID غير صالح','Invalid UUID','UUID invalide')); return; } try{ admVipAfter(await SRV.rpc('admin_vip_grant',{p_user:u,p_days:d})); }catch(e){} }
 function net2Fn(){ try{ return localStorage.getItem('r17-pbfn')||'super-worker'; }catch(e){ return 'super-worker'; } }
