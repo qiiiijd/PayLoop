@@ -2589,6 +2589,7 @@ html.lite #page-tasks .tabs{-webkit-mask-image:none;mask-image:none}
 .vp-root .waa{color:var(--text)}.vp-root .waa.ok{color:#34d399}.vp-root .waa.no{color:#f87171}.vp-root .waa.armed{color:#fff}
 [data-theme=light] .vp-root .waa.ok{color:#047857}[data-theme=light] .vp-root .waa.no{color:#b91c1c}
 
+.nt-tpls{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}.nt-tpls::-webkit-scrollbar{display:none}.nt-tpls button{flex:0 0 auto;border:1px solid var(--border);background:var(--card2);color:inherit;padding:9px 13px;border-radius:99px;font-size:12.5px;font-weight:800;font-family:inherit;white-space:nowrap}.nt-tpls button:active{border-color:var(--accent)}
 /* r42 — الملف الشخصي (تصميم جديد) */
 #page-profile .pf-hero{padding:26px 18px 20px;border-radius:28px;box-shadow:0 18px 40px -18px rgba(109,40,217,.65)}
 #page-profile .pf-hero .pf-av{width:92px;height:92px;font-size:36px}
@@ -4469,7 +4470,7 @@ function refreshBAL(skipAnim){
   const set=(id,v)=>{ if(skipAnim&&(id==='bal-task'||id==='today-task')) return; const e=document.getElementById(id); if(e) e.textContent=v; };
   const earn='$'+earnTotal().toFixed(2);
   set('bal-home','$'+BAL.toFixed(2));
-  set('pts-home','$'+(PTS/10000).toFixed(2));
+  set('pts-home',L('أرباح المهام','Task earnings','Gains des tâches')+': $'+(PTS/10000).toFixed(2));
   set('bal-wd','$'+BAL.toFixed(2));
   set('bal-more','$'+BAL.toFixed(2));
   set('earn-more',earn);
@@ -6584,7 +6585,7 @@ const SRV={
     return this.nf.items.map(function(i){ const tx=i.code?nfText(i):{t:i.title,m:i.body}; return {id:i.id, t:tx.t, m:tx.m, ty:i.kind, at:i.at, read:i.read, nav:i.go||''}; });
   },
   nfClean(r){
-    const GO={home:1,tasks:1,withdraw:1,ff:1,invite:1,profile:1,history:1,news:1,contests:1,info:1,help:1,settings:1,surveys:1};
+    const GO={vip:1,home:1,tasks:1,withdraw:1,ff:1,invite:1,profile:1,history:1,news:1,contests:1,info:1,help:1,settings:1,surveys:1};
     const out=[]; (Array.isArray(r)?r:[]).forEach(function(x){
       if(!x||typeof x.id!=='string'||!/^[pa]:\d{1,15}$/.test(x.id)) return;
       const at=Date.parse(x.at); if(!at) return;
@@ -8195,10 +8196,27 @@ function ntfDelSel(){
   ntfConfirm('🗑️ '+L('حذف الإشعارات','Delete notifications','Supprimer'),L('هل أنت متأكد من حذف العناصر المحددة؟','Are you sure you want to delete the selected items?','Voulez-vous vraiment supprimer les éléments sélectionnés ?'),L('حذف','Delete','Supprimer'),true,async function(){ let n; if(SRV.on()){ const r=await SRV.rpc('admin_delete_announcements',{p_ids:ids.map(function(i){ return parseInt(String(i).replace('ann:',''),10); }).filter(function(x){ return x>0; })}); if(r&&r.ok===false){ toast(L('❌ تعذّر الحذف','❌ Delete failed','❌ Échec')); return; } n=Number(r)||0; SRV.nfAdm.at=0; await SRV.pullAdmNtf(); } else n=NotificationService.remove(ids); NTF_SEL={}; renderAdmNtf(); toast('🗑️ '+L('تم حذف '+n,'Deleted '+n,n+' supprimé(s)')); newsBellRefresh(); });
 }
 function ntfSendDraft(id){ ntfConfirm('📤 '+L('إرسال الإشعار','Send notification','Envoyer'),L('هل تريد إرسال هذا الإشعار الآن؟','Send this notification now?','Envoyer maintenant ?'),L('إرسال','Send','Envoyer'),false,async function(){ if(SRV.on()){ const r=await SRV.rpc('admin_send_announcement',{p_id:parseInt(String(id).replace('ann:',''),10)}); if(r&&r.ok===false){ toast(L('❌ تعذّر الإرسال','❌ Send failed','❌ Échec')); return; } SRV.nfAdm.at=0; await SRV.pullAdmNtf(); } else NotificationService.sendDraft(id); renderAdmNtf(); newsBellRefresh(true); toast('✅ '+L('تم الإرسال','Sent','Envoyé')); }); }
+const NTF_GO={vip:1,home:1,tasks:1,withdraw:1,invite:1,profile:1,news:1,history:1};
+const NTF_TPL=[
+ ['💰','ابدأ الربح الآن','Start earning','Gagner',['مهام جديدة بانتظارك! 💰','New tasks are waiting! 💰','De nouvelles tâches vous attendent ! 💰'],['أنجز مهمة واحدة اليوم واحصل على مكافأتك فورًا. ابدأ الآن!','Complete one task today and get your reward right away. Start now!','Terminez une tâche aujourd’hui et recevez votre récompense. Commencez !'],'task','tasks'],
+ ['🎁','ادعُ صديقًا','Invite a friend','Parrainage',['ادعُ صديقًا واربح 🎁','Invite a friend and earn 🎁','Invitez un ami et gagnez 🎁'],['اربح 10% من أرباح كل صديق تدعوه — مدى الحياة. شارك رمزك الآن!','Earn 10% of every friend’s earnings — for life. Share your code now!','Gagnez 10 % des gains de chaque ami — à vie. Partagez votre code !'],'reward','invite'],
+ ['🔥','المكافأة اليومية','Daily bonus','Bonus du jour',['مكافأتك اليومية جاهزة 🔥','Your daily bonus is ready 🔥','Votre bonus du jour est prêt 🔥'],['ادخل الآن واحصل على مكافأة اليوم قبل أن تفوتك!','Open the app and claim today’s bonus before you miss it!','Ouvrez l’appli et récupérez le bonus du jour !'],'reward','tasks'],
+ ['📝','استطلاعات جديدة','New surveys','Sondages',['استطلاعات جديدة بأرباح أعلى 📝','New surveys with higher rewards 📝','Nouveaux sondages mieux payés 📝'],['استطلاعات جديدة متاحة الآن. دقائق قليلة وتربح!','New surveys are available now. A few minutes and you earn!','De nouveaux sondages sont disponibles. Quelques minutes et vous gagnez !'],'task','tasks'],
+ ['🎮','ألعاب جديدة','New games','Nouveaux jeux',['ألعاب جديدة تدفع لك 🎮','New games that pay you 🎮','De nouveaux jeux qui paient 🎮'],['العب ووصل لمراحل محددة واربح مكافآت حقيقية.','Play, reach milestones and earn real rewards.','Jouez, atteignez des paliers et gagnez de vraies récompenses.'],'game','tasks'],
+ ['💸','اسحب أرباحك','Cash out','Retrait',['حان وقت سحب أرباحك 💸','Time to cash out 💸','C’est le moment de retirer 💸'],['رصيدك جاهز؟ اطلب سحب أرباحك الآن بخطوات بسيطة.','Balance ready? Request your withdrawal now in a few simple steps.','Solde prêt ? Demandez votre retrait en quelques étapes.'],'withdraw','withdraw'],
+ ['👑','ترقية VIP','VIP upgrade','VIP',['ارفع أرباحك مع VIP 👑','Boost your earnings with VIP 👑','Boostez vos gains avec VIP 👑'],['ترقّ إلى VIP واحصل على مزايا ومكافآت أعلى على كل مهمة.','Upgrade to VIP for higher rewards on every task.','Passez VIP pour des récompenses plus élevées sur chaque tâche.'],'offer','vip'],
+ ['👋','نفتقدك','We miss you','Vous nous manquez',['اشتقنا لك 👋','We miss you 👋','Vous nous manquez 👋'],['مهام جديدة وأرباح بانتظارك. عُد الآن وأكمل رحلتك!','New tasks and earnings are waiting. Come back and continue!','De nouvelles tâches et gains vous attendent. Revenez !'],'info','tasks'],
+ ['🎉','عرض خاص','Special offer','Offre spéciale',['عرض خاص اليوم فقط 🎉','Special offer — today only 🎉','Offre spéciale — aujourd’hui seulement 🎉'],['أنجز مهامك اليوم واربح أكثر من المعتاد. لا تفوّت الفرصة!','Complete tasks today and earn more than usual. Don’t miss out!','Terminez vos tâches aujourd’hui et gagnez plus. Ne ratez pas ça !'],'offer','tasks'],
+ ['✨','تحديث جديد','App update','Mise à jour',['تحديث جديد للتطبيق ✨','New app update ✨','Nouvelle mise à jour ✨'],['أغلق التطبيق وافتحه من جديد لتحصل على آخر التحسينات.','Close and reopen the app to get the latest improvements.','Fermez et rouvrez l’appli pour obtenir les dernières améliorations.'],'update',''],
+ ['🛠️','صيانة قصيرة','Short maintenance','Maintenance',['صيانة قصيرة الليلة 🛠️','Short maintenance tonight 🛠️','Courte maintenance ce soir 🛠️'],['قد تتوقف الخدمة دقائق قليلة أثناء التحسين. شكرًا لصبركم 🙏','The service may pause for a few minutes. Thank you for your patience 🙏','Le service peut s’interrompre quelques minutes. Merci de votre patience 🙏'],'system','']
+];
+function ntfTpl(i){ const t=NTF_TPL[i]; if(!t||!NTF_FORM) return; ntfFormKeep(); NTF_FORM.t=L(t[4][0],t[4][1],t[4][2]); NTF_FORM.m=L(t[5][0],t[5][1],t[5][2]); NTF_FORM.ty=(NTF_BCAST.indexOf(t[6])>=0)?t[6]:'info'; NTF_FORM.lk=t[7]||''; renderAdmNtf(); }
 function renderNtfForm(box){
   const f=NTF_FORM; const opt=function(k){ const m=NTF_TYPES[k]; return '<option value="'+k+'"'+(f.ty===k?' selected':'')+'>'+m[0]+' '+L(m[2][0],m[2][1],m[2][2])+'</option>'; };
   const chips=f.sel.map(function(id){ const u=admAllUsers().find(function(x){ return x.id===id; }); return '<span class="nt-chip">'+esc(u?u.name:id)+' <b onclick="NTF_FORM.sel=NTF_FORM.sel.filter(function(x){return x!==\''+id+'\'}); ntfFormKeep(); renderAdmNtf()">✕</b></span>'; }).join('');
   box.innerHTML='<div class="nt-form"><h4 class="adm-h">+ '+L('إنشاء إشعار','Create notification','Créer une notification')+'</h4>'+
+    '<label>⚡ '+L('قوالب جاهزة — اضغط واحدًا ثم عدّل إن أردت','Ready templates — tap one, then edit if you like','Modèles — touchez-en un puis modifiez')+'</label><div class="nt-tpls">'+NTF_TPL.map(function(t,i){ return '<button type="button" onclick="ntfTpl('+i+')">'+t[0]+' '+L(t[1],t[2],t[3])+'</button>'; }).join('')+'</div>'+
+    (f.lk?'<div class="nt-hint" style="margin:6px 0">🔗 '+L('عند الضغط على الإشعار يفتح صفحة: ','Tapping the notice opens: ','Ouvre la page : ')+'<b>'+esc(f.lk)+'</b> <a href="#" onclick="NTF_FORM.lk=\'\'; renderAdmNtf(); return false">✕</a></div>':'')+
     '<label>'+L('العنوان','Title','Titre')+'</label><input id="nf-t" maxlength="80" oninput="ntfPreview()" value="'+esc(f.t||'')+'" placeholder="'+L('تحديث جديد 🎉','New update 🎉','Nouveauté 🎉')+'">'+
     '<label>'+L('المحتوى','Content','Contenu')+'</label><textarea id="nf-m" rows="3" maxlength="600" oninput="ntfPreview()">'+esc(f.m||'')+'</textarea>'+
     '<label>'+L('نوع الإشعار','Type','Type')+'</label><select id="nf-ty" onchange="ntfPreview()">'+NTF_BCAST.map(opt).join('')+'</select>'+
@@ -8234,8 +8252,8 @@ function ntfSubmit(status){
       const now=Date.now(); const when=(f.when!=='now'&&sendAt>now+30000)?new Date(sendAt).toISOString():null;
       if(f.to!=='all'&&(status==='draft'||when)){ toast(L('المسودة والجدولة متاحتان للإشعارات العامة فقط — الإشعار الخاص يُرسل فورًا','Drafts and scheduling are for public notices only — private notices send immediately','Brouillon/planification : notifications publiques uniquement')); return; }
       let r;
-      if(f.to==='all') r=await SRV.rpc('admin_announce',{p_title:f.t,p_body:f.m,p_kind:f.ty,p_link:null,p_send_at:when,p_draft:status==='draft'});
-      else r=await SRV.rpc('admin_notify_users',{p_users:f.sel.slice(0,500),p_kind:f.ty,p_title:f.t,p_body:f.m,p_link:null,p_ref:null,p_code:null,p_params:null});
+      if(f.to==='all') r=await SRV.rpc('admin_announce',{p_title:f.t,p_body:f.m,p_kind:f.ty,p_link:(f.lk&&NTF_GO[f.lk])?{go:f.lk}:null,p_send_at:when,p_draft:status==='draft'});
+      else r=await SRV.rpc('admin_notify_users',{p_users:f.sel.slice(0,500),p_kind:f.ty,p_title:f.t,p_body:f.m,p_link:(f.lk&&NTF_GO[f.lk])?{go:f.lk}:null,p_ref:null,p_code:null,p_params:null});
       if(r&&r.ok===false){ toast(L('تعذر الحفظ','Could not save','Échec')+(r.msg?(' — '+r.msg):'')); return; }
       NTF_FORM=null; NTF_UQ=''; SRV.nfAdm.at=0; try{ SRV.pullAdmNtf(); }catch(e){} renderAdmNtf();
       toast(status==='sent'?(when?'🕒 '+L('تمت الجدولة','Scheduled','Planifié'):'✅ '+L('تم الإرسال','Sent','Envoyé')):'📝 '+L('حُفظت كمسودة','Saved as draft','Brouillon enregistré')); return;
@@ -12071,6 +12089,32 @@ function openOfferwall(){
   };
   window.owAdmPickUse=function(i){ var x=A.pick.items[i]; if(!x) return; A.g.offer_id=x.id; A.err=''; owAdmFormDraw(); owAdmFetch(String(x.id)); };
 })();
+</script>
+<script>/* IAB — متصفح داخلي (تيك توك/فيسبوك/إنستغرام…): نفتح الرابط في المتصفح الحقيقي لتختفي رسالة «روابط خارجية» */
+(function(){try{
+  var ua=navigator.userAgent||''; if(!/FBAN|FBAV|FB_IAB|Instagram|TikTok|musical_ly|Bytedance|Snapchat|Twitter|LinkedInApp|Pinterest|; wv\)|Line\//i.test(ua)) return;
+  if(/Chrome\/[\d.]+ Mobile.*Safari/i.test(ua) && !/; wv\)|FBAN|FBAV|Instagram|TikTok|musical_ly|Bytedance|Snapchat/i.test(ua)) return;
+  var url=location.href, android=/Android/i.test(ua);
+  var intent='intent://'+url.replace(/^https?:\/\//,'')+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(url)+';end';
+  var tried=false; try{ tried=sessionStorage.getItem('iab-try')==='1'; }catch(e){}
+  if(android && !tried){ try{ sessionStorage.setItem('iab-try','1'); }catch(e){} setTimeout(function(){ try{ location.href=intent; }catch(e){} },300); }
+  function show(){
+    if(document.getElementById('iab-bar')) return;
+    var d=document.createElement('div'); d.id='iab-bar';
+    d.style.cssText='position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483000;background:#0f172a;color:#fff;border:1px solid #3b82f6;border-radius:18px;padding:14px;font:700 13.5px/1.7 Tajawal,sans-serif;text-align:center;direction:rtl;box-shadow:0 10px 40px rgba(0,0,0,.6)';
+    d.innerHTML='<div style="font-size:15px;font-weight:900;margin-bottom:4px">🔒 افتح PayLoop في متصفحك للحصول على أفضل تجربة</div>'+
+      '<div style="opacity:.85;font-size:12.5px;margin-bottom:10px">'+(android?'اضغط الزر أدناه ليفتح في Chrome.':'اضغط ⋯ أو أيقونة المشاركة ثم «فتح في Safari / المتصفح».')+'</div>'+
+      (android?'<button id="iab-go" style="width:100%;border:0;border-radius:14px;padding:12px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;font:900 14px Tajawal,sans-serif">🌐 فتح في المتصفح</button>':'')+
+      '<button id="iab-cp" style="width:100%;border:1px solid #334155;border-radius:14px;padding:11px;margin-top:8px;background:transparent;color:#fff;font:800 13px Tajawal,sans-serif">📋 نسخ الرابط</button>'+
+      '<div id="iab-x" style="margin-top:8px;font-size:12px;opacity:.7;text-decoration:underline">متابعة هنا</div>';
+    document.body.appendChild(d);
+    var g=document.getElementById('iab-go'); if(g) g.onclick=function(){ location.href=intent; };
+    document.getElementById('iab-cp').onclick=function(){ try{ navigator.clipboard.writeText(url); this.textContent='✅ تم النسخ — الصقه في متصفحك'; }catch(e){ prompt('انسخ الرابط',url); } };
+    document.getElementById('iab-x').onclick=function(){ d.remove(); try{ sessionStorage.setItem('iab-x','1'); }catch(e){} };
+  }
+  var dismissed=false; try{ dismissed=sessionStorage.getItem('iab-x')==='1'; }catch(e){}
+  if(!dismissed) window.addEventListener('load',function(){ setTimeout(show,1200); });
+}catch(e){}})();
 </script>
 </body>
 </html>
