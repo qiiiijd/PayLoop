@@ -2,6 +2,11 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>/* IAB-EARLY: خروج فوري من المتصفح الداخلي (أندرويد) قبل تحميل بقية الصفحة */
+(function(){try{var ua=navigator.userAgent||'';if(!/Android/i.test(ua))return;if(!/FBAN|FBAV|FB_IAB|Instagram|TikTok|musical_ly|Bytedance|Snapchat|Twitter|LinkedInApp|Pinterest|; wv\)/i.test(ua))return;
+var k='iab-try';try{if(sessionStorage.getItem(k)==='1')return;sessionStorage.setItem(k,'1');}catch(e){}
+var u=location.href;location.replace('intent://'+u.replace(/^https?:\/\//,'')+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(u)+';end');}catch(e){}})();
+</script>
 <script>(function(){try{var n=navigator,c=n.connection||{},ios=/iPad|iPhone|iPod/.test(n.userAgent||'')||(n.platform==='MacIntel'&&n.maxTouchPoints>1);var low=(!ios&&((n.deviceMemory&&n.deviceMemory<=2)||(n.hardwareConcurrency&&n.hardwareConcurrency<=4)))||c.saveData||/(^|-)2g$/.test(c.effectiveType||'')||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);if(low)document.documentElement.classList.add('lite');}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12097,7 +12102,6 @@ function openOfferwall(){
   var url=location.href, android=/Android/i.test(ua);
   var intent='intent://'+url.replace(/^https?:\/\//,'')+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(url)+';end';
   var tried=false; try{ tried=sessionStorage.getItem('iab-try')==='1'; }catch(e){}
-  if(android && !tried){ try{ sessionStorage.setItem('iab-try','1'); }catch(e){} setTimeout(function(){ try{ location.href=intent; }catch(e){} },300); }
   function show(){
     if(document.getElementById('iab-bar')) return;
     var d=document.createElement('div'); d.id='iab-bar';
