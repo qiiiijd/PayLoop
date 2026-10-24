@@ -51,7 +51,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 @supports (-webkit-touch-callout:none){ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select{ font-size:16px!important } }
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.23-r43';
+window.PL_BUILD='2026.10.24-r45';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -973,6 +973,21 @@ body.gated{overflow:hidden;}
 .nw-seal b{display:block; font-size:13px; color:#f59e0b; margin-bottom:2px;}
 .nw-seal span{font-size:11.5px; color:var(--muted); line-height:1.6;}
 .nw-backb{display:block; width:calc(100% - 32px); margin:14px 16px 0; padding:13px; border-radius:13px; background:linear-gradient(135deg,#0ea5e9,#2563eb); border:none; color:#fff; font-size:14px; font-weight:900; font-family:inherit; cursor:pointer; box-shadow:0 12px 26px -14px rgba(14,165,233,.8);}
+
+.ch-h{margin:16px 16px 0; font-size:16px; font-weight:900; color:var(--text); display:flex; flex-direction:column; gap:2px}
+.ch-h span{font-size:11.5px; font-weight:600; color:var(--muted)}
+.ch-h2{margin-top:22px}
+.ch-form .au-f{min-width:0}.ch-form input,.ch-form select{min-width:0;max-width:100%;box-sizing:border-box}
+.ch-card::before{background:linear-gradient(90deg,#f97316,#f59e0b,#facc15)!important}
+.ch-card.ended{opacity:.92}
+.ch-pz{margin-top:8px}.ch-pz .ct-pt b{color:#4ade80}
+.ch-prog{margin:10px 0 4px; padding:10px 12px; border-radius:13px; background:rgba(249,115,22,.08); border:1px solid rgba(249,115,22,.25)}
+.ch-pt{display:flex; justify-content:space-between; align-items:center; font-size:12.5px; margin-bottom:7px}
+.ch-pt b{font-size:15px; direction:ltr; color:#fb923c}
+.ch-ok{margin-top:7px; font-size:12.5px; font-weight:800; color:#4ade80}
+.ch-rules{margin:10px 0 2px; font-size:11px; line-height:1.7; color:var(--muted); background:rgba(148,163,184,.08); border-radius:10px; padding:8px 10px}
+.ch-claim{background:linear-gradient(135deg,#22c55e,#16a34a)!important; animation:chp 1.6s ease-in-out infinite}
+@keyframes chp{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}50%{box-shadow:0 0 0 9px rgba(34,197,94,0)}}
 .ct-hero{display:flex; align-items:center; gap:12px; position:relative; overflow:hidden; margin:12px 16px 4px; padding:16px; border-radius:18px; background:linear-gradient(135deg,#151024,#1a1431); border:1px solid rgba(245,158,11,.4);}
 .ct-hero::before{content:''; position:absolute; inset:0; background:radial-gradient(130px 90px at 90% 10%, rgba(245,158,11,.25), transparent 70%), radial-gradient(140px 95px at 10% 95%, rgba(167,139,250,.20), transparent 70%); pointer-events:none;}
 .ct-hic{position:relative; width:52px; height:52px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-size:26px; border-radius:16px; background:linear-gradient(135deg, rgba(245,158,11,.30), rgba(167,139,250,.25)); border:1px solid rgba(255,255,255,.10);}
@@ -10852,7 +10867,7 @@ setInterval(function(){
     const els=document.querySelectorAll('[data-cd]'); if(!els.length) return;
     let flip=false; const n=ctNow();
     els.forEach(function(el){ const t=Number(el.getAttribute('data-cd'))||0, left=t-n; el.textContent=ctFmt(left); if(left<=0&&!el.getAttribute('data-z')){ el.setAttribute('data-z','1'); flip=true; } });
-    if(flip) setTimeout(function(){ CT.busy=false; ctLoad(); },1200);
+    if(flip) setTimeout(function(){ CT.busy=false; ctLoad(); CH.busy=false; chLoad(); },1200);
   }catch(e){}
 },1000);
 /* احتفال الفوز: يظهر مرة واحدة فقط لكل مسابقة فاز بها هذا المستخدم */
@@ -10869,6 +10884,201 @@ function ctWonCheck(){
     '<div class="ctw-s">'+L('ستتواصل معك الإدارة لتسليم الجائزة. شكرًا لمشاركتك!','The team will contact you to deliver the prize. Thanks for joining!','L’équipe vous contactera pour la remise du prix.')+'</div>'+
     '<button class="ctw-b" onclick="var o=document.getElementById(\'ct-win\'); if(o) o.remove(); try{ go(\'contests\'); }catch(e){}">'+L('رائع!','Awesome!','Super !')+'</button></div>';
   document.body.appendChild(ov);
+}
+/* ===== تحدي المجتمع (داخل المسابقات): الأهداف والعدّ والجوائز كلها من الخادم؛ الواجهة تعرض فقط ===== */
+const CH={rows:[],loaded:false,busy:false,fail:false,joining:{},claiming:{},adm:{rows:[],loaded:false,busy:false,fail:false},pe:null};
+function chMap(x){
+  return {id:Number(x.id), t:String(x.title||''), d:String(x.descr||''), kind:x.kind==='referrals'?'referrals':'tasks', goal:Number(x.goal)||1, prize:Number(x.prize)||0,
+    s:Date.parse(x.starts)||0, e:Date.parse(x.ends)||0, ready:Date.parse(x.ready_at)||0, vh:Number(x.verify_hours)||0, min:Number(x.min_task)||0,
+    n:Number(x.members)||0, claims:Number(x.claims)||0, left:Number(x.budget_left)||0, slots:Number(x.slots_left)||0,
+    joined:!!x.joined, prog:Number(x.progress)||0, claimed:!!x.claimed, can:!!x.claimable};
+}
+async function chLoad(){
+  if(CH.busy) return;
+  if(!SRV.on()||!SESSION){ CH.loaded=true; CH.fail=true; ctPaint(); return; }
+  CH.busy=true;
+  try{
+    const r=await SRV.rpc('challenges_list',{});
+    if(r&&Array.isArray(r.rows)){ const t=Date.parse(r.server_time); if(t) CT.off=t-Date.now(); CH.rows=r.rows.map(chMap); CH.loaded=true; CH.fail=false; }
+    else if(!CH.loaded) CH.fail=true;
+  }catch(e){ if(!CH.loaded) CH.fail=true; }
+  CH.busy=false; ctPaint();
+}
+function chErr(why){
+  const M={ended:L('انتهى التحدي','This challenge has ended','Défi terminé'), blocked:L('⛔ حسابك غير مؤهل للمشاركة','⛔ Your account is not eligible','⛔ Compte non éligible'),
+    missing:L('التحدي غير موجود','Challenge not found','Défi introuvable'), not_joined:L('انضم إلى التحدي أولًا','Join the challenge first','Rejoignez d\'abord'),
+    verifying:L('الجائزة قيد التحقق — ستُفتح بعد انتهاء مدة التحقق','Prize is being verified — it unlocks after the verification period','Vérification en cours'),
+    goal:L('لم يتحقق الهدف بعد (تُحتسب المهام المقبولة فقط)','Goal not reached yet (only accepted tasks count)','Objectif non atteint'),
+    budget:L('نفدت ميزانية الجوائز لهذا التحدي','The prize budget of this challenge is used up','Budget épuisé'), auth:L('انتهت الجلسة — سجّل الدخول من جديد','Session expired — log in again','Session expirée')};
+  return M[why]||L('تعذّر الاتصال بالخادم — حاول مرة أخرى','Could not reach the server — try again','Serveur injoignable');
+}
+async function chJoin(id){
+  id=Number(id); if(!id||CH.joining[id]) return;
+  if(!SESSION){ toast(L('سجّل الدخول أولًا','Log in first','Connectez-vous d\'abord')); return; }
+  CH.joining[id]=1; ctPaint();
+  try{ const r=await SRV.rpc('challenge_join',{p_id:id}); if(r&&r.ok===true) toast(r.already?L('أنت منضم بالفعل ✓','Already joined ✓','Déjà inscrit ✓'):L('🔥 انضممت إلى التحدي — بالتوفيق!','🔥 You joined the challenge — good luck!','🔥 Vous participez !')); else toast(chErr(r&&r.why)); }catch(e){ toast(chErr('net')); }
+  delete CH.joining[id]; CH.busy=false; await chLoad();
+}
+async function chClaim(id){
+  id=Number(id); if(!id||CH.claiming[id]) return;
+  CH.claiming[id]=1; ctPaint();
+  try{
+    const r=await SRV.rpc('challenge_claim',{p_id:id});
+    if(r&&r.ok===true){ toast(r.already?L('تم صرف الجائزة سابقًا ✓','Prize already paid ✓','Déjà versé ✓'):L('🏆 أُضيف $'+Number(r.usd).toFixed(2)+' إلى رصيدك','🏆 $'+Number(r.usd).toFixed(2)+' added to your balance','🏆 $'+Number(r.usd).toFixed(2)+' ajouté')); try{ if(!r.already) celebrate(); }catch(e){} try{ await SRV.pullState(); refreshBAL(true); }catch(e){} }
+    else toast(chErr(r&&r.why));
+  }catch(e){ toast(chErr('net')); }
+  delete CH.claiming[id]; CH.busy=false; await chLoad();
+}
+function chGoalTxt(c){
+  return c.kind==='tasks'?L('أكمل '+c.goal+' مهمة مقبولة','Complete '+c.goal+' accepted tasks','Terminez '+c.goal+' tâches validées')
+                         :L('ادعُ '+c.goal+' أصدقاء جدد يُنجزون مهمة مقبولة','Invite '+c.goal+' new friends who complete an accepted task','Invitez '+c.goal+' nouveaux amis ayant une tâche validée');
+}
+function chCardHtml(c){
+  const st=cSt(c), pct=Math.max(0,Math.min(100,Math.round(Math.min(c.prog,c.goal)*100/c.goal))), reached=c.prog>=c.goal;
+  let cd='';
+  if(st==='live') cd='<div class="ct-cd"><span>⏳ '+L('ينتهي بعد','Ends in','Se termine dans')+'</span><b data-cd="'+c.e+'">'+ctFmt(c.e-ctNow())+'</b></div>';
+  else if(st==='soon') cd='<div class="ct-cd soon"><span>🔔 '+L('يبدأ بعد','Starts in','Commence dans')+'</span><b data-cd="'+c.s+'">'+ctFmt(c.s-ctNow())+'</b></div>';
+  const busyJ=!!CH.joining[c.id], busyC=!!CH.claiming[c.id];
+  let act='';
+  if(c.claimed) act='<span class="ct-wonb">✅ '+L('تم صرف جائزتك $'+c.prize.toFixed(2),'Your $'+c.prize.toFixed(2)+' prize was paid','Prix versé')+'</span>';
+  else if(c.can) act='<button class="ct-btn ch-claim" '+(busyC?'disabled':'')+' onclick="chClaim('+c.id+')">'+(busyC?L('جارٍ الصرف…','Paying…','Versement…'):'🎁 '+L('استلم جائزتك $'+c.prize.toFixed(2),'Claim your $'+c.prize.toFixed(2),'Récupérer $'+c.prize.toFixed(2)))+'</button>';
+  else if(st==='ended'){
+    if(c.joined&&reached&&ctNow()<c.ready) act='<div class="ct-cd"><span>🔍 '+L('قيد التحقق — تُفتح الجائزة بعد','Verifying — prize unlocks in','Vérification — déblocage dans')+'</span><b data-cd="'+c.ready+'">'+ctFmt(c.ready-ctNow())+'</b></div>';
+    else if(c.joined&&reached) act='<span class="ct-end">'+(c.slots<=0?L('💸 نفدت ميزانية الجوائز','💸 Prize budget used up','💸 Budget épuisé'):L('🔍 جارٍ التحقق من حسابك…','🔍 Verifying your account…','🔍 Vérification…'))+'</span>';
+    else act='<span class="ct-end">🏁 '+(c.joined?L('انتهى التحدي — لم يتحقق الهدف','Ended — goal not reached','Terminé — objectif non atteint'):L('انتهى التحدي','Challenge ended','Défi terminé'))+'</span>';
+  }
+  else if(!c.joined) act='<button class="ct-btn" '+(busyJ?'disabled':'')+' onclick="chJoin('+c.id+')">'+(busyJ?L('جارٍ الانضمام…','Joining…','…'):'🔥 '+L('انضم إلى التحدي','Join the challenge','Rejoindre'))+'</button>';
+  else if(st==='soon') act='<span class="ct-soon">✓ '+L('أنت منضم — يبدأ العدّ عند البداية','Joined — counting starts at the start','Inscrit — comptage au début')+'</span>';
+  else if(c.kind==='referrals') act='<button class="ct-btn" onclick="go(\'invite\')">👥 '+L('ادعُ صديقًا الآن','Invite a friend now','Inviter un ami')+'</button>';
+  else act='<button class="ct-btn" onclick="go(\'tasks\')">⚡ '+L('ابدأ المهام الآن','Do tasks now','Faire des tâches')+'</button>';
+  const slotsTxt=c.slots>0?L('متبقٍّ <b>'+c.slots+'</b> جائزة','<b>'+c.slots+'</b> prizes left','<b>'+c.slots+'</b> prix restants'):L('نفدت الجوائز','No prizes left','Plus de prix');
+  return '<div class="ct-card ct2 ch-card '+st+'">'+
+    '<div class="ct-top"><span class="ct-st '+(st==='ended'?'ended':'live')+'">🔥 '+L('تحدي المجتمع','Community challenge','Défi communauté')+'</span>'+cd+'</div>'+
+    '<h3 class="ct-title">'+esc(c.t)+'</h3>'+
+    '<div class="ct-prize"><div class="ct-pic">🎯</div><div class="ct-pt"><span>'+L('الهدف','Goal','Objectif')+'</span><b>'+chGoalTxt(c)+'</b></div></div>'+
+    '<div class="ct-prize ch-pz"><div class="ct-pic">💰</div><div class="ct-pt"><span>'+L('الجائزة النقدية لكل من يحقق الهدف','Cash prize for everyone who reaches the goal','Prix en cash')+'</span><b dir="ltr">$'+c.prize.toFixed(2)+'</b></div></div>'+
+    (c.d?'<p class="ct-desc">'+esc(c.d)+'</p>':'')+
+    (c.joined?'<div class="ch-prog"><div class="ch-pt"><span>'+L('تقدّمك','Your progress','Votre progression')+'</span><b>'+Math.min(c.prog,c.goal)+' / '+c.goal+'</b></div><div class="ct-bar"><i style="width:'+pct+'%"></i></div>'+(reached?'<div class="ch-ok">🎉 '+L('حققت الهدف!','Goal reached!','Objectif atteint !')+'</div>':'')+'</div>':'')+
+    '<div class="ct-meta"><span>👥 <b>'+c.n+'</b> '+L('منضم','joined','inscrits')+'</span><span>🏆 <b>'+c.claims+'</b> '+L('استلموا','paid','payés')+'</span><span>🎁 '+slotsTxt+'</span><span>📅 '+fmtDate(c.e)+'</span></div>'+
+    '<div class="ch-rules">ℹ️ '+L('تُحتسب فقط المهام التي أكّدتها الشبكة'+(c.min>0?' (بقيمة $'+c.min+' فأكثر)':'')+(c.kind==='referrals'?' — والصديق يجب أن يسجّل داخل مدة التحدي عبر رابطك وينجز مهمة مقبولة':'')+'. تُصرف الجائزة بعد التحقق'+(c.vh>0?' ('+c.vh+' ساعة بعد الانتهاء)':'')+' وحتى نفاد الميزانية.',
+       'Only network-confirmed tasks count. Prizes are paid after verification, while the budget lasts.','Seules les tâches validées comptent. Prix versés après vérification, dans la limite du budget.')+'</div>'+
+    '<div class="ct-act">'+act+'</div></div>';
+}
+function chHtml(){
+  if(!CH.rows.length) return '';
+  const cs=CH.rows.slice().sort(function(a,b){ const o={live:0,soon:1,ended:2}; const d=o[cSt(a)]-o[cSt(b)]; return d!==0?d:a.e-b.e; });
+  return '<div class="ch-h">🔥 '+L('تحدي المجتمع','Community Challenge','Défi de la communauté')+'<span>'+L('أهداف حقيقية — جوائز نقدية حقيقية','Real goals — real cash prizes','Vrais objectifs — vrais prix')+'</span></div>'+cs.map(chCardHtml).join('')+'<div class="ch-h ch-h2">🏆 '+L('مسابقات السحب','Prize draws','Tirages')+'</div>';
+}
+/* لوحة الأدمن: إنشاء/تعديل التحديات */
+let ADM_HE=null;
+async function chAdmLoad(){
+  if(CH.adm.busy) return;
+  if(!SRV.on()||!isAdmin()){ CH.adm.loaded=true; CH.adm.fail=true; chAdmPaint(); return; }
+  CH.adm.busy=true;
+  try{
+    const r=await SRV.rpc('admin_challenges',{});
+    if(r&&Array.isArray(r.rows)){ const t=Date.parse(r.server_time); if(t) CT.off=t-Date.now();
+      CH.adm.rows=r.rows.map(function(x){ const m=chMap(x); m.budget=Number(x.budget)||0; m.spent=Number(x.spent)||0; m.active=x.active!==false; m.n=Number(x.members)||0; m.claims=Number(x.claims)||0; return m; });
+      CH.adm.loaded=true; CH.adm.fail=false; }
+    else if(!CH.adm.loaded) CH.adm.fail=true;
+  }catch(e){ if(!CH.adm.loaded) CH.adm.fail=true; }
+  CH.adm.busy=false; chAdmPaint();
+}
+function chAdmPaint(){ const el=document.getElementById('ch-list'); if(el&&ADM_TAB==='contests') el.innerHTML=chAdmListHtml(); }
+function chAdmErr(r){
+  const m=String((r&&r.msg)||'');
+  const M={forbidden:L('غير مسموح','Not allowed','Non autorisé'), bad_input:L('بيانات غير صالحة — راجع الحقول (الميزانية ≥ الجائزة)','Invalid input — budget must be ≥ prize','Données invalides'), bad_time:L('وقت النهاية يجب أن يكون بعد البداية','End must be after start','La fin doit suivre le début'),
+    locked:L('لا يمكن تغيير الهدف/الجائزة/النوع بعد صرف جوائز','Goal/prize/type are locked once prizes were paid','Verrouillé après versements'), budget_low:L('الميزانية أقل مما صُرف فعلًا','Budget is lower than what was already paid','Budget inférieur au déjà versé'), missing:L('التحدي غير موجود','Not found','Introuvable')};
+  for(const k in M){ if(m.indexOf(k)>=0) return M[k]; }
+  return L('تعذّر تنفيذ العملية — حاول مرة أخرى','Operation failed — try again','Échec');
+}
+function chAdmEdit(id){ if(!CH.adm.rows.some(function(x){ return x.id===id; })) return; ADM_HE=id; renderAdmContests(); try{ window.scrollTo(0,0); }catch(e){} }
+function chAdmCancel(){ ADM_HE=null; renderAdmContests(); }
+async function chAdmSave(){
+  const g=function(i){ return ((document.getElementById(i)||{}).value)||''; };
+  const t=g('ch-t').trim(), kind=g('ch-k')==='referrals'?'referrals':'tasks', goal=parseInt(g('ch-g'),10), prize=parseFloat(g('ch-p')), budget=parseFloat(g('ch-b')), mn=parseFloat(g('ch-m')||'0')||0, vh=parseInt(g('ch-v')||'24',10);
+  const sm=new Date(g('ch-s')).getTime(), em=new Date(g('ch-e')).getTime(), ann=!!(document.getElementById('ch-an')||{}).checked, act=!!(document.getElementById('ch-act')||{}).checked;
+  if(t.length<3){ toast(L('اكتب عنوانًا (3 أحرف على الأقل)','Write a title (3+ chars)','Titre requis')); return; }
+  if(!(goal>=1)){ toast(L('حدد هدفًا صحيحًا','Set a valid goal','Objectif invalide')); return; }
+  if(!(prize>0)){ toast(L('حدد قيمة الجائزة','Set the prize amount','Prix requis')); return; }
+  if(!(budget>=prize)){ toast(L('الميزانية يجب أن تكون ≥ الجائزة','Budget must be ≥ prize','Budget ≥ prix')); return; }
+  if(isNaN(sm)||isNaN(em)||em<=sm){ toast(L('تحقق من وقتي البداية والنهاية','Check start/end times','Vérifiez les dates')); return; }
+  if(!SRV.on()){ toast(chAdmErr(null)); return; }
+  const btn=document.getElementById('ch-save'); if(btn) btn.disabled=true;
+  let r=null; try{ r=await SRV.rpc('admin_challenge_save',{p_id:ADM_HE||null,p_title:t,p_descr:g('ch-d').trim(),p_kind:kind,p_goal:goal,p_prize:prize,p_budget:budget,p_min:mn,p_verify:isNaN(vh)?24:vh,p_starts:new Date(sm).toISOString(),p_ends:new Date(em).toISOString(),p_active:act,p_announce:ADM_HE?false:ann}); }catch(e){}
+  if(btn) btn.disabled=false;
+  if(r&&typeof r!=='object'&&Number(r)>0){ toast(ADM_HE?L('تم حفظ التعديل ✓','Saved ✓','Enregistré ✓'):L('تم إنشاء التحدي ✓','Challenge created ✓','Défi créé ✓')); ADM_HE=null; CH.loaded=false; CH.adm.busy=false; await chAdmLoad(); renderAdmContests(); }
+  else toast(chAdmErr(r));
+}
+function chAdmDel(id){
+  const c=CH.adm.rows.find(function(x){ return x.id===id; }); if(!c) return;
+  ntfConfirm('🗑️ '+L('حذف التحدي','Delete challenge','Supprimer'), L('سيُحذف «'+esc(c.t)+'» مع كل المنضمّين. (لا يمكن الحذف بعد صرف جوائز)','“'+esc(c.t)+'” will be deleted. (Not possible after prizes were paid)','Supprimer ?'), L('نعم، احذف','Yes, delete','Oui'), true, async function(){
+    let r=null; try{ r=await SRV.rpc('admin_challenge_delete',{p_id:id}); }catch(e){}
+    if(r===true){ toast(L('تم الحذف','Deleted','Supprimé')); if(ADM_HE===id) ADM_HE=null; CH.loaded=false; CH.adm.busy=false; await chAdmLoad(); renderAdmContests(); } else toast(chAdmErr(r));
+  });
+}
+function chAdmEnd(id){
+  const c=CH.adm.rows.find(function(x){ return x.id===id; }); if(!c) return;
+  ntfConfirm('⏹️ '+L('إنهاء التحدي الآن','End challenge now','Terminer'), L('سينتهي «'+esc(c.t)+'» فورًا وتبدأ مدة التحقق قبل صرف الجوائز.','“'+esc(c.t)+'” ends now; verification period starts.','Terminer maintenant.'), L('إنهاء','End','Terminer'), true, async function(){
+    let r=null; try{ r=await SRV.rpc('admin_challenge_end',{p_id:id}); }catch(e){}
+    if(r===true){ toast(L('تم إنهاء التحدي ✓','Challenge ended ✓','Défi terminé ✓')); CH.loaded=false; CH.adm.busy=false; await chAdmLoad(); } else toast(chAdmErr(r));
+  });
+}
+async function chAdmPeople(id,off){
+  const c=CH.adm.rows.find(function(x){ return x.id===id; }); if(!c) return;
+  const pe=CH.pe={id:id,off:off||0,total:0,rows:[],busy:true}; chPeopleDraw();
+  let r=null; try{ r=await SRV.rpc('admin_challenge_members',{p_id:id,p_limit:20,p_offset:pe.off}); }catch(e){}
+  if(CH.pe!==pe) return; pe.busy=false;
+  if(r&&Array.isArray(r.rows)){ pe.rows=r.rows; pe.total=Number(r.total)||0; } else toast(chAdmErr(r));
+  chPeopleDraw();
+}
+function chPeopleDraw(){
+  const pe=CH.pe; if(!pe) return; const c=CH.adm.rows.find(function(x){ return x.id===pe.id; }); if(!c) return;
+  const rows=pe.rows.map(function(x){
+    return '<div class="mm-row"><span>'+esc(x.name)+' <i style="font-style:normal;color:var(--muted);font-size:10.5px" dir="ltr">'+esc(x.pid||'')+'</i>'+(x.risk==='high'?' ⚠️':'')+'</span><b>'+Number(x.progress)+' / '+c.goal+(x.claimed?' ✅':'')+'</b></div>';
+  }).join('')||'<div class="mm-row"><span>'+(pe.busy?L('جارٍ التحميل…','Loading…','Chargement…'):L('لا منضمّين','No members','Aucun'))+'</span></div>';
+  const pages=Math.max(1,Math.ceil(pe.total/20)), pg=Math.floor(pe.off/20)+1;
+  let ov=document.getElementById('adm-modal'); if(!ov){ ov=document.createElement('div'); ov.id='adm-modal'; document.body.appendChild(ov); }
+  ov.className='adm-modal'; ov.style.display='flex';
+  ov.innerHTML='<div class="mm-card"><div class="mm-h"><b>👥 '+esc(c.t)+'</b><button class="mm-x" onclick="CH.pe=null;admModalClose()">✕</button></div>'+
+    '<div class="mm-row"><span>'+L('المنضمّون','Members','Membres')+'</span><b>'+c.n+'</b></div>'+rows+
+    '<div class="adm-acts2" style="margin-top:10px"><button class="adm-new sm" '+(pe.off<=0||pe.busy?'disabled':'')+' onclick="chAdmPeople('+c.id+','+Math.max(0,pe.off-20)+')">‹</button><span style="align-self:center;font-size:12px">'+pg+' / '+pages+'</span><button class="adm-new sm" '+(pg>=pages||pe.busy?'disabled':'')+' onclick="chAdmPeople('+c.id+','+(pe.off+20)+')">›</button></div></div>';
+  ov.onclick=function(e){ if(e.target===ov){ CH.pe=null; admModalClose(); } };
+}
+function chAdmListHtml(){
+  const a=CH.adm.rows;
+  if(!CH.adm.loaded) return '<div class="ct-load"><i></i><span>'+L('جارٍ التحميل…','Loading…','Chargement…')+'</span></div>';
+  if(CH.adm.fail&&!a.length) return '<div class="nw-empty"><div class="nw-eic">📡</div><b>'+L('تعذّر تحميل التحديات','Could not load challenges','Chargement impossible')+'</b><span>'+L('تأكد أنك شغّلت ملف 52 في Supabase ثم أعد المحاولة.','Make sure SQL file 52 was run, then retry.','Vérifiez le fichier SQL 52.')+'</span></div>';
+  if(!a.length) return '<div class="nw-empty"><div class="nw-eic">🔥</div><b>'+L('لا توجد تحديات بعد','No challenges yet','Aucun défi')+'</b><span>'+L('أنشئ أول تحدٍّ من النموذج أعلاه.','Create your first challenge above.','Créez votre premier défi.')+'</span></div>';
+  return a.map(function(c){
+    const st=cSt(c), stCls=!c.active?'red':(st==='live'?'grn':(st==='soon'?'blu':'red'));
+    return '<div class="adm-row'+(ADM_HE===c.id?' off':'')+'"><div class="adm-rowi"><b>'+esc(c.t)+'</b><span>'+(c.kind==='tasks'?'⚡ '+L('مهام','tasks','tâches'):'👥 '+L('إحالات','referrals','parrainages'))+' ×'+c.goal+' · 💰 $'+c.prize.toFixed(2)+' · 🧾 $'+c.spent.toFixed(2)+' / $'+c.budget.toFixed(2)+' · 👥 '+c.n+' · 🏆 '+c.claims+' · 📅 '+fmtDate(c.s)+' → '+fmtDate(c.e)+'</span></div>'+
+      '<span class="adm-badges"><span class="adm-badge '+stCls+'">'+(c.active?cStTxt(st):L('⏸ متوقف','⏸ Paused','⏸ Pause'))+'</span></span>'+
+      '<div class="adm-acts"><button title="'+L('المنضمّون','Members','Membres')+'" onclick="CH.pe=null;chAdmPeople('+c.id+')">👥</button><button title="'+L('تعديل','Edit','Modifier')+'" onclick="chAdmEdit('+c.id+')">✏️</button>'+
+      (st==='live'?'<button title="'+L('إنهاء الآن','End now','Terminer')+'" onclick="chAdmEnd('+c.id+')">⏹️</button>':'')+'<button title="'+L('حذف','Delete','Supprimer')+'" onclick="chAdmDel('+c.id+')">🗑️</button></div></div>';
+  }).join('');
+}
+function chAdmFormHtml(){
+  const cur=ADM_HE?CH.adm.rows.find(function(x){ return x.id===ADM_HE; }):null;
+  if(ADM_HE&&!cur&&CH.adm.loaded) ADM_HE=null;
+  const vv=function(x){ return String(x==null?'':x).replace(/"/g,'&quot;'); }, now=ctNow(), lock=cur&&cur.claims>0;
+  return '<div class="adm-form ch-form"><div class="adm-ms-h">🔥 '+(cur?L('تعديل التحدي','Edit challenge','Modifier le défi'):L('تحدي مجتمع جديد','New community challenge','Nouveau défi'))+' <span>'+L('جوائز نقدية تُصرف بعد التحقق وضمن الميزانية فقط','Cash prizes, paid after verification and within budget','Prix versés après vérification dans la limite du budget')+'</span></div>'+
+    '<div class="au-f"><label>'+L('عنوان التحدي','Title','Titre')+'</label><input id="ch-t" maxlength="80" value="'+vv(cur?cur.t:'')+'" placeholder="'+L('مثال: تحدي الأسبوع — 10 مهام','e.g. Weekly challenge — 10 tasks','Ex : défi de la semaine')+'"></div>'+
+    '<div class="au-row2"><div class="au-f"><label>'+L('نوع الهدف','Goal type','Type')+'</label><select id="ch-k" '+(lock?'disabled':'')+'><option value="tasks"'+(cur&&cur.kind==='tasks'?' selected':'')+'>'+L('مهام مقبولة','Accepted tasks','Tâches validées')+'</option><option value="referrals"'+(cur&&cur.kind==='referrals'?' selected':'')+'>'+L('إحالات صالحة','Valid referrals','Parrainages valides')+'</option></select></div>'+
+    '<div class="au-f"><label>'+L('الهدف (العدد)','Goal (count)','Objectif')+'</label><input id="ch-g" type="number" min="1" max="100000" '+(lock?'disabled ':'')+'value="'+(cur?cur.goal:10)+'"></div></div>'+
+    '<div class="au-row2"><div class="au-f"><label>'+L('الجائزة لكل فائز ($)','Prize per winner ($)','Prix par gagnant ($)')+'</label><input id="ch-p" type="number" min="0.01" step="0.01" '+(lock?'disabled ':'')+'value="'+(cur?cur.prize:1)+'"></div>'+
+    '<div class="au-f"><label>'+L('ميزانية الجوائز الكلية ($)','Total prize budget ($)','Budget total ($)')+'</label><input id="ch-b" type="number" min="0.01" step="0.01" value="'+(cur?cur.budget:20)+'"></div></div>'+
+    '<div class="au-row2"><div class="au-f"><label>'+L('أقل قيمة للمهمة المحتسبة ($)','Min. task value ($)','Valeur min. ($)')+'</label><input id="ch-m" type="number" min="0" step="0.01" '+(lock?'disabled ':'')+'value="'+(cur?cur.min:0)+'"></div>'+
+    '<div class="au-f"><label>'+L('ساعات التحقق بعد الانتهاء','Verification hours after end','Heures de vérification')+'</label><input id="ch-v" type="number" min="0" max="720" value="'+(cur?cur.vh:24)+'"></div></div>'+
+    '<div class="au-row2"><div class="au-f"><label>'+L('وقت البداية','Starts at','Début')+'</label><input id="ch-s" type="datetime-local" '+(lock?'disabled ':'')+'value="'+(cur?dtVal(cur.s):dtVal(now))+'"></div>'+
+    '<div class="au-f"><label>'+L('وقت النهاية','Ends at','Fin')+'</label><input id="ch-e" type="datetime-local" value="'+(cur?dtVal(cur.e):dtVal(now+7*86400000))+'"></div></div>'+
+    '<div class="au-f"><label>'+L('وصف وشروط إضافية (اختياري)','Description / extra rules (optional)','Description')+'</label><textarea id="ch-d" class="adm-ta" rows="3" maxlength="1500">'+(cur?esc(cur.d):'')+'</textarea></div>'+
+    '<label class="ct-chk"><input id="ch-act" type="checkbox" '+(!cur||cur.active?'checked':'')+'> '+L('التحدي ظاهر للمستخدمين','Visible to users','Visible')+'</label>'+
+    (cur?'':'<label class="ct-chk"><input id="ch-an" type="checkbox" checked> '+L('أرسل إشعارًا للجميع بالتحدي الجديد','Notify everyone','Notifier tous')+'</label>')+
+    (lock?'<div class="ch-rules">🔒 '+L('صُرفت جوائز — الهدف والجائزة والنوع والبداية مقفلة، ويمكنك تعديل الميزانية والنهاية والظهور.','Prizes were paid — goal, prize, type and start are locked.','Verrouillé après versements.')+'</div>':'')+
+    '<div class="adm-acts2"><button id="ch-save" class="au-btn" onclick="chAdmSave()">💾 '+(cur?L('حفظ التعديل','Save changes','Enregistrer'):L('إنشاء التحدي','Create challenge','Créer'))+'</button>'+(cur?'<button class="adm-new sm" onclick="chAdmCancel()">✕ '+L('إلغاء','Cancel','Annuler')+'</button>':'')+'</div></div>'+
+    '<div class="adm-ms-h">🔥 '+L('قائمة التحديات','Challenges','Défis')+' <span>'+(CH.adm.loaded?CH.adm.rows.length:'…')+'</span></div><div id="ch-list">'+chAdmListHtml()+'</div>'+
+    '<div class="adm-ms-h" style="margin-top:18px">🏆 '+L('مسابقات السحب','Prize draws','Tirages')+'</div>';
 }
 function newsBack(){ if(NEWS_TI!=null){ NEWS_TI=null; renderNews(); } else go('more'); }
 function newsFilter(k){ NEWS_F=k; NEWS_TI=null; renderNews(); }
@@ -10939,7 +11149,7 @@ function renderContests(){
   const box=document.getElementById('contests-body'); if(!box) return;
   if(!box.querySelector('.ct-hero')) box.innerHTML='<div class="ct-load"><i></i><span>'+L('جارٍ تحميل المسابقات…','Loading contests…','Chargement…')+'</span></div>';
   renderContests0();
-  CT.busy=false; ctLoad();
+  CT.busy=false; ctLoad(); CH.busy=false; chLoad();
   try{ lbLoad(); }catch(e){}
 }
 function renderContests0(){
@@ -10948,7 +11158,7 @@ function renderContests0(){
   const cs=CT.rows.slice().sort(function(a,b){ const d=ord[cSt(a)]-ord[cSt(b)]; return d!==0?d:(cSt(a)==='ended'?b.e-a.e:a.e-b.e); });
   const liveN=cs.filter(function(c){ return cSt(c)==='live'; }).length;
   const hero='<div class="ct-hero"><div class="ct-hic">🏆</div><div class="ct-hit"><h2>'+L('مسابقات PayLoop','PayLoop Contests','Concours PayLoop')+'</h2><p>'+L('اشترك بنقرة واحدة، واحصل على تذكرتك، وانتظر السحب العلني — الفائزون يُختارون عشوائيًا من الخادم.','Join in one tap, get your ticket and wait for the draw — winners are picked randomly by the server.','Participez en un clic — le tirage est fait par le serveur.')+'</p></div><div class="ct-hn"><b>'+liveN+'</b><span>'+L('جارية الآن','Live now','En cours')+'</span></div></div>';
-  let html='<div id="lb-box">'+(CT.lbh||'')+'</div>'+hero;
+  let html='<div id="lb-box">'+(CT.lbh||'')+'</div>'+hero+chHtml();
   if(!CT.loaded){ box.innerHTML=html+'<div class="ct-load"><i></i><span>'+L('جارٍ تحميل المسابقات…','Loading contests…','Chargement…')+'</span></div>'; return; }
   if(CT.fail&&!cs.length){ box.innerHTML=html+'<div class="nw-empty"><div class="nw-eic">📡</div><b>'+L('تعذّر تحميل المسابقات','Could not load contests','Chargement impossible')+'</b><span>'+L('تحقق من الاتصال ثم أعد المحاولة.','Check your connection and retry.','Vérifiez la connexion.')+'</span><button class="ct-btn" style="margin-top:12px;max-width:220px" onclick="CT.busy=false;CT.fail=false;CT.loaded=false;renderContests()">'+L('إعادة المحاولة','Retry','Réessayer')+'</button></div>'; return; }
   if(!cs.length){
@@ -11183,7 +11393,7 @@ function renderAdmContests(){
   if(ADM_CE&&!cur&&CT.adm.loaded) ADM_CE=null;
   const vv=function(x){ return String(x==null?'':x).replace(/"/g,'&quot;'); };
   const now=ctNow(), pr=function(l,ms){ return '<button type="button" class="ct-chipb" onclick="ctPreset('+ms+')">'+l+'</button>'; };
-  const html='<div class="adm-form">'+
+  const html=chAdmFormHtml()+'<div class="adm-form">'+
     '<div class="adm-ms-h">'+(cur?L('تعديل المسابقة','Edit contest','Modifier le concours'):L('مسابقة جديدة','New contest','Nouveau concours'))+' <span>'+L('تظهر فورًا ويصل إشعار للجميع','Appears at once and everyone is notified','Visible aussitôt, notification à tous')+'</span></div>'+
     '<div class="au-f"><label>'+L('عنوان المسابقة','Contest title','Titre')+'</label><input id="ac-t" maxlength="80" value="'+vv(cur?cur.t:'')+'" placeholder="'+L('مثال: جائزة الأسبوع الكبرى','e.g. Weekly grand prize','Ex : grand prix')+'"></div>'+
     '<div class="au-row2">'+
@@ -11204,6 +11414,7 @@ function renderAdmContests(){
   '<div class="adm-ms-h">'+L('قائمة المسابقات','Contests list','Liste des concours')+' <span>'+(CT.adm.loaded?CT.adm.rows.length:'…')+'</span></div><div id="ac-list">'+ctAdmListHtml()+'</div>';
   box.innerHTML=html;
   if(!CT.adm.busy&&(!CT.adm.loaded||Date.now()-CT.adm.at>3000)) ctAdmLoad();
+  if(!CH.adm.busy&&!CH.adm.loaded) chAdmLoad();
 }
 
 function copyText(t){
@@ -11506,6 +11717,77 @@ async function openCpx(){
         +go+'</div>';
       try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
       box.insertAdjacentHTML('afterbegin',card);
+    }catch(e){}
+  };
+})();
+</script>
+<script>
+/* ===== ayeT: عروض ومهام إضافية. الرابط يأتي من الخادم (لا سرّ في التطبيق).
+   المكافأة لا تُمنح من هنا: تصل فقط عبر postback موقَّع إلى الخادم ثم تظهر في رصيدك.
+   البطاقة لا تظهر أبدًا ما لم تكن الشبكة مفعّلة ومكتملة الإعداد في الخادم. ===== */
+(function(){
+  var KEY='pl-ay-on', TTL=30*60000;
+  function fnUrl(q){ return RealAuth.base()+'/functions/v1/'+encodeURIComponent((typeof net2Fn==='function'?net2Fn():'super-worker'))+'?action=ayet_link'+(q||''); }
+  function cached(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o&&typeof o.on==='boolean'&&Date.now()-o.t<(o.on?TTL:120000)) return o; }catch(e){} return null; }
+  function again(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
+  window.ayProbe=function(){
+    try{
+      var c=cached(); if(c){ window.__ayOn=c.on; return; }
+      if(window.__ayProbing||typeof SRV==='undefined'||!SRV||!SRV.on||!SRV.on()) return;
+      window.__ayProbing=true;
+      Promise.resolve(SRV.tok()).then(function(t){
+        if(!t) return;
+        return fetch(fnUrl('&probe=1'),{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()}}).then(function(r){ return r.ok?r.json():null; }).then(function(j){
+          if(!j||j.ok!==true) return;
+          var was=!!window.__ayOn; window.__ayOn=j.on===true;
+          try{ localStorage.setItem(KEY,JSON.stringify({on:window.__ayOn,t:Date.now()})); }catch(e){}
+          if(window.__ayOn&&!was) again();
+        });
+      }).catch(function(){}).then(function(){ window.__ayProbing=false; });
+    }catch(e){ window.__ayProbing=false; }
+  };
+  window.openAyet=async function(){
+    if(window.__ayBusy) return; window.__ayBusy=true;
+    var w=null; try{ w=window.open('about:blank','_blank'); }catch(e){}
+    var fail=function(m){ try{ if(w) w.close(); }catch(e){} toast(m||L('تعذّر فتح العروض الآن','Could not open offers now','Impossible d\'ouvrir les offres')); };
+    try{
+      var s=null; try{ s=RealAuth.getSession(); }catch(e){}
+      if(!s||!s.access_token){ fail(L('سجّل الدخول أولاً','Please sign in first','Connectez-vous d\'abord')); return; }
+      try{ await RealAuth.ensureFresh(); s=RealAuth.getSession()||s; }catch(e){}
+      var r=await fetch(fnUrl(),{headers:{'Authorization':'Bearer '+s.access_token,'apikey':RealAuth.key()}});
+      var j=await r.json().catch(function(){ return {}; });
+      if(j&&j.why==='network_off'){ try{ localStorage.setItem(KEY,JSON.stringify({on:false,t:Date.now()})); }catch(e){} window.__ayOn=false; fail(L('العروض الإضافية غير متاحة الآن','Extra offers are unavailable right now','Offres indisponibles')); again(); return; }
+      if(!r.ok||!j||j.ok!==true||typeof j.url!=='string'||j.url.indexOf('https://offerwall.ayet.io/offers?')!==0){ fail(); return; }
+      window.__ayAt=Date.now();
+      if(w){ try{ w.opener=null; }catch(e){} try{ w.location.href=j.url; return; }catch(e){} }
+      if(!openTaskUrl(j.url)) fail();
+    }catch(e){ fail(); }
+    finally{ window.__ayBusy=false; }
+  };
+  /* عند العودة من الجدار: حدّث الرصيد (المكافأة تصل من الخادم، قد تتأخر ثوانٍ) */
+  try{ document.addEventListener('visibilitychange',function(){
+    if(document.hidden||!window.__ayAt||Date.now()-window.__ayAt>7200000) return;
+    if(Date.now()-(window.__aySync||0)<20000) return; window.__aySync=Date.now();
+    setTimeout(function(){ try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} try{ if(SRV&&SRV.cycle) SRV.cycle(true); }catch(e){} },2500);
+  }); }catch(e){}
+  var _rt2=window.renderTasks; if(typeof _rt2!=='function') return;
+  window.renderTasks=function(cat){
+    _rt2.apply(this,arguments);
+    try{
+      if(cat!=='games') return;
+      if(typeof taskTab!=='undefined'&&taskTab!=='new') return;
+      window.ayProbe();
+      if(!window.__ayOn) return;
+      var box=document.getElementById('tlist'); if(!box||box.querySelector('.ay-row')) return;
+      var art=''; try{ art=artHTML('games'); }catch(e){}
+      var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+      var card='<div class="trow ay-row" onclick="openAyet()">'
+        +'<div class="t-icon art">'+art+'</div>'
+        +'<div class="t-info"><h4>'+L('عروض ومهام إضافية','More offers & tasks','Plus d\'offres et tâches')+'</h4>'
+        +'<div class="meta"><span>🔓 '+L('فتح العروض','Open offers','Ouvrir les offres')+'</span><span>'+L('التوفر والمكافأة حسب بلدك وجهازك','Availability and reward depend on your country and device','Selon votre pays et appareil')+'</span></div></div>'
+        +go+'</div>';
+      try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
+      var _ag=box.querySelector('.ag-row'); if(_ag) _ag.insertAdjacentHTML('afterend',card); else box.insertAdjacentHTML('afterbegin',card);
     }catch(e){}
   };
 })();
