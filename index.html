@@ -2598,6 +2598,25 @@ html.lite #page-tasks .tabs{-webkit-mask-image:none;mask-image:none}
 [data-theme=light] .vp-root .waa.ok{color:#047857}[data-theme=light] .vp-root .waa.no{color:#b91c1c}
 
 .nt-tpls{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}.nt-tpls::-webkit-scrollbar{display:none}.nt-tpls button{flex:0 0 auto;border:1px solid var(--border);background:var(--card2);color:inherit;padding:9px 13px;border-radius:99px;font-size:12.5px;font-weight:800;font-family:inherit;white-space:nowrap}.nt-tpls button:active{border-color:var(--accent)}
+.hs-card{margin:0 18px 14px;padding:14px 16px;border-radius:22px;background:linear-gradient(150deg,var(--card),var(--card2));border:1px solid var(--border)}
+.hs-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hs-hi{font-size:15px;font-weight:800}.hs-hi b{color:var(--accent)}
+.hs-lv{font-size:11.5px;font-weight:800;padding:5px 10px;border-radius:99px;background:rgba(245,185,66,.14);border:1px solid rgba(245,185,66,.4);color:#f5b942;white-space:nowrap}
+.hs-bar{height:8px;border-radius:99px;background:rgba(148,163,184,.2);overflow:hidden;margin-top:12px}
+.hs-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#fde68a,#f59e0b);transition:width .7s cubic-bezier(.2,.8,.3,1)}
+.hs-sub{font-size:11.5px;color:var(--muted);margin-top:6px;font-weight:700}
+.hs-go{width:100%;margin-top:12px;border:0;border-radius:14px;padding:12px 14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font:800 13px inherit;font-family:inherit;display:flex;gap:6px;align-items:center;justify-content:center;cursor:pointer;min-width:0}
+.hs-go span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;opacity:.95}
+[data-theme=light] .hs-sub{color:#64748b}
+/* بطاقات الاستطلاعات */
+#page-tasks .trow.cpx-row,#page-tasks .trow.tr-row{background:linear-gradient(135deg,rgba(14,165,233,.20),rgba(99,102,241,.14) 55%,var(--card));border-color:rgba(56,189,248,.45);box-shadow:0 10px 28px -14px rgba(14,165,233,.55)}
+#page-tasks .trow.cpx-row .t-icon,#page-tasks .trow.tr-row .t-icon{width:84px;height:84px;border-radius:24px;flex:0 0 auto}
+#page-tasks .trow.cpx-row h4,#page-tasks .trow.tr-row h4{font-size:17px;font-weight:900}
+.svy-sub{order:4;flex:1 1 100%;font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:3px;font-weight:600}
+.svy-pills{order:5;flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.svy-pills span{font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.35);color:#7dd3fc}
+[data-theme=light] .svy-pills span{color:#0369a1}[data-theme=light] .svy-sub{color:#64748b}
+#page-tasks .trow.cpx-row .go,#page-tasks .trow.tr-row .go{background:linear-gradient(135deg,#0ea5e9,#6366f1)}
 /* r42 — الملف الشخصي (تصميم جديد) */
 #page-profile .pf-hero{padding:26px 18px 20px;border-radius:28px;box-shadow:0 18px 40px -18px rgba(109,40,217,.65)}
 #page-profile .pf-hero .pf-av{width:92px;height:92px;font-size:36px}
@@ -2728,8 +2747,7 @@ html.lite .vip-hero:before{display:none}
     </div>
     <button data-i18n="btn.start" class="start-btn" onclick="go('tasks')">ابدأ الربح</button>
   </div>
-
-  <div id="home-smart"></div>
+  <div id="home-hello"></div>
 
   <div class="section"><div class="section-title" data-i18n="sec.promo">🎁 مكافآت مميزة</div></div>
   <div class="promo-scroll">
@@ -4486,10 +4504,23 @@ function updHeld(){
   he.className='w-held'+(h>0?' on':'');
   const v=document.getElementById('w-held-v'); if(v) v.textContent='$'+h.toFixed(2);
 }
+function homeSmart(){
+  const box=document.getElementById('home-hello'); if(!box) return;
+  const u=(typeof curUser==='function')?curUser():null; if(!u){ box.innerHTML=''; return; }
+  let li; try{ li=levelInfo(earnTotal()); }catch(e){ return; }
+  const nm=String(u.name||NAME||'').trim().split(/\s+/)[0]||'';
+  let cont=null; try{ const B=taskBuckets('all'); if(B.started.length) cont=B.started[0]; }catch(e){}
+  const ti=cont?TASKS.indexOf(cont):-1;
+  const rem=(li.nextMin!=null)?Math.max(0,li.nextMin-earnTotal()):0;
+  box.innerHTML='<div class="hs-card"><div class="hs-top"><div class="hs-hi">'+L('مرحبًا','Hello','Bonjour')+(nm?'، <b>'+esc(nm)+'</b>':'')+' 👋</div><span class="hs-lv">Lv.'+li.i+' '+li.emo+' '+esc(L(li.name[0],li.name[1],li.name[2]))+'</span></div>'+
+    '<div class="hs-bar"><i style="width:'+li.pct+'%"></i></div>'+
+    '<div class="hs-sub">'+(li.nextMin!=null?L('تبقّى $'+rem.toFixed(2)+' للمستوى القادم','$'+rem.toFixed(2)+' to the next level','Encore '+rem.toFixed(2)+' $ pour le niveau suivant'):L('وصلت لأعلى مستوى ⭐','Max level reached ⭐','Niveau maximum ⭐'))+'</div>'+
+    (cont&&ti>=0?'<button class="hs-go" onclick="openTask('+ti+')">▶ '+L('تابع','Continue','Reprendre')+' · <span>'+esc(tr(cont.title))+'</span></button>':'')+'</div>';
+}
 function refreshBAL(skipAnim){
   const set=(id,v)=>{ if(skipAnim&&(id==='bal-task'||id==='today-task')) return; const e=document.getElementById(id); if(e) e.textContent=v; };
   const earn='$'+earnTotal().toFixed(2);
-  set('bal-home','$'+BAL.toFixed(2));
+  set('bal-home','$'+BAL.toFixed(2)); try{ homeSmart(); }catch(e){}
   set('pts-home',L('أرباح المهام','Task earnings','Gains des tâches')+': $'+(PTS/10000).toFixed(2));
   set('bal-wd','$'+BAL.toFixed(2));
   set('bal-more','$'+BAL.toFixed(2));
@@ -11273,6 +11304,29 @@ async function openCpx(){
 </style>
 <script>
 (function(){
+  var KEY='pl-cpx-on', TTL=30*60000;
+  function cached(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o&&typeof o.on==='boolean'&&Date.now()-o.t<(o.on?TTL:120000)) return o; }catch(e){} return null; }
+  function again(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
+  /* هل شبكة CPX مفعّلة؟ نسأل الخادم عبر cpx_link نفسه (يردّ network_off إن كانت موقوفة) — لا نُظهر البطاقة إلا إذا كانت جاهزة */
+  window.cpxProbe=function(){
+    try{
+      var c=cached(); if(c){ window.__cpxOn=c.on; return; }
+      if(window.__cpxProbing||typeof SRV==='undefined'||!SRV||!SRV.on||!SRV.on()) return;
+      window.__cpxProbing=true;
+      Promise.resolve(SRV.tok()).then(function(t){
+        if(!t) return;
+        return fetch(RealAuth.base()+'/functions/v1/'+encodeURIComponent((typeof net2Fn==='function'?net2Fn():'super-worker'))+'?action=cpx_link',{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()}}).then(function(r){ return r.json().catch(function(){ return null; }).then(function(j){ return {st:r.status,j:j}; }); }).then(function(x){
+          var on=null; if(x&&x.j&&x.j.ok===true) on=true; else if(x&&x.j&&x.j.why==='network_off') on=false;
+          if(on===null) return;
+          var was=window.__cpxOn; window.__cpxOn=on;
+          try{ localStorage.setItem(KEY,JSON.stringify({on:on,t:Date.now()})); }catch(e){}
+          if(was!==on) again();
+        });
+      }).catch(function(){}).then(function(){ window.__cpxProbing=false; });
+    }catch(e){ window.__cpxProbing=false; }
+  };
+})();
+(function(){
   /* ===== إعدادات ظاهرية لبطاقة الاستطلاعات (عدّلها كما تشاء) ===== */
   var CPX_UI={ max:'5.00', time:['5–15 د','5–15 min','5–15 min'] };
   var _rt0=window.renderTasks; if(typeof _rt0!=='function') return;
@@ -11280,6 +11334,8 @@ async function openCpx(){
     _rt0.apply(this,arguments);
     try{
       if((cat==='survey'||(cat==='all'&&(typeof taskTab==='undefined'||taskTab==='new'))) && !window.__cpxTaskExists()){
+        try{ window.cpxProbe(); }catch(e){}
+        if(window.__cpxOn!==true) return;
         var box=document.getElementById('tlist');
         if(box && !box.querySelector('.cpx-row')){
           var art=''; try{ art=artHTML('survey'); }catch(e){}
@@ -11287,7 +11343,7 @@ async function openCpx(){
           var card='<div class="trow cpx-row" onclick="openCpx()">'
             +'<div class="t-icon art">'+art+'</div>'
             +'<div class="t-info"><h4>'+L('استطلاعات مدفوعة','Paid surveys','Sondages rémunérés')+'</h4>'
-            +'<div class="meta"><span>🔓 '+L('فتح الاستطلاعات','Open surveys','Ouvrir les sondages')+'</span><span>'+L('المكافأة تظهر داخل كل استطلاع','Reward shown inside each survey','Récompense affichée dans chaque sondage')+'</span></div></div>'
+            +'<div class="svy-sub">'+L('استطلاعات قصيرة تناسب ملفك — تعرف المكافأة قبل أن تبدأ','Short surveys matched to your profile — see the reward before you start','Sondages courts adaptés à votre profil — récompense visible avant de commencer')+'</div>'+'<div class="svy-pills"><span>🔓 '+L('مفتوحة الآن','Open now','Ouvert')+'</span><span>⏱ '+L(CPX_UI.time[0],CPX_UI.time[1],CPX_UI.time[2])+'</span></div></div>'
             +go+'</div>';
           try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
           box.insertAdjacentHTML('afterbegin','<div class="t-sec">📋 '+L('الاستطلاعات','Surveys','Sondages')+' <i>∞</i></div>'+card);
@@ -11345,7 +11401,7 @@ async function openCpx(){
       try{ await RealAuth.ensureFresh(); s=RealAuth.getSession()||s; }catch(e){}
       var r=await fetch(fnUrl(),{headers:{'Authorization':'Bearer '+s.access_token,'apikey':RealAuth.key()}});
       var j=await r.json().catch(function(){ return {}; });
-      if(j&&j.why==='no_surveys'){ fail(L('لا توجد استبيانات متاحة لحسابك الآن. جرّب لاحقًا.','No surveys are available for your account right now. Try again later.','Aucun sondage disponible pour votre compte pour le moment.')); return; }
+      if(j&&j.why==='no_surveys'){ try{ localStorage.setItem(KEY,JSON.stringify({on:false,t:Date.now()+6*3600000-120000})); }catch(e){} window.__trOn=false; fail(L('لا توجد استبيانات متاحة لحسابك الآن. جرّب لاحقًا.','No surveys are available for your account right now. Try again later.','Aucun sondage disponible pour votre compte pour le moment.')); again(); return; }
       if(j&&j.why==='network_off'){ try{ localStorage.setItem(KEY,JSON.stringify({on:false,t:Date.now()})); }catch(e){} window.__trOn=false; fail(L('الاستبيانات الإضافية غير متاحة الآن','Extra surveys are unavailable right now','Sondages indisponibles')); again(); return; }
       if(!r.ok||!j||j.ok!==true||typeof j.url!=='string'||j.url.indexOf('https://theoremreach.com/respondent_entry/direct?')!==0){ fail(); return; }
       window.__trAt=Date.now();
@@ -11373,7 +11429,7 @@ async function openCpx(){
       var card='<div class="trow tr-row" onclick="openTheorem()">'
         +'<div class="t-icon art">'+art+'</div>'
         +'<div class="t-info"><h4>'+L('استبيانات إضافية','More surveys','Plus de sondages')+'</h4>'
-        +'<div class="meta"><span>🔓 '+L('فتح الاستبيانات','Open surveys','Ouvrir les sondages')+'</span><span>'+L('التوفر والمكافأة حسب بلدك وملفك الشخصي','Availability and reward depend on your country and profile','Selon votre pays et profil')+'</span></div></div>'
+        +'<div class="svy-sub">'+L('استبيانات إضافية — التوفر والمكافأة حسب بلدك وملفك','More surveys — availability and reward depend on your country and profile','Plus de sondages — selon votre pays et profil')+'</div>'+'<div class="svy-pills"><span>🔓 '+L('مفتوحة الآن','Open now','Ouvert')+'</span></div></div>'
         +go+'</div>';
       try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
       var anchor=box.querySelector('.cpx-row');
