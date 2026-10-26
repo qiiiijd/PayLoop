@@ -50,8 +50,24 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 .lite .auth-aurora i,.lite .ax-logo-ring,.lite .wv-card.pending .wv-cico,.lite .wv-cico .wv-cico-main,.lite .ctw-ic,.lite .ctw-conf i{animation:none!important}
 @supports (-webkit-touch-callout:none){ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select{ font-size:16px!important } }
 </style>
+<style>html[data-mnt="w"] body{visibility:hidden}#mnt-ov{visibility:visible}</style>
+<script>/* الصيانة: نسأل الخادم فورًا قبل رسم التطبيق (حدّ أقصى 1.5 ثانية)، فلا يرى المستخدم التطبيق ثم تظهر له الصيانة */
+(function(){try{
+  if(location.search.indexOf('r7test=1')>=0) return;
+  var d=document.documentElement,M=window.__MNT0={done:false,flag:null},uid='',hint='';
+  try{ var ss=JSON.parse(localStorage.getItem('r12-sbauth')||'null'); uid=(ss&&ss.uid)||''; hint=localStorage.getItem('pl-adm-hint')||''; }catch(e){}
+  var admin=!!(uid&&hint&&uid===hint);
+  if(!admin) d.setAttribute('data-mnt','w');
+  var fin=function(){ if(M.done) return; M.done=true; if(d.getAttribute('data-mnt')==='w') d.removeAttribute('data-mnt'); try{ if(window.__mntReady) window.__mntReady(); }catch(e){} };
+  var t=setTimeout(fin,1500);
+  fetch('https://yqzndgfpasmwgcxekskv.supabase.co/rest/v1/app_flags?k=eq.maintenance&select=v',{headers:{apikey:'sb_publishable_0Bwpm_p5QbwMitA3OA-t4Q_AjZ2uTeH'},cache:'no-store'})
+    .then(function(r){ return r.ok?r.json():null; })
+    .then(function(j){ if(Array.isArray(j)){ var v=j[0]&&j[0].v; M.flag=(v&&typeof v==='object')?{on:v.on===true,msg:String(v.msg||'').slice(0,300)}:{on:false,msg:''}; } })
+    .catch(function(){}).then(function(){ clearTimeout(t); fin(); });
+}catch(e){}})();
+</script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.26-r50';
+window.PL_BUILD='2026.10.26-r54';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -2832,6 +2848,8 @@ html.lite .vip-hero:before{display:none}
 
   <div class="w-held" id="w-held"><span>🔒 المبلغ المحجوز</span><b id="w-held-v" dir="ltr">$0.00</b><i>محجوز لطلبك قيد المعالجة — لا يمكن استخدامه حتى قبول الطلب أو إرجاعه عند الرفض</i></div>
 
+  <div id="wd-rate" style="display:none;margin:12px 18px 0;padding:12px 14px;border-radius:16px;border:1px solid rgba(251,191,36,.45);background:rgba(251,191,36,.08);align-items:center;gap:10px"><span style="font-size:22px">💱</span><div style="line-height:1.8"><b style="font-size:14px;color:#fbbf24" dir="auto"><span class="wd-rate-t"></span></b><div style="font-size:12px;color:#cbd5e1" class="wd-rate-s"></div></div></div>
+
   <div class="w-time" style="margin:12px 18px 0"><b data-i18n="wd.time">⏱ مدة المعالجة: من 48 إلى 72 ساعة</b><span data-i18n="wd.timeSub">تتم مراجعة الطلب قبل التحويل ثم إشعارك بالنتيجة</span></div>
 
   <div id="wd-req"></div>
@@ -5041,6 +5059,15 @@ function wdApplyCountry(){
   if(sp){ sp.removeAttribute('data-i18n'); const n=(dz?4:3)+(fxOk?1:0); sp.textContent=L(n+' طرق متاحة',n+' methods available',n+' méthodes disponibles'); }
   try{ wdNumberMethods(); }catch(e){}
 }
+const WD_DZD=200;   /* سعر السحب إلى CCP: 1$ = 200 دج */
+function wdAlg(){ try{ var u=curUser(); return !!u&&u.cty==='الجزائر'; }catch(e){ return false; } }   /* فقط لمن اختار الجزائر */
+function wdRateDraw(){ try{
+  var bx=document.getElementById('wd-rate'); if(bx) bx.style.display=wdAlg()?'flex':'none';
+  var t=document.querySelector('#wd-rate .wd-rate-t'), u=document.querySelector('#wd-rate .wd-rate-s'); if(!t||!u) return;
+  t.textContent=L('سعر الصرف عند السحب: 1$ = '+WD_DZD+' دج','Withdrawal rate: $1 = '+WD_DZD+' DZD','Taux de retrait : 1 $ = '+WD_DZD+' DA');
+  u.textContent=L('مثال: سحب $5 = '+(5*WD_DZD)+' دج. ينطبق على السحب إلى CCP. أما شحن Flexy فله باقاته المحددة.','Example: $5 = '+(5*WD_DZD)+' DZD. Applies to CCP withdrawals. Flexy top-ups have their own fixed packs.','Exemple : 5 $ = '+(5*WD_DZD)+' DA. Pour les retraits CCP. Les recharges Flexy ont leurs forfaits.');
+}catch(e){} }
+try{ document.addEventListener('DOMContentLoaded',wdRateDraw); window.addEventListener('load',wdRateDraw); setInterval(wdRateDraw,3000); }catch(e){}
 function wdCheck(k){
   const inp=document.getElementById('wd-amt-'+k); if(!inp) return;
   const help=document.getElementById('wd-help-'+k), btn=document.getElementById('wd-btn-'+k);
@@ -5050,6 +5077,7 @@ function wdCheck(k){
   else if(raw && v>BAL+1e-9){ cls='bad'; msg=L('رصيدك غير كافٍ — المتاح $'+BAL.toFixed(2),'Insufficient balance — available $'+BAL.toFixed(2),'Solde insuffisant'); }
   else if(raw && wdPendingBlock()){ cls='bad'; msg=L('لديك طلب سحب قيد المعالجة — انتظر مراجعة الطلب الحالي','You already have a pending request — wait for review','Une demande est déjà en cours'); }
   else if(raw){ cls='ok'; msg=L('✓ المبلغ صالح — سيُحجز من رصيدك عند الإرسال','✓ Valid — will be held from your balance on submit','✓ Valide — sera bloqué à l\'envoi'); }
+  if(cls==='ok'&&k==='ccp'&&wdAlg()) msg+=' · ≈ '+Math.round(v*WD_DZD)+' '+L('دج','DZD','DA');
   if(help){ help.textContent=msg; help.className='wv-help '+cls; }
   let fieldsOk=true;
   if(k==='ccp'){
@@ -12562,6 +12590,7 @@ function openOfferwall(){
   document.head.appendChild(st);
   function sess(){ try{ return RealAuth.getSession(); }catch(e){ return null; } }
   function adm(){ try{ return isAdmin(); }catch(e){ return false; } }
+  function uid0(){ var x=sess(); return (x&&x.uid)||''; }
   function lg(a,b,c){ try{ return L(a,b,c); }catch(e){ return a; } }
   function esc2(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function live(){ try{ return DataGateway.config.DATA_MODE==='supabase'; }catch(e){ return false; } }
@@ -12569,9 +12598,9 @@ function openOfferwall(){
   function apply(){
     if(!live()) return;
     var want=!!FLAG.on;
-    if(adm()){ want=false; try{ localStorage.setItem('pl-adm-hint','1'); }catch(e){} }
+    if(adm()){ want=false; try{ localStorage.setItem('pl-adm-hint',uid0()); }catch(e){} }
     if(want && window.__mntLogin && !sess()) want=false;
-    if(want && sess()){ var h=''; try{ h=localStorage.getItem('pl-adm-hint')||''; }catch(e){} if(h && Date.now()-T0<6000) want=false; }
+    if(want && sess()){ var h=''; try{ h=localStorage.getItem('pl-adm-hint')||''; }catch(e){} if(h && h===uid0() && Date.now()-T0<6000) want=false; }
     var e=document.getElementById('mnt-ov');
     if(!want){ if(e) e.style.display='none'; return; }
     e=ovEl();
@@ -12618,10 +12647,45 @@ function openOfferwall(){
       });
   };
   var LASTP=0; window.renderAdmMnt=function(){ var b=document.getElementById('adm-mnt'); mntAdmDraw(); if(Date.now()-LASTP>10000){ LASTP=Date.now(); pull(); } };
+  window.__mntReady=function(){ var m=window.__MNT0; if(m&&m.flag) FLAG=m.flag; apply(); try{ mntAdmDraw(); }catch(e){} };
+  if(window.__MNT0&&window.__MNT0.done) window.__mntReady();
   setInterval(apply,2000); setInterval(pull,60000);
   document.addEventListener('visibilitychange',function(){ if(!document.hidden) pull(); });
-  setTimeout(pull,300);
+  if(!(window.__MNT0&&window.__MNT0.flag)) setTimeout(pull,300);
 }catch(e){ try{ console.warn('[mnt]',e); }catch(_){} }})();
+</script>
+<script>
+/* دعوة لطيفة لتفعيل إشعارات الهاتف: مرة واحدة، بعد الفتح الثالث، في الصفحة الرئيسية فقط، وتختفي 7 أيام عند «لاحقًا» */
+(function(){ try{
+  var K='pl-pp', o={}; try{ o=JSON.parse(localStorage.getItem(K)||'{}')||{}; }catch(e){}
+  o.opens=(o.opens||0)+1; function sv(){ try{ localStorage.setItem(K,JSON.stringify(o)); }catch(e){} } sv();
+  var shown=false;
+  function lg(a,b,c){ try{ return L(a,b,c); }catch(e){ return a; } }
+  function can(){
+    try{
+      try{ var f=JSON.parse(localStorage.getItem(K)||'{}')||{}; if(f.until) o.until=f.until; }catch(e){}
+      if(shown||o.opens<3||(o.until&&Date.now()<o.until)) return false;
+      if(typeof SESSION==='undefined'||!SESSION||typeof Push==='undefined'||!Push.ok()) return false;
+      if(Notification.permission!=='default'||Push.want()) return false;
+      var h=document.getElementById('page-home'); if(!h||!h.classList.contains('active')) return false;
+      var m=document.getElementById('mnt-ov'); if(m&&getComputedStyle(m).display!=='none') return false;
+      if(document.documentElement.hasAttribute('data-nf')||document.body.classList.contains('gated')) return false;
+      return true;
+    }catch(e){ return false; }
+  }
+  function close(days){ var e=document.getElementById('pp-card'); if(e) e.remove(); o.until=Date.now()+days*864e5; sv(); }
+  window.ppLater=function(){ close(7); };
+  window.ppYes=function(){ close(30); try{ Push.toggle(true); }catch(e){} };
+  function show(){
+    shown=true; var d=document.createElement('div'); d.id='pp-card';
+    d.style.cssText='position:fixed;left:12px;right:12px;bottom:84px;z-index:8000;background:#101a2e;border:1px solid #2563eb;border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.5);font-family:inherit;color:#fff;display:flex;flex-direction:column;gap:10px';
+    d.innerHTML='<div style="font-weight:900;font-size:14px;line-height:1.8">🔔 '+lg('فعّل الإشعارات لتصلك مكافآتك فورًا','Turn on notifications to get your rewards instantly','Activez les notifications pour recevoir vos récompenses')+'</div>'+
+      '<div style="display:flex;gap:8px"><button onclick="ppYes()" style="flex:1;padding:11px;border:0;border-radius:12px;font:inherit;font-weight:900;color:#fff;background:linear-gradient(135deg,#2563eb,#1d4ed8);cursor:pointer">'+lg('تفعيل','Turn on','Activer')+'</button>'+
+      '<button onclick="ppLater()" style="flex:1;padding:11px;border:1px solid #334155;border-radius:12px;font:inherit;font-weight:800;color:#cbd5e1;background:transparent;cursor:pointer">'+lg('لاحقًا','Later','Plus tard')+'</button></div>';
+    document.body.appendChild(d);
+  }
+  setInterval(function(){ if(can()) show(); },4000);
+}catch(e){}})();
 </script>
 </body>
 </html>
