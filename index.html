@@ -51,7 +51,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 @supports (-webkit-touch-callout:none){ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select{ font-size:16px!important } }
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.26-r48';
+window.PL_BUILD='2026.10.26-r49';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -7390,7 +7390,7 @@ const Push={
   local:async function(){
     try{
       const reg=await navigator.serviceWorker.ready;
-      await reg.showNotification('PayLoop  •  '+L('اختبار الإشعارات','Notification test','Test des notifications'),{actions:[{action:'open',title:L('فتح PayLoop','Open PayLoop','Ouvrir PayLoop')}],lang:'ar',body:L('✅ ممتاز! الإشعارات تعمل بشكل صحيح على هاتفك.','✅ Great! Notifications work on your phone.','✅ Parfait ! Les notifications fonctionnent.'),icon:'icon-192.png',badge:'badge-96.png',vibrate:[200,100,200],silent:false,tag:'local-test'});
+      await reg.showNotification('✅ '+L('اختبار الإشعارات','Notification test','Test des notifications'),{actions:[{action:'open',title:L('فتح','Open','Ouvrir')},{action:'dismiss',title:L('تجاهل','Dismiss','Ignorer')}],lang:'ar',body:L('✅ ممتاز! الإشعارات تعمل بشكل صحيح على هاتفك.','✅ Great! Notifications work on your phone.','✅ Parfait ! Les notifications fonctionnent.'),icon:'icon-192.png',badge:'badge-96.png',vibrate:[200,100,200],silent:false,tag:'local-test'});
       toast(L('✅ طُلب العرض — انظر إلى أعلى الشاشة','✅ Requested — look at the top of the screen','✅ Demandé — regardez en haut'));
     }catch(e){ toast('⚠️ '+((e&&e.name)||'')+' '+((e&&e.message)||'')); }
   },

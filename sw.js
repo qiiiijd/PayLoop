@@ -1,4 +1,4 @@
-/* v9 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
+/* v10 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
 var SHELL = 'pl-shell-v1';
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
@@ -56,16 +56,16 @@ self.addEventListener('push', function (e) {
   try { d = e.data ? e.data.json() : {}; } catch (x) { try { d = { title: 'PayLoop', body: e.data.text() }; } catch (y) { d = {}; } }
   e.waitUntil((async function () {
     /* أولًا: اعرض الإشعار فورًا (لا شيء قبله يؤخّره). بعدها فقط نسجّل التشخيص ونخبر الصفحة المفتوحة. */
-    var t0 = String(d.title || '').trim();
-    var title = (!t0 || /^payloop$/i.test(t0)) ? 'PayLoop' : (/^\W*payloop/i.test(t0) ? t0 : 'PayLoop  \u2022  ' + t0);
+    /* العنوان كما كتبته أنت تمامًا (بدون إضافة اسم التطبيق: أندرويد يعرض اسم التطبيق أصلًا في أعلى الإشعار) */
+    var title = String(d.title || '').trim() || 'PayLoop';
     var opt = {
-      body: String(d.body || '').slice(0, 240), tag: d.tag || undefined, icon: 'icon-192.png', badge: 'badge-96.png?v=5',
+      body: String(d.body || '').slice(0, 300), tag: d.tag || undefined, icon: 'icon-192.png', badge: 'badge-96.png?v=5',
       data: { go: d.go || null }, dir: 'auto', lang: 'ar',
       silent: false, vibrate: [200, 100, 200], timestamp: Date.now(), renotify: !!d.tag,
-      actions: [{ action: 'open', title: '\u0641\u062a\u062d PayLoop' }]
+      actions: [{ action: 'open', title: '\u0641\u062a\u062d' }, { action: 'dismiss', title: '\u062a\u062c\u0627\u0647\u0644' }]
     };
     try { if (typeof d.image === 'string' && /^https:\/\//.test(d.image)) opt.image = d.image.slice(0, 500); } catch (x) {}
-    var shown = self.registration.showNotification(title.slice(0, 100), opt);
+    var shown = self.registration.showNotification(title.slice(0, 120), opt);
     try { await shown; await diag('last-show', 'ok'); } catch (err) { await diag('last-show', String((err && err.name) || 'error') + ':' + String((err && err.message) || '').slice(0, 80)); }
     await diag('last-push', Date.now());
     try { var cs = await self.clients.matchAll({ type: 'window', includeUncontrolled: true }); cs.forEach(function (c) { try { c.postMessage({ type: 'push', go: d.go || null }); } catch (x) {} }); } catch (x) {}
@@ -74,6 +74,7 @@ self.addEventListener('push', function (e) {
 
 self.addEventListener('notificationclick', function (e) {
   e.notification.close();
+  if (e.action === 'dismiss') return;
   var go = (e.notification.data && e.notification.data.go) || null;
   e.waitUntil((async function () {
     var cs = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
