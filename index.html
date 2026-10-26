@@ -51,7 +51,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 @supports (-webkit-touch-callout:none){ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select{ font-size:16px!important } }
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.24-r46';
+window.PL_BUILD='2026.10.26-r48';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -6707,8 +6707,8 @@ const SRV={
       const r=await this.rpc('admin_announcements',{p_limit:100});
       if(Array.isArray(r)){ const now=Date.now();
         this.nfAdm.rows=r.map(function(a){ const sa=Date.parse(a.send_at)||0; return {id:'ann:'+a.id, t:a.title, m:a.body, ty:a.kind, to:'all', at:Date.parse(a.created_at)||sa, sendAt:sa, st:a.status==='draft'?'draft':(sa>now?'scheduled':'sent')}; });
-        this.nfAdm.at=Date.now(); }
-    }catch(e){} finally{ this.nfAdm.busy=false; }
+        }
+    }catch(e){} finally{ this.nfAdm.busy=false; this.nfAdm.at=Date.now(); }   /* نسجّل وقت المحاولة حتى عند الفشل، وإلا تُعيد renderAdmNtf الطلب بلا توقف */
     try{ if(ADM_TAB==='ntf'&&!NTF_FORM) renderAdmNtf(); }catch(e){}
   },
   async notifyUser(uid,kind,code,params,go,ref){
@@ -7390,7 +7390,7 @@ const Push={
   local:async function(){
     try{
       const reg=await navigator.serviceWorker.ready;
-      await reg.showNotification('🔔 '+L('اختبار العرض','Display test','Test d’affichage'),{body:L('إن رأيت هذا في أعلى الشاشة فعرض الإشعارات يعمل في هاتفك','If you see this at the top, notifications can be displayed on your phone','Si vous voyez ceci, l’affichage fonctionne'),icon:'icon-192.png',badge:'badge-96.png',vibrate:[200,100,200],silent:false,tag:'local-test'});
+      await reg.showNotification('PayLoop  •  '+L('اختبار الإشعارات','Notification test','Test des notifications'),{actions:[{action:'open',title:L('فتح PayLoop','Open PayLoop','Ouvrir PayLoop')}],lang:'ar',body:L('✅ ممتاز! الإشعارات تعمل بشكل صحيح على هاتفك.','✅ Great! Notifications work on your phone.','✅ Parfait ! Les notifications fonctionnent.'),icon:'icon-192.png',badge:'badge-96.png',vibrate:[200,100,200],silent:false,tag:'local-test'});
       toast(L('✅ طُلب العرض — انظر إلى أعلى الشاشة','✅ Requested — look at the top of the screen','✅ Demandé — regardez en haut'));
     }catch(e){ toast('⚠️ '+((e&&e.name)||'')+' '+((e&&e.message)||'')); }
   },
@@ -8387,7 +8387,7 @@ function admUserDetail(){
     '<div class="adk"><span>'+L('تاريخ الإنشاء','Created','Créé le')+'</span><b>'+(u.created?fmtDate(u.created):'—')+'</b></div>'+
     ((ADM_EARN.byUid[u.id])?('<div class="adk"><span>'+L('الأرباح (من السجل المالي)','Earnings (from ledger)','Gains (registre)')+'</span><b>💰 $'+Number(ADM_EARN.byUid[u.id].earned).toFixed(2)+' · '+ADM_EARN.byUid[u.id].tasks+' '+L('مهمة','tasks','tâches')+' · '+ADM_EARN.byUid[u.id].refs+' '+L('إحالة','ref','parrainage')+((ADM_EARN.byUid[u.id].today>0)?(' · '+L('اليوم','Today','Aujourd\u2019hui')+' +$'+Number(ADM_EARN.byUid[u.id].today).toFixed(2)):'')+'</b></div>'):'')+
     '<div class="adk"><span>'+L('رمز الدعوة','Invite code','Code')+'</span><b>'+esc(u.code||'—')+'</b></div>'+
-    '<div class="adk"><span>'+L('سجّل عبر','Registered via','Inscrit via')+'</span><b>'+(u.by||L('رابط مباشر','Direct','Direct'))+'</b></div>'+
+    '<div class="adk"><span>'+L('سجّل عبر','Registered via','Inscrit via')+'</span><b>'+(u.by?esc(u.by):L('رابط مباشر','Direct','Direct'))+'</b></div>'+
     '</div>'+
     admUProfHtml(u)+
     admActBlock(u)+
