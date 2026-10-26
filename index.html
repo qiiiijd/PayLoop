@@ -51,7 +51,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 @supports (-webkit-touch-callout:none){ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select{ font-size:16px!important } }
 </style>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.26-r49';
+window.PL_BUILD='2026.10.26-r50';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -3246,6 +3246,7 @@ html.lite .vip-hero:before{display:none}
     <h1>🛠️ لوحة التحكم</h1>
     <button class="icon-btn" id="adm-bell" onclick="ntfOpen('admin')" aria-label="admin alerts" style="margin-inline-start:auto;position:relative"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9d3ea" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg><span class="nbadge" id="adm-bell-badge" style="display:none"></span></button>
   </div>
+  <div id="adm-mnt"></div>
   <div class="adm-tabs" id="adm-tabs">
     <button class="atb active" data-t="users" onclick="admTab('users')">👥 المستخدمون</button>
     <button class="atb" data-t="stats" onclick="admTab('stats')">📈 الإحصائيات</button>
@@ -7995,6 +7996,7 @@ function renderAdmin(t){
   if(!isAdmin()){ go('more'); toast(L('غير مسموح','Not allowed','Non autorisé')); return; }
   ADM_TAB=t||ADM_TAB;
   admDots(); admBellRefresh();
+  try{ if(typeof renderAdmMnt==='function') renderAdmMnt(); }catch(e){}
   document.querySelectorAll('#adm-tabs .atb').forEach(function(b){ b.classList.toggle('active', b.dataset.t===ADM_TAB); });
   const tools=document.getElementById('adm-search');
   if(tools) tools.style.display=(ADM_TAB==='users'&&!ADM_UID)?'block':'none';
@@ -12543,6 +12545,83 @@ function openOfferwall(){
   var dismissed=false; try{ dismissed=sessionStorage.getItem('iab-x')==='1'; }catch(e){}
   if(!dismissed) window.addEventListener('load',function(){ setTimeout(show,1200); });
 }catch(e){}})();
+</script>
+<script>
+/* وضع الصيانة: يقرأ العلم العام app_flags/maintenance. المدير يتجاوزه دائمًا. فشل الشبكة لا يقفل أحدًا. */
+(function(){ try{
+  var FLAG={on:false,msg:''}, T0=Date.now(), BUSY=false;
+  var st=document.createElement('style');
+  st.textContent='#mnt-ov{position:fixed;inset:0;z-index:2147483600;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:28px;box-sizing:border-box;background:radial-gradient(120% 80% at 50% 0,#12203a,#05070d 70%);color:#fff;font-family:Tajawal,system-ui,sans-serif}'+
+   '#mnt-ov .mi{font-size:64px;margin-bottom:18px}#mnt-ov h1{margin:0 0 12px;font-size:24px;color:#fbbf24}#mnt-ov p{margin:0 0 26px;color:#cbd5e1;line-height:2;font-size:15px;max-width:340px;white-space:pre-line}'+
+   '#mnt-ov button.mb{font:900 16px Tajawal,system-ui,sans-serif;color:#1a1200;border:0;border-radius:16px;padding:14px 34px;min-width:210px;background:linear-gradient(135deg,#ffd60a,#ffa200);cursor:pointer}'+
+   '#mnt-ov a.ma{margin-top:26px;color:#64748b;font-size:12px;text-decoration:underline;cursor:pointer}'+
+   '.mnt-card{margin:0 16px 10px;padding:12px 14px;border-radius:16px;border:1px solid var(--border,#1e293b);background:var(--card,#0f172a)}'+
+   '.mnt-card.on{border-color:#f59e0b;background:rgba(245,158,11,.10)}.mnt-card b{display:block;font-size:13.5px;margin-bottom:8px}'+
+   '.mnt-card input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:12px;border:1px solid var(--border,#1e293b);background:transparent;color:inherit;font:inherit;font-size:13px;margin-bottom:8px}'+
+   '.mnt-card button{width:100%;padding:11px;border-radius:12px;border:0;font:inherit;font-weight:900;font-size:14px;cursor:pointer;color:#fff}';
+  document.head.appendChild(st);
+  function sess(){ try{ return RealAuth.getSession(); }catch(e){ return null; } }
+  function adm(){ try{ return isAdmin(); }catch(e){ return false; } }
+  function lg(a,b,c){ try{ return L(a,b,c); }catch(e){ return a; } }
+  function esc2(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function live(){ try{ return DataGateway.config.DATA_MODE==='supabase'; }catch(e){ return false; } }
+  function ovEl(){ var e=document.getElementById('mnt-ov'); if(!e){ e=document.createElement('div'); e.id='mnt-ov'; document.body.appendChild(e); } return e; }
+  function apply(){
+    if(!live()) return;
+    var want=!!FLAG.on;
+    if(adm()){ want=false; try{ localStorage.setItem('pl-adm-hint','1'); }catch(e){} }
+    if(want && window.__mntLogin && !sess()) want=false;
+    if(want && sess()){ var h=''; try{ h=localStorage.getItem('pl-adm-hint')||''; }catch(e){} if(h && Date.now()-T0<6000) want=false; }
+    var e=document.getElementById('mnt-ov');
+    if(!want){ if(e) e.style.display='none'; return; }
+    e=ovEl();
+    var sig=FLAG.msg+'|'+(sess()?1:0);
+    if(e.getAttribute('data-sig')!==sig){
+      e.setAttribute('data-sig',sig);
+      e.innerHTML='<div class="mi">🔧</div><h1>'+lg('التطبيق تحت الصيانة','Under maintenance','En maintenance')+'</h1>'+
+        '<p>'+(esc2(FLAG.msg)||lg('نعمل على تحسين التطبيق وسنعود قريبًا.\nرصيدك وأرباحك محفوظة بأمان.','We are improving the app and will be back soon.\nYour balance and earnings are safe.','Nous améliorons l’application et revenons bientôt.\nVotre solde est en sécurité.'))+'</p>'+
+        '<button class="mb" onclick="mntRetry()">🔄 '+lg('إعادة المحاولة','Try again','Réessayer')+'</button>'+
+        (sess()?'':'<a class="ma" onclick="mntAdminLogin()">'+lg('دخول المشرف','Admin sign-in','Connexion admin')+'</a>');
+    }
+    e.style.display='flex';
+  }
+  async function pull(){
+    if(!live()||BUSY) return; BUSY=true;
+    try{
+      var r=await fetch(RealAuth.base()+'/rest/v1/app_flags?k=eq.maintenance&select=v',{headers:{apikey:RealAuth.key()},cache:'no-store'});
+      if(r.ok){ var j=await r.json(); var v=(Array.isArray(j)&&j[0]&&j[0].v)||null; if(v&&typeof v==='object'){ FLAG={on:v.on===true,msg:String(v.msg||'').slice(0,300)}; } else if(Array.isArray(j)&&!j.length){ FLAG={on:false,msg:''}; } }
+    }catch(e){}
+    BUSY=false; apply(); try{ mntAdmDraw(); }catch(e){}
+  }
+  window.mntRetry=function(){ pull(); };
+  window.mntAdminLogin=function(){ window.__mntLogin=true; apply(); };
+  /* لوحة التحكم: بطاقة التفعيل */
+  window.mntAdmDraw=function(){
+    var b=document.getElementById('adm-mnt'); if(!b) return;
+    var sig=(FLAG.on?1:0)+'|'+FLAG.msg;
+    if(b.getAttribute('data-sig')===sig && b.firstChild) return;
+    b.setAttribute('data-sig',sig);
+    b.innerHTML='<div class="mnt-card'+(FLAG.on?' on':'')+'"><b>🔧 '+lg('وضع الصيانة','Maintenance mode','Mode maintenance')+': '+(FLAG.on?'<span style="color:#fbbf24">'+lg('مفعّل — المستخدمون لا يستطيعون الدخول','ON — users cannot enter','ACTIF — accès bloqué')+'</span>':'<span style="color:#34d399">'+lg('مغلق — التطبيق يعمل','OFF — app is running','INACTIF — application active')+'</span>')+'</b>'+
+      '<input id="mnt-msg" maxlength="300" placeholder="'+lg('رسالة للمستخدمين (اختياري)','Message for users (optional)','Message aux utilisateurs (optionnel)')+'" value="'+esc2(FLAG.msg)+'">'+
+      '<button onclick="mntToggle()" style="background:'+(FLAG.on?'linear-gradient(135deg,#10b981,#059669)':'linear-gradient(135deg,#f59e0b,#d97706)')+'">'+(FLAG.on?'✅ '+lg('إيقاف الصيانة وفتح التطبيق','Turn off & reopen the app','Désactiver et rouvrir'):'🔧 '+lg('تفعيل الصيانة','Turn on maintenance','Activer la maintenance'))+'</button></div>';
+  };
+  window.mntToggle=function(){
+    var to=!FLAG.on, mi=document.getElementById('mnt-msg'), msg=mi?String(mi.value||'').slice(0,300):'';
+    ntfConfirm('🔧 '+lg('وضع الصيانة','Maintenance mode','Mode maintenance'),
+      to?lg('سيرى جميع المستخدمين شاشة «تحت الصيانة» ولن يستطيعوا الدخول. أنت كمشرف تدخل عادي. هل تريد التفعيل؟','All users will see the maintenance screen and cannot enter. You (admin) can still enter. Turn on?','Tous les utilisateurs verront l’écran de maintenance. Vous (admin) pouvez entrer. Activer ?')
+        :lg('سيعود التطبيق للعمل لجميع المستخدمين. هل تريد الإيقاف؟','The app will reopen for all users. Turn off?','L’application rouvrira pour tous. Désactiver ?'),
+      to?lg('تفعيل','Turn on','Activer'):lg('إيقاف','Turn off','Désactiver'), to, async function(){
+        try{ ntfConfirmClose(); }catch(e){}
+        var r=null; try{ r=await SRV.rpc('admin_set_maintenance',{p_on:to,p_msg:msg}); }catch(e){}
+        if(r&&r.ok===true){ FLAG={on:to,msg:msg}; toast(to?lg('🔧 تم تفعيل الصيانة','🔧 Maintenance is ON','🔧 Maintenance activée'):lg('✅ عاد التطبيق للعمل','✅ App is back','✅ Application rouverte')); apply(); mntAdmDraw(); }
+        else toast(lg('تعذّر الحفظ — شغّل ملف 55_maintenance.sql في Supabase','Could not save — run 55_maintenance.sql in Supabase','Échec — exécutez 55_maintenance.sql'));
+      });
+  };
+  var LASTP=0; window.renderAdmMnt=function(){ var b=document.getElementById('adm-mnt'); mntAdmDraw(); if(Date.now()-LASTP>10000){ LASTP=Date.now(); pull(); } };
+  setInterval(apply,2000); setInterval(pull,60000);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) pull(); });
+  setTimeout(pull,300);
+}catch(e){ try{ console.warn('[mnt]',e); }catch(_){} }})();
 </script>
 </body>
 </html>
