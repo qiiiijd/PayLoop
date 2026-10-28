@@ -67,7 +67,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.28-r58';
+window.PL_BUILD='2026.10.28-r59';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -6912,7 +6912,7 @@ const SRV={
     if(!this.on()||this._cyc) return;
     if(!force && Date.now()-this._last<10000) return;
     this._cyc=true;
-    try{ const _ls=Number(localStorage.getItem('r7-seen-at')||0); if(Date.now()-_ls>30*60000){ localStorage.setItem('r7-seen-at',String(Date.now())); const _s=RealAuth.getSession(); if(_s&&_s.uid) profileUpdate(_s.uid,{last_seen:new Date().toISOString()},_s.access_token); } }catch(e){}
+    try{ const _ls=Number(localStorage.getItem('r7-seen-at')||0); if(Date.now()-_ls>170000){ localStorage.setItem('r7-seen-at',String(Date.now())); const _s=RealAuth.getSession(); if(_s&&_s.uid) profileUpdate(_s.uid,{last_seen:new Date().toISOString()},_s.access_token); } }catch(e){}
     try{
       const _fullKv=force||this._needFull||this.isAdm()||!this._lastKv||(Date.now()-this._lastKv>180000);
       const pr=_fullKv?await DataGateway.pull():null; if(_fullKv) this._lastKv=Date.now();
@@ -8405,6 +8405,9 @@ function userMetrics(uid){
   const bal=parseFloat(raw('r7-bal'))||0;
   return {bal:bal, pts:parseInt(raw('r7-pts'),10)||0, done:done, prog:prog, wd:WRS.filter(function(r){ return (r.uid||'')===uid; }).length, diff:Ledger.diff(uid,bal)};
 }
+/* r59: «متصل الآن» = أرسل التطبيق نبضة خلال آخر 7 دقائق (والتطبيق مفتوح ومرئي؛ يتوقف النبض عند إغلاقه أو تصغيره) */
+function admOnline(u){ return !!(u&&u.last&&Date.now()-u.last<7*60000); }
+function admAgo(t){ const m=Math.max(1,Math.round((Date.now()-t)/60000)); if(m<60) return L(m+' د',m+' min',m+' min'); const h=Math.round(m/60); if(h<48) return L(h+' س',h+' h',h+' h'); return L(Math.round(h/24)+' يوم',Math.round(h/24)+' d',Math.round(h/24)+' j'); }
 function renderAdmUserList(){
   const box=document.getElementById('adm-body'); if(!box) return;
   const q=((document.getElementById('adm-q')||{}).value||'').trim().toUpperCase();
@@ -8418,12 +8421,13 @@ function renderAdmUserList(){
   if(ADM_UP>pages) ADM_UP=1;
   const SHOW=_srv?list:((ADM_UP===1)?list.slice(0,100):list.slice((ADM_UP-1)*PAGE,(ADM_UP-1)*PAGE+PAGE));
   const pager=(pages>1?'<div class="adm-pager"><button class="adm-pg"'+(ADM_UP<=1?' disabled':'')+' onclick="ADM_UP=Math.max(1,ADM_UP-1); renderAdmUserList()">'+L('السابق','Previous','Précédent')+'</button><span>'+L('صفحة '+ADM_UP+' من '+pages,'Page '+ADM_UP+' of '+pages,'Page '+ADM_UP+' sur '+pages)+'</span><button class="adm-pg"'+(ADM_UP>=pages?' disabled':'')+' onclick="ADM_UP=Math.min('+pages+',ADM_UP+1); renderAdmUserList()">'+L('التالي','Next','Suivant')+'</button></div>':'');
-  box.innerHTML=pager+SHOW.map(function(u){
+  const _on=SHOW.filter(admOnline).length;
+  box.innerHTML='<div style="padding:6px 14px;font-size:12px;font-weight:800;color:#4ade80">🟢 '+L('متصلون الآن في هذه القائمة: ','Online now in this list: ','En ligne dans cette liste : ')+_on+'</div>'+pager+SHOW.map(function(u){
     const ini=esc((u.name||'?').trim().charAt(0));
     return '<div class="adm-row" onclick="ADM_UID=\''+u.id+'\'; document.getElementById(\'adm-search\').style.display=\'none\'; admUserDetail();">'+
       '<div class="adm-av'+(u.blocked?' bad':'')+'">'+ini+'</div>'+
       '<div class="adm-rowi"><b>'+esc(u.name)+(u.role==='admin'?' 🔑':'')+(u.cloudOnly?' ☁️':'')+'</b><span>'+(u.pid?'<b class="pidtag">'+esc(u.pid)+'</b> · ':'')+esc(u.id)+(function(){ if(u.cloudOnly) return ''; const m=userMetrics(u.id); return ' · 💰 $'+m.bal.toFixed(2)+' · ✅ '+m.done+' · 🟡 '+m.prog+' · 💸 '+m.wd+(Math.abs(m.diff)>0.01?' · ⚠️':''); })()+'</span></div>'+
-      (u.blocked?'<span class="adm-badge red">'+L('محظور','Blocked','Bloqué')+'</span>':'<span class="adm-badge grn">'+L('نشط','Active','Actif')+'</span>')+
+      (u.blocked?'<span class="adm-badge red">'+L('محظور','Blocked','Bloqué')+'</span>':(admOnline(u)?'<span class="adm-badge grn">🟢 '+L('متصل الآن','Online','En ligne')+'</span>':'<span class="adm-badge" style="background:rgba(148,163,184,.18);color:#94a3b8">⚪ '+L('غير متصل','Offline','Hors ligne')+(u.last?' · '+admAgo(u.last):'')+'</span>'))+
       '<span class="adm-badge blu">👥 '+(u.refn||0)+'</span>'+
       ((ADM_EARN.byUid[u.id]&&ADM_EARN.byUid[u.id].earned>0)?'<span class="adm-badge grn">💰 $'+Number(ADM_EARN.byUid[u.id].earned).toFixed(2)+'</span>':'')+
     '</div>';
