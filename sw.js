@@ -1,12 +1,17 @@
-/* v10 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
-var SHELL = 'pl-shell-v1';
+/* v11 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
+/* رقم الإصدار: يجب أن يطابق window.PL_BUILD في index.html. عند تغييره يحذف الـ SW نسخة الصفحة القديمة المحفوظة ويبلّغ الصفحات المفتوحة بوجود تحديث. */
+var BUILD = '2026.10.29-r63';
+var SHELL = 'pl-shell-' + BUILD;
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
   e.waitUntil((async function () {
     try { var ks = await caches.keys(); await Promise.all(ks.filter(function (k) { return k.indexOf('pl-shell-') === 0 && k !== SHELL; }).map(function (k) { return caches.delete(k); })); } catch (x) {}
     await self.clients.claim();
+    /* r63: أبلغ كل الصفحات المفتوحة بالإصدار الجديد ليظهر لها «يتوفر تحديث» */
+    try { var cl = await self.clients.matchAll({ type: 'window', includeUncontrolled: true }); cl.forEach(function (c) { try { c.postMessage({ type: 'build', build: BUILD }); } catch (y) {} }); } catch (z) {}
   })());
 });
+self.addEventListener('message', function (e) { try { if (e.data && e.data.type === 'getBuild' && e.source) e.source.postMessage({ type: 'build', build: BUILD }); } catch (x) {} });
 
 /* فتح التطبيق بدون إنترنت: بدل صفحة المتصفح الرمادية تظهر شاشة PayLoop. لا يوجد أي تخزين: إن نجح الطلب يُمرَّر كما هو دون تدخل. */
 var OFFLINE_HTML = '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#05070d"><title>PayLoop</title>' +
