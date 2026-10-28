@@ -67,7 +67,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.26-r54';
+window.PL_BUILD='2026.10.28-r58';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -186,13 +186,13 @@ window.PL_BUILD='2026.10.26-r54';
   NG.check=check;
   NG.suspect=function(){ if(!NG.up) return; clearTimeout(sugT); sugT=setTimeout(check,400); };
   /* أي فشل شبكة في طلب حقيقي يطلب فحصًا فوريًا (لا يغيّر سلوك الطلب نفسه) */
-  try{ if(_f){ var orig=window.fetch; window.fetch=function(){ var p=orig.apply(this,arguments); try{ p.catch(function(){ NG.suspect(); }); }catch(e){} return p; }; } }catch(e){}
+  try{ if(_f){ var orig=window.fetch; window.fetch=function(){ var p=orig.apply(this,arguments); try{ p.then(function(){ window.__ngOk=Date.now(); },function(){ NG.suspect(); }); }catch(e){} return p; }; } }catch(e){}
   window.addEventListener('offline',function(){ show(); check(); });    /* فوري: لا ننتظر */
   window.addEventListener('online',function(){ check(); });
   window.addEventListener('focus',function(){ check(); });
   window.addEventListener('pageshow',function(){ check(); });
   document.addEventListener('visibilitychange',function(){ if(!document.hidden) check(); });
-  setInterval(function(){ if(NG.up&&!document.hidden) check(); },20000);   /* كشف Wi-Fi بلا إنترنت فعلي */
+  setInterval(function(){ if(NG.up&&!document.hidden&&Date.now()-(window.__ngOk||0)>45000) check(); },60000);   /* كشف Wi-Fi بلا إنترنت فعلي */
   if(navigator.onLine===false) show();
   check();
   /* عند الفتح بدون إنترنت أصلًا: Service Worker يعرض شاشة الاتصال بدل صفحة المتصفح (لا يخزّن التطبيق ولا بياناته) */
@@ -2850,6 +2850,8 @@ html.lite .vip-hero:before{display:none}
 
   <div id="wd-rate" style="display:none;margin:12px 18px 0;padding:12px 14px;border-radius:16px;border:1px solid rgba(251,191,36,.45);background:rgba(251,191,36,.08);align-items:center;gap:10px"><span style="font-size:22px">💱</span><div style="line-height:1.8"><b style="font-size:14px;color:#fbbf24" dir="auto"><span class="wd-rate-t"></span></b><div style="font-size:12px;color:#cbd5e1" class="wd-rate-s"></div></div></div>
 
+  <div id="wd-rules" style="display:none;margin:12px 18px 0;padding:13px 14px;border-radius:16px;border:1px solid rgba(56,189,248,.4);background:rgba(56,189,248,.08)"></div>
+
   <div class="w-time" style="margin:12px 18px 0"><b data-i18n="wd.time">⏱ مدة المعالجة: من 48 إلى 72 ساعة</b><span data-i18n="wd.timeSub">تتم مراجعة الطلب قبل التحويل ثم إشعارك بالنتيجة</span></div>
 
   <div id="wd-req"></div>
@@ -5061,6 +5063,23 @@ function wdApplyCountry(){
 }
 const WD_DZD=200;   /* سعر السحب إلى CCP: 1$ = 200 دج */
 function wdAlg(){ try{ var u=curUser(); return !!u&&u.cty==='الجزائر'; }catch(e){ return false; } }   /* فقط لمن اختار الجزائر */
+/* ---- r58: شرط الأصدقاء + الرسوم ---- */
+function wdFeeOf(v,k){ const R=SRV.wdRules; if(!R||!(R.fee_pct>0)||(k!=='ccp'&&k!=='pp'&&k!=='usdt')||!(v>0)) return 0; return Math.round(v*R.fee_pct/100*10000)/10000; }
+function wdRefsLock(){ const R=SRV.wdRules; if(!R||R.exempt||!(R.min_refs>0)) return null; return R.refs<R.min_refs?{have:R.refs,need:R.min_refs}:null; }
+function wdRulesDraw(){ try{
+  const bx=document.getElementById('wd-rules'); if(!bx) return; const R=SRV.wdRules;
+  if(!R||(!(R.min_refs>0)&&!(R.fee_pct>0))){ bx.style.display='none'; return; }
+  let h='';
+  if(R.min_refs>0&&!R.exempt){
+    const n=Math.min(R.refs,R.min_refs), pc=Math.round(n/R.min_refs*100), ok=R.refs>=R.min_refs;
+    h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:20px">'+(ok?'✅':'👥')+'</span><b style="font-size:13.5px;color:'+(ok?'#4ade80':'#7dd3fc')+'">'+(ok?L('شرط الأصدقاء مكتمل — يمكنك السحب','Friends requirement complete — you can withdraw','Condition remplie — retrait possible'):L('للسحب ادعُ '+R.min_refs+' أصدقاء عبر رابط دعوتك','To withdraw, invite '+R.min_refs+' friends with your link','Pour retirer, invitez '+R.min_refs+' amis avec votre lien'))+'</b><span style="margin-inline-start:auto;font-weight:900;direction:ltr">'+R.refs+'/'+R.min_refs+'</span></div>'
+      +'<div style="height:8px;border-radius:99px;background:rgba(255,255,255,.10);overflow:hidden"><i style="display:block;height:100%;width:'+pc+'%;background:linear-gradient(90deg,#38bdf8,#4ade80);border-radius:99px"></i></div>';
+    if(!ok) h+='<div style="display:flex;gap:8px;margin-top:10px"><button type="button" onclick="copyLink()" style="flex:1;border:0;border-radius:11px;padding:9px;font:inherit;font-weight:900;font-size:12.5px;background:#38bdf8;color:#082f49;cursor:pointer">'+L('📋 انسخ رابط الدعوة','📋 Copy invite link','📋 Copier le lien')+'</button><button type="button" onclick="go(\'invite\')" style="flex:1;border:1px solid var(--border);border-radius:11px;padding:9px;font:inherit;font-weight:800;font-size:12.5px;background:transparent;color:var(--text);cursor:pointer">'+L('صفحة الدعوة','Invite page','Page parrainage')+'</button></div><div style="font-size:11px;color:var(--muted);margin-top:7px">'+L('يُحسب الصديق عندما يُنشئ حسابه من رابطك.','A friend counts once they sign up from your link.','Un ami compte dès son inscription via votre lien.')+'</div>';
+  }
+  if(R.fee_pct>0) h+='<div style="font-size:11.5px;color:var(--muted);margin-top:'+(h?'9':'0')+'px">💳 '+L('رسوم السحب '+R.fee_pct+'% من المبلغ (CCP / PayPal / USDT) — تُخصم من المبلغ وتظهر لك قبل الإرسال.','Withdrawal fee '+R.fee_pct+'% of the amount (CCP / PayPal / USDT) — deducted and shown before you submit.','Frais de retrait '+R.fee_pct+' % (CCP / PayPal / USDT) — déduits et affichés avant l\'envoi.')+'</div>';
+  bx.innerHTML=h; bx.style.display='block';
+}catch(e){} }
+try{ document.addEventListener('DOMContentLoaded',function(){ setTimeout(wdRulesDraw,1500); }); }catch(e){}
 function wdRateDraw(){ try{
   var bx=document.getElementById('wd-rate'); if(bx) bx.style.display=wdAlg()?'flex':'none';
   var t=document.querySelector('#wd-rate .wd-rate-t'), u=document.querySelector('#wd-rate .wd-rate-s'); if(!t||!u) return;
@@ -5076,7 +5095,9 @@ function wdCheck(k){
   if(raw && !(v>=3)){ cls='bad'; msg=L('الحد الأدنى للسحب $3.00','Minimum withdrawal is $3.00','Le minimum est 3,00 $'); }
   else if(raw && v>BAL+1e-9){ cls='bad'; msg=L('رصيدك غير كافٍ — المتاح $'+BAL.toFixed(2),'Insufficient balance — available $'+BAL.toFixed(2),'Solde insuffisant'); }
   else if(raw && wdPendingBlock()){ cls='bad'; msg=L('لديك طلب سحب قيد المعالجة — انتظر مراجعة الطلب الحالي','You already have a pending request — wait for review','Une demande est déjà en cours'); }
+  else if(raw && wdRefsLock()){ const _l=wdRefsLock(); cls='bad'; msg=L('🔒 تحتاج '+_l.need+' أصدقاء مسجّلين بدعوتك للسحب (لديك '+_l.have+')','🔒 You need '+_l.need+' friends joined via your link to withdraw (you have '+_l.have+')','🔒 Il faut '+_l.need+' amis inscrits via votre lien (vous : '+_l.have+')'); }
   else if(raw){ cls='ok'; msg=L('✓ المبلغ صالح — سيُحجز من رصيدك عند الإرسال','✓ Valid — will be held from your balance on submit','✓ Valide — sera bloqué à l\'envoi'); }
+  if(cls==='ok'){ const _f=wdFeeOf(v,k); if(_f>0) msg+=' · '+L('الرسوم $'+_f.toFixed(3)+' ← ستستلم $'+(v-_f).toFixed(3),'Fee $'+_f.toFixed(3)+' → you receive $'+(v-_f).toFixed(3),'Frais '+_f.toFixed(3)+' $ → vous recevez '+(v-_f).toFixed(3)+' $'); }
   if(cls==='ok'&&k==='ccp'&&wdAlg()) msg+=' · ≈ '+Math.round(v*WD_DZD)+' '+L('دج','DZD','DA');
   if(help){ help.textContent=msg; help.className='wv-help '+cls; }
   let fieldsOk=true;
@@ -5143,6 +5164,8 @@ async function submitWD(k){
     det.network=net; det.address=ad;
   } else return;
   if(!(v>=3)){ toast(L('الحد الأدنى للسحب $3.00','Minimum withdrawal is $3.00','Le minimum est 3,00 $')); wdCheck(k); return; }
+  try{ if(SRV.cfg()&&Date.now()-SRV._rulesAt>15000) await SRV.pullRules(); }catch(e){}
+  { const _l=wdRefsLock(); if(_l){ toast(L('🔒 لا يمكن السحب قبل أن يسجّل '+_l.need+' أصدقاء عبر رابط دعوتك (لديك '+_l.have+')','🔒 Need '+_l.need+' friends via your link (you have '+_l.have+')','🔒 Il faut '+_l.need+' amis via votre lien (vous : '+_l.have+')')); wdCheck(k); try{ document.getElementById('wd-rules').scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} return; } }
   if(v>BAL+1e-9){ toast(L('رصيدك غير كافٍ — المتاح $'+BAL.toFixed(2),'Insufficient balance — available $'+BAL.toFixed(2),'Solde insuffisant')); wdCheck(k); return; }
   const btn=document.getElementById('wd-btn-'+k);
   WD_LOCK=true; wdBtnBusy(btn, true); if(btn) btn.disabled=true;
@@ -6565,6 +6588,7 @@ const SRV={
   err(why){
     const M={
       balance:L('رصيدك غير كافٍ','Insufficient balance','Solde insuffisant'),
+      need_refs:L('🔒 لا يمكن السحب قبل أن يسجّل 5 أصدقاء عبر رابط دعوتك','🔒 Withdrawals unlock after 5 friends join with your invite link','🔒 Retrait débloqué après 5 amis inscrits via votre lien'),
       pending_exists:L('لديك طلب سحب قيد المعالجة، يرجى انتظار مراجعة الطلب الحالي.','You have a withdrawal under review.','Une demande est en cours.'),
       algeria_only:L('هذه الطريقة متاحة لمستخدمي الجزائر فقط','Available for Algeria only','Réservé à l\'Algérie'),
       min:L('المبلغ أقل من الحد الأدنى','Below the minimum amount','Montant inférieur au minimum'),
@@ -6804,8 +6828,13 @@ const SRV={
     if(!this.on()) return;
     let _me=''; try{ _me=String(SRV.uid()||''); }catch(e){}
     if(!/^[0-9a-f-]{36}$/i.test(_me)) return;   /* لا نقرأ تقدّم المهام بدون معرّف المستخدم: لا نعتمد على RLS وحدها */
-    const rows=await this.get('/rest/v1/task_progress?select=user_id,task_id,state,level,paid,updated_at&user_id=eq.'+_me+'&limit=2000');
+    /* r55: بعد أول جلب كامل نجلب الصفوف المتغيّرة فقط (مع تراجع 5 ثوانٍ للأمان)، وجلب كامل كل 30 دقيقة */
+    const _pc=this._pgCur&&this._pgCur.u===_me?this._pgCur:null;
+    const _inc=_pc&&(Date.now()-_pc.full<1800000);
+    const rows=await this.get('/rest/v1/task_progress?select=user_id,task_id,state,level,paid,updated_at&user_id=eq.'+_me+(_inc?'&updated_at=gt.'+encodeURIComponent(new Date(Math.max(0,_pc.t-90000)).toISOString()):'')+'&order=updated_at.desc&limit=2000');
     if(!Array.isArray(rows)) return;
+    { let mx=_inc?_pc.t:0; rows.forEach(function(r){ const t=Date.parse(r&&r.updated_at)||0; if(t>mx) mx=t; }); this._pgCur={u:_me,t:mx,full:_inc?_pc.full:Date.now()}; }
+    if(_inc&&!rows.length) return;
     const by={}; rows.forEach(function(r){ if(r&&String(r.user_id||_me)===_me) by[r.task_id]=r; });   /* صفوف غيرك تُتجاهل حتى لو أرسلها الخادم */
     const tp=TaskEngine.all(); let ts=false;
     TASKS.forEach(function(t,ti){
@@ -6821,6 +6850,14 @@ const SRV={
     try{ LS.set('r16-tp', JSON.stringify(tp)); }catch(e){}
     if(ts) saveTS();
   },
+  /* r58: شروط السحب من الخادم (عدد الأصدقاء المطلوب + نسبة الرسوم). إن لم يُشغَّل ملف 57 بعدُ تبقى null فلا يظهر شيء */
+  async pullRules(){
+    if(!this.on()) return;
+    const r=await this.rpc('wd_rules',{}); this._rulesAt=Date.now();
+    if(r&&typeof r.min_refs==='number'){ this.wdRules=r; } else if(r&&r.ok===false&&!r.net) { this.wdRules=null; }
+    try{ wdRulesDraw(); }catch(e){}
+  },
+  wdRules:null, _rulesAt:0,
   async pullRefs(){
     if(!this.on()) return;
     const r=await this.rpc('my_referrals',{}); if(!r||typeof r.count!=='number') return;
@@ -6854,7 +6891,9 @@ const SRV={
     try{ await this.qFlush(); }catch(e){}
     const before=this.sig();
     const s=await this.pullState(); if(!s||s.ok!==true) return false;
-    await this.pullWd(); await Promise.all([this.pullLedger(), this.pullProgress(), this.pullRefs()]);
+    /* r55: دورة خفيفة (طلب واحد) إن لم يتغيّر شيء؛ الدورة الكاملة عند التغيّر أو كل ~5 دقائق أو للإدارة أو بعد غياب */
+    const nowT=Date.now(), full=this._needFull||this.isAdm()||before!==this.sig()||!this._lastFull||(nowT-this._lastFull>300000+(this._jit||(this._jit=Math.floor(Math.random()*60000))));
+    if(full){ this._needFull=false; this._lastFull=nowT; await this.pullWd(); await Promise.all([this.pullLedger(), this.pullProgress(), this.pullRefs(), this.pullRules()]); }
     if(this.isAdm()){ try{ await this.pullTickets(); }catch(e){} this.pullStats(); try{ loadEarnings(); }catch(e){} }
     this._last=Date.now();
     this.paint(before!==this.sig());
@@ -6875,7 +6914,8 @@ const SRV={
     this._cyc=true;
     try{ const _ls=Number(localStorage.getItem('r7-seen-at')||0); if(Date.now()-_ls>30*60000){ localStorage.setItem('r7-seen-at',String(Date.now())); const _s=RealAuth.getSession(); if(_s&&_s.uid) profileUpdate(_s.uid,{last_seen:new Date().toISOString()},_s.access_token); } }catch(e){}
     try{
-      const pr=await DataGateway.pull();
+      const _fullKv=force||this._needFull||this.isAdm()||!this._lastKv||(Date.now()-this._lastKv>180000);
+      const pr=_fullKv?await DataGateway.pull():null; if(_fullKv) this._lastKv=Date.now();
       if(pr&&pr.applied>0){ try{ applyTaskCustom(); }catch(e){} try{ newsBellRefresh(); }catch(e){} try{ renderTasks(curCat); renderFeatured(); }catch(e){} }
       await this.refresh();
       await DataGateway.push();
@@ -6886,11 +6926,11 @@ const SRV={
     if(this._started) return; this._started=true;
     this.probe();
     const self=this;
-    const tick=function(){ try{ if(!document.hidden) self.cycle(false); }catch(e){} setTimeout(tick, 60000+Math.floor(Math.random()*30000)); };
+    const tick=function(){ try{ if(!document.hidden) self.cycle(false); }catch(e){} setTimeout(tick, 90000+Math.floor(Math.random()*60000)); };
     setTimeout(tick, 2500);
     try{ window.addEventListener('online', function(){ self.cycle(true); self.qFlush(); }); }catch(e){}
     try{ window.addEventListener('focus', function(){ self.cycle(false); }); }catch(e){}
-    try{ document.addEventListener('visibilitychange', function(){ if(!document.hidden) self.cycle(false); }); }catch(e){}
+    try{ document.addEventListener('visibilitychange', function(){ if(document.hidden){ self._hidAt=Date.now(); } else { if(self._hidAt&&Date.now()-self._hidAt>120000) self._needFull=true; self.cycle(false); } }); }catch(e){}
   },
   afterLogin(){ if(this.cfg()&&this.uid()){ this.cycle(true); try{ setTimeout(function(){ if(typeof cpxWatch==='function') cpxWatch(); },6000); }catch(e){} try{ Push.sync(); }catch(e){} try{ if(_pendingGo){ const g=_pendingGo; _pendingGo=null; setTimeout(function(){ pushGo(g); },600); } }catch(e){} } },
   pushSoon(){ if(!this.on()) return; clearTimeout(this._pT); this._pT=setTimeout(function(){ try{ DataGateway.push(); }catch(e){} },2500); },
@@ -7476,7 +7516,7 @@ const Push={
 let _pendingGo=null;
 function pushGo(g){ if(!g) return; if(!SESSION){ _pendingGo=g; return; } try{ ntfNavigate(g); }catch(e){} }
 try{ const _m=String(location.hash||'').match(/^#go=([a-z_]{2,24})$/); if(_m){ _pendingGo=_m[1]; history.replaceState(null,'',location.pathname+location.search); } }catch(e){}
-try{ if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',function(ev){ const d=ev&&ev.data||{}; if(d.type==='go') pushGo(d.go); else if(d.type==='push'){ try{ SRV.cycle(true); }catch(e){} try{ setTimeout(function(){ Push.render(); },800); }catch(e){} } }); }catch(e){}
+try{ if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',function(ev){ const d=ev&&ev.data||{}; if(d.type==='go') pushGo(d.go); else if(d.type==='push'){ try{ setTimeout(function(){ SRV.cycle(true); },Math.floor(Math.random()*6000)); SRV._needFull=true; }catch(e){} try{ setTimeout(function(){ Push.render(); },800); }catch(e){} } }); }catch(e){}
 
 function doLogout(){
   try{ localStorage.removeItem('r7-adm-rev'); }catch(e){}   /* بعد الخروج تختفي لوحة التحكم حتى تُفتح من جديد بالنقرات + كلمة السر */
@@ -10180,6 +10220,7 @@ function admWrInfo(id){
   }
   if(!d.fullName&&!d.ccpNumber&&!d.paypalEmail&&!d.network&&!d.phone&&r.acc) rows+=row(L('الحساب','Account','Compte'), '<span dir="ltr">'+esc(String(r.acc))+'</span>');
   rows+=row(L('المبلغ','Amount','Montant'), '<span dir="ltr">'+money_(r.amount)+'</span>');
+  if(d.fee_usd>0) rows+=row(L('الرسوم ('+d.fee_pct+'%)','Fee ('+d.fee_pct+'%)','Frais ('+d.fee_pct+' %)'), '<span dir="ltr">$'+Number(d.fee_usd).toFixed(4)+'</span>')+row(L('الصافي للتحويل','Net to send','Net à envoyer'), '<b dir="ltr">$'+Number(d.net_usd).toFixed(4)+'</b>');
   rows+=row(L('تاريخ الطلب','Requested at','Demandé le'), '<span dir="ltr">'+fmtDate(r.date)+'</span>');
   if(r.decidedAt) rows+=row(L('تاريخ القرار','Decided at','Décidé le'), '<span dir="ltr">'+fmtDate(r.decidedAt)+(r.decidedBy?(' — '+esc(r.decidedBy)):'')+'</span>');
   let log='';
@@ -12649,7 +12690,7 @@ function openOfferwall(){
   var LASTP=0; window.renderAdmMnt=function(){ var b=document.getElementById('adm-mnt'); mntAdmDraw(); if(Date.now()-LASTP>10000){ LASTP=Date.now(); pull(); } };
   window.__mntReady=function(){ var m=window.__MNT0; if(m&&m.flag) FLAG=m.flag; apply(); try{ mntAdmDraw(); }catch(e){} };
   if(window.__MNT0&&window.__MNT0.done) window.__mntReady();
-  setInterval(apply,2000); setInterval(pull,60000);
+  setInterval(apply,2000); setInterval(pull,120000);
   document.addEventListener('visibilitychange',function(){ if(!document.hidden) pull(); });
   if(!(window.__MNT0&&window.__MNT0.flag)) setTimeout(pull,300);
 }catch(e){ try{ console.warn('[mnt]',e); }catch(_){} }})();
