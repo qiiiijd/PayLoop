@@ -67,7 +67,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.28-r59';
+window.PL_BUILD='2026.10.28-r61';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -2779,6 +2779,7 @@ html.lite .vip-hero:before{display:none}
     <button data-i18n="btn.start" class="start-btn" onclick="go('tasks')">ابدأ الربح</button>
   </div>
   <div id="home-hello"></div>
+  <div id="home-guide"></div>
 
   <div class="section"><div class="section-title" data-i18n="sec.promo">🎁 مكافآت مميزة</div></div>
   <div class="promo-scroll">
@@ -3115,6 +3116,9 @@ html.lite .vip-hero:before{display:none}
   <div class="pf-block qopts">
     <div class="qrow"><span class="ql">🌗 <span data-i18n="set.theme">المظهر</span></span>
       <div class="seg mini" id="seg-theme2"><button data-v="dark" onclick="setTheme('dark')"><span data-i18n="set.dark">داكن</span></button><button data-v="light" onclick="setTheme('light')"><span data-i18n="set.light">فاتح</span></button></div>
+    </div>
+    <div class="qrow"><span class="ql">🔠 <span id="sz-lbl">حجم الخط</span></span>
+      <div class="seg mini" id="seg-size"><button data-v="1" onclick="setSize('1')"><span id="sz-n">عادي</span></button><button data-v="1.18" onclick="setSize('1.18')"><span id="sz-l">كبير</span></button></div>
     </div>
     <div class="qrow"><span class="ql">🌐 <span data-i18n="set.lang">اللغة</span></span>
       <div class="seg mini" id="seg-lang2"><button data-v="ar" onclick="setLang('ar')">العربية</button><button data-v="fr" onclick="setLang('fr')">Français</button><button data-v="en" onclick="setLang('en')">English</button></div>
@@ -5063,6 +5067,24 @@ function wdApplyCountry(){
 }
 const WD_DZD=200;   /* سعر السحب إلى CCP: 1$ = 200 دج */
 function wdAlg(){ try{ var u=curUser(); return !!u&&u.cty==='الجزائر'; }catch(e){ return false; } }   /* فقط لمن اختار الجزائر */
+/* ===== r61: تبسيط للمستخدمين الأكبر سنًا: بطاقة «كيف أربح؟» + حجم الخط الكبير ===== */
+function setSize(v){ try{ v=(v==='1.18')?'1.18':'1'; LS.set('pl-size',v); document.documentElement.style.zoom=(v==='1'?'':v); segSet('seg-size',v); }catch(e){} }
+try{ const _z=LS.get('pl-size'); if(_z==='1.18') document.documentElement.style.zoom='1.18'; }catch(e){}
+function szDraw(){ try{ const a=document.getElementById('sz-lbl'); if(!a) return; a.textContent=L('حجم الخط','Text size','Taille du texte'); document.getElementById('sz-n').textContent=L('عادي','Normal','Normal'); document.getElementById('sz-l').textContent=L('كبير','Large','Grand'); segSet('seg-size',LS.get('pl-size')==='1.18'?'1.18':'1'); }catch(e){} }
+function homeGuideDraw(){ try{
+  const bx=document.getElementById('home-guide'); if(!bx) return;
+  let off=false; try{ off=localStorage.getItem('pl-guide-x')==='1'; }catch(e){}
+  const R=(typeof SRV!=='undefined'&&SRV.wdRules)||null, mr=(R&&R.min_refs>0&&!R.exempt)?R.min_refs:0; const sig=(off?'x':'o')+(typeof LANG!=='undefined'?LANG:'')+mr; if(bx.getAttribute('data-sig')===sig) return; bx.setAttribute('data-sig',sig);
+  if(off){ bx.innerHTML=''; return; }
+  const st=function(n,ic,t,d){ return '<div style="display:flex;gap:12px;align-items:center;padding:10px 0"><div style="flex:none;width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#38bdf8,#2563eb);display:flex;align-items:center;justify-content:center;font-size:22px">'+ic+'</div><div style="line-height:1.55"><b style="font-size:15px">'+n+'. '+t+'</b><div style="font-size:12.5px;color:var(--muted)">'+d+'</div></div></div>'; };
+  bx.innerHTML='<div style="margin:12px 18px 0;padding:14px 16px;border-radius:18px;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.07)">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between"><b style="font-size:16px">💡 '+L('كيف أربح؟ (3 خطوات بسيطة)','How do I earn? (3 easy steps)','Comment gagner ? (3 étapes)')+'</b><button type="button" onclick="try{localStorage.setItem(\'pl-guide-x\',\'1\')}catch(e){} homeGuideDraw()" aria-label="close" style="border:0;background:transparent;color:var(--muted);font-size:20px;cursor:pointer">✕</button></div>'
+    +st(1,'👆',L('اضغط «المهام» من الأسفل','Tap “Tasks” below','Appuyez sur « Tâches »'),L('اختر أي مهمة (استطلاع، لعبة، تطبيق…) واقرأ المبلغ المكتوب عليها.','Pick any task (survey, game, app…) and check the reward.','Choisissez une tâche et vérifiez la récompense.'))
+    +st(2,'✅',L('أنجز المهمة كما هي مكتوبة','Complete it as described','Terminez-la comme indiqué'),L('عند انتهائها يُضاف المبلغ إلى رصيدك تلقائيًا (قد يتأخر دقائق).','The reward is added to your balance automatically (may take minutes).','La récompense est ajoutée automatiquement (quelques minutes).'))
+    +st(3,'💸',L('اسحب أرباحك','Withdraw your money','Retirez vos gains'),(L('من «السحب» ابتداءً من $3.','From “Withdraw”, from $3.','Dès 3 $.')+(mr?L(' تحتاج أيضًا '+mr+' أصدقاء سجّلوا برابط دعوتك.',' You also need '+mr+' friends who joined with your invite link.',' Il faut aussi '+mr+' amis inscrits via votre lien.'):'')))
+    +'<button type="button" onclick="go(\'tasks\')" style="width:100%;margin-top:6px;border:0;border-radius:13px;padding:12px;font:900 15px inherit;background:#38bdf8;color:#082f49;cursor:pointer">'+L('ابدأ الآن ←','Start now →','Commencer →')+'</button></div>';
+}catch(e){} }
+try{ document.addEventListener('DOMContentLoaded',function(){ setTimeout(function(){ homeGuideDraw(); szDraw(); },1200); }); setInterval(function(){ homeGuideDraw(); szDraw(); },4000); }catch(e){}
 /* ---- r58: شرط الأصدقاء + الرسوم ---- */
 function wdFeeOf(v,k){ const R=SRV.wdRules; if(!R||!(R.fee_pct>0)||(k!=='ccp'&&k!=='pp'&&k!=='usdt')||!(v>0)) return 0; return Math.round(v*R.fee_pct/100*10000)/10000; }
 function wdRefsLock(){ const R=SRV.wdRules; if(!R||R.exempt||!(R.min_refs>0)) return null; return R.refs<R.min_refs?{have:R.refs,need:R.min_refs}:null; }
@@ -6912,7 +6934,7 @@ const SRV={
     if(!this.on()||this._cyc) return;
     if(!force && Date.now()-this._last<10000) return;
     this._cyc=true;
-    try{ const _ls=Number(localStorage.getItem('r7-seen-at')||0); if(Date.now()-_ls>170000){ localStorage.setItem('r7-seen-at',String(Date.now())); const _s=RealAuth.getSession(); if(_s&&_s.uid) profileUpdate(_s.uid,{last_seen:new Date().toISOString()},_s.access_token); } }catch(e){}
+    try{ const _ls=Number(localStorage.getItem('r7-seen-at')||0); if(Date.now()-_ls>170000){ localStorage.setItem('r7-seen-at',String(Date.now())); const _s=RealAuth.getSession(); if(_s&&_s.uid){ /* r60: نبضة حضور عبر دالة الخادم touch_seen (ملف 58)، وإن لم تكن موجودة نرجع لتعديل الجدول مباشرة */ this.rpc('touch_seen',{}).then(function(r){ if(!(r&&r.ok===true)&&!(r&&r.net)) profileUpdate(_s.uid,{last_seen:new Date().toISOString()},_s.access_token); }).catch(function(){}); } } }catch(e){}
     try{
       const _fullKv=force||this._needFull||this.isAdm()||!this._lastKv||(Date.now()-this._lastKv>180000);
       const pr=_fullKv?await DataGateway.pull():null; if(_fullKv) this._lastKv=Date.now();
@@ -8127,7 +8149,7 @@ function admUProfHtml(u){
       row(L('الهاتف','Phone','Téléphone'),'<span dir="ltr">'+esc(p.phone||'—')+'</span>')+row(L('الدولة','Country','Pays'),esc(p.country||'—'))+(p.wilaya?row(L('الولاية','Wilaya','Wilaya'),esc(p.wilaya)):'')+
       row(L('تاريخ التسجيل','Registered','Inscrit le'),admDt(p.created_at))+row(L('آخر ظهور','Last seen','Dernière activité'),admDt(p.last_seen))+row(L('رمز دعوته','Invite code','Code'),esc(p.ref_code||'—'))+refr+
       row(L('المهام المنجزة','Tasks completed','Tâches terminées'),String(p.done_count||0))+row(L('طلبات السحب','Withdrawal requests','Demandes de retrait'),(t.wd_count||0)+' ('+L('مرفوض','rejected','rejetés')+': '+(t.wd_rejected||0)+')')+
-      row(L('الحالة','Status','Statut'),p.blocked?('🚫 '+L('محظور','Blocked','Bloqué')):('✅ '+L('نشط','Active','Actif')))+'</div>'+
+      row(L('الحالة','Status','Statut'),p.blocked?('🚫 '+L('محظور','Blocked','Bloqué')):((p.last_seen&&Date.now()-Date.parse(p.last_seen)<7*60000)?('🟢 '+L('متصل الآن','Online','En ligne')):('⚪ '+L('غير متصل','Offline','Hors ligne'))))+'</div>'+
     '<div class="up-box"><div class="up-h">👥 '+L('الإحالات ('+(d.referral_count||0)+') · عمولته منها '+usdF(d.referral_commission),'Referrals ('+(d.referral_count||0)+') · commission '+usdF(d.referral_commission),'Parrainages ('+(d.referral_count||0)+') · commission '+usdF(d.referral_commission))+'</div>'+refs+'</div>'+
     '<div class="up-box"><div class="up-h">💸 '+L('سجل السحوبات','Withdrawal history','Historique des retraits')+'</div>'+wds+'</div>'+
     '<div class="up-box"><div class="up-h">🧩 '+L('آخر المهام','Recent tasks','Tâches récentes')+'</div>'+tks+'</div>'+
@@ -8447,7 +8469,7 @@ function admUserDetail(){
     '<button class="adm-back" onclick="ADM_UID=null; renderAdmUserList();">→ '+L('قائمة المستخدمون','Back to users','Retour')+'</button>'+
     '<div class="adm-detail">'+
     '<div class="adk-head"><div class="adm-av big">'+esc((u.name||'?').charAt(0))+'</div><div><b>'+esc(u.name)+'</b><span>'+(u.pid?'<b class="pidtag" onclick="copyText(\''+esc(u.pid)+'\')" title="نسخ">'+esc(u.pid)+' ⧉</b> · ':'')+esc(u.id)+' · '+(u.role==='admin'?L('مدير التطبيق','App admin','Administrateur'):L('عضو','Member','Membre'))+'</span></div>'+
-    (u.blocked?'<span class="adm-badge red">'+L('محظور','Blocked','Bloqué')+'</span>':'<span class="adm-badge grn">'+L('نشط','Active','Actif')+'</span>')+'</div>'+
+    (u.blocked?'<span class="adm-badge red">'+L('محظور','Blocked','Bloqué')+'</span>':(admOnline(u)?'<span class="adm-badge grn">🟢 '+L('متصل الآن','Online','En ligne')+'</span>':'<span class="adm-badge" style="background:rgba(148,163,184,.18);color:#94a3b8">⚪ '+L('غير متصل','Offline','Hors ligne')+(u.last?' · '+admAgo(u.last):'')+'</span>'))+'</div>'+
     '<div class="adk-grid">'+
     (SRV.cfg()
   ? '<div class="adk"><span>'+L('كلمة السر','Password','Mot de passe')+'</span><b>🔒 '+L('مشفّرة — لا يراها أحد','Encrypted — nobody can see it','Chiffré — invisible')+(u.email?' <button class="adk-rst" onclick="admSendReset(\''+esc(u.id)+'\')">📧 '+L('إرسال رابط إعادة تعيين','Send reset link','Envoyer un lien')+'</button>':'')+'</b></div>'
