@@ -67,7 +67,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.28-r61';
+window.PL_BUILD='2026.10.29-r62';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -226,8 +226,63 @@ if(_r7q){document.documentElement.setAttribute('data-hs','1');document.documentE
 else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.documentElement.setAttribute('data-hs','1');}
 }catch(e){}</script>
 <meta name="theme-color" content="#090d14">
+<script>/* r62: تثبيت التطبيق على الهاتف (PWA). يظهر شريط «حمّل التطبيق» في الأعلى فقط إذا لم يكن التطبيق مثبّتًا/مفتوحًا كتطبيق.
+   - أندرويد (Chrome/Samsung): المتصفح نفسه لا يطلق حدث التثبيت إن كان التطبيق مثبّتًا، فلا يظهر الشريط؛ وإن حُذف التطبيق يعود الحدث فيظهر الشريط من جديد. لا نحفظ «تم التثبيت» أبدًا.
+   - آيفون: لا يوجد حدث تثبيت؛ نعرض شرح «إضافة إلى الشاشة الرئيسية». داخل متصفحات التطبيقات (ماسنجر/فيسبوك…) نشرح فتحه في المتصفح.
+   - زر ✕ يخفي الشريط يومين فقط. */
+(function(){ try{
+  var DEF=null, shown=false, KEY='pl-inst-x', DAY=86400000;
+  var LGs=function(){ try{ var l=localStorage.getItem('r7-lang'); return (l==='fr'||l==='en')?l:'ar'; }catch(e){ return 'ar'; } };
+  var T={ar:{t:'حمّل تطبيق PayLoop',s:'يعمل على هاتفك مثل أي تطبيق، بدون متصفح',b:'تحميل',h:'كيف أحمّل التطبيق؟',
+      ios:['اضغط زر المشاركة ⬆️ في المتصفح (Safari)','اختر «إضافة إلى الشاشة الرئيسية»','اضغط «إضافة» — سيظهر التطبيق بين تطبيقاتك'],
+      x:'إغلاق'},
+    fr:{t:'Installez l’app PayLoop',s:'Elle s’ouvre comme une vraie app, sans navigateur',b:'Installer',h:'Comment installer ?',
+      ios:['Touchez le bouton Partager ⬆️ dans Safari','Choisissez « Sur l’écran d’accueil »','Touchez « Ajouter »'],
+      x:'Fermer'},
+    en:{t:'Install the PayLoop app',s:'Opens like a real app on your phone, no browser',b:'Install',h:'How to install',
+      ios:['Tap the Share button ⬆️ in Safari','Choose “Add to Home Screen”','Tap “Add”'],
+      x:'Close'}};
+  var UA=navigator.userAgent||'';
+  function standalone(){ try{ return matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||matchMedia('(display-mode: minimal-ui)').matches||navigator.standalone===true; }catch(e){ return false; } }
+  function isIOS(){ return /iPhone|iPad|iPod/i.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1); }
+  function inApp(){ return /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|MicroMessenger|Snapchat|TikTok|musical_ly|; wv\)/i.test(UA); }
+  function dismissed(){ try{ var t=Number(localStorage.getItem(KEY)||0); return t&&Date.now()-t<2*DAY; }catch(e){ return false; } }
+  function mode(){ if(standalone()||inApp()) return ''; if(DEF) return 'prompt'; if(isIOS()) return 'ios'; return ''; }  /* داخل متصفحات التطبيقات يتولّى شريط «افتح في المتصفح» الموجود مسبقًا الأمر */
+  function hide(){ var b=document.getElementById('pl-inst'); if(b) b.remove(); document.documentElement.classList.remove('pl-inst'); shown=false; }
+  function sheet(m){ var L=T[LGs()], el=document.createElement('div'); el.id='pl-inst-sh';
+    el.style.cssText='position:fixed;inset:0;z-index:2147483100;background:rgba(2,6,23,.78);display:flex;align-items:flex-end;justify-content:center;direction:'+(LGs()==='ar'?'rtl':'ltr');
+    var st=L.ios.map(function(x,i){ return '<div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0"><span style="flex:none;width:30px;height:30px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900">'+(i+1)+'</span><span style="line-height:1.6;font-size:14.5px">'+x+'</span></div>'; }).join('');
+    el.innerHTML='<div style="width:100%;max-width:460px;background:#0f172a;color:#f2f5ff;border-radius:22px 22px 0 0;padding:20px 20px 26px;font-family:Tajawal,system-ui,sans-serif"><b style="font-size:17px">'+L.h+'</b><div style="margin-top:8px">'+st+'</div>'
+      +'<button id="pl-inst-cl" type="button" style="width:100%;margin-top:10px;border:1px solid #334155;border-radius:13px;padding:12px;font:800 14px inherit;background:transparent;color:#cbd5e1">'+L.x+'</button></div>';
+    el.addEventListener('click',function(e){ if(e.target===el||e.target.id==='pl-inst-cl') el.remove(); });
+    document.body.appendChild(el);
+  }
+  function render(){ try{
+    var m=mode(); if(!m||dismissed()||!document.body){ if(!m||dismissed()) hide(); return; }
+    if(shown&&document.getElementById('pl-inst')) return; shown=true;
+    var L=T[LGs()], rtl=LGs()==='ar', b=document.createElement('div'); b.id='pl-inst'; b.setAttribute('dir',rtl?'rtl':'ltr');
+    b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:2147483000;display:flex;align-items:center;gap:10px;padding:max(8px,env(safe-area-inset-top)) 12px 8px;background:linear-gradient(135deg,#1e3a8a,#5b21b6);color:#fff;box-shadow:0 4px 18px rgba(0,0,0,.4);font-family:Tajawal,system-ui,sans-serif';
+    b.innerHTML='<img src="icon-192.png" alt="" width="40" height="40" style="border-radius:10px;flex:none"><div style="flex:1;min-width:0;line-height:1.35"><b style="font-size:14px;display:block">'+L.t+'</b><span style="font-size:11.5px;opacity:.85;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+L.s+'</span></div>'
+      +'<button id="pl-inst-go" type="button" style="flex:none;border:0;border-radius:99px;padding:9px 16px;font:900 13.5px inherit;background:#fff;color:#1e1b4b;cursor:pointer">'+L.b+'</button>'
+      +'<button id="pl-inst-x" type="button" aria-label="'+L.x+'" style="flex:none;border:0;background:transparent;color:#fff;font-size:20px;opacity:.8;cursor:pointer;padding:4px">✕</button>';
+    document.body.appendChild(b); document.documentElement.classList.add('pl-inst');
+    document.getElementById('pl-inst-x').onclick=function(){ try{ localStorage.setItem(KEY,String(Date.now())); }catch(e){} hide(); };
+    document.getElementById('pl-inst-go').onclick=function(){ var mm=mode();
+      if(mm==='prompt'&&DEF){ var d=DEF; try{ d.prompt(); d.userChoice.then(function(c){ DEF=null; if(c&&c.outcome==='accepted'){ hide(); } else { try{ localStorage.setItem(KEY,String(Date.now())); }catch(e){} hide(); } }).catch(function(){}); }catch(e){} }
+      else if(mm==='ios') sheet('ios'); };
+  }catch(e){} }
+  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); DEF=e; if(document.readyState!=='loading') render(); });
+  window.addEventListener('appinstalled',function(){ DEF=null; try{ localStorage.removeItem(KEY); }catch(e){} hide(); });
+  try{ matchMedia('(display-mode: standalone)').addEventListener('change',function(){ if(standalone()) hide(); }); }catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){ var st=document.createElement('style'); st.textContent='html.pl-inst body{padding-top:58px} html.pl-inst #auth-gate{top:58px}'; document.head.appendChild(st); setTimeout(render,1200); });
+  window.__plInstRender=render;
+}catch(e){} })();</script>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PayLoop">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PayLoop</title>
 <style>
