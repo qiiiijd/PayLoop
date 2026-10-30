@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>اختبار إعلان</title>
+<style>body{margin:0;background:#0b1220;color:#e6edf7;font:700 15px system-ui,sans-serif;padding:18px}h2{font-size:16px;margin:22px 0 8px;color:#7dd3fc}p{margin:0 0 10px;color:#9fb0c8;font-weight:600;font-size:13.5px;line-height:1.7}.box{min-height:56px;background:#111a2e;border:1px dashed #334155;border-radius:10px;padding:6px;text-align:center}iframe{border:0;width:320px;height:50px;max-width:100%}</style></head>
+<body>
+<h1 style="font-size:18px;margin:0 0 6px">صفحة اختبار الإعلان</h1>
+<p>انتظر 10 ثوانٍ، ثم قل لي أيّ المربعين ظهر فيه إعلان.</p>
+
+<h2>اختبار 1 — مباشر (بلا أي عزل)</h2>
+<div class="box">
+<script>
+  atOptions = {
+    'key' : '1eb5ec534500c5cdc43811653bf2876f',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };
+</script>
+<script src="https://bauval.org/22/1eb5ec534500c5cdc43811653bf2876f"></script>
+</div>
+
+<h2>اختبار 2 — كما في التطبيق (داخل إطار معزول)</h2>
+<div class="box" id="t2"></div>
+<script>
+(function(){
+  var KEY='1eb5ec534500c5cdc43811653bf2876f';
+  var doc='<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;overflow:hidden;background:transparent}</style></head><body><scr'+'ipt>atOptions={"key":"'+KEY+'","format":"iframe","height":50,"width":320,"params":{}};</scr'+'ipt><scr'+'ipt src="https://bauval.org/22/'+KEY+'"></scr'+'ipt></body></html>';
+  var f=document.createElement('iframe'); f.setAttribute('sandbox','allow-scripts allow-popups allow-popups-to-escape-sandbox'); f.setAttribute('scrolling','no'); f.srcdoc=doc; document.getElementById('t2').appendChild(f);
+})();
+</script>
+</body></html>
