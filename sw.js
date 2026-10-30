@@ -1,6 +1,6 @@
 /* v11 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
 /* رقم الإصدار: يجب أن يطابق window.PL_BUILD في index.html. عند تغييره يحذف الـ SW نسخة الصفحة القديمة المحفوظة ويبلّغ الصفحات المفتوحة بوجود تحديث. */
-var BUILD = '2026.10.30-r69';
+var BUILD = '2026.10.30-r71';
 var SHELL = 'pl-shell-' + BUILD;
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
@@ -64,7 +64,7 @@ self.addEventListener('push', function (e) {
     /* العنوان كما كتبته أنت تمامًا (بدون إضافة اسم التطبيق: أندرويد يعرض اسم التطبيق أصلًا في أعلى الإشعار) */
     var title = String(d.title || '').trim() || 'PayLoop';
     var opt = {
-      body: String(d.body || '').slice(0, 300), tag: d.tag || undefined, icon: 'icon-192.png', badge: 'badge-96.png?v=5',
+      body: String(d.body || '').slice(0, 300), tag: d.tag || undefined, icon: 'payloop-192.png', badge: 'badge-96.png?v=5',
       data: { go: d.go || null }, dir: 'auto', lang: 'ar',
       silent: false, vibrate: [200, 100, 200], timestamp: Date.now(), renotify: !!d.tag,
       actions: [{ action: 'open', title: '\u0641\u062a\u062d' }, { action: 'dismiss', title: '\u062a\u062c\u0627\u0647\u0644' }]

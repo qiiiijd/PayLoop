@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.30-r69';
+window.PL_BUILD='2026.10.30-r71';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -276,7 +276,7 @@ else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.docume
     if(shown&&document.getElementById('pl-inst')) return; shown=true;
     var L=T[LGs()], rtl=LGs()==='ar', b=document.createElement('div'); b.id='pl-inst'; b.setAttribute('dir',rtl?'rtl':'ltr');
     b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:2147483000;display:flex;align-items:center;gap:10px;padding:max(8px,env(safe-area-inset-top)) 12px 8px;background:linear-gradient(135deg,#1e3a8a,#5b21b6);color:#fff;box-shadow:0 4px 18px rgba(0,0,0,.4);font-family:Tajawal,system-ui,sans-serif';
-    b.innerHTML='<img src="icon-192.png" alt="" width="40" height="40" style="border-radius:10px;flex:none"><div style="flex:1;min-width:0;line-height:1.35"><b style="font-size:14px;display:block">'+L.t+'</b><span style="font-size:11.5px;opacity:.85;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+L.s+'</span></div>'
+    b.innerHTML='<img src="payloop-192.png" alt="" width="40" height="40" style="border-radius:10px;flex:none"><div style="flex:1;min-width:0;line-height:1.35"><b style="font-size:14px;display:block">'+L.t+'</b><span style="font-size:11.5px;opacity:.85;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+L.s+'</span></div>'
       +'<button id="pl-inst-go" type="button" style="flex:none;border:0;border-radius:99px;padding:9px 16px;font:900 13.5px inherit;background:#fff;color:#1e1b4b;cursor:pointer">'+L.b+'</button>'
       +'<button id="pl-inst-x" type="button" aria-label="'+L.x+'" style="flex:none;border:0;background:transparent;color:#fff;font-size:20px;opacity:.8;cursor:pointer;padding:4px">✕</button>';
     document.body.appendChild(b); document.documentElement.classList.add('pl-inst');
@@ -292,7 +292,7 @@ else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.docume
   window.__plInstRender=render;
 }catch(e){} })();</script>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="payloop-apple-180.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PayLoop">
@@ -3376,6 +3376,7 @@ html.lite .vip-hero:before{display:none}
     <button class="icon-btn" id="adm-bell" onclick="ntfOpen('admin')" aria-label="admin alerts" style="margin-inline-start:auto;position:relative"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9d3ea" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg><span class="nbadge" id="adm-bell-badge" style="display:none"></span></button>
   </div>
   <div id="adm-mnt"></div>
+  <div id="adm-ads"></div>
   <div class="adm-tabs" id="adm-tabs">
     <button class="atb active" data-t="users" onclick="admTab('users')">👥 المستخدمون</button>
     <button class="atb" data-t="stats" onclick="admTab('stats')">📈 الإحصائيات</button>
@@ -7614,7 +7615,7 @@ const Push={
   local:async function(){
     try{
       const reg=await navigator.serviceWorker.ready;
-      await reg.showNotification('✅ '+L('اختبار الإشعارات','Notification test','Test des notifications'),{actions:[{action:'open',title:L('فتح','Open','Ouvrir')},{action:'dismiss',title:L('تجاهل','Dismiss','Ignorer')}],lang:'ar',body:L('✅ ممتاز! الإشعارات تعمل بشكل صحيح على هاتفك.','✅ Great! Notifications work on your phone.','✅ Parfait ! Les notifications fonctionnent.'),icon:'icon-192.png',badge:'badge-96.png',vibrate:[200,100,200],silent:false,tag:'local-test'});
+      await reg.showNotification('✅ '+L('اختبار الإشعارات','Notification test','Test des notifications'),{actions:[{action:'open',title:L('فتح','Open','Ouvrir')},{action:'dismiss',title:L('تجاهل','Dismiss','Ignorer')}],lang:'ar',body:L('✅ ممتاز! الإشعارات تعمل بشكل صحيح على هاتفك.','✅ Great! Notifications work on your phone.','✅ Parfait ! Les notifications fonctionnent.'),icon:'payloop-192.png',badge:'badge-96.png',vibrate:[200,100,200],silent:false,tag:'local-test'});
       toast(L('✅ طُلب العرض — انظر إلى أعلى الشاشة','✅ Requested — look at the top of the screen','✅ Demandé — regardez en haut'));
     }catch(e){ toast('⚠️ '+((e&&e.name)||'')+' '+((e&&e.message)||'')); }
   },
@@ -8220,6 +8221,7 @@ function renderAdmin(t){
   ADM_TAB=t||ADM_TAB;
   admDots(); admBellRefresh();
   try{ if(typeof renderAdmMnt==='function') renderAdmMnt(); }catch(e){}
+  try{ if(typeof renderAdmAds==='function') renderAdmAds(); }catch(e){}
   document.querySelectorAll('#adm-tabs .atb').forEach(function(b){ b.classList.toggle('active', b.dataset.t===ADM_TAB); });
   const tools=document.getElementById('adm-search');
   if(tools) tools.style.display=(ADM_TAB==='users'&&!ADM_UID)?'block':'none';
@@ -12911,7 +12913,7 @@ function openOfferwall(){
     try{
       fetch(RealAuth.base()+'/rest/v1/app_flags?k=eq.ads&select=v',{headers:{apikey:RealAuth.key()},cache:'no-store'})
         .then(function(r){ return r.ok?r.json():null; })
-        .then(function(j){ var on=true; if(j===null) on=false; else if(Array.isArray(j)&&j[0]&&j[0].v&&j[0].v.banner===false) on=false; FLAG=on; cb(on); })
+        .then(function(j){ var on=!!(Array.isArray(j)&&j[0]&&j[0].v&&j[0].v.banner===true); FLAG=on; cb(on); })
         .catch(function(){ FLAG=false; cb(false); });
     }catch(e){ cb(false); }
   }
@@ -12935,6 +12937,25 @@ function openOfferwall(){
     box._io=io; io.observe(box);
   }
   /* لا نعيد تحميل iframe في كل زيارة: كل 5 دقائق كحدّ أدنى */
+  /* بطاقة لوحة التحكم: تشغيل/إيقاف الإعلانات (القرار لك وحدك) */
+  var AON=null;
+  function lg(a,b,c){ try{ return L(a,b,c); }catch(e){ return a; } }
+  function draw(){
+    var b=document.getElementById('adm-ads'); if(!b) return;
+    var st=AON===null?'…':(AON?'<span style="color:#34d399">'+lg('مفعّلة — تظهر للمستخدمين','ON — shown to users','ACTIVES')+'</span>':'<span style="color:#94a3b8">'+lg('متوقفة','OFF','ARRÊTÉES')+'</span>');
+    b.innerHTML='<div class="mnt-card'+(AON?' on':'')+'" style="'+(AON?'border-color:#10b981;background:rgba(16,185,129,.08)':'')+'"><b>📢 '+lg('الإعلانات','Ads','Annonces')+': '+st+'</b>'+
+      '<button onclick="adsToggle()" style="background:'+(AON?'linear-gradient(135deg,#ef4444,#b91c1c)':'linear-gradient(135deg,#10b981,#059669)')+'">'+(AON?'⏹ '+lg('إيقاف الإعلانات','Stop ads','Arrêter'):'▶ '+lg('تشغيل الإعلانات','Turn on ads','Activer'))+'</button></div>';
+  }
+  function pullAds(){
+    try{ fetch(RealAuth.base()+'/rest/v1/app_flags?k=eq.ads&select=v',{headers:{apikey:RealAuth.key()},cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(j){ AON=!!(Array.isArray(j)&&j[0]&&j[0].v&&j[0].v.banner===true); draw(); }).catch(function(){}); }catch(e){}
+  }
+  window.renderAdmAds=function(){ draw(); pullAds(); };
+  window.adsToggle=async function(){
+    var to=!AON, r=null;
+    try{ r=await SRV.rpc('admin_set_ads',{p_on:to}); }catch(e){}
+    if(r&&r.ok===true){ AON=to; FLAG=to; draw(); try{ toast(to?lg('📢 تم تشغيل الإعلانات','📢 Ads are ON','📢 Annonces activées'):lg('⏹ تم إيقاف الإعلانات','⏹ Ads are OFF','⏹ Annonces arrêtées')); }catch(e){} }
+    else { try{ toast(lg('تعذّر الحفظ — شغّل ملف 62_ads_toggle.sql في Supabase','Could not save — run 62_ads_toggle.sql','Échec — exécutez 62_ads_toggle.sql')); }catch(e){} }
+  };
   window.plAdsShow=function(p){ try{ if(p==='home') watch('pl-ad-home'); else if(p==='tasks') watch('pl-ad-tasks'); }catch(e){} };
   var _go=window.go; if(typeof _go==='function'){ window.go=function(p){ var r=_go.apply(this,arguments); try{ setTimeout(function(){ window.plAdsShow(p); },900); }catch(e){} return r; }; }
   window.addEventListener('load',function(){ setTimeout(function(){ try{ var a=document.querySelector('.page.active'); if(a&&a.id==='page-home') window.plAdsShow('home'); else if(a&&a.id==='page-tasks') window.plAdsShow('tasks'); }catch(e){} },4500); });
