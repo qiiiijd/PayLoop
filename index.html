@@ -80,7 +80,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.29-r67';
+window.PL_BUILD='2026.10.30-r68';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -2718,6 +2718,14 @@ html.lite #page-tasks .tabs{-webkit-mask-image:none;mask-image:none}
 .svy-sub{order:4;flex:1 1 100%;font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:3px;font-weight:600}
 .svy-pills{order:5;flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .svy-pills span{font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.35);color:#7dd3fc}
+/* بطاقة الاستطلاعات: مضغوطة */
+#page-tasks .trow.cpx-row{padding:9px 12px !important;gap:10px !important;border-radius:18px}
+#page-tasks .trow.cpx-row .t-icon{width:66px !important;height:66px !important;border-radius:18px !important}
+#page-tasks .trow.cpx-row h4{font-size:15.5px !important;line-height:1.35;margin:0}
+#page-tasks .trow.cpx-row .svy-sub{font-size:11.5px;line-height:1.45;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#page-tasks .trow.cpx-row .svy-pills{gap:5px;margin-top:5px;flex-wrap:nowrap}
+#page-tasks .trow.cpx-row .svy-pills span{font-size:10.5px;padding:3px 8px;white-space:nowrap}
+#page-tasks .trow.cpx-row .go{width:34px !important;height:34px !important}
 [data-theme=light] .svy-pills span{color:#0369a1}[data-theme=light] .svy-sub{color:#64748b}
 #page-tasks .trow.cpx-row .go,#page-tasks .trow.tr-row .go{background:linear-gradient(135deg,#0ea5e9,#6366f1)}
 /* r42 — الملف الشخصي (تصميم جديد) */
