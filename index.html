@@ -57,7 +57,8 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 .lite *,.lite *::before,.lite *::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .lite .auth-aurora i,.lite .ax-logo-ring,.lite .wv-card.pending .wv-cico,.lite .wv-cico .wv-cico-main,.lite .ctw-ic,.lite .ctw-conf i{animation:none!important}
 @supports (-webkit-touch-callout:none){ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select{ font-size:16px!important } }
-</style><style id="boot-css2">html.plsp #boot-splash{display:flex;position:fixed;inset:0;z-index:9000;background:#090d14;align-items:center;justify-content:center;flex-direction:column;gap:16px}#boot-splash{transition:opacity .25s ease}html.plsp-out #boot-splash{opacity:0;pointer-events:none}</style>
+</style><style id="pl-ad-css">.pl-ad{display:block;height:1px;margin:0 auto;text-align:center}.pl-ad.on{height:auto;margin:16px auto 4px}.pl-ad-lbl{font-size:10px;font-weight:700;color:var(--muted);opacity:.7;margin-bottom:4px;letter-spacing:.3px}.pl-ad iframe{border:0;display:block;margin:0 auto;width:320px;max-width:100%;height:50px;border-radius:8px;background:rgba(148,163,184,.07);color-scheme:normal}</style>
+<style id="boot-css2">html.plsp #boot-splash{display:flex;position:fixed;inset:0;z-index:9000;background:#090d14;align-items:center;justify-content:center;flex-direction:column;gap:16px}#boot-splash{transition:opacity .25s ease}html.plsp-out #boot-splash{opacity:0;pointer-events:none}</style>
 <script>/* PL-SPLASH: شاشة PayLoop المتحركة (الشعار + الاسم) تبقى ~1.5 ثانية عند فتح التطبيق مرة واحدة لكل جلسة */
 (function(){try{var d=document.documentElement,k='pl-sp1',seen=false;try{seen=sessionStorage.getItem(k)==='1';sessionStorage.setItem(k,'1');}catch(e){}
 if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('plsp-out');setTimeout(function(){d.classList.remove('plsp','plsp-out');},280);},1500);}catch(e){}})();
@@ -80,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.30-r68';
+window.PL_BUILD='2026.10.30-r69';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -2908,6 +2909,7 @@ html.lite .vip-hero:before{display:none}
     <div><h4 data-i18n="ref.h">ادعُ أصدقاءك واحصل على 10% من أرباحهم</h4><p data-i18n="ref.p">شارك رابطك الآن وابدأ الكسب</p></div>
     <button data-i18n="ref.btn" class="small-btn" onclick="go('more')">دعوة</button>
   </div>
+  <div class="pl-ad" id="pl-ad-home" aria-label="إعلان"></div>
 </section>
 
 <!-- ===== TASKS ===== -->
@@ -2930,6 +2932,7 @@ html.lite .vip-hero:before{display:none}
   <div class="tabs" id="tabs"></div>
   <div id="gsub"></div>
   <div class="tlist" id="tlist"></div>
+  <div class="pl-ad" id="pl-ad-tasks" aria-label="إعلان"></div>
   <div style="height:16px"></div>
 </section>
 
@@ -12898,6 +12901,44 @@ function openOfferwall(){
   }
   setInterval(function(){ if(can()) show(); },4000);
 }catch(e){}})();
+</script>
+<script>/* PL-ADS: بانر Adsterra 320×50 داخل iframe معزول (بلا allow-same-origin) فلا يصل كود الإعلان إلى بيانات التطبيق. يُحمَّل متأخرًا وعند ظهوره في الشاشة فقط، ولا يظهر للمدير. */
+(function(){
+  var KEY='1eb5ec534500c5cdc43811653bf2876f', SRC='https://bauval.org/22/'+KEY, FLAG=null, T={}, REFRESH=5*60*1000;
+  function docHtml(){ return '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}</style></head><body><scr'+'ipt>atOptions={"key":"'+KEY+'","format":"iframe","height":50,"width":320,"params":{}};</scr'+'ipt><scr'+'ipt src="'+SRC+'"></scr'+'ipt></body></html>'; }
+  function flag(cb){
+    if(FLAG!==null) return cb(FLAG);
+    try{
+      fetch(RealAuth.base()+'/rest/v1/app_flags?k=eq.ads&select=v',{headers:{apikey:RealAuth.key()},cache:'no-store'})
+        .then(function(r){ return r.ok?r.json():null; })
+        .then(function(j){ var on=true; if(j===null) on=false; else if(Array.isArray(j)&&j[0]&&j[0].v&&j[0].v.banner===false) on=false; FLAG=on; cb(on); })
+        .catch(function(){ FLAG=false; cb(false); });
+    }catch(e){ cb(false); }
+  }
+  function ok(){ try{ if(!navigator.onLine||document.visibilityState==='hidden') return false; var u=curUser(); if(!u||u.role==='admin') return false; if(document.documentElement.hasAttribute('data-hs')||document.documentElement.classList.contains('plsp')) return false; return true; }catch(e){ return false; } }
+  function mount(box){
+    if(!box||!ok()) return; var now=Date.now(), id=box.id;
+    if(box.dataset.on==='1' && now-(T[id]||0)<REFRESH) return;
+    flag(function(on){
+      if(!on||!ok()) return;
+      box.innerHTML='<div class="pl-ad-lbl">إعلان</div>';
+      var f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.setAttribute('title','إعلان');
+      f.setAttribute('sandbox','allow-scripts allow-popups allow-popups-to-escape-sandbox'); f.setAttribute('referrerpolicy','no-referrer-when-downgrade');
+      f.srcdoc=docHtml(); box.appendChild(f); box.classList.add('on'); box.dataset.on='1'; T[id]=now;
+    });
+  }
+  function watch(id){
+    var box=document.getElementById(id); if(!box) return;
+    if(!('IntersectionObserver' in window)){ mount(box); return; }
+    if(box._io) box._io.disconnect();
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ io.disconnect(); mount(box); } }); },{rootMargin:'120px'});
+    box._io=io; io.observe(box);
+  }
+  /* لا نعيد تحميل iframe في كل زيارة: كل 5 دقائق كحدّ أدنى */
+  window.plAdsShow=function(p){ try{ if(p==='home') watch('pl-ad-home'); else if(p==='tasks') watch('pl-ad-tasks'); }catch(e){} };
+  var _go=window.go; if(typeof _go==='function'){ window.go=function(p){ var r=_go.apply(this,arguments); try{ setTimeout(function(){ window.plAdsShow(p); },900); }catch(e){} return r; }; }
+  window.addEventListener('load',function(){ setTimeout(function(){ try{ var a=document.querySelector('.page.active'); if(a&&a.id==='page-home') window.plAdsShow('home'); else if(a&&a.id==='page-tasks') window.plAdsShow('tasks'); }catch(e){} },4500); });
+})();
 </script>
 </body>
 </html>
