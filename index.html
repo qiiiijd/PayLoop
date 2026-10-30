@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.30-r72';
+window.PL_BUILD='2026.10.30-r73';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -2909,7 +2909,6 @@ html.lite .vip-hero:before{display:none}
     <div><h4 data-i18n="ref.h">ادعُ أصدقاءك واحصل على 10% من أرباحهم</h4><p data-i18n="ref.p">شارك رابطك الآن وابدأ الكسب</p></div>
     <button data-i18n="ref.btn" class="small-btn" onclick="go('more')">دعوة</button>
   </div>
-  <div class="pl-ad" id="pl-ad-home" aria-label="إعلان"></div>
 </section>
 
 <!-- ===== TASKS ===== -->
@@ -12956,9 +12955,9 @@ function openOfferwall(){
     if(r&&r.ok===true){ AON=to; FLAG=to; draw(); try{ toast(to?lg('📢 تم تشغيل الإعلانات','📢 Ads are ON','📢 Annonces activées'):lg('⏹ تم إيقاف الإعلانات','⏹ Ads are OFF','⏹ Annonces arrêtées')); }catch(e){} }
     else { try{ toast(lg('تعذّر الحفظ — شغّل ملف 62_ads_toggle.sql في Supabase','Could not save — run 62_ads_toggle.sql','Échec — exécutez 62_ads_toggle.sql')); }catch(e){} }
   };
-  window.plAdsShow=function(p){ try{ if(p==='home') watch('pl-ad-home'); else if(p==='tasks') watch('pl-ad-tasks'); }catch(e){} };
+  window.plAdsShow=function(p){ try{ if(p==='tasks') watch('pl-ad-tasks'); }catch(e){} };
   var _go=window.go; if(typeof _go==='function'){ window.go=function(p){ var r=_go.apply(this,arguments); try{ setTimeout(function(){ window.plAdsShow(p); },900); }catch(e){} return r; }; }
-  window.addEventListener('load',function(){ setTimeout(function(){ try{ var a=document.querySelector('.page.active'); if(a&&a.id==='page-home') window.plAdsShow('home'); else if(a&&a.id==='page-tasks') window.plAdsShow('tasks'); }catch(e){} },4500); });
+  window.addEventListener('load',function(){ setTimeout(function(){ try{ var a=document.querySelector('.page.active'); if(a&&a.id==='page-tasks') window.plAdsShow('tasks'); }catch(e){} },4500); });
 })();
 </script>
 </body>
