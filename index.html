@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.30-r73';
+window.PL_BUILD='2026.10.30-r74';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12905,7 +12905,7 @@ function openOfferwall(){
 </script>
 <script>/* PL-ADS: بانر Adsterra 320×50 داخل iframe معزول (بلا allow-same-origin) فلا يصل كود الإعلان إلى بيانات التطبيق. يُحمَّل متأخرًا وعند ظهوره في الشاشة فقط، ولا يظهر للمدير. */
 (function(){
-  var KEY='1eb5ec534500c5cdc43811653bf2876f', SRC='https://bauval.org/22/'+KEY, FLAG=null, T={}, REFRESH=5*60*1000;
+  var AD_PAGE='https://payloop00.github.io/PayLoop/', KEY='1eb5ec534500c5cdc43811653bf2876f', SRC='https://bauval.org/22/'+KEY, FLAG=null, T={}, REFRESH=5*60*1000;
   function docHtml(){ return '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:transparent;overflow:hidden}</style></head><body><scr'+'ipt>atOptions={"key":"'+KEY+'","format":"iframe","height":50,"width":320,"params":{}};</scr'+'ipt><scr'+'ipt src="'+SRC+'"></scr'+'ipt></body></html>'; }
   function flag(cb){
     if(FLAG!==null) return cb(FLAG);
@@ -12924,8 +12924,9 @@ function openOfferwall(){
       if(!on||!ok()) return;
       box.innerHTML='<div class="pl-ad-lbl">إعلان</div>';
       var f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.setAttribute('title','إعلان');
-      f.setAttribute('sandbox','allow-scripts allow-popups allow-popups-to-escape-sandbox'); f.setAttribute('referrerpolicy','no-referrer-when-downgrade');
-      f.srcdoc=docHtml(); box.appendChild(f); box.classList.add('on'); box.dataset.on='1'; T[id]=now;
+      /* صفحة الإعلان على موقع منفصل (origin مختلف): المتصفح نفسه يعزلها عن بيانات التطبيق، فلا حاجة لـ sandbox الذي كان يعطّل السكربت */
+      f.setAttribute('referrerpolicy','no-referrer-when-downgrade'); f.setAttribute('loading','lazy');
+      f.src=AD_PAGE; box.appendChild(f); box.classList.add('on'); box.dataset.on='1'; T[id]=now;
     });
   }
   function watch(id){
