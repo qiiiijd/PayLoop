@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.30-r71';
+window.PL_BUILD='2026.10.30-r72';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12943,8 +12943,8 @@ function openOfferwall(){
   function draw(){
     var b=document.getElementById('adm-ads'); if(!b) return;
     var st=AON===null?'…':(AON?'<span style="color:#34d399">'+lg('مفعّلة — تظهر للمستخدمين','ON — shown to users','ACTIVES')+'</span>':'<span style="color:#94a3b8">'+lg('متوقفة','OFF','ARRÊTÉES')+'</span>');
-    b.innerHTML='<div class="mnt-card'+(AON?' on':'')+'" style="'+(AON?'border-color:#10b981;background:rgba(16,185,129,.08)':'')+'"><b>📢 '+lg('الإعلانات','Ads','Annonces')+': '+st+'</b>'+
-      '<button onclick="adsToggle()" style="background:'+(AON?'linear-gradient(135deg,#ef4444,#b91c1c)':'linear-gradient(135deg,#10b981,#059669)')+'">'+(AON?'⏹ '+lg('إيقاف الإعلانات','Stop ads','Arrêter'):'▶ '+lg('تشغيل الإعلانات','Turn on ads','Activer'))+'</button></div>';
+    b.innerHTML='<div class="mnt-card" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;margin-bottom:8px;'+(AON?'border-color:#10b981;background:rgba(16,185,129,.08)':'')+'"><b style="margin:0;font-size:13px">📢 '+lg('الإعلانات','Ads','Annonces')+': '+st+'</b>'+
+      '<button onclick="adsToggle()" style="width:auto;flex:none;padding:7px 14px;font-size:12.5px;border-radius:10px;background:'+(AON?'linear-gradient(135deg,#ef4444,#b91c1c)':'linear-gradient(135deg,#10b981,#059669)')+'">'+(AON?'⏹ '+lg('إيقاف','Stop','Arrêter'):'▶ '+lg('تشغيل','Turn on','Activer'))+'</button></div>';
   }
   function pullAds(){
     try{ fetch(RealAuth.base()+'/rest/v1/app_flags?k=eq.ads&select=v',{headers:{apikey:RealAuth.key()},cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(j){ AON=!!(Array.isArray(j)&&j[0]&&j[0].v&&j[0].v.banner===true); draw(); }).catch(function(){}); }catch(e){}
