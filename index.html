@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.30-r76';
+window.PL_BUILD='2026.10.30-r78';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12115,7 +12115,7 @@ async function openCpx(){
    البطاقة لا تظهر أبدًا ما لم تكن الشبكة مفعّلة ومكتملة الإعداد في الخادم. ===== */
 (function(){
   var KEY='pl-cg-on', TTL=30*60000;
-  function fnUrl(q){ return RealAuth.base()+'/functions/v1/'+encodeURIComponent((typeof net2Fn==='function'?net2Fn():'super-worker'))+'?action=cpagrip_link'+(q||''); }
+  function fnUrl(q){ return RealAuth.base()+'/functions/v1/rapid-api?action=cpagrip_link'+(q||''); }
   function cached(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o&&typeof o.on==='boolean'&&Date.now()-o.t<(o.on?TTL:120000)) return o; }catch(e){} return null; }
   function again(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
   window.cgProbe=function(){
