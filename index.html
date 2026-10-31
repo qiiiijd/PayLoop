@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.10.30-r75';
+window.PL_BUILD='2026.10.30-r76';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12105,6 +12105,77 @@ async function openCpx(){
         +go+'</div>';
       try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
       var _ag=box.querySelector('.ay-row')||box.querySelector('.ag-row'); if(_ag) _ag.insertAdjacentHTML('afterend',card); else box.insertAdjacentHTML('afterbegin',card);
+    }catch(e){}
+  };
+})();
+</script>
+<script>
+/* ===== CPAGrip: عروض إضافية (جدار على نطاق منفصل). الرابط يأتي من الخادم (لا سرّ في التطبيق).
+   المكافأة لا تُمنح من هنا: تصل فقط عبر postback موقَّع إلى الخادم ثم تظهر في رصيدك.
+   البطاقة لا تظهر أبدًا ما لم تكن الشبكة مفعّلة ومكتملة الإعداد في الخادم. ===== */
+(function(){
+  var KEY='pl-cg-on', TTL=30*60000;
+  function fnUrl(q){ return RealAuth.base()+'/functions/v1/'+encodeURIComponent((typeof net2Fn==='function'?net2Fn():'super-worker'))+'?action=cpagrip_link'+(q||''); }
+  function cached(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o&&typeof o.on==='boolean'&&Date.now()-o.t<(o.on?TTL:120000)) return o; }catch(e){} return null; }
+  function again(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
+  window.cgProbe=function(){
+    try{
+      var c=cached(); if(c){ window.__cgOn=c.on; return; }
+      if(window.__cgProbing||typeof SRV==='undefined'||!SRV||!SRV.on||!SRV.on()) return;
+      window.__cgProbing=true;
+      Promise.resolve(SRV.tok()).then(function(t){
+        if(!t) return;
+        return fetch(fnUrl('&probe=1'),{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()}}).then(function(r){ return r.ok?r.json():null; }).then(function(j){
+          if(!j||j.ok!==true) return;
+          var was=!!window.__cgOn; window.__cgOn=j.on===true;
+          try{ localStorage.setItem(KEY,JSON.stringify({on:window.__cgOn,t:Date.now()})); }catch(e){}
+          if(window.__cgOn&&!was) again();
+        });
+      }).catch(function(){}).then(function(){ window.__cgProbing=false; });
+    }catch(e){ window.__cgProbing=false; }
+  };
+  window.openCpagrip=async function(){
+    if(window.__cgBusy) return; window.__cgBusy=true;
+    var w=null; try{ w=window.open('about:blank','_blank'); }catch(e){}
+    var fail=function(m){ try{ if(w) w.close(); }catch(e){} toast(m||L('تعذّر فتح العروض الآن','Could not open offers now','Impossible d\'ouvrir les offres')); };
+    try{
+      var s=null; try{ s=RealAuth.getSession(); }catch(e){}
+      if(!s||!s.access_token){ fail(L('سجّل الدخول أولاً','Please sign in first','Connectez-vous d\'abord')); return; }
+      try{ await RealAuth.ensureFresh(); s=RealAuth.getSession()||s; }catch(e){}
+      var r=await fetch(fnUrl(),{headers:{'Authorization':'Bearer '+s.access_token,'apikey':RealAuth.key()}});
+      var j=await r.json().catch(function(){ return {}; });
+      if(j&&j.why==='network_off'){ try{ localStorage.setItem(KEY,JSON.stringify({on:false,t:Date.now()})); }catch(e){} window.__cgOn=false; fail(L('العروض الإضافية غير متاحة الآن','Extra offers are unavailable right now','Offres indisponibles')); again(); return; }
+      if(!r.ok||!j||j.ok!==true||typeof j.url!=='string'||j.url.indexOf('https://payloop00.github.io/PayLoop/wall.html?u=')!==0){ fail(); return; }
+      window.__cgAt=Date.now();
+      if(w){ try{ w.opener=null; }catch(e){} try{ w.location.href=j.url; return; }catch(e){} }
+      if(!openTaskUrl(j.url)) fail();
+    }catch(e){ fail(); }
+    finally{ window.__cgBusy=false; }
+  };
+  /* عند العودة من الجدار: حدّث الرصيد (المكافأة تصل من الخادم، قد تتأخر ثوانٍ) */
+  try{ document.addEventListener('visibilitychange',function(){
+    if(document.hidden||!window.__cgAt||Date.now()-window.__cgAt>7200000) return;
+    if(Date.now()-(window.__cgSync||0)<20000) return; window.__cgSync=Date.now();
+    setTimeout(function(){ try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} try{ if(SRV&&SRV.cycle) SRV.cycle(true); }catch(e){} },2500);
+  }); }catch(e){}
+  var _rt3=window.renderTasks; if(typeof _rt3!=='function') return;
+  window.renderTasks=function(cat){
+    _rt3.apply(this,arguments);
+    try{
+      if(cat!=='games') return;
+      if(typeof taskTab!=='undefined'&&taskTab!=='new') return;
+      window.cgProbe();
+      if(!window.__cgOn) return;
+      var box=document.getElementById('tlist'); if(!box||box.querySelector('.cg-row')) return;
+      var art=''; try{ art=artHTML('games'); }catch(e){}
+      var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+      var card='<div class="trow cg-row" onclick="openCpagrip()">'
+        +'<div class="t-icon art">'+art+'</div>'
+        +'<div class="t-info"><h4>'+L('عروض ومهام إضافية','More offers & tasks','Plus d\'offres')+'</h4>'
+        +'<div class="meta"><span>🔓 '+L('فتح العروض','Open offers','Ouvrir les offres')+'</span><span>'+L('التوفر والمكافأة حسب بلدك وجهازك','Availability and reward depend on your country and device','Selon votre pays et appareil')+'</span></div></div>'
+        +go+'</div>';
+      try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
+      var _ag=box.querySelector('.mx-row')||box.querySelector('.ay-row')||box.querySelector('.ag-row'); if(_ag) _ag.insertAdjacentHTML('afterend',card); else box.insertAdjacentHTML('afterbegin',card);
     }catch(e){}
   };
 })();
