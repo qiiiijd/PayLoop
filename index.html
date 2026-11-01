@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.01-r79';
+window.PL_BUILD='2026.11.01-r80';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -3376,6 +3376,7 @@ html.lite .vip-hero:before{display:none}
   </div>
   <div id="adm-mnt"></div>
   <div id="adm-ads"></div>
+  <div id="adm-owm"></div>
   <div class="adm-tabs" id="adm-tabs">
     <button class="atb active" data-t="users" onclick="admTab('users')">👥 المستخدمون</button>
     <button class="atb" data-t="stats" onclick="admTab('stats')">📈 الإحصائيات</button>
@@ -8221,6 +8222,7 @@ function renderAdmin(t){
   admDots(); admBellRefresh();
   try{ if(typeof renderAdmMnt==='function') renderAdmMnt(); }catch(e){}
   try{ if(typeof renderAdmAds==='function') renderAdmAds(); }catch(e){}
+  try{ if(typeof renderAdmOwm==='function') renderAdmOwm(); }catch(e){}
   document.querySelectorAll('#adm-tabs .atb').forEach(function(b){ b.classList.toggle('active', b.dataset.t===ADM_TAB); });
   const tools=document.getElementById('adm-search');
   if(tools) tools.style.display=(ADM_TAB==='users'&&!ADM_UID)?'block':'none';
@@ -12191,21 +12193,22 @@ async function openCpx(){
   function again(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
   window.owmProbe=function(){
     try{
-      var c=cached(); if(c){ window.__owmOn=c.on; return; }
+      var c=cached(); if(c){ window.__owmOn=c.on; window.__owmList=!!c.list; return; }
       if(window.__owmProbing||typeof SRV==='undefined'||!SRV||!SRV.on||!SRV.on()) return;
       window.__owmProbing=true;
       Promise.resolve(SRV.tok()).then(function(t){
         if(!t) return;
         return fetch(fnUrl('&probe=1'),{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()}}).then(function(r){ return r.ok?r.json():null; }).then(function(j){
           if(!j||j.ok!==true) return;
-          var was=!!window.__owmOn; window.__owmOn=j.on===true;
-          try{ localStorage.setItem(KEY,JSON.stringify({on:window.__owmOn,t:Date.now()})); }catch(e){}
+          var was=!!window.__owmOn; window.__owmOn=j.on===true; window.__owmList=j.on===true&&j.list===true;
+          try{ localStorage.setItem(KEY,JSON.stringify({on:window.__owmOn,list:window.__owmList,t:Date.now()})); }catch(e){}
           if(window.__owmOn&&!was) again();
         });
       }).catch(function(){}).then(function(){ window.__owmProbing=false; });
     }catch(e){ window.__owmProbing=false; }
   };
   window.openOfferwallMe=async function(){
+    if(window.__owmList&&typeof window.owmOpenList==='function'){ window.owmOpenList(); return; }
     if(window.__owmBusy) return; window.__owmBusy=true;
     var w=null; try{ w=window.open('about:blank','_blank'); }catch(e){}
     var fail=function(m){ try{ if(w) w.close(); }catch(e){} toast(m||L('تعذّر فتح العروض الآن','Could not open offers now','Impossible d\'ouvrir les offres')); };
@@ -12247,6 +12250,147 @@ async function openCpx(){
       try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
       var _ag=box.querySelector('.cg-row')||box.querySelector('.mx-row')||box.querySelector('.ay-row')||box.querySelector('.ag-row'); if(_ag) _ag.insertAdjacentHTML('afterend',card); else box.insertAdjacentHTML('afterbegin',card);
     }catch(e){}
+  };
+})();
+</script>
+<style>
+#owm-ov{position:fixed;inset:0;z-index:99998;background:#0b1220;display:none;flex-direction:column}
+#owm-ov.on{display:flex}
+#owm-ov .ob{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top,0px));background:#111a2e;color:#fff;font-weight:800}
+#owm-ov .ox{border:0;border-radius:10px;padding:8px 14px;background:#1e2a47;color:#fff;font:inherit;font-size:14px}
+#owm-ov .ot{display:flex;gap:8px;padding:10px 12px;background:#0e1626}
+#owm-ov .ot button{flex:1;border:1px solid #243252;border-radius:12px;padding:9px 6px;background:#101a2f;color:#b8c6e6;font:inherit;font-size:13.5px;font-weight:700}
+#owm-ov .ot button.on{background:#ea580c;border-color:#ea580c;color:#fff}
+#owm-ov .ol{flex:1;overflow:auto;padding:10px 12px 28px;-webkit-overflow-scrolling:touch}
+#owm-ov .oi{display:flex;gap:10px;align-items:center;padding:11px;margin-bottom:9px;border:1px solid #1f2d4a;border-radius:14px;background:#0f192d;color:#e6edfb;cursor:pointer}
+#owm-ov .oi .im{flex:none;width:52px;height:52px;border-radius:12px;background:#17233d;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden}
+#owm-ov .oi .im img{width:100%;height:100%;object-fit:cover}
+#owm-ov .oi .tx{flex:1;min-width:0}
+#owm-ov .oi h4{margin:0 0 3px;font-size:14.5px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#owm-ov .oi p{margin:0;font-size:12px;color:#8fa3c8;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#owm-ov .oi .mt{margin-top:4px;font-size:11px;color:#6f84ad}
+#owm-ov .oi .rw{flex:none;padding:8px 10px;border-radius:11px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:900;font-size:14px;white-space:nowrap}
+#owm-ov .oe{padding:40px 16px;text-align:center;color:#8fa3c8;line-height:1.7}
+#adm-owm .oa-row{display:flex;gap:8px;align-items:center;padding:8px;border:1px solid #243252;border-radius:11px;margin-top:6px;font-size:12px}
+#adm-owm .oa-row.off{opacity:.55}
+#adm-owm input[type=number],#adm-owm input[type=text],#adm-owm textarea{width:100%;box-sizing:border-box;padding:8px;border-radius:9px;border:1px solid #243252;background:#0d1627;color:#fff;font:inherit;font-size:13px}
+</style>
+<div id="owm-ov"><div class="ob"><span id="owm-t"></span><button class="ox" id="owm-x" type="button"></button></div><div class="ot" id="owm-tabs"></div><div class="ol" id="owm-list"></div></div>
+<script>
+/* ===== Offerwall.me داخل التطبيق: قائمة العروض والاستطلاعات بتصفية المدير. الرابط يُجلب من الخادم عند الضغط فقط. ===== */
+(function(){
+  var ITEMS=[], TAB='all', BUSY=false;
+  function fn(q){ return RealAuth.base()+'/functions/v1/rapid-api?action='+q; }
+  function usd(n){ n=Number(n)||0; return '$'+(n>=0.01?n.toFixed(2):n.toFixed(3)); }
+  function hdr(t){ return {'Authorization':'Bearer '+t,'apikey':RealAuth.key()}; }
+  function draw(){
+    var box=document.getElementById('owm-list'); if(!box) return;
+    var list=ITEMS.filter(function(i){ return TAB==='all'||i.kind===TAB; });
+    if(!list.length){ box.innerHTML='<div class="oe">'+L('لا توجد عروض متاحة لبلدك وجهازك الآن. عُد لاحقًا.','No offers are available for your country and device right now. Check back later.','Aucune offre disponible pour le moment.')+'</div>'; return; }
+    box.innerHTML=list.map(function(i,ix){
+      var img=i.image?'<img src="'+esc(i.image)+'" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.remove()">':(i.kind==='survey'?'📝':'🎮');
+      var meta=[]; if(i.min) meta.push('⏱ '+i.min+' '+L('د','min','min')); if(i.devices&&i.devices.length) meta.push(esc(i.devices.join(' / ')));
+      return '<div class="oi" data-i="'+esc(i.id)+'"><div class="im">'+img+'</div><div class="tx"><h4>'+esc(i.title)+'</h4>'+(i.desc?'<p>'+esc(i.desc)+'</p>':'')+(meta.length?'<div class="mt">'+meta.join(' · ')+'</div>':'')+'</div><div class="rw" dir="ltr">+'+usd(i.usd)+'</div></div>';
+    }).join('');
+    Array.prototype.forEach.call(box.querySelectorAll('.oi'),function(el){ el.onclick=function(){ go(el.getAttribute('data-i')); }; });
+  }
+  function tabs(){
+    var t=document.getElementById('owm-tabs'); if(!t) return;
+    var defs=[['all',L('الكل','All','Tout')],['offer',L('ألعاب وعروض','Games & offers','Jeux et offres')],['survey',L('استطلاعات','Surveys','Sondages')]];
+    t.innerHTML=defs.map(function(d){ return '<button type="button" data-t="'+d[0]+'" class="'+(TAB===d[0]?'on':'')+'">'+d[1]+'</button>'; }).join('');
+    Array.prototype.forEach.call(t.querySelectorAll('button'),function(b){ b.onclick=function(){ TAB=b.getAttribute('data-t'); tabs(); draw(); }; });
+  }
+  async function go(id){
+    if(BUSY) return; BUSY=true;
+    var w=null; try{ w=window.open('about:blank','_blank'); }catch(e){}
+    var fail=function(m){ try{ if(w) w.close(); }catch(e){} toast(m||L('تعذّر فتح العرض الآن','Could not open the offer','Impossible d\'ouvrir')); };
+    try{
+      var t=await SRV.tok(); if(!t){ fail(L('سجّل الدخول أولاً','Please sign in first','Connectez-vous')); return; }
+      var r=await fetch(fn('offerwallme_go&o='+encodeURIComponent(id)),{headers:hdr(t)});
+      var j=await r.json().catch(function(){ return {}; });
+      if(!j||j.ok!==true||typeof j.url!=='string'||j.url.indexOf('https://offerwall.me/')!==0){ fail(j&&j.why==='gone'?L('هذا العرض لم يعد متاحًا','This offer is no longer available','Offre indisponible'):null); load(true); return; }
+      window.__owmAt=Date.now();
+      if(w){ try{ w.opener=null; }catch(e){} try{ w.location.href=j.url; return; }catch(e){} }
+      if(!openTaskUrl(j.url)) fail();
+    }catch(e){ fail(); }
+    finally{ BUSY=false; }
+  }
+  async function load(quiet){
+    var box=document.getElementById('owm-list'); if(!quiet&&box) box.innerHTML='<div class="oe">'+L('جارٍ التحميل…','Loading…','Chargement…')+'</div>';
+    try{
+      var t=await SRV.tok(); if(!t) return;
+      var r=await fetch(fn('offerwallme_offers'),{headers:hdr(t)}); var j=await r.json().catch(function(){ return null; });
+      if(j&&j.ok===true&&Array.isArray(j.items)){ ITEMS=j.items; draw(); }
+      else if(box&&!quiet) box.innerHTML='<div class="oe">'+L('تعذّر تحميل العروض. حاول لاحقًا.','Could not load offers. Try again later.','Échec du chargement.')+'</div>';
+    }catch(e){ if(box&&!quiet) box.innerHTML='<div class="oe">'+L('تعذّر تحميل العروض. حاول لاحقًا.','Could not load offers.','Échec.')+'</div>'; }
+  }
+  window.owmOpenList=function(){
+    var ov=document.getElementById('owm-ov'); if(!ov) return;
+    document.getElementById('owm-t').textContent=L('ألعاب ومهام واستطلاعات','Games, tasks & surveys','Jeux, tâches et sondages');
+    var x=document.getElementById('owm-x'); x.textContent=L('إغلاق','Close','Fermer');
+    x.onclick=function(){ ov.classList.remove('on'); try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} try{ if(SRV&&SRV.cycle) SRV.cycle(true); }catch(e){} };
+    ov.classList.add('on'); tabs(); draw(); load(false);
+  };
+  /* ===== بطاقة المدير ===== */
+  var A={open:false,cfg:null,items:null,hidden:{},busy:false,country:'DZ'};
+  function aToast(m){ try{ toast(m); }catch(e){} }
+  function aDraw(){
+    var b=document.getElementById('adm-owm'); if(!b) return;
+    var h='<div class="mnt-card" style="padding:8px 12px;margin-bottom:8px"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><b style="margin:0;font-size:13px">🎯 '+L('عروض Offerwall.me (أنت تتحكم)','Offerwall.me offers (you control)','Offres Offerwall.me')+'</b><button onclick="owmAdmToggle()" style="width:auto;flex:none;padding:7px 14px;font-size:12.5px;border-radius:10px">'+(A.open?'▲':'▼')+'</button></div>';
+    if(A.open){
+      var c=A.cfg;
+      if(!c){ h+='<div style="margin-top:8px;font-size:12.5px;color:#94a3b8">'+L('جارٍ التحميل… إن لم يظهر شيء شغّل ملف 66_owm_control.sql في Supabase.','Loading… if nothing appears, run 66_owm_control.sql in Supabase.','Chargement…')+'</div>'; }
+      else{
+        h+='<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><label style="font-size:12px;color:#94a3b8">'+L('حصة المستخدم %','User share %','Part utilisateur %')+'<input id="owm-sh" type="number" min="5" max="100" step="1" value="'+Math.round((Number(c.share)||0.5)*100)+'"></label>'+
+          '<label style="font-size:12px;color:#94a3b8">'+L('أقل مكافأة للمستخدم $','Min user reward $','Récompense min $')+'<input id="owm-mn" type="number" min="0" max="5" step="0.01" value="'+(Number(c.min_usd)||0)+'"></label></div>'+
+          '<div style="margin-top:8px;display:flex;gap:14px;font-size:13px;color:#e2e8f0"><label><input id="owm-t-o" type="checkbox"'+(c.types&&c.types.offers===false?'':' checked')+'> '+L('ألعاب وعروض','Offers','Offres')+'</label><label><input id="owm-t-s" type="checkbox"'+(c.types&&c.types.surveys===false?'':' checked')+'> '+L('استطلاعات','Surveys','Sondages')+'</label></div>'+
+          '<label style="display:block;margin-top:8px;font-size:12px;color:#94a3b8">'+L('كلمات تُخفي أي عرض يحتويها (افصل بفاصلة)','Words that hide an offer (comma separated)','Mots masquant une offre')+'<textarea id="owm-bw" rows="3">'+esc((c.block||[]).join(', '))+'</textarea></label>'+
+          '<div style="margin-top:8px;font-size:11.5px;color:#94a3b8;line-height:1.6">'+L('ربحك = ما تدفعه Offerwall.me − ما يصل للمستخدم. المستخدم يرى في التطبيق المبلغ الذي سيصله فعلًا.','Your profit = what Offerwall.me pays − what the user gets. Users see the exact amount they will receive.','Votre profit = paiement − part utilisateur.')+'</div>'+
+          '<div style="margin-top:8px;display:flex;gap:8px;align-items:end"><label style="font-size:12px;color:#94a3b8;flex:none;width:90px">'+L('بلد المعاينة','Preview country','Pays')+'<input id="owm-cc" type="text" maxlength="2" value="'+esc(A.country)+'" style="text-transform:uppercase"></label><button onclick="owmAdmLoad()" style="flex:1;padding:9px;font-size:12.5px;border-radius:10px">📥 '+L('تحميل العروض','Load offers','Charger')+'</button><button onclick="owmAdmSave()" style="flex:1;padding:9px;font-size:12.5px;border-radius:10px;background:linear-gradient(135deg,#10b981,#059669)">💾 '+L('حفظ','Save','Enregistrer')+'</button></div>';
+        if(A.items){
+          if(!A.items.length) h+='<div style="margin-top:8px;font-size:12.5px;color:#94a3b8">'+L('لا عروض لهذا البلد الآن.','No offers for this country right now.','Aucune offre.')+'</div>';
+          h+=A.items.map(function(i){
+            var hid=!!A.hidden[i.id]; var fl=i.flag==='blocked'?'🚫 '+L('كلمة ممنوعة','blocked word','mot bloqué'):i.flag==='low'?'⬇️ '+L('أقل من الحد','below min','sous le min'):'';
+            return '<div class="oa-row'+(hid?' off':'')+'"><div style="flex:1;min-width:0"><b style="display:block;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(i.kind==='survey'?'📝 ':'🎮 ')+esc(i.title)+'</b><span style="color:#94a3b8">'+L('تدفع لك','Pays you','Vous paie')+' '+usd(i.raw)+' · '+L('للمستخدم','user','user')+' '+usd(i.usd)+' · '+L('ربحك','profit','profit')+' '+usd(i.raw-i.usd)+(fl?' · '+fl:'')+'</span></div><button onclick="owmAdmHide(\''+esc(i.id).replace(/'/g,'')+'\')" style="width:auto;flex:none;padding:6px 10px;font-size:12px;border-radius:9px;'+(hid?'background:#475569':'background:linear-gradient(135deg,#ef4444,#b91c1c)')+'">'+(hid?L('إظهار','Show','Afficher'):L('إخفاء','Hide','Masquer'))+'</button></div>';
+          }).join('');
+        }
+      }
+    }
+    b.innerHTML=h+'</div>';
+  }
+  async function aLoadCfg(){
+    try{ var r=await SRV.rpc('admin_owm_get',{}); if(r&&typeof r==='object'&&r.ok!==false&&('share' in r||'block' in r||'hidden' in r)){ A.cfg=r; A.hidden={}; (r.hidden||[]).forEach(function(x){ A.hidden[String(x)]=1; }); aDraw(); } else aToast(L('شغّل ملف 66_owm_control.sql في Supabase','Run 66_owm_control.sql in Supabase','Exécutez 66_owm_control.sql')); }catch(e){ aToast(L('تعذّر التحميل','Could not load','Échec')); }
+  }
+  window.renderAdmOwm=function(){ aDraw(); };
+  window.owmAdmToggle=function(){ A.open=!A.open; aDraw(); if(A.open&&!A.cfg) aLoadCfg(); };
+  window.owmAdmHide=function(id){ if(A.hidden[id]) delete A.hidden[id]; else A.hidden[id]=1; aDraw(); };
+  window.owmAdmLoad=async function(){
+    if(A.busy) return; A.busy=true;
+    try{
+      var cc=((document.getElementById('owm-cc')||{}).value||'DZ').toUpperCase(); if(!/^[A-Z]{2}$/.test(cc)) cc='DZ'; A.country=cc;
+      var t=await SRV.tok(); var r=await fetch(fn('offerwallme_admin_list&country='+cc),{headers:hdr(t)}); var j=await r.json().catch(function(){ return null; });
+      if(j&&j.ok===true){ A.items=j.items||[]; if(j.why==='no_country') aToast(L('لم يُعرف البلد','Country unknown','Pays inconnu')); }
+      else if(j&&j.why==='not_configured') aToast(L('ضع OFFERWALLME_TOKEN في Supabase Secrets أولًا','Add OFFERWALLME_TOKEN in Supabase Secrets first','Ajoutez OFFERWALLME_TOKEN'));
+      else if(j&&j.why==='forbidden') aToast(L('غير مسموح','Not allowed','Non autorisé'));
+      else aToast(L('تعذّر تحميل العروض','Could not load offers','Échec'));
+      aDraw();
+    }catch(e){ aToast(L('تعذّر تحميل العروض','Could not load offers','Échec')); }
+    finally{ A.busy=false; }
+  };
+  window.owmAdmSave=async function(){
+    if(A.busy) return; A.busy=true;
+    try{
+      var sh=Number((document.getElementById('owm-sh')||{}).value)/100, mn=Number((document.getElementById('owm-mn')||{}).value);
+      if(!(sh>=0.05&&sh<=1)){ aToast(L('الحصة بين 5 و100','Share must be 5–100','Part 5–100')); return; }
+      if(!(mn>=0&&mn<=5)){ aToast(L('الحد الأدنى بين 0 و5','Min must be 0–5','Min 0–5')); return; }
+      var bw=String((document.getElementById('owm-bw')||{}).value||'').split(/[,،\n]/).map(function(x){ return x.trim().toLowerCase(); }).filter(function(x){ return x.length>=2; }).slice(0,80);
+      var payload={share:sh,min_usd:mn,hidden:Object.keys(A.hidden).slice(0,1000),block:bw,types:{offers:!!(document.getElementById('owm-t-o')||{}).checked,surveys:!!(document.getElementById('owm-t-s')||{}).checked}};
+      var r=await SRV.rpc('admin_owm_set',{p:payload});
+      if(r&&r.ok===true){ A.cfg=payload; aToast(L('✅ تم الحفظ','✅ Saved','✅ Enregistré')); try{ localStorage.removeItem('pl-owm-on'); }catch(e){} }
+      else aToast(L('تعذّر الحفظ — شغّل 66_owm_control.sql','Could not save — run 66_owm_control.sql','Échec'));
+      aDraw();
+    }catch(e){ aToast(L('تعذّر الحفظ','Could not save','Échec')); }
+    finally{ A.busy=false; }
   };
 })();
 </script>
