@@ -12471,7 +12471,6 @@ async function openCpx(){
   function mList(){
     var h='<button class="adm-new" style="width:100%;margin-bottom:12px" onclick="owmMgPick()">+ '+L('إضافة لعبة','Add a game','Ajouter un jeu')+'</button>';
     h+='<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgDiag()">🩺 '+L('فحص: لماذا لا تظهر لعبتي للمستخدمين؟','Check: why is my game not visible?','Diagnostic')+'</button>'+
-    '<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgDiag()">🩺 '+L('فحص: لماذا لا تظهر لعبتي للمستخدمين؟','Check: why is my game not visible?','Diagnostic')+'</button>'+
     '<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgSet()">⚙️ '+L('الإعدادات: النسبة والكلمات المحظورة','Settings: share and blocked words','Réglages')+'</button>';
     if(!M.rows.length) h+='<div style="padding:18px;text-align:center;color:var(--muted)">'+L('لم تضف أي لعبة بعد. لن يرى المستخدمون ألعابًا حتى تضيف.','No games yet. Users will see none until you add some.','Aucun jeu.')+'</div>';
     M.rows.forEach(function(g,i){
@@ -12531,8 +12530,11 @@ async function openCpx(){
     var cc=((document.getElementById('owm-dc')||{}).value||'DZ').toUpperCase(); if(!/^[A-Z]{2}$/.test(cc)) cc='DZ'; M.cc=cc;
     var b=document.getElementById('owm-dr'); if(b) b.textContent=L('جارٍ الفحص…','Checking…','Vérification…');
     var WHY={hidden:L('مخفية من قائمة الإخفاء في الإعدادات','Hidden in settings','Masquée'),blocked:L('تحتوي كلمة ممنوعة (قمار/كازينو…)','Contains a blocked word','Mot interdit'),low:L('مكافأتها أقل من الحد الأدنى في الإعدادات','Below the minimum reward','Sous le minimum'),over_cap:L('فيها مرحلة أكبر من حدّ العملية المسموح','A step exceeds the per-transaction cap','Plafond dépassé'),type_off:L('نوعها (ألعاب/استطلاعات) مغلق في الإعدادات','This type is switched off in settings','Type désactivé')};
-    Promise.all([Promise.resolve(SRV.rpc('owm_games_admin_list',{})),Promise.resolve(SRV.tok()).then(function(t){ return Promise.all([fetch(fn('offerwallme_admin_list&country='+cc),{headers:hdr(t)}).then(function(r){ return r.json(); }),fetch(fn('offerwallme_link'),{headers:hdr(t)}).then(function(r){ return r.json(); }).catch(function(){ return {}; })]); })]).then(function(a){
-      var rows=a[0], j=a[1][0], pr=a[1][1]||{}, el=document.getElementById('owm-dr'); if(!el) return;
+    Promise.all([Promise.resolve(SRV.rpc('owm_games_admin_list',{})),Promise.resolve(SRV.tok()).then(function(t){ return Promise.all([fetch(fn('offerwallme_admin_list&country='+cc),{headers:hdr(t)}).then(function(r){ return r.json(); }),fetch(fn('offerwallme_link'),{headers:hdr(t)}).then(function(r){ return r.json(); }).catch(function(){ return {}; }),fetch(fn('offerwallme_offers'),{headers:hdr(t)}).then(function(r){ return r.json(); }).catch(function(){ return {ok:false,why:'net'}; })]); })]).then(function(a){
+      var rows=a[0], j=a[1][0], pr=a[1][1]||{}, us=a[1][2]||{}, el=document.getElementById('owm-dr'); if(!el) return;
+      /* مسار المستخدم الحقيقي (بلدك يُكتشف من الاتصال، لا يُفرض DZ): هذا ما يراه التطبيق فعلًا */
+      var shown={}; (Array.isArray(us.items)?us.items:[]).forEach(function(x){ shown[x.id]=1; });
+      var UW={no_country:L('الخادم لم يكتشف بلد اتصالك (header البلد غير موجود)','Server could not detect your country','Pays non détecté'),no_ip:L('الخادم لم يقرأ عنوان IP لاتصالك','Server could not read your IP','IP illisible'),network_off:L('الشبكة غير مفعّلة','Network off','Réseau inactif'),not_allowed:L('حسابك محظور أو محذوف','Account not allowed','Compte non autorisé'),not_configured:L('أسرار Offerwall.me ناقصة في Supabase','Secrets missing','Secrets manquants'),exception:L('خطأ داخل الخادم (exception)','Server exception','Exception'),net:L('انقطاع الاتصال بالخادم','Network error','Erreur réseau'),bad_token:L('انتهت الجلسة، سجّل الدخول من جديد','Session expired','Session expirée'),no_token:L('انتهت الجلسة، سجّل الدخول من جديد','Session expired','Session expirée')};
       if(!Array.isArray(rows)){ el.textContent=L('تعذّر تحميل قائمة ألعابك','Could not load your games','Échec'); return; }
       if(!j||j.ok!==true){ el.textContent=L('تعذّر جلب عروض الشبكة الآن','Could not fetch network offers','Échec'); return; }
       var byId={}; (j.items||[]).forEach(function(it){ byId[it.id]=it; });
@@ -12545,10 +12547,13 @@ async function openCpx(){
         if(!g.active) why=L('موقوفة (الحالة: متوقفة)','Paused','En pause');
         else if(!it) why=L('غير متاحة في الشبكة لبلد '+cc+' الآن، أو أُزيلت من العروض. جرّب بلدًا آخر أو احذفها.','Not available in the network for '+cc+' right now.','Indisponible pour '+cc);
         else if(it.flag&&WHY[it.flag]) why=WHY[it.flag];
+        else if(us.ok!==true) why=L('تعذّر اختبار مسار المستخدم: ','User-path test failed: ','Test échoué: ')+(UW[us.why]||String(us.why||'?'));
+        else if(!shown[g.ext]) why=us.why&&UW[us.why]?UW[us.why]:(!(us.items||[]).length?L('الخادم يرجع للمستخدم قائمة فارغة رغم أن الفحص نجح (بلدك الحقيقي غير DZ؟ أو لم تُقرأ لعبتك من جدول owm_games)','Server returns an empty list to the real user path','Liste vide'):L('هذه اللعبة غير موجودة في قائمة المستخدم الفعلية. جرّب بلدًا مختلفًا للفحص','Not in the real user list','Absent'));
         var ok=!why; if(ok) okN++;
         h+='<div style="display:flex;gap:8px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--border)"><span style="font-size:18px">'+(ok?'✅':'❌')+'</span><div style="flex:1;min-width:0"><b style="color:#fff">'+esc(g.name||g.ext)+'</b><div style="font-size:12px;margin-top:2px;color:'+(ok?'#34d399':'#fbbf24')+'">'+(ok?L('تظهر للمستخدمين في '+pl(g.place)+' (للمستخدم '+usd(it.usd)+')','Visible in '+pl(g.place),'Visible'):why)+'</div></div></div>';
       });
-      el.innerHTML='<div style="margin-bottom:6px">'+L('النتيجة لبلد','Result for','Résultat pour')+' <b>'+cc+'</b>: '+okN+'/'+rows.length+' '+L('تظهر','visible','visibles')+'</div>'+h;
+      el.innerHTML='<div style="margin-bottom:6px">'+L('النتيجة لبلد','Result for','Résultat pour')+' <b>'+cc+'</b>: '+okN+'/'+rows.length+' '+L('تظهر','visible','visibles')+'</div>'
+        +'<div style="margin-bottom:6px;font-size:12px;color:#9fb3d9">'+L('ما يُرجعه الخادم لك أنت الآن (مسار المستخدم الحقيقي): ','What the server returns to you now: ','Réponse serveur: ')+'<b>'+(us.ok===true?(us.items||[]).length:'✖')+'</b>'+(us.why?' · '+esc(String(us.why)):'')+'</div>'+h;
     }).catch(function(){ var el=document.getElementById('owm-dr'); if(el) el.textContent=L('تعذّر الفحص','Check failed','Échec'); });
   };
   window.owmMgSet=function(){
