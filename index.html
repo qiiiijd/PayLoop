@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.01-r86';
+window.PL_BUILD='2026.11.01-r88';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12318,6 +12318,7 @@ async function openCpx(){
     }).catch(function(){}).then(function(){ busy=false; });
   }
   window.owmGamesLoad=load;
+  function ptxt(p){ return p==='android'?'🤖 '+L('أندرويد','Android','Android'):p==='ios'?'🍎 '+L('آيفون','iPhone','iPhone'):p==='all'?'📱 '+L('أندرويد وآيفون','Android & iPhone','Android et iPhone'):'🔄 '+L('تلقائي','Auto','Auto'); }
   function stKey(){ var u=''; try{ u=(RealAuth.getSession()||{}).uid||''; }catch(e){} return 'pl-owm-st:'+u; }
   function stGet(){ try{ return JSON.parse(localStorage.getItem(stKey())||'{}')||{}; }catch(e){ return {}; } }
   function stSet(id){ var m=stGet(); m[id]=Date.now(); try{ localStorage.setItem(stKey(),JSON.stringify(m)); }catch(e){} }
@@ -12342,7 +12343,7 @@ async function openCpx(){
         html+='<div class="trow owm-g" data-oid="'+esc(g.id)+'" onclick="owmOpenGame(this.getAttribute(\'data-oid\'))">'
           +'<div class="t-icon art'+(g.image?' has-img':'')+'">'+img+'</div>'
           +'<div class="t-info"><div class="t-head"><b class="t-amt">'+usd(g.usd)+'</b><span class="t-amtl">'+(g.multi?L('المجموع','Total','Total'):L('المكافأة','Reward','Gain'))+'</span></div>'
-          +'<h4>'+esc(g.name||'')+'</h4><span class="t-tag ext">🌐 '+L('خارجية','External','Externe')+'</span>'+(STM[g.id]?'<span class="t-tag" style="background:#f59e0b22;color:#f59e0b">'+L('إكمال','Continue','Reprendre')+'</span>':'<span class="t-tag" style="background:#22c55e22;color:#22c55e">'+L('جديد','New','Nouveau')+'</span>')
+          +'<h4>'+esc(g.name||'')+'</h4><span class="t-tag ext">🌐 '+L('خارجية','External','Externe')+'</span>'+(STM[g.id]?'<span class="t-tag" style="background:#f59e0b22;color:#f59e0b">'+L('إكمال','Continue','Reprendre')+'</span>':'<span class="t-tag" style="background:#22c55e22;color:#22c55e">'+L('جديد','New','Nouveau')+'</span>')+((g.plat==='android'||g.plat==='ios')?'<span class="t-tag" style="background:rgba(56,189,248,.14);color:#7dd3fc">'+ptxt(g.plat)+'</span>':'')
           +'<div class="meta"><span>📶 '+(n?n+' '+L('خطوات','steps','étapes'):L('مهمة واحدة','Single task','Une tâche'))+'</span></div></div>'+go+'</div>';
       });
       if(html){ try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){} box.insertAdjacentHTML('afterbegin',html); }
@@ -12362,11 +12363,10 @@ async function openCpx(){
       h+='<div class="sc"><b>'+L('المكافآت حسب المراحل','Rewards by step','Récompenses par étape')+' — '+g.steps.length+' '+L('مراحل','steps','étapes')+'</b>'+g.steps.map(function(s,n){ return '<div class="st"><div class="n">'+(n+1)+'</div><div class="d">'+esc(s.d||('#'+(n+1)))+'</div><div class="r">'+usd(s.usd)+'</div></div>'; }).join('')
         +'<div style="margin-top:6px;font-size:12px;color:#9fb3d9">'+L('لا يُمنح المجموع كاملًا إلا بعد إكمال كل المراحل. تصلك كل مرحلة فقط بعد تأكيد الشبكة لها.','The total is paid only after every step is completed. Each step is paid only after the network confirms it.','Chaque étape est payée après confirmation du réseau.')+'</div></div>';
     }
-    var ds=(g.devices||[]).join(' ، ');
-    if(ds) h+='<div class="sc"><b>'+L('الأجهزة','Devices','Appareils')+'</b>'+esc(ds)+'</div>';
+    if(g.plat==='android'||g.plat==='ios'||g.plat==='all') h+='<div class="sc"><b>'+L('يعمل على','Works on','Fonctionne sur')+'</b>'+ptxt(g.plat)+'</div>';
     h+='<div class="sc" style="font-size:13px;color:#9fb3d9">'+L('المكافأة تصل تلقائيًا إلى رصيدك بعد أن تؤكد الشبكة الإنجاز (قد يستغرق دقائق وأحيانًا أكثر). لا تحذف اللعبة قبل إنهاء المراحل.','The reward is added automatically once the network confirms completion (minutes, sometimes longer). Do not uninstall the game before finishing.','La récompense est ajoutée après confirmation du réseau.')+'</div>';
     d.innerHTML=h; d.scrollTop=0;
-    var bar=document.createElement('div'); bar.className='gs'; bar.innerHTML='<button type="button">'+L('ابدأ','Start','Commencer')+'</button>';
+    var bar=document.createElement('div'); bar.className='gs'; bar.innerHTML='<button type="button"></button>'; bar.firstChild.textContent=(g.btn&&String(g.btn).trim())||L('ابدأ','Start','Commencer');
     bar.firstChild.onclick=function(){ go(g.id); }; d.appendChild(bar);
     ov.classList.add('on');
   };
@@ -12449,7 +12449,7 @@ async function openCpx(){
   };
 
   /* ===== إدارة ألعاب Offerwall.me (للمدير فقط): تصفّح عروض الشبكة ثم اكتب الاسم والوصف والمهمة بالعربية واختر مكان الظهور ===== */
-  var M={rows:[],pick:[],q:'',cc:'DZ',cur:null,share:0.5};
+  var M={pf:'',rows:[],pick:[],q:'',cc:'DZ',cur:null,share:0.5};
   var PL=[['games','🎮','الألعاب','Games'],['survey','📝','الاستطلاعات','Surveys'],['ads','📢','الإعلانات','Ads'],['apps','📲','التطبيقات','Apps'],['daily','📅','المهام اليومية','Daily']];
   function pl(k){ for(var i=0;i<PL.length;i++) if(PL[i][0]===k) return PL[i][1]+' '+L(PL[i][2],PL[i][3],PL[i][3]); return k; }
   function mroot(){ var ov=document.getElementById('adm-modal'); if(!ov){ ov=document.createElement('div'); ov.id='adm-modal'; document.body.appendChild(ov); } ov.className='adm-modal'; ov.style.display='flex'; return ov; }
@@ -12471,13 +12471,14 @@ async function openCpx(){
   function mList(){
     var h='<button class="adm-new" style="width:100%;margin-bottom:12px" onclick="owmMgPick()">+ '+L('إضافة لعبة','Add a game','Ajouter un jeu')+'</button>';
     h+='<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgDiag()">🩺 '+L('فحص: لماذا لا تظهر لعبتي للمستخدمين؟','Check: why is my game not visible?','Diagnostic')+'</button>'+
+    '<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgDiag()">🩺 '+L('فحص: لماذا لا تظهر لعبتي للمستخدمين؟','Check: why is my game not visible?','Diagnostic')+'</button>'+
     '<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgSet()">⚙️ '+L('الإعدادات: النسبة والكلمات المحظورة','Settings: share and blocked words','Réglages')+'</button>';
     if(!M.rows.length) h+='<div style="padding:18px;text-align:center;color:var(--muted)">'+L('لم تضف أي لعبة بعد. لن يرى المستخدمون ألعابًا حتى تضيف.','No games yet. Users will see none until you add some.','Aucun jeu.')+'</div>';
     M.rows.forEach(function(g,i){
       h+='<div style="display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--border)">'+
         '<div style="width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,.06);overflow:hidden;flex:none;display:flex;align-items:center;justify-content:center">'+(g.img?'<img src="'+esc(g.img)+'" style="width:100%;height:100%;object-fit:cover" referrerpolicy="no-referrer" onerror="this.remove()">':(g.kind==='survey'?'📝':'🎮'))+'</div>'+
         '<div style="flex:1;min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(g.name||g.ext)+'</div>'+
-        '<div style="font-size:12px;color:var(--muted)">'+L('الترتيب','order','ordre')+' '+g.sort+' · <b style="color:#38bdf8">'+pl(g.place)+'</b> · '+(g.active?'<b style="color:#22c55e">'+L('نشطة','active','active')+'</b>':'<b style="color:#f59e0b">'+L('متوقفة','paused','pause')+'</b>')+'</div></div>'+
+        '<div style="font-size:12px;color:var(--muted)">'+L('الترتيب','order','ordre')+' '+g.sort+' · <b style="color:#38bdf8">'+pl(g.place)+'</b> · '+ptxt(g.platform||'auto')+' · '+(g.active?'<b style="color:#22c55e">'+L('نشطة','active','active')+'</b>':'<b style="color:#f59e0b">'+L('متوقفة','paused','pause')+'</b>')+'</div></div>'+
         '<button class="mm-x" onclick="owmMgFeat('+i+')" style="'+(g.featured?'':'opacity:.4')+'">⭐</button>'+
         '<button class="mm-x" onclick="owmMgTog('+i+')">'+(g.active?'⏸':'▶️')+'</button>'+
         '<button class="mm-x" onclick="owmMgEdit('+i+')">✏️</button>'+
@@ -12530,11 +12531,8 @@ async function openCpx(){
     var cc=((document.getElementById('owm-dc')||{}).value||'DZ').toUpperCase(); if(!/^[A-Z]{2}$/.test(cc)) cc='DZ'; M.cc=cc;
     var b=document.getElementById('owm-dr'); if(b) b.textContent=L('جارٍ الفحص…','Checking…','Vérification…');
     var WHY={hidden:L('مخفية من قائمة الإخفاء في الإعدادات','Hidden in settings','Masquée'),blocked:L('تحتوي كلمة ممنوعة (قمار/كازينو…)','Contains a blocked word','Mot interdit'),low:L('مكافأتها أقل من الحد الأدنى في الإعدادات','Below the minimum reward','Sous le minimum'),over_cap:L('فيها مرحلة أكبر من حدّ العملية المسموح','A step exceeds the per-transaction cap','Plafond dépassé'),type_off:L('نوعها (ألعاب/استطلاعات) مغلق في الإعدادات','This type is switched off in settings','Type désactivé')};
-    Promise.all([Promise.resolve(SRV.rpc('owm_games_admin_list',{})),Promise.resolve(SRV.tok()).then(function(t){ return Promise.all([fetch(fn('offerwallme_admin_list&country='+cc),{headers:hdr(t)}).then(function(r){ return r.json(); }),fetch(fn('offerwallme_link'),{headers:hdr(t)}).then(function(r){ return r.json(); }).catch(function(){ return {}; }),fetch(fn('offerwallme_offers'),{headers:hdr(t)}).then(function(r){ return r.json(); }).catch(function(){ return {ok:false,why:'net'}; })]); })]).then(function(a){
-      var rows=a[0], j=a[1][0], pr=a[1][1]||{}, us=a[1][2]||{}, el=document.getElementById('owm-dr'); if(!el) return;
-      /* مسار المستخدم الحقيقي (بلدك يُكتشف من الاتصال، لا يُفرض DZ): هذا ما يراه التطبيق فعلًا */
-      var shown={}; (Array.isArray(us.items)?us.items:[]).forEach(function(x){ shown[x.id]=1; });
-      var UW={no_country:L('الخادم لم يكتشف بلد اتصالك (header البلد غير موجود)','Server could not detect your country','Pays non détecté'),no_ip:L('الخادم لم يقرأ عنوان IP لاتصالك','Server could not read your IP','IP illisible'),network_off:L('الشبكة غير مفعّلة','Network off','Réseau inactif'),not_allowed:L('حسابك محظور أو محذوف','Account not allowed','Compte non autorisé'),not_configured:L('أسرار Offerwall.me ناقصة في Supabase','Secrets missing','Secrets manquants'),exception:L('خطأ داخل الخادم (exception)','Server exception','Exception'),net:L('انقطاع الاتصال بالخادم','Network error','Erreur réseau'),bad_token:L('انتهت الجلسة، سجّل الدخول من جديد','Session expired','Session expirée'),no_token:L('انتهت الجلسة، سجّل الدخول من جديد','Session expired','Session expirée')};
+    Promise.all([Promise.resolve(SRV.rpc('owm_games_admin_list',{})),Promise.resolve(SRV.tok()).then(function(t){ return Promise.all([fetch(fn('offerwallme_admin_list&country='+cc),{headers:hdr(t)}).then(function(r){ return r.json(); }),fetch(fn('offerwallme_link'),{headers:hdr(t)}).then(function(r){ return r.json(); }).catch(function(){ return {}; })]); })]).then(function(a){
+      var rows=a[0], j=a[1][0], pr=a[1][1]||{}, el=document.getElementById('owm-dr'); if(!el) return;
       if(!Array.isArray(rows)){ el.textContent=L('تعذّر تحميل قائمة ألعابك','Could not load your games','Échec'); return; }
       if(!j||j.ok!==true){ el.textContent=L('تعذّر جلب عروض الشبكة الآن','Could not fetch network offers','Échec'); return; }
       var byId={}; (j.items||[]).forEach(function(it){ byId[it.id]=it; });
@@ -12547,13 +12545,10 @@ async function openCpx(){
         if(!g.active) why=L('موقوفة (الحالة: متوقفة)','Paused','En pause');
         else if(!it) why=L('غير متاحة في الشبكة لبلد '+cc+' الآن، أو أُزيلت من العروض. جرّب بلدًا آخر أو احذفها.','Not available in the network for '+cc+' right now.','Indisponible pour '+cc);
         else if(it.flag&&WHY[it.flag]) why=WHY[it.flag];
-        else if(us.ok!==true) why=L('تعذّر اختبار مسار المستخدم: ','User-path test failed: ','Test échoué: ')+(UW[us.why]||String(us.why||'?'));
-        else if(!shown[g.ext]) why=us.why&&UW[us.why]?UW[us.why]:(!(us.items||[]).length?L('الخادم يرجع للمستخدم قائمة فارغة رغم أن الفحص نجح (بلدك الحقيقي غير DZ؟ أو لم تُقرأ لعبتك من جدول owm_games)','Server returns an empty list to the real user path','Liste vide'):L('هذه اللعبة غير موجودة في قائمة المستخدم الفعلية. جرّب بلدًا مختلفًا للفحص','Not in the real user list','Absent'));
         var ok=!why; if(ok) okN++;
         h+='<div style="display:flex;gap:8px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--border)"><span style="font-size:18px">'+(ok?'✅':'❌')+'</span><div style="flex:1;min-width:0"><b style="color:#fff">'+esc(g.name||g.ext)+'</b><div style="font-size:12px;margin-top:2px;color:'+(ok?'#34d399':'#fbbf24')+'">'+(ok?L('تظهر للمستخدمين في '+pl(g.place)+' (للمستخدم '+usd(it.usd)+')','Visible in '+pl(g.place),'Visible'):why)+'</div></div></div>';
       });
-      el.innerHTML='<div style="margin-bottom:6px">'+L('النتيجة لبلد','Result for','Résultat pour')+' <b>'+cc+'</b>: '+okN+'/'+rows.length+' '+L('تظهر','visible','visibles')+'</div>'
-        +'<div style="margin-bottom:6px;font-size:12px;color:#9fb3d9">'+L('ما يُرجعه الخادم لك أنت الآن (مسار المستخدم الحقيقي): ','What the server returns to you now: ','Réponse serveur: ')+'<b>'+(us.ok===true?(us.items||[]).length:'✖')+'</b>'+(us.why?' · '+esc(String(us.why)):'')+'</div>'+h;
+      el.innerHTML='<div style="margin-bottom:6px">'+L('النتيجة لبلد','Result for','Résultat pour')+' <b>'+cc+'</b>: '+okN+'/'+rows.length+' '+L('تظهر','visible','visibles')+'</div>'+h;
     }).catch(function(){ var el=document.getElementById('owm-dr'); if(el) el.textContent=L('تعذّر الفحص','Check failed','Échec'); });
   };
   window.owmMgSet=function(){
@@ -12566,7 +12561,7 @@ async function openCpx(){
       else{ try{ toast(mwhy(r)); }catch(e){} done(false); }
     }).catch(function(){ try{ toast(L('تعذّر الحفظ','Could not save','Échec')); }catch(e){} done(false); });
   }
-  function rowObj(g,ch){ var o={ext:g.ext,name:g.name,descr:g.descr,task:g.task,img:g.img,place:g.place,sort:g.sort,featured:g.featured,active:g.active}; for(var k in ch) o[k]=ch[k]; return o; }
+  function rowObj(g,ch){ var o={ext:g.ext,name:g.name,descr:g.descr,task:g.task,img:g.img,place:g.place,sort:g.sort,featured:g.featured,active:g.active,btn:g.btn||'',platform:g.platform||'auto'}; for(var k in ch) o[k]=ch[k]; return o; }
   window.owmMgTog=function(i){ var g=M.rows[i]; if(!g) return; mSave(rowObj(g,{active:!g.active}),function(ok){ if(ok){ g.active=!g.active; mList(); } }); };
   window.owmMgDel=function(i){ var g=M.rows[i]; if(!g||!confirm(L('حذف «'+g.name+'»؟','Delete "'+g.name+'"?','Supprimer ?'))) return;
     Promise.resolve(SRV.rpc('owm_game_delete',{p_id:g.id})).then(function(r){ if(r&&r.ok===true){ M.rows.splice(i,1); mList(); } else toast(mwhy(r)); }).catch(function(){}); };
@@ -12587,31 +12582,34 @@ async function openCpx(){
   function mPickList(){
     var b=document.getElementById('owm-pl'); if(!b) return;
     if(!M.pick.length){ b.textContent=L('لا عروض لهذا البلد الآن.','No offers for this country now.','Aucune offre.'); return; }
-    b.innerHTML='<input id="owm-q" type="text" placeholder="'+esc(L('بحث بالاسم…','Search…','Rechercher…'))+'" value="'+esc(M.q)+'" oninput="owmMgQ(this.value)" style="width:100%;box-sizing:border-box;padding:9px;border-radius:10px;border:1px solid #243252;background:#0d1627;color:#fff;margin-bottom:6px"><div id="owm-pr"></div>';
+    b.innerHTML='<input id="owm-q" type="text" placeholder="'+esc(L('بحث بالاسم…','Search…','Rechercher…'))+'" value="'+esc(M.q)+'" oninput="owmMgQ(this.value)" style="width:100%;box-sizing:border-box;padding:9px;border-radius:10px;border:1px solid #243252;background:#0d1627;color:#fff;margin-bottom:6px"><div style="display:flex;gap:6px;margin-bottom:6px">'+[['','📱 '+L('الكل','All','Tous')],['ios','🍎 '+L('آيفون','iPhone','iPhone')],['android','🤖 '+L('أندرويد','Android','Android')]].map(function(o){ return '<button class="adm-new sm" style="margin:0;flex:1;'+(M.pf===o[0]?'':'opacity:.55')+'" onclick="owmMgPf(\''+o[0]+'\')">'+o[1]+'</button>'; }).join('')+'</div><div id="owm-pr"></div>';
     mPickRows();
   }
+  window.owmMgPf=function(v){ M.pf=v; mPickList(); };
   window.owmMgQ=function(v){ M.q=String(v||'').toLowerCase(); mPickRows(); };
   function mPickRows(){
     var el=document.getElementById('owm-pr'); if(!el) return;
-    var q=M.q, list=[]; M.pick.forEach(function(it,i){ if(!q||String(it.title||'').toLowerCase().indexOf(q)>=0) list.push([it,i]); });
+    var q=M.q, list=[]; M.pick.forEach(function(it,i){ if(M.pf&&it.plat&&it.plat!=='all'&&it.plat!==M.pf) return; if(!q||String(it.title||'').toLowerCase().indexOf(q)>=0) list.push([it,i]); });
     el.innerHTML=list.slice(0,80).map(function(p){
       var it=p[0], i=p[1], im=it.image?'<img src="'+esc(it.image)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(it.kind==='survey'?'📝':'🎮');
       var warn=it.flag==='blocked'?' · 🚫':it.flag==='over_cap'?' · ⚠️ >$20':'';
-      return '<div class="owm-r"><div class="im">'+im+'</div><div class="tx"><b dir="auto">'+esc(it.title)+'</b>'+L('تدفع لك','pays you','vous paie')+' '+usd(it.raw)+' · '+L('للمستخدم','user','user')+' '+usd(it.usd)+(it.multi?' · 🎯'+it.nsteps:'')+warn+'</div>'
+      return '<div class="owm-r"><div class="im">'+im+'</div><div class="tx"><b dir="auto">'+esc(it.title)+'</b>'+L('تدفع لك','pays you','vous paie')+' '+usd(it.raw)+' · '+L('للمستخدم','user','user')+' '+usd(it.usd)+(it.multi?' · 🎯'+it.nsteps:'')+' · '+ptxt(it.plat||'all')+warn+'</div>'
         +(it.added?'<span style="font-size:12px;color:#34d399">✅</span>':'<button class="adm-new sm" style="margin:0;flex:none" onclick="owmMgAdd('+i+')">'+L('إضافة','Add','Ajouter')+'</button>')+'</div>';
     }).join('');
   }
   window.owmMgAdd=function(i){ var it=M.pick[i]; if(!it) return; M.cur={ext:it.id,title:it.title,row:null,image:it.image||'',usd:it}; mForm(); };
   function mForm(){
-    var c=M.cur, r=c.row||{};
+    var c=M.cur, r=c.row||{}; M.imgUp='';
     var opts=PL.map(function(p){ return '<option value="'+p[0]+'"'+((r.place||'games')===p[0]?' selected':'')+'>'+p[1]+' '+L(p[2],p[3],p[3])+'</option>'; }).join('');
     var ta='width:100%;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none;resize:vertical;box-sizing:border-box';
     var im=(r.img!=null&&r.img!==''?r.img:(c.image||''));
     var h='<div class="au-f full" style="background:rgba(14,165,233,.08);border-radius:12px;padding:10px;font-size:13px;margin-bottom:10px">✅ <b dir="auto">'+esc(c.title||c.ext)+'</b>'+(c.usd?'<br>'+L('تدفع لك','pays you','vous paie')+' '+usd(c.usd.raw)+' · '+L('للمستخدم','user','user')+' <b style="color:#22c55e">'+usd(c.usd.usd)+'</b>'+(c.usd.multi?' · '+c.usd.nsteps+' '+L('مراحل','levels','niveaux'):''):'')+'</div>'
       +'<div class="au-f full"><label>'+L('اسم اللعبة (بالعربية، أنت تكتبه)','Game name (you write it)','Nom du jeu')+'</label><input id="owm-f-n" maxlength="80" value="'+esc(r.name||'')+'" placeholder="'+esc(L('مثال: فقاعات الأساطير','e.g. Bubble Legends','ex'))+'"></div>'
-      +'<div class="au-f full"><label>'+L('الصورة (تُؤخذ تلقائيًا من الشبكة، أو ضع رابط https)','Image (auto from network, or https link)','Image')+'</label><div style="display:flex;align-items:center;gap:10px">'+(im?'<img class="at-prev" src="'+esc(im)+'" alt="" referrerpolicy="no-referrer" style="width:54px;height:54px;border-radius:10px;object-fit:cover" onerror="this.remove()">':'')+'<input id="owm-f-i" dir="ltr" value="'+esc(im)+'" placeholder="https://..." style="flex:1;min-width:0"></div></div>'
+      +'<div class="au-f full"><label>'+L('الصورة (تُؤخذ تلقائيًا من الشبكة، أو ضع رابط https)','Image (auto from network, or https link)','Image')+'</label><div style="display:flex;align-items:center;gap:10px">'+(im?'<img class="at-prev" src="'+esc(im)+'" alt="" referrerpolicy="no-referrer" style="width:54px;height:54px;border-radius:10px;object-fit:cover" onerror="this.remove()">':'')+'<input id="owm-f-i" dir="ltr" value="'+esc(/^data:/.test(im)?'':im)+'" placeholder="https://..." style="flex:1;min-width:0"></div><input type="file" accept="image/*" onchange="owmMgImg(this)" style="margin-top:8px;max-width:100%"><span id="owm-f-iu" style="display:block;font-size:11.5px;color:#9fb3d9;margin-top:4px">'+(/^data:/.test(im)?L('صورة مرفوعة محفوظة','Uploaded image saved','Image enregistrée'):L('ارفع صورة من هاتفك أو ضع رابطًا. إن تركتها فارغة تُستعمل صورة الشبكة.','Upload a photo or paste a link. If empty, the network image is used.','Image du réseau par défaut.'))+'</span></div>'
       +'<div class="au-f full"><label>'+L('وصف اللعبة (بالعربية)','Description (Arabic)','Description')+'</label><textarea id="owm-f-d" rows="3" maxlength="600" style="'+ta+'">'+esc(r.descr||'')+'</textarea></div>'
       +'<div class="au-f full"><label>'+L('المهمة المطلوبة (مثال: صِل إلى المستوى 10)','Required task','Tâche')+'</label><textarea id="owm-f-t" rows="3" maxlength="400" style="'+ta+'">'+esc(r.task||'')+'</textarea></div>'
+      +'<div class="au-f full"><label>'+L('نصّ زر البدء (أنت تختاره، مثل: ابدأ اللعب / ثبّت اللعبة)','Start button text','Texte du bouton')+'</label><input id="owm-f-b" maxlength="30" value="'+esc(r.btn||'')+'" placeholder="'+esc(L('ابدأ اللعب','Start playing','Jouer'))+'"></div>'
+      +'<div class="au-f full"><label>📱 '+L('الجهاز: أي هاتف تعمل عليه؟','Device','Appareil')+'</label><select id="owm-f-pf">'+[['auto','🔄 '+L('تلقائي (من الشبكة، موصى به)','Auto (from network, recommended)','Auto')],['android','🤖 '+L('أندرويد فقط','Android only','Android')],['ios','🍎 '+L('آيفون فقط','iPhone only','iPhone')],['all','📱 '+L('الاثنان','Both','Les deux')]].map(function(o){ return '<option value="'+o[0]+'"'+((r.platform||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select><span style="display:block;font-size:11.5px;color:#9fb3d9;margin-top:4px">'+L('لا نعرض اللعبة لمن جهازه مختلف، حتى لا تفتح له متجرًا خاطئًا.','Users on another device will not see this game.','Les autres appareils ne la voient pas.')+'</span></div>'
       +'<div class="au-f full"><label>'+L('📍 أين تظهر هذه اللعبة في التطبيق؟','📍 Where does it appear?','📍 Où ?')+'</label><select id="owm-f-p">'+opts+'</select></div>'
       +'<div class="au-f full"><label>⭐ '+L('الأكثر لعبًا / المفضلة','Favourite','Favori')+'</label><select id="owm-f-f"><option value="0">'+L('لا','No','Non')+'</option><option value="1"'+(r.featured?' selected':'')+'>'+L('نعم','Yes','Oui')+'</option></select></div>'
       +'<div style="display:flex;gap:10px"><div class="au-f" style="flex:1"><label>'+L('الترتيب (الأصغر أولًا)','Order','Ordre')+'</label><input id="owm-f-s" inputmode="numeric" dir="ltr" value="'+(r.sort!=null?r.sort:100)+'"></div>'
@@ -12619,10 +12617,25 @@ async function openCpx(){
       +'<div style="display:flex;gap:10px;margin-top:6px"><button class="adm-new" style="flex:1" onclick="owmMgSave()">💾 '+L('حفظ','Save','Enregistrer')+'</button><button class="adm-new" style="flex:1;background:rgba(255,255,255,.08)" onclick="owmMgOpen()">'+L('رجوع','Back','Retour')+'</button></div>';
     mcard(h,(c.row?'✏️ ':'+ ')+L('لعبة','Game','Jeu'));
   }
+  window.owmMgImg=function(inp){
+    var f=inp.files&&inp.files[0]; if(!f) return;
+    if(!/^image\//.test(f.type)){ toast(L('الملف ليس صورة','Not an image','Pas une image')); return; }
+    var rd=new FileReader();
+    rd.onload=function(ev){
+      var raw=String((ev&&ev.target&&ev.target.result)||'');
+      var ok=function(d){ return /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(d)&&d.length<=38000; };
+      imgShrink(raw,200,0.7,true,function(d){
+        var fin=function(x){ M.imgUp=x; var e=document.getElementById('owm-f-iu'); if(e) e.innerHTML='<img src="'+x+'" alt="" style="width:54px;height:54px;border-radius:10px;object-fit:cover;vertical-align:middle"> ✅ '+esc(L('ستُحفظ هذه الصورة','This image will be saved','Image prête')); var u=document.getElementById('owm-f-i'); if(u) u.value=''; };
+        if(ok(d)){ fin(d); return; }
+        imgShrink(raw,120,0.5,true,function(d2){ if(ok(d2)) fin(d2); else toast(L('الصورة كبيرة، استعمل رابطًا','Image too large, use a link','Image trop grande')); });
+      });
+    };
+    rd.readAsDataURL(f);
+  };
   window.owmMgSave=function(){
     var c=M.cur; if(!c) return; var g=function(id){ return String((document.getElementById(id)||{}).value||'').trim(); };
     var name=g('owm-f-n'); if(!name){ toast(L('اكتب اسم اللعبة بالعربية','Enter the game name','Entrez le nom')); return; }
-    var o={ext:c.ext,name:name,descr:g('owm-f-d'),task:g('owm-f-t'),img:g('owm-f-i'),place:g('owm-f-p')||'games',sort:parseInt(g('owm-f-s'),10)||100,featured:g('owm-f-f')==='1',active:g('owm-f-a')!=='0'};
+    var o={ext:c.ext,name:name,descr:g('owm-f-d'),task:g('owm-f-t'),img:(M.imgUp||g('owm-f-i')),btn:g('owm-f-b'),platform:g('owm-f-pf')||'auto',place:g('owm-f-p')||'games',sort:parseInt(g('owm-f-s'),10)||100,featured:g('owm-f-f')==='1',active:g('owm-f-a')!=='0'};
     mSave(o,function(ok){ if(ok){ toast(L('✅ تم الحفظ','✅ Saved','✅ Enregistré')); window.owmMgOpen(); } });
   };
 })();
