@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.01-r83';
+window.PL_BUILD='2026.11.01-r85';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -3376,7 +3376,6 @@ html.lite .vip-hero:before{display:none}
   </div>
   <div id="adm-mnt"></div>
   <div id="adm-ads"></div>
-  <div id="adm-owm"></div>
   <div class="adm-tabs" id="adm-tabs">
     <button class="atb active" data-t="users" onclick="admTab('users')">👥 المستخدمون</button>
     <button class="atb" data-t="stats" onclick="admTab('stats')">📈 الإحصائيات</button>
@@ -12470,15 +12469,26 @@ async function openCpx(){
     }).catch(function(){ mcard('<div style="padding:18px;text-align:center">'+esc(L('تعذّر التحميل','Could not load','Échec'))+'</div>','🎮'); });
   };
   function mList(){
-    var h='<button class="owm-b" style="width:100%;padding:12px;font-size:14px;background:#16a05f" onclick="owmMgPick()">➕ '+L('إضافة لعبة أو عرض','Add a game or offer','Ajouter')+'</button>';
-    if(!M.rows.length) h+='<div style="padding:18px;text-align:center;color:#9fb3d9;font-size:13px">'+L('لم تضف شيئًا بعد. ما تضيفه فقط يظهر للمستخدمين.','Nothing added yet. Only what you add is shown to users.','Rien ajouté.')+'</div>';
-    h+=M.rows.map(function(g,i){
-      var im=g.img?'<img src="'+esc(g.img)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(g.kind==='survey'?'📝':'🎮');
-      return '<div class="owm-r" style="'+(g.active?'':'opacity:.55')+'"><div class="im">'+im+'</div><div class="tx"><b>'+esc(g.name)+'</b>'+pl(g.place)+' · #'+g.sort+(g.featured?' · ⭐':'')+(g.active?'':' · ⏸')+'</div>'
-        +'<button class="owm-b" onclick="owmMgTog('+i+')">'+(g.active?'⏸':'▶')+'</button><button class="owm-b" onclick="owmMgEdit('+i+')">✏️</button><button class="owm-b" style="background:#b91c1c" onclick="owmMgDel('+i+')">🗑</button></div>';
-    }).join('');
-    mcard(h,'🎮 '+L('ألعاب Offerwall.me','Offerwall.me games','Jeux Offerwall.me'));
+    var h='<button class="adm-new" style="width:100%;margin-bottom:12px" onclick="owmMgPick()">+ '+L('إضافة لعبة','Add a game','Ajouter un jeu')+'</button>';
+    h+='<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgSet()">⚙️ '+L('الإعدادات: النسبة والكلمات المحظورة','Settings: share and blocked words','Réglages')+'</button>';
+    if(!M.rows.length) h+='<div style="padding:18px;text-align:center;color:var(--muted)">'+L('لم تضف أي لعبة بعد. لن يرى المستخدمون ألعابًا حتى تضيف.','No games yet. Users will see none until you add some.','Aucun jeu.')+'</div>';
+    M.rows.forEach(function(g,i){
+      h+='<div style="display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--border)">'+
+        '<div style="width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,.06);overflow:hidden;flex:none;display:flex;align-items:center;justify-content:center">'+(g.img?'<img src="'+esc(g.img)+'" style="width:100%;height:100%;object-fit:cover" referrerpolicy="no-referrer" onerror="this.remove()">':(g.kind==='survey'?'📝':'🎮'))+'</div>'+
+        '<div style="flex:1;min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(g.name||g.ext)+'</div>'+
+        '<div style="font-size:12px;color:var(--muted)">'+L('الترتيب','order','ordre')+' '+g.sort+' · <b style="color:#38bdf8">'+pl(g.place)+'</b> · '+(g.active?'<b style="color:#22c55e">'+L('نشطة','active','active')+'</b>':'<b style="color:#f59e0b">'+L('متوقفة','paused','pause')+'</b>')+'</div></div>'+
+        '<button class="mm-x" onclick="owmMgFeat('+i+')" style="'+(g.featured?'':'opacity:.4')+'">⭐</button>'+
+        '<button class="mm-x" onclick="owmMgTog('+i+')">'+(g.active?'⏸':'▶️')+'</button>'+
+        '<button class="mm-x" onclick="owmMgEdit('+i+')">✏️</button>'+
+        '<button class="mm-x" onclick="owmMgDel('+i+')">🗑️</button></div>';
+    });
+    mcard(h,'🌐 '+L('ألعاب Offerwall.me','Offerwall.me games','Jeux Offerwall.me'));
   }
+  window.owmMgFeat=function(i){ var g=M.rows[i]; if(!g) return; mSave(rowObj(g,{featured:!g.featured}),function(ok){ if(ok){ g.featured=!g.featured; mList(); } }); };
+  window.owmMgSet=function(){
+    mcard('<div id="adm-owm"></div><button class="adm-new" style="width:100%;margin-top:12px;background:rgba(255,255,255,.08)" onclick="owmMgOpen()">'+L('رجوع','Back','Retour')+'</button>','⚙️ '+L('إعدادات Offerwall.me','Offerwall.me settings','Réglages'));
+    try{ A.open=true; aDraw(); if(!A.cfg) aLoadCfg(); }catch(e){}
+  };
   function mSave(obj,done){
     Promise.resolve(SRV.rpc('owm_game_save',{p:obj})).then(function(r){
       if(r&&r.ok===true){ try{ localStorage.removeItem('pl-owm-on'); }catch(e){} done(true); }
@@ -12517,24 +12527,26 @@ async function openCpx(){
       var it=p[0], i=p[1], im=it.image?'<img src="'+esc(it.image)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(it.kind==='survey'?'📝':'🎮');
       var warn=it.flag==='blocked'?' · 🚫':it.flag==='over_cap'?' · ⚠️ >$20':'';
       return '<div class="owm-r"><div class="im">'+im+'</div><div class="tx"><b dir="auto">'+esc(it.title)+'</b>'+L('تدفع لك','pays you','vous paie')+' '+usd(it.raw)+' · '+L('للمستخدم','user','user')+' '+usd(it.usd)+(it.multi?' · 🎯'+it.nsteps:'')+warn+'</div>'
-        +(it.added?'<span style="font-size:12px;color:#34d399">✅</span>':'<button class="owm-b" style="background:#16a05f" onclick="owmMgAdd('+i+')">'+L('إضافة','Add','Ajouter')+'</button>')+'</div>';
+        +(it.added?'<span style="font-size:12px;color:#34d399">✅</span>':'<button class="adm-new sm" style="margin:0;flex:none" onclick="owmMgAdd('+i+')">'+L('إضافة','Add','Ajouter')+'</button>')+'</div>';
     }).join('');
   }
   window.owmMgAdd=function(i){ var it=M.pick[i]; if(!it) return; M.cur={ext:it.id,title:it.title,row:null,image:it.image||'',usd:it}; mForm(); };
   function mForm(){
     var c=M.cur, r=c.row||{};
     var opts=PL.map(function(p){ return '<option value="'+p[0]+'"'+((r.place||'games')===p[0]?' selected':'')+'>'+p[1]+' '+L(p[2],p[3],p[3])+'</option>'; }).join('');
-    var h='<div class="owm-f"><div style="font-size:12.5px;color:#9fb3d9;line-height:1.7" dir="auto">'+esc(c.title||'')+(c.usd?' — '+L('تدفع لك','pays you','vous paie')+' '+usd(c.usd.raw)+' · '+L('للمستخدم','user','user')+' '+usd(c.usd.usd):'')+'</div>'
-      +'<label>'+L('اسم اللعبة (بالعربية، أنت تكتبه)','Game name (Arabic)','Nom')+'<input id="owm-f-n" maxlength="80" value="'+esc(r.name||'')+'" placeholder="'+esc(L('مثال: فقاعات الأساطير','e.g. Legend Bubbles','ex.'))+'"></label>'
-      +'<label>'+L('الصورة (رابط https)','Image (https link)','Image (https)')+'<input id="owm-f-i" dir="ltr" value="'+esc(r.img!=null?r.img:(c.image||''))+'" placeholder="https://..."></label>'
-      +'<label>'+L('وصف اللعبة (بالعربية)','Description (Arabic)','Description')+'<textarea id="owm-f-d" rows="3" maxlength="600">'+esc(r.descr||'')+'</textarea></label>'
-      +'<label>'+L('المهمة المطلوبة (مثال: صِل إلى المستوى 10)','Required task','Tâche')+'<textarea id="owm-f-t" rows="2" maxlength="400">'+esc(r.task||'')+'</textarea></label>'
-      +'<label>📍 '+L('أين تظهر في التطبيق؟','Where it appears','Où')+'<select id="owm-f-p">'+opts+'</select></label>'
-      +'<div style="display:flex;gap:8px"><label style="flex:1">'+L('الترتيب (الأصغر أولًا)','Order','Ordre')+'<input id="owm-f-s" type="number" min="0" max="9999" value="'+(r.sort!=null?r.sort:100)+'"></label>'
-      +'<label style="flex:1">⭐ '+L('مفضلة','Featured','Favori')+'<select id="owm-f-f"><option value="0">'+L('لا','No','Non')+'</option><option value="1"'+(r.featured?' selected':'')+'>'+L('نعم','Yes','Oui')+'</option></select></label>'
-      +'<label style="flex:1">'+L('الحالة','Status','Statut')+'<select id="owm-f-a"><option value="1">'+L('نشطة','Active','Active')+'</option><option value="0"'+(r.active===false?' selected':'')+'>'+L('موقوفة','Paused','Pause')+'</option></select></label></div>'
-      +'<div style="display:flex;gap:8px;margin-top:14px"><button class="owm-b" style="flex:1;padding:12px;font-size:14px;background:#16a05f" onclick="owmMgSave()">💾 '+L('حفظ','Save','Enregistrer')+'</button><button class="owm-b" style="flex:1;padding:12px;font-size:14px" onclick="owmMgOpen()">'+L('رجوع','Back','Retour')+'</button></div></div>';
-    mcard(h,'✏️ '+L('بيانات اللعبة','Game details','Détails'));
+    var ta='width:100%;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none;resize:vertical;box-sizing:border-box';
+    var im=(r.img!=null&&r.img!==''?r.img:(c.image||''));
+    var h='<div class="au-f full" style="background:rgba(14,165,233,.08);border-radius:12px;padding:10px;font-size:13px;margin-bottom:10px">✅ <b dir="auto">'+esc(c.title||c.ext)+'</b>'+(c.usd?'<br>'+L('تدفع لك','pays you','vous paie')+' '+usd(c.usd.raw)+' · '+L('للمستخدم','user','user')+' <b style="color:#22c55e">'+usd(c.usd.usd)+'</b>'+(c.usd.multi?' · '+c.usd.nsteps+' '+L('مراحل','levels','niveaux'):''):'')+'</div>'
+      +'<div class="au-f full"><label>'+L('اسم اللعبة (بالعربية، أنت تكتبه)','Game name (you write it)','Nom du jeu')+'</label><input id="owm-f-n" maxlength="80" value="'+esc(r.name||'')+'" placeholder="'+esc(L('مثال: فقاعات الأساطير','e.g. Bubble Legends','ex'))+'"></div>'
+      +'<div class="au-f full"><label>'+L('الصورة (تُؤخذ تلقائيًا من الشبكة، أو ضع رابط https)','Image (auto from network, or https link)','Image')+'</label><div style="display:flex;align-items:center;gap:10px">'+(im?'<img class="at-prev" src="'+esc(im)+'" alt="" referrerpolicy="no-referrer" style="width:54px;height:54px;border-radius:10px;object-fit:cover" onerror="this.remove()">':'')+'<input id="owm-f-i" dir="ltr" value="'+esc(im)+'" placeholder="https://..." style="flex:1;min-width:0"></div></div>'
+      +'<div class="au-f full"><label>'+L('وصف اللعبة (بالعربية)','Description (Arabic)','Description')+'</label><textarea id="owm-f-d" rows="3" maxlength="600" style="'+ta+'">'+esc(r.descr||'')+'</textarea></div>'
+      +'<div class="au-f full"><label>'+L('المهمة المطلوبة (مثال: صِل إلى المستوى 10)','Required task','Tâche')+'</label><textarea id="owm-f-t" rows="3" maxlength="400" style="'+ta+'">'+esc(r.task||'')+'</textarea></div>'
+      +'<div class="au-f full"><label>'+L('📍 أين تظهر هذه اللعبة في التطبيق؟','📍 Where does it appear?','📍 Où ?')+'</label><select id="owm-f-p">'+opts+'</select></div>'
+      +'<div class="au-f full"><label>⭐ '+L('الأكثر لعبًا / المفضلة','Favourite','Favori')+'</label><select id="owm-f-f"><option value="0">'+L('لا','No','Non')+'</option><option value="1"'+(r.featured?' selected':'')+'>'+L('نعم','Yes','Oui')+'</option></select></div>'
+      +'<div style="display:flex;gap:10px"><div class="au-f" style="flex:1"><label>'+L('الترتيب (الأصغر أولًا)','Order','Ordre')+'</label><input id="owm-f-s" inputmode="numeric" dir="ltr" value="'+(r.sort!=null?r.sort:100)+'"></div>'
+      +'<div class="au-f" style="flex:1"><label>'+L('الحالة','Status','Statut')+'</label><select id="owm-f-a"><option value="1">'+L('نشطة','Active','Active')+'</option><option value="0"'+(r.active===false?' selected':'')+'>'+L('متوقفة','Paused','Pause')+'</option></select></div></div>'
+      +'<div style="display:flex;gap:10px;margin-top:6px"><button class="adm-new" style="flex:1" onclick="owmMgSave()">💾 '+L('حفظ','Save','Enregistrer')+'</button><button class="adm-new" style="flex:1;background:rgba(255,255,255,.08)" onclick="owmMgOpen()">'+L('رجوع','Back','Retour')+'</button></div>';
+    mcard(h,(c.row?'✏️ ':'+ ')+L('لعبة','Game','Jeu'));
   }
   window.owmMgSave=function(){
     var c=M.cur; if(!c) return; var g=function(id){ return String((document.getElementById(id)||{}).value||'').trim(); };
