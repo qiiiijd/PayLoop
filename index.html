@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.01-r88';
+window.PL_BUILD='2026.11.01-r90';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12276,7 +12276,7 @@ async function openCpx(){
 #adm-owm .oa-row.off{opacity:.55}
 #adm-owm input[type=number],#adm-owm input[type=text],#adm-owm textarea{width:100%;box-sizing:border-box;padding:8px;border-radius:9px;border:1px solid #243252;background:#0d1627;color:#fff;font:inherit;font-size:13px}
 #owm-ov .ob button{cursor:pointer}
-#owm-ov .od{flex:1;overflow:auto;padding:12px 12px 90px;-webkit-overflow-scrolling:touch;color:#e8eefc}
+#owm-ov .od{flex:1;overflow:auto;padding:12px 12px 16px;-webkit-overflow-scrolling:touch;color:#e8eefc}
 #owm-ov .oh{display:flex;gap:12px;align-items:center;margin-bottom:12px}
 #owm-ov .oh .im{width:80px;height:80px;border-radius:16px;background:#17233d;display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden;flex:none}
 #owm-ov .oh .im img{width:100%;height:100%;object-fit:cover}
@@ -12288,7 +12288,20 @@ async function openCpx(){
 #owm-ov .st .n{flex:none;width:24px;height:24px;border-radius:50%;background:#1e2a47;display:flex;align-items:center;justify-content:center;font-size:13px}
 #owm-ov .st .d{flex:1}
 #owm-ov .st .r{flex:none;font-weight:800;color:#5df0a0}
-#owm-ov .gs{position:sticky;bottom:0;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,#0b1220 30%)}
+#owm-ov .od{min-height:0;overscroll-behavior:contain}
+#owg-ov .g-body{overscroll-behavior:contain}
+.trow.owm-g,.trow.ow-row{transition:transform .12s ease,border-color .15s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.trow.owm-g:active,.trow.ow-row:active{transform:scale(.985)}
+#owm-ov.on,#owg-ov .g-sheet.on{animation:plUp .22s ease-out}
+@keyframes plUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.trow.owm-sk{pointer-events:none;gap:14px}
+.trow.owm-sk .sk-i{width:78px;height:78px;border-radius:18px;flex:none;background:linear-gradient(90deg,#17233d 25%,#1e2c4a 50%,#17233d 75%);background-size:200% 100%;animation:plSk 1.2s linear infinite}
+.trow.owm-sk .sk-l{flex:1;display:flex;flex-direction:column;gap:10px}
+.trow.owm-sk .sk-l i{display:block;height:14px;border-radius:7px;width:70%;background:linear-gradient(90deg,#17233d 25%,#1e2c4a 50%,#17233d 75%);background-size:200% 100%;animation:plSk 1.2s linear infinite}
+.trow.owm-sk .sk-l i+i{width:45%}
+@keyframes plSk{from{background-position:200% 0}to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){#owm-ov.on,#owg-ov .g-sheet.on,.trow.owm-sk .sk-i,.trow.owm-sk .sk-l i{animation:none}}
+#owm-ov .gs{flex:none;position:static;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:#0b1220;border-top:1px solid #1f2d4a}
 #owm-ov .gs button{width:100%;border:0;border-radius:14px;padding:14px;background:#16a05f;color:#fff;font:inherit;font-size:16px;font-weight:800}
 #adm-modal .owm-f label{display:block;margin-top:9px;font-size:12px;color:#9fb3d9}
 #adm-modal .owm-f input,#adm-modal .owm-f textarea,#adm-modal .owm-f select{width:100%;box-sizing:border-box;padding:9px;border-radius:10px;border:1px solid #243252;background:#0d1627;color:#fff;font:inherit;font-size:14px}
@@ -12303,19 +12316,24 @@ async function openCpx(){
 <script>
 /* ===== Offerwall.me داخل التطبيق: ألعاب يضيفها المدير فقط (اسم/وصف/مهمة بالعربية). المبالغ والمراحل الحقيقية من الشبكة والرابط يُجلب من الخادم عند الضغط. ===== */
 (function(){
-  var G=null, GT=0, busy=false, BUSY=false;
+  var G=null, GT=0, busy=false, BUSY=false, LT=0, LOADING=false, JIT=Math.floor(Math.random()*15000);
   function fn(q){ return RealAuth.base()+'/functions/v1/rapid-api?action='+q; }
   function usd(n){ n=Number(n)||0; return '$'+(n>=0.01?n.toFixed(2):n.toFixed(3)); }
   function hdr(t){ return {'Authorization':'Bearer '+t,'apikey':RealAuth.key()}; }
   function redraw(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
+  function cKey(){ var u=''; try{ u=(RealAuth.getSession()||{}).uid||''; }catch(e){} return 'pl-owm-g:'+u; }
+  function readCache(){ try{ var c=JSON.parse(localStorage.getItem(cKey())||'null'); if(c&&Array.isArray(c.items)&&Date.now()-c.t<86400000){ G=c.items; GT=0; } }catch(e){} }
+  function saveCache(){ try{ var t=JSON.stringify({t:Date.now(),items:G}); if(t.length<400000) localStorage.setItem(cKey(),t); }catch(e){} }
   function load(force){
-    if(busy||!window.__owmList) return; if(!force&&G&&Date.now()-GT<60000) return; busy=true;
+    if(busy||!window.__owmList) return;
+    if(!force){ if(G&&Date.now()-GT<60000+JIT) return; if(!G&&Date.now()-LT<15000) return; }
+    busy=true; LT=Date.now(); LOADING=!G;
     Promise.resolve(SRV.tok()).then(function(t){
       if(!t) return;
       return fetch(fn('offerwallme_offers'),{headers:hdr(t)}).then(function(r){ return r.json(); }).then(function(j){
-        if(j&&j.ok===true&&Array.isArray(j.items)){ G=j.items; GT=Date.now(); redraw(); }
+        if(j&&j.ok===true&&Array.isArray(j.items)){ G=j.items; GT=Date.now(); saveCache(); redraw(); }
       });
-    }).catch(function(){}).then(function(){ busy=false; });
+    }).catch(function(){}).then(function(){ busy=false; if(LOADING){ LOADING=false; redraw(); } });
   }
   window.owmGamesLoad=load;
   function ptxt(p){ return p==='android'?'🤖 '+L('أندرويد','Android','Android'):p==='ios'?'🍎 '+L('آيفون','iPhone','iPhone'):p==='all'?'📱 '+L('أندرويد وآيفون','Android & iPhone','Android et iPhone'):'🔄 '+L('تلقائي','Auto','Auto'); }
@@ -12324,7 +12342,12 @@ async function openCpx(){
   function stSet(id){ var m=stGet(); m[id]=Date.now(); try{ localStorage.setItem(stKey(),JSON.stringify(m)); }catch(e){} }
   window.owmInject=function(cat){
     try{
-      load(false); if(!G||!G.length) return;
+      if(!G) readCache();
+      load(false);
+      if(!G&&LOADING){ var bx=document.getElementById('tlist'); var tb='new'; try{ if(typeof taskTab!=='undefined') tb=taskTab; }catch(e){}
+        if(bx&&tb==='new'&&!bx.querySelector('.owm-sk')&&(cat==='all'||cat==='games')){ var sk=''; for(var q=0;q<2;q++) sk+='<div class="trow owm-sk"><div class="sk-i"></div><div class="sk-l"><i></i><i></i></div></div>'; bx.insertAdjacentHTML('afterbegin',sk); }
+        return; }
+      if(!G||!G.length) return;
       var box=document.getElementById('tlist'); if(!box) return;
       var flat=(cat==='ads'||cat==='survey');
       var tab='new'; try{ if(!flat&&typeof taskTab!=='undefined') tab=taskTab; }catch(e){}
@@ -12367,7 +12390,7 @@ async function openCpx(){
     h+='<div class="sc" style="font-size:13px;color:#9fb3d9">'+L('المكافأة تصل تلقائيًا إلى رصيدك بعد أن تؤكد الشبكة الإنجاز (قد يستغرق دقائق وأحيانًا أكثر). لا تحذف اللعبة قبل إنهاء المراحل.','The reward is added automatically once the network confirms completion (minutes, sometimes longer). Do not uninstall the game before finishing.','La récompense est ajoutée après confirmation du réseau.')+'</div>';
     d.innerHTML=h; d.scrollTop=0;
     var bar=document.createElement('div'); bar.className='gs'; bar.innerHTML='<button type="button"></button>'; bar.firstChild.textContent=(g.btn&&String(g.btn).trim())||L('ابدأ','Start','Commencer');
-    bar.firstChild.onclick=function(){ go(g.id); }; d.appendChild(bar);
+    bar.firstChild.onclick=function(){ go(g.id); }; try{ Array.prototype.forEach.call(ov.querySelectorAll('.gs'),function(e){ e.remove(); }); }catch(e){} ov.appendChild(bar);
     ov.classList.add('on');
   };
   async function go(id){
@@ -12813,7 +12836,8 @@ function openOfferwall(){
 #owg-ov .g-rw{flex:none;background:#0f3d2a;color:#5df0a0;border-radius:12px;padding:6px 10px;font-weight:800;font-size:14px}
 #owg-ov .g-rw.v{background:#2a2f45;color:#cfd8f5}
 #owg-ov .g-more{display:block;width:100%;border:0;border-radius:12px;padding:12px;background:#1e2a47;color:#fff;font-size:15px;margin-top:6px}
-#owg-ov .g-sheet{position:absolute;inset:0;background:#0b1220;display:none;flex-direction:column;overflow:auto;-webkit-overflow-scrolling:touch}
+#owg-ov .g-sheet{position:absolute;inset:0;background:#0b1220;display:none;flex-direction:column;overflow:hidden}
+#owg-ov .g-sheet .g-body{min-height:0;padding-bottom:16px}
 #owg-ov .g-sheet.on{display:flex}
 #owg-ov .g-h{display:flex;gap:12px;align-items:center;margin-bottom:12px}
 #owg-ov .g-h .g-img{width:80px;height:80px}
@@ -12827,7 +12851,7 @@ function openOfferwall(){
 #owg-ov .g-step .g-r{flex:none;font-weight:800;color:#5df0a0}
 #owg-ov .g-tot{flex:none;text-align:center;line-height:1.2}
 #owg-ov .g-tot small{display:block;font-size:11px;color:#9fb3d9;font-weight:400}
-#owg-ov .g-start{position:sticky;bottom:0;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,#0b1220 30%)}
+#owg-ov .g-start{flex:none;position:static;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:#0b1220;border-top:1px solid #1f2d4a}
 #owg-ov .g-start button{width:100%;border:0;border-radius:14px;padding:14px;background:#16a05f;color:#fff;font-size:16px;font-weight:800}
 </style>
 <div id="owg-ov">
