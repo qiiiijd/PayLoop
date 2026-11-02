@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.01-r90';
+window.PL_BUILD='2026.11.01-r91';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12312,6 +12312,60 @@ async function openCpx(){
 #adm-modal .owm-r .tx b{display:block;color:#fff;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #adm-modal .owm-b{width:auto;flex:none;padding:6px 10px;font-size:12px;border-radius:9px;border:0;color:#fff;background:#334155;cursor:pointer;font:inherit}
 </style>
+<script>
+/* ترجمة تلقائية آمنة لوصف مراحل الألعاب (إنجليزي → عربي) بقواعد ثابتة، بلا خدمة خارجية. ما لا يطابق قاعدة يبقى كما هو بالإنجليزية (لا تخمين). */
+(function(){
+  var V={pass:'اجتز',reach:'اصل إلى',complete:'أكمل',clear:'أنهِ',finish:'أنهِ',unlock:'افتح',win:'اربح',collect:'اجمع',earn:'اكسب',spend:'أنفق',upgrade:'طوّر',buy:'اشترِ',purchase:'اشترِ',play:'العب',open:'افتح',install:'ثبّت',defeat:'اهزم',kill:'اقتل',obtain:'احصل على',get:'احصل على',join:'انضم إلى',create:'أنشئ',register:'سجّل',score:'سجّل',watch:'شاهد',use:'استخدم',build:'ابنِ',train:'درّب',summon:'استدعِ',deposit:'اشحن',login:'سجّل الدخول'};
+  var ONE={level:'المستوى','player level':'مستوى اللاعب','hero level':'مستوى البطل','vip level':'مستوى VIP',vip:'VIP',chapter:'الفصل',stage:'المرحلة',rank:'الرتبة',world:'العالم',quest:'المهمة',mission:'المهمة',round:'الجولة','town hall':'قاعة المدينة','town hall level':'مستوى قاعة المدينة',castle:'القلعة','castle level':'مستوى القلعة',day:'اليوم',season:'الموسم',tier:'المستوى',league:'الدوري',wave:'الموجة',floor:'الطابق',episode:'الحلقة'};
+  var PL={levels:'مستويات',chapters:'فصول',stages:'مراحل',quests:'مهام',missions:'مهام',tasks:'مهام',matches:'مباريات',games:'ألعاب',battles:'معارك',rounds:'جولات',days:'أيام',wins:'انتصارات',gems:'جواهر',coins:'عملات',diamonds:'ألماسات',gold:'ذهب',stars:'نجوم',points:'نقاط',crystals:'بلورات',keys:'مفاتيح',tickets:'تذاكر',cash:'نقد',trophies:'كؤوس',enemies:'أعداء',monsters:'وحوش',bosses:'زعماء',heroes:'أبطال',cards:'بطاقات',buildings:'مباني',towers:'أبراج',units:'وحدات',items:'عناصر',lines:'خطوط',waves:'موجات',kills:'قتلى',ads:'إعلانات',videos:'فيديوهات',minutes:'دقائق',hours:'ساعات',gold_coins:'عملات ذهبية',trophy:'كؤوس'};
+  var ITEM={diamonds:'الألماس',gems:'الجواهر',coins:'العملات',gold:'الذهب',crystals:'البلورات',pack:'الحزمة','starter pack':'حزمة البداية','vip pass':'تذكرة VIP','battle pass':'تذكرة المعركة',subscription:'الاشتراك','no ads':'إزالة الإعلانات'};
+  var TIME={day:'يومًا',days:'يومًا',hour:'ساعة',hours:'ساعة',week:'أسبوعًا',weeks:'أسبوعًا',month:'شهرًا',months:'شهرًا'};
+  function tail(t){ /* يُرجع نصّ الذيل بالعربية أو null إن لم يُفهم */
+    t=String(t||'').replace(/^[\s.,]+|[\s.]+$/g,''); if(!t) return '';
+    var m=t.match(/^(?:within|in|during|inside)\s+(?:the\s+)?(?:first\s+)?(\d+)\s*(days?|hours?|weeks?|months?)$/i);
+    if(m){ var n=+m[1], u=m[2].toLowerCase().replace(/s$/,''); var w={day:['يوم','يومين','أيام','يومًا'],hour:['ساعة','ساعتين','ساعات','ساعة'],week:['أسبوع','أسبوعين','أسابيع','أسبوعًا'],month:['شهر','شهرين','أشهر','شهرًا']}[u];
+      var s=n===1?w[0]:n===2?w[1]:(n>=3&&n<=10)?w[2]:w[3]; return 'خلال '+(n===1||n===2?s:n+' '+s); }
+    if(/^(?:in\s+)?(?:the\s+)?(?:game|app)$/i.test(t)) return 'داخل اللعبة';
+    if(/^from the shop$|^in the shop$|^from (?:the )?store$/i.test(t)) return 'من المتجر';
+    return null;
+  }
+  function one(s){
+    s=String(s||'').trim().replace(/\s+/g,' ').replace(/\.$/,''); var m;
+    if((m=s.match(/^open the app(?: and (?:start playing|play))?$/i))) return m[0].match(/play/i)?'افتح التطبيق وابدأ اللعب':'افتح التطبيق';
+    if(/^(?:start playing|launch the (?:game|app)|open the game)$/i.test(s)) return 'ابدأ اللعب';
+    if(/^(?:complete|finish) the tutorial$/i.test(s)) return 'أكمل الشرح التعليمي';
+    if(/^(?:install|download) (?:and (?:open|launch|play) )?the (?:game|app)$/i.test(s)) return 'ثبّت اللعبة وافتحها';
+    if((m=s.match(/^(?:create|register)(?: an?)? (?:new )?(?:account|profile)$/i))) return 'أنشئ حسابًا في اللعبة';
+    /* Buy ... [9.99usd] x 1 from the shop */
+    if((m=s.match(/^(?:buy|purchase)\s+(?:the\s+)?(.+?)\s*[\[(]\s*\$?\s*([\d.]+)\s*(?:usd|\$)?\s*[\])]\s*(?:x\s*(\d+))?\s*(.*)$/i))){
+      var it=ITEM[m[1].toLowerCase()]||null; var tl=tail(m[4]); if(it&&tl!==null) return 'اشترِ '+it+' ('+m[2]+'$)'+(m[3]?' × '+m[3]:'')+(tl?' '+tl:''); return null; }
+    /* Verb [the] ONE N [tail] */
+    var vk='(pass|reach|complete|clear|finish|unlock|win|beat|upgrade)'; 
+    var re1=new RegExp('^'+vk+'\\s+(?:the\\s+)?(player level|hero level|vip level|town hall level|castle level|town hall|level|chapter|stage|rank|world|quest|mission|round|day|season|tier|league|wave|floor|episode|castle|vip)\\s*(?:no\\.?\\s*)?#?(\\d[\\d,]*)\\s*(.*)$','i');
+    if((m=s.match(re1))){ var v=m[1].toLowerCase(); if(v==='beat') v='clear'; var o=ONE[m[2].toLowerCase()]; var tl2=tail(m[4]); if(V[v]&&o&&tl2!==null) return V[v]+' '+o+' '+m[3].replace(/,/g,'')+(tl2?' '+tl2:''); return null; }
+    /* Verb N PLURAL [tail] */
+    var re2=new RegExp('^(collect|earn|spend|win|reach|complete|play|defeat|kill|obtain|get|score|watch|use|build|train|summon|unlock|upgrade|clear|finish|deposit)\\s+([\\d][\\d,.]*[kKmM]?)\\s+('+Object.keys(PL).join('|').replace(/_/g,' ')+')\\s*(.*)$','i');
+    if((m=s.match(re2))){ var v2=m[1].toLowerCase(), p=PL[m[3].toLowerCase()]; var tl3=tail(m[4]); if(V[v2]&&p&&tl3!==null) return V[v2]+' '+m[2]+' من ال'+p+(tl3?' '+tl3:''); return null; }
+    return null;
+  }
+  window.plStepAr=function(txt){
+    try{
+      var raw=String(txt==null?'':txt); if(!raw||raw.length>200) return null;
+      var parts=raw.split(/(?<=[.!])\s+(?=[A-Z])/); var out=[];
+      for(var i=0;i<parts.length;i++){ var r=one(parts[i]); if(r==null) return null; out.push(r); }
+      return out.join('. ');
+    }catch(e){ return null; }
+  };
+  window.plStepHtml=function(txt){
+    var e=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+    var raw=String(txt==null?'':txt), ar=null;
+    try{ if(typeof L==='function'&&L('ar','en','fr')==='ar') ar=window.plStepAr(raw); }catch(x){}
+    if(!ar) return e(raw);
+    return e(ar)+'<small dir="ltr" style="display:block;font-size:11px;color:#7f93bb;margin-top:2px;text-align:left">'+e(raw)+'</small>';
+  };
+})();
+
+</script>
 <div id="owm-ov"><div class="ob"><span id="owm-t"></span><button class="ox" id="owm-x" type="button"></button></div><div class="od" id="owm-d"></div></div>
 <script>
 /* ===== Offerwall.me داخل التطبيق: ألعاب يضيفها المدير فقط (اسم/وصف/مهمة بالعربية). المبالغ والمراحل الحقيقية من الشبكة والرابط يُجلب من الخادم عند الضغط. ===== */
@@ -12383,7 +12437,7 @@ async function openCpx(){
     if(g.descr) h+='<div class="sc"><b>'+L('الوصف','About','Description')+'</b>'+esc(g.descr)+'</div>';
     if(g.task) h+='<div class="sc"><b>'+L('المهمة المطلوبة','Required task','Tâche requise')+'</b>'+esc(g.task)+'</div>';
     if(g.multi&&g.steps&&g.steps.length){
-      h+='<div class="sc"><b>'+L('المكافآت حسب المراحل','Rewards by step','Récompenses par étape')+' — '+g.steps.length+' '+L('مراحل','steps','étapes')+'</b>'+g.steps.map(function(s,n){ return '<div class="st"><div class="n">'+(n+1)+'</div><div class="d">'+esc(s.d||('#'+(n+1)))+'</div><div class="r">'+usd(s.usd)+'</div></div>'; }).join('')
+      h+='<div class="sc"><b>'+L('المكافآت حسب المراحل','Rewards by step','Récompenses par étape')+' — '+g.steps.length+' '+L('مراحل','steps','étapes')+'</b>'+g.steps.map(function(s,n){ return '<div class="st"><div class="n">'+(n+1)+'</div><div class="d">'+(window.plStepHtml?window.plStepHtml(s.d||('#'+(n+1))):esc(s.d||('#'+(n+1))))+'</div><div class="r">'+usd(s.usd)+'</div></div>'; }).join('')
         +'<div style="margin-top:6px;font-size:12px;color:#9fb3d9">'+L('لا يُمنح المجموع كاملًا إلا بعد إكمال كل المراحل. تصلك كل مرحلة فقط بعد تأكيد الشبكة لها.','The total is paid only after every step is completed. Each step is paid only after the network confirms it.','Chaque étape est payée après confirmation du réseau.')+'</div></div>';
     }
     if(g.plat==='android'||g.plat==='ios'||g.plat==='all') h+='<div class="sc"><b>'+L('يعمل على','Works on','Fonctionne sur')+'</b>'+ptxt(g.plat)+'</div>';
@@ -12975,7 +13029,7 @@ function openOfferwall(){
       h+='<div class="g-sec"><b>'+esc(L('المكافآت','Rewards','Récompenses'))+' — '+esc(L('أنجزت '+nd+' من '+goals.length,nd+' of '+goals.length+' done',nd+' sur '+goals.length))+'</b>';
       goals.forEach(function(g,n){
         var dn=done[g.id]!==undefined;
-        h+='<div class="g-step'+(dn?' done':'')+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+esc(g.d||('#'+(n+1)))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+'</div><div class="g-r">'+esc(money(g.r))+'</div></div>';
+        h+='<div class="g-step'+(dn?' done':'')+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+(window.plStepHtml?window.plStepHtml(g.d||('#'+(n+1))):esc(g.d||('#'+(n+1))))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+'</div><div class="g-r">'+esc(money(g.r))+'</div></div>';
       });
       h+='</div>';
       if(o.reward!=null) h+='<div class="g-sec"><b>'+esc(L('مجموع المكافآت الممكنة','Total possible rewards','Total possible'))+'</b><span style="font-size:20px;font-weight:800;color:#5df0a0">'+esc(money(o.reward))+'</span><br><small style="color:#9fb3d9">'+esc(L('لا يُمنح كاملًا إلا بعد إكمال كل المراحل والشروط، وتصلك كل مرحلة فقط بعد تأكيد الشبكة لها.','Not paid in full until every level is completed; each level is paid only after the network confirms it.','Versé en totalité après tous les niveaux; chaque niveau après confirmation du réseau.'))+'</small></div>';
