@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.01-r85';
+window.PL_BUILD='2026.11.01-r86';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12449,7 +12449,7 @@ async function openCpx(){
   };
 
   /* ===== إدارة ألعاب Offerwall.me (للمدير فقط): تصفّح عروض الشبكة ثم اكتب الاسم والوصف والمهمة بالعربية واختر مكان الظهور ===== */
-  var M={rows:[],pick:[],q:'',cc:'SA',cur:null,share:0.5};
+  var M={rows:[],pick:[],q:'',cc:'DZ',cur:null,share:0.5};
   var PL=[['games','🎮','الألعاب','Games'],['survey','📝','الاستطلاعات','Surveys'],['ads','📢','الإعلانات','Ads'],['apps','📲','التطبيقات','Apps'],['daily','📅','المهام اليومية','Daily']];
   function pl(k){ for(var i=0;i<PL.length;i++) if(PL[i][0]===k) return PL[i][1]+' '+L(PL[i][2],PL[i][3],PL[i][3]); return k; }
   function mroot(){ var ov=document.getElementById('adm-modal'); if(!ov){ ov=document.createElement('div'); ov.id='adm-modal'; document.body.appendChild(ov); } ov.className='adm-modal'; ov.style.display='flex'; return ov; }
@@ -12470,7 +12470,9 @@ async function openCpx(){
   };
   function mList(){
     var h='<button class="adm-new" style="width:100%;margin-bottom:12px" onclick="owmMgPick()">+ '+L('إضافة لعبة','Add a game','Ajouter un jeu')+'</button>';
-    h+='<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgSet()">⚙️ '+L('الإعدادات: النسبة والكلمات المحظورة','Settings: share and blocked words','Réglages')+'</button>';
+    h+='<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgDiag()">🩺 '+L('فحص: لماذا لا تظهر لعبتي للمستخدمين؟','Check: why is my game not visible?','Diagnostic')+'</button>'+
+    '<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgDiag()">🩺 '+L('فحص: لماذا لا تظهر لعبتي للمستخدمين؟','Check: why is my game not visible?','Diagnostic')+'</button>'+
+    '<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgSet()">⚙️ '+L('الإعدادات: النسبة والكلمات المحظورة','Settings: share and blocked words','Réglages')+'</button>';
     if(!M.rows.length) h+='<div style="padding:18px;text-align:center;color:var(--muted)">'+L('لم تضف أي لعبة بعد. لن يرى المستخدمون ألعابًا حتى تضيف.','No games yet. Users will see none until you add some.','Aucun jeu.')+'</div>';
     M.rows.forEach(function(g,i){
       h+='<div style="display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--border)">'+
@@ -12484,7 +12486,71 @@ async function openCpx(){
     });
     mcard(h,'🌐 '+L('ألعاب Offerwall.me','Offerwall.me games','Jeux Offerwall.me'));
   }
+  window.owmMgDiag=function(){
+    var cc=M.cc||'DZ';
+    mcard('<div style="padding:24px;text-align:center">'+L('جارٍ الفحص…','Checking…','Vérification…')+'</div>','🩺 '+L('فحص الظهور','Visibility check','Diagnostic'));
+    Promise.resolve(SRV.tok()).then(function(t){
+      var H=hdr(t), j=function(q){ return fetch(fn(q),{headers:H}).then(function(r){ return r.json().catch(function(){ return {}; }); }).catch(function(){ return {ok:false,why:'net'}; }); };
+      return Promise.all([ Promise.resolve(SRV.rpc('owm_games_admin_list',{})), j('offerwallme_link&probe=1'), j('offerwallme_admin_list&country='+cc), j('offerwallme_offers&country='+cc) ]);
+    }).then(function(R){
+      var lst=R[0], pr=R[1], ad=R[2], us=R[3], h='', W={hidden:'🙈 مخفي من قائمة الإخفاء',blocked:'🚫 يحتوي كلمة محظورة',low:'💤 أقل من الحد الأدنى للمكافأة',over_cap:'⚠️ مرحلة أكبر من حدّ العملية',type_off:'⏹ هذا النوع متوقف من الإعدادات'};
+      h+='<div style="font-weight:800;margin-bottom:6px">🌐 '+L('الحالة العامة','General status','État')+' · '+L('البلد','country','pays')+' <b dir="ltr">'+esc(cc)+'</b></div>';
+      if(!Array.isArray(lst)){ h+='<div style="color:#f87171">❌ '+esc(mwhy(lst))+'</div>'; mcard(h+'<button class="adm-new" style="width:100%;margin-top:12px" onclick="owmMgOpen()">'+L('رجوع','Back','Retour')+'</button>','🩺'); return; }
+      h+='<div>• '+lst.length+' '+L('لعبة مسجّلة،','saved,','jeux,')+' '+lst.filter(function(x){ return x.active; }).length+' '+L('نشطة','active','actifs')+'</div>';
+      if(!(pr&&pr.ok&&pr.on)) h+='<div style="color:#f87171">❌ '+L('شبكة Offerwall.me غير مفعّلة (الإدارة ← الشبكات)','Offerwall.me network is off','Réseau inactif')+'</div>';
+      else if(!pr.list) h+='<div style="color:#f87171">❌ '+L('OFFERWALLME_TOKEN غير موجود في Supabase Secrets','OFFERWALLME_TOKEN missing','Token manquant')+'</div>';
+      else h+='<div style="color:#22c55e">✅ '+L('الشبكة مفعّلة والقائمة جاهزة','Network on, list ready','Réseau actif')+'</div>';
+      if(!ad||ad.ok!==true) h+='<div style="color:#f87171">❌ '+L('تعذّر جلب عروض الشبكة الآن','Could not load network offers','Échec')+'</div>';
+      if(!us||us.ok!==true) h+='<div style="color:#f87171">❌ '+L('تعذّر جلب قائمة المستخدمين','Could not load user list','Échec')+'</div>';
+      else h+='<div>• '+L('الخادم يُرجع للمستخدم','Server returns to a user','Le serveur renvoie')+': <b>'+(us.items||[]).length+'</b> '+L('لعبة','games','jeux')+'</div>';
+      var byId={}; ((ad&&ad.items)||[]).forEach(function(it){ byId[it.id]=it; });
+      var shown={}; ((us&&us.items)||[]).forEach(function(it){ shown[it.id]=1; });
+      if(!lst.length) h+='<div style="color:var(--muted);margin-top:8px">'+L('لا توجد ألعاب مسجّلة بعد.','No games saved yet.','Aucun jeu.')+'</div>';
+      lst.forEach(function(g){
+        var it=byId[g.ext], m, ok=false;
+        if(!g.active) m='⏸ '+L('موقوفة من عندك','Paused by you','En pause');
+        else if(!ad||ad.ok!==true||!us||us.ok!==true) m='❔ '+L('لا يمكن الحكم الآن','Cannot tell now','Indéterminé');
+        else if(!it) m='🌍 '+L('غير متوفرة في بلد الفحص ('+cc+') أو أُزيلت من الشبكة','Not available for '+cc+' or removed','Indisponible');
+        else if(shown[g.ext]){ m='✅ '+L('تظهر للمستخدمين','Shown to users','Visible'); ok=true; }
+        else m=(it.flag&&W[it.flag])?W[it.flag]:'❔ '+L('لا تظهر (سبب غير معروف)','Not shown','Non visible');
+        h+='<div style="border-top:1px solid var(--border);padding:8px 0"><b dir="auto">'+esc(g.name||g.ext)+'</b> <span style="color:var(--muted);font-size:12px">'+pl(g.place)+'</span><br><span style="color:'+(ok?'#22c55e':'#f59e0b')+'">'+m+'</span></div>';
+      });
+      h+='<div style="display:flex;gap:10px;margin-top:14px"><label style="flex:1;font-size:12px;color:var(--muted)">'+L('بلد الفحص','Country','Pays')+'<input id="owm-dc" maxlength="2" dir="ltr" value="'+esc(cc)+'" style="width:100%;box-sizing:border-box;padding:10px;border-radius:10px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);text-transform:uppercase"></label><button class="adm-new" style="flex:1" onclick="var v=(document.getElementById(\'owm-dc\').value||\'DZ\').toUpperCase();if(/^[A-Z]{2}$/.test(v)){owmMgCC(v)}">🔄 '+L('أعد الفحص','Re-check','Revérifier')+'</button></div>';
+      h+='<button class="adm-new" style="width:100%;margin-top:10px;background:rgba(255,255,255,.08)" onclick="owmMgOpen()">'+L('رجوع','Back','Retour')+'</button>';
+      mcard(h,'🩺 '+L('فحص الظهور','Visibility check','Diagnostic'));
+    }).catch(function(){ mcard('<div style="padding:18px;text-align:center">'+esc(L('تعذّر الفحص','Check failed','Échec'))+'</div><button class="adm-new" style="width:100%" onclick="owmMgOpen()">'+L('رجوع','Back','Retour')+'</button>','🩺'); });
+  };
+  window.owmMgCC=function(c){ M.cc=c; window.owmMgDiag(); };
   window.owmMgFeat=function(i){ var g=M.rows[i]; if(!g) return; mSave(rowObj(g,{featured:!g.featured}),function(ok){ if(ok){ g.featured=!g.featured; mList(); } }); };
+  /* فحص الظهور: لكل لعبة أضفتها، هل تظهر للمستخدمين في بلد معيّن؟ ولماذا لا؟ (قراءة فقط) */
+  window.owmMgDiag=function(){
+    var cc=M.cc||'DZ';
+    mcard('<div style="display:flex;gap:8px;align-items:end"><label style="font-size:12px;color:#9fb3d9;width:90px">'+L('بلد المستخدم','User country','Pays')+'<input id="owm-dc" type="text" maxlength="2" value="'+esc(cc)+'" style="width:100%;box-sizing:border-box;padding:9px;border-radius:10px;border:1px solid #243252;background:#0d1627;color:#fff;text-transform:uppercase"></label><button class="adm-new" style="flex:1;margin:0" onclick="owmMgDiagRun()">🩺 '+L('افحص الآن','Check now','Vérifier')+'</button></div><div id="owm-dr" style="margin-top:10px;color:#9fb3d9;font-size:13px">'+L('اكتب رمز بلد المستخدم (مثل DZ) ثم اضغط افحص. العروض تختلف حسب البلد.','Enter the user country code then check.','Entrez le pays.')+'</div><button class="adm-new" style="width:100%;margin-top:12px;background:rgba(255,255,255,.08)" onclick="owmMgOpen()">'+L('رجوع','Back','Retour')+'</button>','🩺 '+L('فحص: لماذا لا تظهر لعبتي؟','Why is my game not visible?','Diagnostic'));
+  };
+  window.owmMgDiagRun=function(){
+    var cc=((document.getElementById('owm-dc')||{}).value||'DZ').toUpperCase(); if(!/^[A-Z]{2}$/.test(cc)) cc='DZ'; M.cc=cc;
+    var b=document.getElementById('owm-dr'); if(b) b.textContent=L('جارٍ الفحص…','Checking…','Vérification…');
+    var WHY={hidden:L('مخفية من قائمة الإخفاء في الإعدادات','Hidden in settings','Masquée'),blocked:L('تحتوي كلمة ممنوعة (قمار/كازينو…)','Contains a blocked word','Mot interdit'),low:L('مكافأتها أقل من الحد الأدنى في الإعدادات','Below the minimum reward','Sous le minimum'),over_cap:L('فيها مرحلة أكبر من حدّ العملية المسموح','A step exceeds the per-transaction cap','Plafond dépassé'),type_off:L('نوعها (ألعاب/استطلاعات) مغلق في الإعدادات','This type is switched off in settings','Type désactivé')};
+    Promise.all([Promise.resolve(SRV.rpc('owm_games_admin_list',{})),Promise.resolve(SRV.tok()).then(function(t){ return Promise.all([fetch(fn('offerwallme_admin_list&country='+cc),{headers:hdr(t)}).then(function(r){ return r.json(); }),fetch(fn('offerwallme_link'),{headers:hdr(t)}).then(function(r){ return r.json(); }).catch(function(){ return {}; })]); })]).then(function(a){
+      var rows=a[0], j=a[1][0], pr=a[1][1]||{}, el=document.getElementById('owm-dr'); if(!el) return;
+      if(!Array.isArray(rows)){ el.textContent=L('تعذّر تحميل قائمة ألعابك','Could not load your games','Échec'); return; }
+      if(!j||j.ok!==true){ el.textContent=L('تعذّر جلب عروض الشبكة الآن','Could not fetch network offers','Échec'); return; }
+      var byId={}; (j.items||[]).forEach(function(it){ byId[it.id]=it; });
+      var h='';
+      if(pr.on===false||pr.list===false) h+='<div style="padding:9px;border-radius:10px;background:rgba(239,68,68,.12);color:#fca5a5;margin-bottom:8px">⛔ '+L('الشبكة غير مفعّلة في «الشبكات» أو الخادم غير جاهز: لا تظهر أي لعبة للمستخدمين.','The network is off or the server is not ready: nothing is shown to users.','Réseau inactif.')+'</div>';
+      if(!rows.length) h+='<div>'+L('لم تضف ألعابًا بعد.','No games added yet.','Aucun jeu.')+'</div>';
+      var okN=0;
+      rows.forEach(function(g){
+        var it=byId[g.ext], why='';
+        if(!g.active) why=L('موقوفة (الحالة: متوقفة)','Paused','En pause');
+        else if(!it) why=L('غير متاحة في الشبكة لبلد '+cc+' الآن، أو أُزيلت من العروض. جرّب بلدًا آخر أو احذفها.','Not available in the network for '+cc+' right now.','Indisponible pour '+cc);
+        else if(it.flag&&WHY[it.flag]) why=WHY[it.flag];
+        var ok=!why; if(ok) okN++;
+        h+='<div style="display:flex;gap:8px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--border)"><span style="font-size:18px">'+(ok?'✅':'❌')+'</span><div style="flex:1;min-width:0"><b style="color:#fff">'+esc(g.name||g.ext)+'</b><div style="font-size:12px;margin-top:2px;color:'+(ok?'#34d399':'#fbbf24')+'">'+(ok?L('تظهر للمستخدمين في '+pl(g.place)+' (للمستخدم '+usd(it.usd)+')','Visible in '+pl(g.place),'Visible'):why)+'</div></div></div>';
+      });
+      el.innerHTML='<div style="margin-bottom:6px">'+L('النتيجة لبلد','Result for','Résultat pour')+' <b>'+cc+'</b>: '+okN+'/'+rows.length+' '+L('تظهر','visible','visibles')+'</div>'+h;
+    }).catch(function(){ var el=document.getElementById('owm-dr'); if(el) el.textContent=L('تعذّر الفحص','Check failed','Échec'); });
+  };
   window.owmMgSet=function(){
     mcard('<div id="adm-owm"></div><button class="adm-new" style="width:100%;margin-top:12px;background:rgba(255,255,255,.08)" onclick="owmMgOpen()">'+L('رجوع','Back','Retour')+'</button>','⚙️ '+L('إعدادات Offerwall.me','Offerwall.me settings','Réglages'));
     try{ A.open=true; aDraw(); if(!A.cfg) aLoadCfg(); }catch(e){}
