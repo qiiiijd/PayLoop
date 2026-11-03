@@ -1,6 +1,6 @@
 /* v11 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
 /* رقم الإصدار: يجب أن يطابق window.PL_BUILD في index.html. عند تغييره يحذف الـ SW نسخة الصفحة القديمة المحفوظة ويبلّغ الصفحات المفتوحة بوجود تحديث. */
-var BUILD = '2026.11.03-r95';
+var BUILD = '2026.11.03-r96';
 var SHELL = 'pl-shell-' + BUILD;
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
@@ -78,14 +78,23 @@ self.addEventListener('push', function (e) {
     /* العنوان كما كتبته أنت تمامًا (بدون إضافة اسم التطبيق: أندرويد يعرض اسم التطبيق أصلًا في أعلى الإشعار) */
     var title = String(d.title || '').trim() || 'PayLoop';
     var opt = {
-      body: String(d.body || '').slice(0, 300), tag: d.tag || undefined, icon: 'payloop-192.png', badge: 'badge-96.png?v=6',
+      body: String(d.body || '').slice(0, 300), tag: d.tag || undefined, icon: 'payloop-192.png', badge: 'badge-96.png?v=7',
       data: { go: d.go || null }, dir: 'auto', lang: 'ar',
-      silent: false, vibrate: [200, 100, 200], timestamp: Date.now(), renotify: !!d.tag,
+      silent: false, vibrate: [300, 120, 300, 120, 300], timestamp: Date.now(), renotify: !!d.tag,
       actions: [{ action: 'open', title: '\u0641\u062a\u062d' }, { action: 'dismiss', title: '\u062a\u062c\u0627\u0647\u0644' }]
     };
     try { if (typeof d.image === 'string' && /^https:\/\//.test(d.image)) opt.image = d.image.slice(0, 500); } catch (x) {}
     /* بانر كبير فخم يناسب نوع الإشعار (إن لم يُرسل الأدمن صورة خاصة) */
     if (!opt.image) { try { opt.image = bannerFor(d, title, opt.body); } catch (x) {} }
+    /* إن كان التطبيق مفتوحًا أمام المستخدم الآن: يظهر شريط داخل التطبيق (مثل سناب/فيسبوك) بدل إشعار النظام — ما عدا آيفون الذي يشترط عرض إشعار دائمًا */
+    var vis = null;
+    try { var all = await self.clients.matchAll({ type: 'window', includeUncontrolled: true }); for (var k = 0; k < all.length; k++) { if (all[k].visibilityState === 'visible' && all[k].focused) { vis = all[k]; break; } } } catch (x) {}
+    var isIos = false; try { isIos = /iphone|ipad|ipod/i.test(self.navigator.userAgent || ''); } catch (x) {}
+    if (vis && !isIos) {
+      try { vis.postMessage({ type: 'push', go: d.go || null, title: title, body: opt.body, image: opt.image || null, banner: true }); } catch (x) {}
+      await diag('last-show', 'inapp'); await diag('last-push', Date.now());
+      return;
+    }
     var shown = self.registration.showNotification(title.slice(0, 120), opt);
     try { await shown; await diag('last-show', 'ok'); } catch (err) { await diag('last-show', String((err && err.name) || 'error') + ':' + String((err && err.message) || '').slice(0, 80)); }
     await diag('last-push', Date.now());

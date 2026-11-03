@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.03-r95';
+window.PL_BUILD='2026.11.03-r96';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -441,6 +441,15 @@ button{font-family:inherit; cursor:pointer; border:none;}
 .nav-btn.active{color:var(--accent);}
 .nav-btn span{font-size:10.5px; font-weight:700;}
 
+.pl-pb{position:fixed;top:0;left:0;right:0;z-index:2147483000;display:flex;justify-content:center;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 0;pointer-events:none;transform:translateY(-140%);transition:transform .38s cubic-bezier(.2,.9,.3,1.1)}
+.pl-pb.on{transform:translateY(0)}
+.pl-pb .pb{pointer-events:auto;width:100%;max-width:460px;border-radius:20px;overflow:hidden;background:linear-gradient(135deg,#102040,#0b3b4a);border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 40px rgba(0,0,0,.55),0 0 0 1px rgba(34,208,196,.25);color:#fff;direction:rtl;cursor:pointer}
+.pl-pb .pb-im{display:block;width:100%;height:120px;object-fit:cover}
+.pl-pb .pb-r{display:flex;align-items:center;gap:12px;padding:13px 14px}
+.pl-pb .pb-ic{width:46px;height:46px;border-radius:13px;flex:none}
+.pl-pb .pb-t{font-weight:900;font-size:16px;line-height:1.35}
+.pl-pb .pb-b{font-size:13.5px;opacity:.88;line-height:1.5;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pl-pb .pb-x{margin-inline-start:auto;opacity:.5;font-size:20px;padding:4px 6px}
 .toast{position:fixed; left:0; right:0; bottom:calc(92px + env(safe-area-inset-bottom,0px)); width:100%; max-width:480px; margin:0 auto; padding:0 14px; display:flex; flex-direction:column; gap:10px; z-index:100; pointer-events:none; direction:rtl;}
 .tst{align-self:center; width:fit-content; max-width:100%; background:#1a2338; border:1px solid var(--accent); color:#fff; padding:9px 16px; border-radius:11px; font-size:12px; font-weight:700; line-height:1.55; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-shadow:0 6px 18px rgba(0,0,0,.32); opacity:0; transform:translateY(-12px); transition:opacity .25s ease, transform .25s ease;}
 .tst.show{opacity:1; transform:translateY(0);}
@@ -7680,9 +7689,25 @@ const Push={
 try{ document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ Push.heal(); }catch(e){} } }); setTimeout(function(){ try{ Push.heal(); }catch(e){} },9000); }catch(e){}
 /* فتح الصفحة المرتبطة بالإشعار عند الضغط عليه (من الخلفية أو والتطبيق مفتوح) */
 let _pendingGo=null;
+let _pbT=null;
+function plPushBanner(d){
+  try{
+    let el=document.getElementById('pl-pb'); if(!el){ el=document.createElement('div'); el.id='pl-pb'; el.className='pl-pb'; document.body.appendChild(el); }
+    const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const img='';
+    el.innerHTML='<div class="pb">'+img+'<div class="pb-r"><img class="pb-ic" alt="" src="payloop-192.png"><div style="min-width:0"><div class="pb-t">'+esc(d.title)+'</div><div class="pb-b">'+esc(d.body)+'</div></div><span class="pb-x" data-x="1">\u00d7</span></div></div>';
+    const pb=el.firstChild;
+    const hide=function(){ el.classList.remove('on'); if(_pbT){ clearTimeout(_pbT); _pbT=null; } };
+    pb.onclick=function(ev){ const x=ev.target&&ev.target.getAttribute&&ev.target.getAttribute('data-x'); hide(); if(!x&&d.go){ try{ pushGo(d.go); }catch(e){} } };
+    let y0=null; pb.ontouchstart=function(e){ y0=e.touches[0].clientY; }; pb.ontouchmove=function(e){ if(y0!=null&&y0-e.touches[0].clientY>24){ y0=null; hide(); } };
+    void el.offsetWidth; el.classList.add('on');
+    if(_pbT) clearTimeout(_pbT); _pbT=setTimeout(hide,6000);
+    try{ if(navigator.vibrate) navigator.vibrate([120,60,120]); }catch(e){}
+  }catch(e){}
+}
 function pushGo(g){ if(!g) return; if(!SESSION){ _pendingGo=g; return; } try{ ntfNavigate(g); }catch(e){} }
 try{ const _m=String(location.hash||'').match(/^#go=([a-z_]{2,24})$/); if(_m){ _pendingGo=_m[1]; history.replaceState(null,'',location.pathname+location.search); } }catch(e){}
-try{ if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',function(ev){ const d=ev&&ev.data||{}; if(d.type==='build'){ try{ plBuildSeen(d.build); }catch(e){} } else if(d.type==='go') pushGo(d.go); else if(d.type==='push'){ try{ setTimeout(function(){ SRV.cycle(true); },Math.floor(Math.random()*6000)); SRV._needFull=true; }catch(e){} try{ setTimeout(function(){ Push.render(); },800); }catch(e){} } }); }catch(e){}
+try{ if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',function(ev){ const d=ev&&ev.data||{}; if(d.type==='build'){ try{ plBuildSeen(d.build); }catch(e){} } else if(d.type==='go') pushGo(d.go); else if(d.type==='push'){ try{ if(d.banner) plPushBanner(d); }catch(e){} try{ setTimeout(function(){ SRV.cycle(true); },Math.floor(Math.random()*6000)); SRV._needFull=true; }catch(e){} try{ setTimeout(function(){ Push.render(); },800); }catch(e){} } }); }catch(e){}
 
 function doLogout(){
   try{ localStorage.removeItem('r7-adm-rev'); }catch(e){}   /* بعد الخروج تختفي لوحة التحكم حتى تُفتح من جديد بالنقرات + كلمة السر */
