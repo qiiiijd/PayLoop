@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.03-r96';
+window.PL_BUILD='2026.11.03-r97';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -8527,7 +8527,7 @@ function ntfDelSel(){
 function ntfSendDraft(id){ ntfConfirm('📤 '+L('إرسال الإشعار','Send notification','Envoyer'),L('هل تريد إرسال هذا الإشعار الآن؟','Send this notification now?','Envoyer maintenant ?'),L('إرسال','Send','Envoyer'),false,async function(){ if(SRV.on()){ const r=await SRV.rpc('admin_send_announcement',{p_id:parseInt(String(id).replace('ann:',''),10)}); if(r&&r.ok===false){ toast(L('❌ تعذّر الإرسال','❌ Send failed','❌ Échec')); return; } SRV.nfAdm.at=0; await SRV.pullAdmNtf(); } else NotificationService.sendDraft(id); renderAdmNtf(); newsBellRefresh(true); toast('✅ '+L('تم الإرسال','Sent','Envoyé')); }); }
 const NTF_GO={vip:1,home:1,tasks:1,withdraw:1,invite:1,profile:1,news:1,history:1};
 const NTF_TPL=[
- ['💰','ابدأ الربح الآن','Start earning','Gagner',['مهام جديدة بانتظارك! 💰','New tasks are waiting! 💰','De nouvelles tâches vous attendent ! 💰'],['أنجز مهمة واحدة اليوم واحصل على مكافأتك فورًا. ابدأ الآن!','Complete one task today and get your reward right away. Start now!','Terminez une tâche aujourd’hui et recevez votre récompense. Commencez !'],'task','tasks'],
+ ['💰','ابدأ الربح الآن','Start earning','Gagner',['مهمة جديدة 🎁','New tasks are waiting! 💰','De nouvelles tâches vous attendent ! 💰'],['أنجز مهمة واحدة اليوم واحصل على مكافأتك','Complete one task today and get your reward right away. Start now!','Terminez une tâche aujourd’hui et recevez votre récompense. Commencez !'],'task','tasks'],
  ['🎁','ادعُ صديقًا','Invite a friend','Parrainage',['ادعُ صديقًا واربح 🎁','Invite a friend and earn 🎁','Invitez un ami et gagnez 🎁'],['اربح 10% من أرباح كل صديق تدعوه — مدى الحياة. شارك رمزك الآن!','Earn 10% of every friend’s earnings — for life. Share your code now!','Gagnez 10 % des gains de chaque ami — à vie. Partagez votre code !'],'reward','invite'],
  ['🔥','المكافأة اليومية','Daily bonus','Bonus du jour',['مكافأتك اليومية جاهزة 🔥','Your daily bonus is ready 🔥','Votre bonus du jour est prêt 🔥'],['ادخل الآن واحصل على مكافأة اليوم قبل أن تفوتك!','Open the app and claim today’s bonus before you miss it!','Ouvrez l’appli et récupérez le bonus du jour !'],'reward','tasks'],
  ['📝','استطلاعات جديدة','New surveys','Sondages',['استطلاعات جديدة بأرباح أعلى 📝','New surveys with higher rewards 📝','Nouveaux sondages mieux payés 📝'],['استطلاعات جديدة متاحة الآن. دقائق قليلة وتربح!','New surveys are available now. A few minutes and you earn!','De nouveaux sondages sont disponibles. Quelques minutes et vous gagnez !'],'task','tasks'],

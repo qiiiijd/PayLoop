@@ -1,6 +1,6 @@
 /* v11 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
 /* رقم الإصدار: يجب أن يطابق window.PL_BUILD في index.html. عند تغييره يحذف الـ SW نسخة الصفحة القديمة المحفوظة ويبلّغ الصفحات المفتوحة بوجود تحديث. */
-var BUILD = '2026.11.03-r96';
+var BUILD = '2026.11.03-r97';
 var SHELL = 'pl-shell-' + BUILD;
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
@@ -70,6 +70,46 @@ function bannerFor(d, t, b) {
   return 'nb-default.jpg';
 }
 
+/* يرسم بانرًا فخمًا يحمل نص الإشعار نفسه (يعمل داخل الـ Service Worker) — إن فشل يرجع للبانر الجاهز */
+async function richBanner(file, title, body) {
+  try {
+    if (typeof OffscreenCanvas === 'undefined' || typeof createImageBitmap === 'undefined') return null;
+    var r = await fetch(file); if (!r.ok) return null;
+    var bm = await createImageBitmap(await r.blob());
+    var W = 1024, H = 512, c = new OffscreenCanvas(W, H), x = c.getContext('2d');
+    x.drawImage(bm, 0, 0, W, H);
+    /* لوح معتم يسار الصورة ليحمل النص بوضوح */
+    var g = x.createLinearGradient(0, 0, 470, 0);
+    g.addColorStop(0, 'rgba(7,16,36,0.96)'); g.addColorStop(0.8, 'rgba(7,16,36,0.9)'); g.addColorStop(1, 'rgba(7,16,36,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 470, H);
+    x.direction = 'rtl'; x.textAlign = 'right'; x.textBaseline = 'alphabetic';
+    var FONT = '"Noto Sans Arabic","Noto Naskh Arabic","Segoe UI",Roboto,Arial,sans-serif';
+    function wrap(t, maxW, maxLines) {
+      var words = String(t).split(/\s+/), lines = [], cur = '';
+      for (var i = 0; i < words.length; i++) {
+        var test = cur ? cur + ' ' + words[i] : words[i];
+        if (x.measureText(test).width > maxW && cur) { lines.push(cur); cur = words[i]; if (lines.length >= maxLines) break; } else cur = test;
+      }
+      if (lines.length < maxLines && cur) lines.push(cur);
+      else if (cur && lines.length >= maxLines) lines[maxLines - 1] += '…';
+      return lines;
+    }
+    var R = 420, maxW = 370;
+    x.font = '800 46px ' + FONT; x.fillStyle = '#ffffff';
+    var tl = wrap(title, maxW, 2), bl;
+    x.font = '500 29px ' + FONT; bl = wrap(body, maxW, 3);
+    var total = tl.length * 58 + 14 + bl.length * 42, y = Math.max(70, (H - total) / 2 - 20) + 46;
+    x.font = '800 46px ' + FONT; x.fillStyle = '#ffffff';
+    for (var i = 0; i < tl.length; i++) { x.fillText(tl[i], R, y); y += 58; }
+    y += 14 - 6; x.font = '500 29px ' + FONT; x.fillStyle = 'rgba(226,236,250,0.92)';
+    for (var j = 0; j < bl.length; j++) { x.fillText(bl[j], R, y); y += 42; }
+    var blob = await c.convertToBlob({ type: 'image/jpeg', quality: 0.86 });
+    var buf = new Uint8Array(await blob.arrayBuffer()), s = '';
+    for (var k = 0; k < buf.length; k += 8192) s += String.fromCharCode.apply(null, buf.subarray(k, k + 8192));
+    return 'data:image/jpeg;base64,' + btoa(s);
+  } catch (e) { return null; }
+}
+
 self.addEventListener('push', function (e) {
   var d = {};
   try { d = e.data ? e.data.json() : {}; } catch (x) { try { d = { title: 'PayLoop', body: e.data.text() }; } catch (y) { d = {}; } }
@@ -85,7 +125,14 @@ self.addEventListener('push', function (e) {
     };
     try { if (typeof d.image === 'string' && /^https:\/\//.test(d.image)) opt.image = d.image.slice(0, 500); } catch (x) {}
     /* بانر كبير فخم يناسب نوع الإشعار (إن لم يُرسل الأدمن صورة خاصة) */
-    if (!opt.image) { try { opt.image = bannerFor(d, title, opt.body); } catch (x) {} }
+    if (!opt.image) {
+      try {
+        var stat = bannerFor(d, title, opt.body);
+        var rich = null;
+        try { rich = await Promise.race([richBanner(stat, title, opt.body), new Promise(function (ok) { setTimeout(function () { ok(null); }, 2500); })]); } catch (x) {}
+        opt.image = rich || stat;
+      } catch (x) {}
+    }
     /* إن كان التطبيق مفتوحًا أمام المستخدم الآن: يظهر شريط داخل التطبيق (مثل سناب/فيسبوك) بدل إشعار النظام — ما عدا آيفون الذي يشترط عرض إشعار دائمًا */
     var vis = null;
     try { var all = await self.clients.matchAll({ type: 'window', includeUncontrolled: true }); for (var k = 0; k < all.length; k++) { if (all[k].visibilityState === 'visible' && all[k].focused) { vis = all[k]; break; } } } catch (x) {}
