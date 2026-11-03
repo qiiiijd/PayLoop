@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.03-r101';
+window.PL_BUILD='2026.11.03-r102';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -240,6 +240,9 @@ if(_r7q){document.documentElement.setAttribute('data-hs','1');document.documentE
 else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.documentElement.setAttribute('data-hs','1');}
 }catch(e){}</script>
 <meta name="theme-color" content="#090d14">
+<script>/* كشف الهاتف الضعيف مبكرًا: ذاكرة ≤4GB أو ≤4 أنوية أو توفير البيانات. الإعداد اليدوي: localStorage pl-lite = 1 أو 0 */
+try{var _m=navigator.deviceMemory,_c=navigator.hardwareConcurrency,_cn=navigator.connection,_o=null;try{_o=localStorage.getItem('pl-lite');}catch(e){}
+if(_o==='1'||(_o!=='0'&&((_m&&_m<=4)||(_c&&_c<=4)||(_cn&&_cn.saveData)))) document.documentElement.classList.add('pl-lite');}catch(e){}</script>
 <script>/* r62: تثبيت التطبيق على الهاتف (PWA). يظهر شريط «حمّل التطبيق» في الأعلى فقط إذا لم يكن التطبيق مثبّتًا/مفتوحًا كتطبيق.
    - أندرويد (Chrome/Samsung): المتصفح نفسه لا يطلق حدث التثبيت إن كان التطبيق مثبّتًا، فلا يظهر الشريط؛ وإن حُذف التطبيق يعود الحدث فيظهر الشريط من جديد. لا نحفظ «تم التثبيت» أبدًا.
    - آيفون: لا يوجد حدث تثبيت؛ نعرض شرح «إضافة إلى الشاشة الرئيسية». داخل متصفحات التطبيقات (ماسنجر/فيسبوك…) نشرح فتحه في المتصفح.
@@ -382,6 +385,29 @@ button{font-family:inherit; cursor:pointer; border:none;}
 button,.mini-btn{-webkit-tap-highlight-color:transparent; transition:transform .1s ease, opacity .1s ease;}
 button:active,.mini-btn:active{transform:scale(.97); opacity:.92;}
 @media (prefers-reduced-motion:reduce){ button,.mini-btn{transition:none} }
+/* وضع خفيف للهواتف الضعيفة (يُفعَّل تلقائيًا): يوقف الحركات الزخرفية المتكررة والتمويه الثقيل فقط */
+html.pl-lite .adm-nd.hot,
+html.pl-lite .atb .htk-n,
+html.pl-lite .auth-aurora i:nth-child(1),
+html.pl-lite .auth-aurora i:nth-child(2),
+html.pl-lite .auth-aurora i:nth-child(3),
+html.pl-lite .ax-logo-ring,
+html.pl-lite .ch-claim,
+html.pl-lite .ctw-conf i,
+html.pl-lite .ctw-ic,
+html.pl-lite .nv-dot.no,
+html.pl-lite .nv-dot.ok,
+html.pl-lite .pf-hero.vip #pf-name,
+html.pl-lite .pf-hero.vip .pf-av,
+html.pl-lite .trow .ow-hot,
+html.pl-lite .trow .ow-hot::after,
+html.pl-lite .trow.tprog .tp-dots u.cur,
+html.pl-lite .vip-crown,
+html.pl-lite .vip-hero h2 b,
+html.pl-lite .wv-card.pending .wv-cico,
+html.pl-lite .wv-cico .wv-cico-main{animation:none!important}
+html.pl-lite *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.pl-lite .balance-card,html.pl-lite .hero{box-shadow:none}
 .start-btn{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-weight:800; font-size:13px; padding:12px 18px; border-radius:14px; box-shadow:0 6px 18px rgba(59,130,246,.3);}
 
 .section{padding:6px 18px 4px;}
