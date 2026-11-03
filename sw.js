@@ -1,6 +1,6 @@
 /* v11 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
 /* رقم الإصدار: يجب أن يطابق window.PL_BUILD في index.html. عند تغييره يحذف الـ SW نسخة الصفحة القديمة المحفوظة ويبلّغ الصفحات المفتوحة بوجود تحديث. */
-var BUILD = '2026.11.01-r94';
+var BUILD = '2026.11.03-r95';
 var SHELL = 'pl-shell-' + BUILD;
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
@@ -56,6 +56,20 @@ self.addEventListener('fetch', function (e) {
 /* تسجيل تشخيصي بسيط: متى وصل آخر إشعار وهل نجح عرضه (يقرؤه التطبيق في الإعدادات) */
 async function diag(k, v) { try { var c = await caches.open('pl-diag'); await c.put('/' + k, new Response(String(v))); } catch (x) {} }
 
+/* اختيار البانر حسب نوع الإشعار (من وجهة go ثم من كلمات العنوان) */
+function bannerFor(d, t, b) {
+  var g = String(d.go || '').toLowerCase(), x = (t + ' ' + b).toLowerCase();
+  function has(a) { for (var i = 0; i < a.length; i++) if (x.indexOf(a[i]) >= 0) return true; return false; }
+  if (g === 'help' || has(['\u0645\u0633\u0627\u0639\u062f', '\u062f\u0639\u0645', '\u0631\u062f '])) return 'nb-help.jpg';
+  if (has(['\u0633\u062d\u0628', 'withdraw', 'retrait'])) return 'nb-withdraw.jpg';
+  if (has(['\u0627\u062f\u0639', '\u062f\u0639\u0648\u0629', '\u0625\u062d\u0627\u0644', '\u0627\u062d\u0627\u0644', '\u0647\u062f\u064a', 'referral'])) return 'nb-gift.jpg';
+  if (g === 'surveys' || has(['\u0627\u0633\u062a\u0637\u0644\u0627\u0639', '\u0627\u0633\u062a\u0628\u064a\u0627\u0646', 'survey'])) return 'nb-survey.jpg';
+  if (has(['\u0644\u0639\u0628\u0629', '\u0644\u0639\u0628', 'game'])) return 'nb-game.jpg';
+  if (has(['\u0631\u0628\u062d\u062a', '\u0623\u0636\u064a\u0641', '\u0627\u0636\u064a\u0641', '\u0631\u0635\u064a\u062f', '\u0645\u0643\u0627\u0641', '$', '\u062f\u0648\u0644\u0627\u0631', '\u062a\u0645 \u0627\u0644\u062f\u0641\u0639', '\u062a\u0645\u062a \u0627\u0644\u0645\u0648\u0627\u0641'])) return 'nb-money.jpg';
+  if (g === 'tasks' || has(['\u0645\u0647\u0645\u0629', '\u0645\u0647\u0627\u0645', '\u0639\u0631\u0636', '\u062c\u062f\u064a\u062f'])) return 'nb-star.jpg';
+  return 'nb-default.jpg';
+}
+
 self.addEventListener('push', function (e) {
   var d = {};
   try { d = e.data ? e.data.json() : {}; } catch (x) { try { d = { title: 'PayLoop', body: e.data.text() }; } catch (y) { d = {}; } }
@@ -64,12 +78,14 @@ self.addEventListener('push', function (e) {
     /* العنوان كما كتبته أنت تمامًا (بدون إضافة اسم التطبيق: أندرويد يعرض اسم التطبيق أصلًا في أعلى الإشعار) */
     var title = String(d.title || '').trim() || 'PayLoop';
     var opt = {
-      body: String(d.body || '').slice(0, 300), tag: d.tag || undefined, icon: 'payloop-192.png', badge: 'badge-96.png?v=5',
+      body: String(d.body || '').slice(0, 300), tag: d.tag || undefined, icon: 'payloop-192.png', badge: 'badge-96.png?v=6',
       data: { go: d.go || null }, dir: 'auto', lang: 'ar',
       silent: false, vibrate: [200, 100, 200], timestamp: Date.now(), renotify: !!d.tag,
       actions: [{ action: 'open', title: '\u0641\u062a\u062d' }, { action: 'dismiss', title: '\u062a\u062c\u0627\u0647\u0644' }]
     };
     try { if (typeof d.image === 'string' && /^https:\/\//.test(d.image)) opt.image = d.image.slice(0, 500); } catch (x) {}
+    /* بانر كبير فخم يناسب نوع الإشعار (إن لم يُرسل الأدمن صورة خاصة) */
+    if (!opt.image) { try { opt.image = bannerFor(d, title, opt.body); } catch (x) {} }
     var shown = self.registration.showNotification(title.slice(0, 120), opt);
     try { await shown; await diag('last-show', 'ok'); } catch (err) { await diag('last-show', String((err && err.name) || 'error') + ':' + String((err && err.message) || '').slice(0, 80)); }
     await diag('last-push', Date.now());
