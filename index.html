@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.01-r91';
+window.PL_BUILD='2026.11.01-r93';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12356,6 +12356,11 @@ async function openCpx(){
       return out.join('. ');
     }catch(e){ return null; }
   };
+  window.plDeviceWarn=function(){
+    var e=function(x){ return String(x).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+    return '<div style="margin:10px 0;padding:12px;border-radius:14px;background:#2a1215;border:1px solid #7f1d1d;color:#fca5a5;font-size:13px;line-height:1.8"><b style="display:block;color:#f87171;font-size:13.5px;margin-bottom:4px">⚠️ '+e(L('تنبيه مهم: حساب واحد لكل هاتف','Important: one account per phone','Important : un compte par téléphone'))+'</b>'
+      +e(L('يُمنع استعمال هذا الهاتف لحسابين مختلفين. الشبكات تكتشف ذلك وترفض العرض أو لا تدفع المكافأة، وقد يُحظر الحساب. إن ظهرت لك رسالة 429 (This device already started this offer with a different account) فمعناها أن هذا الهاتف بدأ هذا العرض بحساب آخر، ولا يمكن إكماله من هنا.','Using one phone for two different accounts is forbidden. Networks detect it and reject the offer or withhold the reward, and the account may be banned. If you see error 429 (This device already started this offer with a different account), this phone already started this offer with another account and it cannot be completed here.','Un téléphone ne peut pas servir à deux comptes. Le réseau refuse l\'offre ou ne paie pas, et le compte peut être bloqué.'))+'</div>';
+  };
   window.plStepHtml=function(txt){
     var e=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
     var raw=String(txt==null?'':txt), ar=null;
@@ -12442,6 +12447,7 @@ async function openCpx(){
     }
     if(g.plat==='android'||g.plat==='ios'||g.plat==='all') h+='<div class="sc"><b>'+L('يعمل على','Works on','Fonctionne sur')+'</b>'+ptxt(g.plat)+'</div>';
     h+='<div class="sc" style="font-size:13px;color:#9fb3d9">'+L('المكافأة تصل تلقائيًا إلى رصيدك بعد أن تؤكد الشبكة الإنجاز (قد يستغرق دقائق وأحيانًا أكثر). لا تحذف اللعبة قبل إنهاء المراحل.','The reward is added automatically once the network confirms completion (minutes, sometimes longer). Do not uninstall the game before finishing.','La récompense est ajoutée après confirmation du réseau.')+'</div>';
+    try{ if(window.plDeviceWarn) h+=window.plDeviceWarn(); }catch(e){}
     d.innerHTML=h; d.scrollTop=0;
     var bar=document.createElement('div'); bar.className='gs'; bar.innerHTML='<button type="button"></button>'; bar.firstChild.textContent=(g.btn&&String(g.btn).trim())||L('ابدأ','Start','Commencer');
     bar.firstChild.onclick=function(){ go(g.id); }; try{ Array.prototype.forEach.call(ov.querySelectorAll('.gs'),function(e){ e.remove(); }); }catch(e){} ov.appendChild(bar);
@@ -12993,8 +12999,10 @@ function openOfferwall(){
   };
   window.owGameDone=function(o){ return doneOf(o).length; };
   /* حالة اللعبة للتبويبات: done = أنجز كل المراحل الأساسية، started = أنجز بعضها أو ضغط «ابدأ اللعب»، وإلا new */
-  function stMap(){ try{ return JSON.parse(localStorage.getItem('pl-ow-st')||'{}')||{}; }catch(e){ return {}; } }
-  window.owMarkStarted=function(ext){ try{ if(!ext) return; var m=stMap(); m[String(ext)]=Date.now(); var ks=Object.keys(m); if(ks.length>200){ ks.sort(function(a,b){ return m[a]-m[b]; }).slice(0,ks.length-200).forEach(function(k){ delete m[k]; }); } localStorage.setItem('pl-ow-st',JSON.stringify(m)); }catch(e){} };
+  /* حالة «بدأ» لكل حساب على حدة (كانت مشتركة بين كل الحسابات على نفس الجهاز، فتظهر الألعاب «إكمال» لحساب جديد) */
+  function stKeyGG(){ var u=''; try{ u=(RealAuth.getSession()||{}).uid||''; }catch(e){} return u?('pl-ow-st:'+u):''; }
+  function stMap(){ try{ var k=stKeyGG(); if(!k) return {}; return JSON.parse(localStorage.getItem(k)||'{}')||{}; }catch(e){ return {}; } }
+  window.owMarkStarted=function(ext){ try{ if(!ext) return; var m=stMap(); m[String(ext)]=Date.now(); var ks=Object.keys(m); if(ks.length>200){ ks.sort(function(a,b){ return m[a]-m[b]; }).slice(0,ks.length-200).forEach(function(k){ delete m[k]; }); } var kk=stKeyGG(); if(kk) localStorage.setItem(kk,JSON.stringify(m)); }catch(e){} };
   window.owGameState=function(o){
     try{
       var done=(S.prog&&S.prog[o.ext])||{}, ids=Object.keys(done), goals=o.goals||[];
@@ -13039,6 +13047,7 @@ function openOfferwall(){
     }
     if(earned>0) h+='<div class="g-sec"><b>'+esc(L('ما وصلك من هذه اللعبة','Received from this game','Reçu pour ce jeu'))+'</b>'+esc(money(earned))+'</div>';
     h+='<div class="g-sec" style="font-size:13px;color:#9fb3d9">'+esc(L('المكافأة تصل تلقائيًا إلى رصيدك بعد أن تؤكد الشبكة إنجاز المرحلة (قد يستغرق دقائق، وأحيانًا أكثر). لا تحذف اللعبة قبل إنهاء المراحل.','The reward is added automatically once the network confirms each level (can take minutes, sometimes longer). Do not uninstall the game before finishing.','La récompense est ajoutée automatiquement après confirmation du réseau. Ne désinstallez pas le jeu avant la fin.'))+'</div></div>';
+        try{ if(window.plDeviceWarn) h+=window.plDeviceWarn(); }catch(e){}
         sh.innerHTML=h;
     $('owg-back').onclick=function(){ sh.classList.remove('on'); S.cur=null; paint(); };
     if(o.ready&&o.url){
