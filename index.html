@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.03-r98';
+window.PL_BUILD='2026.11.03-r99';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -245,7 +245,9 @@ else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.docume
    - آيفون: لا يوجد حدث تثبيت؛ نعرض شرح «إضافة إلى الشاشة الرئيسية». داخل متصفحات التطبيقات (ماسنجر/فيسبوك…) نشرح فتحه في المتصفح.
    - زر ✕ يخفي الشريط يومين فقط. */
 (function(){ try{
-  var DEF=null, shown=false, KEY='pl-inst-x', DAY=86400000;
+  var DEF=null, shown=false, KEY='pl-inst-x', DAY=86400000, INS='pl-installed', prompting=false;
+  function installed(){ try{ return localStorage.getItem(INS)==='1'; }catch(e){ return false; } }
+  function setInstalled(v){ try{ if(v) localStorage.setItem(INS,'1'); else localStorage.removeItem(INS); }catch(e){} }
   var LGs=function(){ try{ var l=localStorage.getItem('r7-lang'); return (l==='fr'||l==='en')?l:'ar'; }catch(e){ return 'ar'; } };
   var T={ar:{t:'حمّل تطبيق PayLoop',s:'يعمل على هاتفك مثل أي تطبيق، بدون متصفح',b:'تحميل',h:'كيف أحمّل التطبيق؟',
       ios:['اضغط زر المشاركة ⬆️ في المتصفح (Safari)','اختر «إضافة إلى الشاشة الرئيسية»','اضغط «إضافة» — سيظهر التطبيق بين تطبيقاتك'],
@@ -261,7 +263,7 @@ else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.docume
   function isIOS(){ return /iPhone|iPad|iPod/i.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1); }
   function inApp(){ return /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|MicroMessenger|Snapchat|TikTok|musical_ly|; wv\)/i.test(UA); }
   function dismissed(){ try{ var t=Number(localStorage.getItem(KEY)||0); return t&&Date.now()-t<6*3600000; }catch(e){ return false; } }
-  function mode(){ if(standalone()||inApp()) return ''; if(DEF) return 'prompt'; if(isIOS()) return 'ios'; return ''; }  /* داخل متصفحات التطبيقات يتولّى شريط «افتح في المتصفح» الموجود مسبقًا الأمر */
+  function mode(){ if(standalone()||inApp()) return ''; if(installed()) return ''; if(DEF) return 'prompt'; if(isIOS()) return 'ios'; return ''; }  /* داخل متصفحات التطبيقات يتولّى شريط «افتح في المتصفح» الموجود مسبقًا الأمر */
   function hide(){ var b=document.getElementById('pl-inst'); if(b) b.remove(); document.documentElement.classList.remove('pl-inst'); shown=false; }
   function sheet(m,cu){ var L=T[LGs()], el=document.createElement('div'); el.id='pl-inst-sh'; if(cu){ L={h:cu.h,ios:cu.st,x:L.x}; }
     el.style.cssText='position:fixed;inset:0;z-index:2147483100;background:rgba(2,6,23,.78);display:flex;align-items:flex-end;justify-content:center;direction:'+(LGs()==='ar'?'rtl':'ltr');
@@ -282,22 +284,42 @@ else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.docume
     document.body.appendChild(b); document.documentElement.classList.add('pl-inst');
     document.getElementById('pl-inst-x').onclick=function(){ try{ localStorage.setItem(KEY,String(Date.now())); }catch(e){} hide(); };
     document.getElementById('pl-inst-go').onclick=function(){ var mm=mode();
-      if(mm==='prompt'&&DEF){ var d=DEF; try{ d.prompt(); d.userChoice.then(function(c){ DEF=null; if(c&&c.outcome==='accepted'){ hide(); } else { try{ localStorage.setItem(KEY,String(Date.now())); }catch(e){} hide(); } }).catch(function(){}); }catch(e){} }
+      if(mm==='prompt'&&DEF){ if(prompting) return; prompting=true; var d=DEF; try{ d.prompt(); d.userChoice.then(function(c){ prompting=false; DEF=null; if(c&&c.outcome==='accepted'){ setInstalled(true); hide(); } else { try{ localStorage.setItem(KEY,String(Date.now())); }catch(e){} hide(); } }).catch(function(){ prompting=false; }); }catch(e){ prompting=false; } }
       else if(mm==='ios') sheet('ios'); };
   }catch(e){} }
-  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); DEF=e; if(document.readyState!=='loading') render(); });
-  window.addEventListener('appinstalled',function(){ DEF=null; try{ localStorage.removeItem(KEY); }catch(e){} hide(); });
+  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); DEF=e; setInstalled(false); try{ sessionStorage.removeItem('pl-ins-note'); }catch(x){} var n=document.getElementById('pl-inst-note'); if(n) n.remove(); document.documentElement.classList.remove('pl-inst'); if(document.readyState!=='loading') render(); try{ plInstRow(); }catch(x){} });
+  window.addEventListener('appinstalled',function(){ DEF=null; prompting=false; setInstalled(true); try{ localStorage.removeItem(KEY); }catch(e){} hide(); try{ plInstRow(); }catch(e){} });
   try{ matchMedia('(display-mode: standalone)').addEventListener('change',function(){ if(standalone()) hide(); }); }catch(e){}
-  document.addEventListener('DOMContentLoaded',function(){ var st=document.createElement('style'); st.textContent='html.pl-inst body{padding-top:58px} html.pl-inst #auth-gate{top:58px}'; document.head.appendChild(st); setTimeout(render,1200); });
+  document.addEventListener('DOMContentLoaded',function(){ var st=document.createElement('style'); st.textContent='html.pl-inst body{padding-top:58px} html.pl-inst #auth-gate{top:58px}'; document.head.appendChild(st); setTimeout(function(){ detect(); render(); try{ plInstRow(); }catch(e){} },1200); });
   var GD={ar:{h:'تثبيت PayLoop على هاتفك',st:['افتح الموقع في تطبيق Chrome نفسه (وليس من داخل تطبيق آخر أو نافذة مصغّرة).','اضغط قائمة النقاط الثلاث ⋮ في Chrome.','اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» ثم «تثبيت».','إن لم يظهر هذا الخيار فغالبًا التطبيق مثبّت عندك: ابحث عن أيقونة PayLoop في هاتفك وافتحها منها.']},
     en:{h:'Install PayLoop on your phone',st:['Open the site in the Chrome app itself (not inside another app or a mini window).','Tap the three-dot menu ⋮ in Chrome.','Choose “Install app” or “Add to Home screen”, then “Install”.','If you do not see it, the app is probably installed already: look for the PayLoop icon on your phone.']},
     fr:{h:'Installer PayLoop sur votre téléphone',st:['Ouvrez le site dans l’appli Chrome elle-même.','Touchez le menu ⋮ de Chrome.','Choisissez « Installer l’application » puis « Installer ».','Sinon, l’appli est sûrement déjà installée : cherchez l’icône PayLoop.']}};
   window.plInstallNow=function(){ try{
+    if(installed()&&!standalone()){ if(typeof toast==='function') toast('✅ '+({ar:'التطبيق مثبّت عندك — افتحه من أيقونة PayLoop',en:'Already installed — open it from the PayLoop icon',fr:'Déjà installée — ouvrez-la depuis l’icône'}[LGs()]||'')); return; }
     if(standalone()){ if(typeof toast==='function') toast('✅ '+({ar:'التطبيق مثبّت ويعمل كتطبيق',en:'The app is already installed',fr:'Déjà installée'}[LGs()]||'')); return; }
-    if(DEF){ var d=DEF; d.prompt(); d.userChoice.then(function(c){ DEF=null; if(c&&c.outcome==='accepted') hide(); }).catch(function(){}); return; }
+    if(DEF){ if(prompting) return; prompting=true; var d=DEF; d.prompt(); d.userChoice.then(function(c){ prompting=false; DEF=null; if(c&&c.outcome==='accepted'){ setInstalled(true); hide(); try{ plInstRow(); }catch(e){} } }).catch(function(){ prompting=false; }); return; }
     sheet('guide',GD[LGs()]||GD.ar);
   }catch(e){} };
-  window.plInstRow=function(){ try{ var r=document.getElementById('inst-row'); if(r) r.style.display=(standalone()||inApp()&&false)?'none':'flex'; }catch(e){} };
+  window.plInstRow=function(){ try{ var r=document.getElementById('inst-row'); if(!r) return; if(standalone()){ r.style.display='none'; return; } r.style.display='flex';
+      var s=r.querySelector('.sl span:last-child'), ok=installed(); if(s) s.textContent=ok?({ar:'✅ التطبيق مثبّت — افتحه من أيقونة PayLoop',en:'✅ Installed — open from the PayLoop icon',fr:'✅ Installée — ouvrez l’icône PayLoop'}[LGs()]):({ar:'تثبيت التطبيق على هاتفك',en:'Install the app on your phone',fr:'Installer l’appli'}[LGs()]); }catch(e){} };
+  /* اكتشاف ذكي: هل التطبيق مثبّت على هذا الهاتف فعلًا؟ (حتى لو فتحت الموقع من رابط/متصفح) */
+  function note(){ try{
+    if(standalone()||inApp()||!installed()||!document.body) return;
+    try{ if(sessionStorage.getItem('pl-ins-note')) return; }catch(e){}
+    if(document.getElementById('pl-inst-note')||document.getElementById('pl-inst')) return;
+    var rtl=LGs()==='ar', tx={ar:['✅ التطبيق مثبّت على هاتفك','افتحه من أيقونة PayLoop في شاشة هاتفك للحصول على أفضل تجربة'],en:['✅ The app is installed','Open it from the PayLoop icon on your phone for the best experience'],fr:['✅ L’appli est installée','Ouvrez-la depuis l’icône PayLoop de votre téléphone']}[LGs()];
+    var b=document.createElement('div'); b.id='pl-inst-note'; b.setAttribute('dir',rtl?'rtl':'ltr');
+    b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:2147483000;display:flex;align-items:center;gap:10px;padding:max(8px,env(safe-area-inset-top)) 12px 8px;background:linear-gradient(135deg,#065f46,#0e7490);color:#fff;box-shadow:0 4px 18px rgba(0,0,0,.4);font-family:Tajawal,system-ui,sans-serif';
+    b.innerHTML='<img src="payloop-192.png" alt="" width="40" height="40" style="border-radius:10px;flex:none"><div style="flex:1;min-width:0;line-height:1.35"><b style="font-size:14px;display:block">'+tx[0]+'</b><span style="font-size:11.5px;opacity:.9;display:block">'+tx[1]+'</span></div><button id="pl-inst-nx" type="button" style="flex:none;border:0;background:transparent;color:#fff;font-size:20px;opacity:.85;cursor:pointer;padding:4px">✕</button>';
+    document.body.appendChild(b); document.documentElement.classList.add('pl-inst');
+    document.getElementById('pl-inst-nx').onclick=function(){ try{ sessionStorage.setItem('pl-ins-note','1'); }catch(e){} b.remove(); document.documentElement.classList.remove('pl-inst'); };
+  }catch(e){} }
+  function detect(){ try{
+    if(standalone()){ setInstalled(true); return; }
+    if(navigator.getInstalledRelatedApps){ navigator.getInstalledRelatedApps().then(function(a){ var ok=!!(a&&a.length); setInstalled(ok); if(ok){ hide(); note(); } else { var n=document.getElementById('pl-inst-note'); if(n){ n.remove(); document.documentElement.classList.remove('pl-inst'); } } try{ plInstRow(); }catch(e){} }).catch(function(){ note(); });
+    } else note();
+  }catch(e){} }
+  window.__plInstDetect=detect;
   window.__plInstRender=render;
 }catch(e){} })();</script>
 <link rel="manifest" href="manifest.webmanifest">
@@ -4687,7 +4709,7 @@ function homeSmart(){
     '<div class="hs-sub">'+(li.nextMin!=null?L('تبقّى $'+rem.toFixed(2)+' للمستوى القادم','$'+rem.toFixed(2)+' to the next level','Encore '+rem.toFixed(2)+' $ pour le niveau suivant'):L('وصلت لأعلى مستوى ⭐','Max level reached ⭐','Niveau maximum ⭐'))+'</div>'+
     (cont&&ti>=0?'<button class="hs-go" onclick="openTask('+ti+')">▶ '+L('تابع','Continue','Reprendre')+' · <span>'+esc(tr(cont.title))+'</span></button>':'')+'</div>';
 }
-function fm(v){ v=Number(v)||0; var r=v.toFixed(2); return Math.abs(v-Number(r))>0.00005?v.toFixed(4):r; }
+function fm(v){ v=Number(v)||0; /* العرض: خانتان دائمًا، وخانات أكثر فقط للمبالغ الصغيرة جدًا (<0.10$) حتى لا يظهر الربح الدقيق كصفر */ return (v>0&&v<0.1&&Math.abs(v-Number(v.toFixed(2)))>0.00005)?v.toFixed(4):v.toFixed(2); }
 function refreshBAL(skipAnim){
   const set=(id,v)=>{ if(skipAnim&&(id==='bal-task'||id==='today-task')) return; const e=document.getElementById(id); if(e) e.textContent=v; };
   const earn='$'+earnTotal().toFixed(2);
