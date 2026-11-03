@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.03-r99';
+window.PL_BUILD='2026.11.03-r100';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -246,30 +246,32 @@ else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.docume
    - زر ✕ يخفي الشريط يومين فقط. */
 (function(){ try{
   var DEF=null, shown=false, KEY='pl-inst-x', DAY=86400000, INS='pl-installed', prompting=false;
-  function installed(){ try{ return localStorage.getItem(INS)==='1'; }catch(e){ return false; } }
-  function setInstalled(v){ try{ if(v) localStorage.setItem(INS,'1'); else localStorage.removeItem(INS); }catch(e){} }
+  var RT=false, CHK=false; /* حالة التثبيت الحقيقية من المتصفح فقط (وليست من localStorage الذي قد يبقى بعد الحذف) */
+  function installed(){ return RT; }
+  function setInstalled(v){ RT=!!v; try{ localStorage.removeItem(INS); }catch(e){} }
+  function isAndroid(){ return /Android/i.test(UA); }
   var LGs=function(){ try{ var l=localStorage.getItem('r7-lang'); return (l==='fr'||l==='en')?l:'ar'; }catch(e){ return 'ar'; } };
-  var T={ar:{t:'حمّل تطبيق PayLoop',s:'يعمل على هاتفك مثل أي تطبيق، بدون متصفح',b:'تحميل',h:'كيف أحمّل التطبيق؟',
+  var T={ar:{t:'حمّل تطبيق PayLoop',s:'يعمل على هاتفك مثل أي تطبيق، بدون متصفح',b:'⬇ تحميل',h:'كيف أحمّل التطبيق؟',
       ios:['اضغط زر المشاركة ⬆️ في المتصفح (Safari)','اختر «إضافة إلى الشاشة الرئيسية»','اضغط «إضافة» — سيظهر التطبيق بين تطبيقاتك'],
       x:'إغلاق'},
-    fr:{t:'Installez l’app PayLoop',s:'Elle s’ouvre comme une vraie app, sans navigateur',b:'Installer',h:'Comment installer ?',
+    fr:{t:'Installez l’app PayLoop',s:'Elle s’ouvre comme une vraie app, sans navigateur',b:'⬇ Installer',h:'Comment installer ?',
       ios:['Touchez le bouton Partager ⬆️ dans Safari','Choisissez « Sur l’écran d’accueil »','Touchez « Ajouter »'],
       x:'Fermer'},
-    en:{t:'Install the PayLoop app',s:'Opens like a real app on your phone, no browser',b:'Install',h:'How to install',
+    en:{t:'Install the PayLoop app',s:'Opens like a real app on your phone, no browser',b:'⬇ Install',h:'How to install',
       ios:['Tap the Share button ⬆️ in Safari','Choose “Add to Home Screen”','Tap “Add”'],
       x:'Close'}};
   var UA=navigator.userAgent||'';
   function standalone(){ try{ if(/PayLoopApp/.test(UA)) return true; return matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||matchMedia('(display-mode: minimal-ui)').matches||navigator.standalone===true; }catch(e){ return false; } }
   function isIOS(){ return /iPhone|iPad|iPod/i.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1); }
   function inApp(){ return /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|MicroMessenger|Snapchat|TikTok|musical_ly|; wv\)/i.test(UA); }
-  function dismissed(){ try{ var t=Number(localStorage.getItem(KEY)||0); return t&&Date.now()-t<6*3600000; }catch(e){ return false; } }
-  function mode(){ if(standalone()||inApp()) return ''; if(installed()) return ''; if(DEF) return 'prompt'; if(isIOS()) return 'ios'; return ''; }  /* داخل متصفحات التطبيقات يتولّى شريط «افتح في المتصفح» الموجود مسبقًا الأمر */
+  var DIS=false; function dismissed(){ return DIS; } /* ✕ يخفي الشريط حتى تحديث الصفحة فقط، وليس نهائيًا */
+  function mode(){ if(standalone()||inApp()) return ''; if(installed()) return ''; if(DEF) return 'prompt'; if(isIOS()) return 'ios'; if(CHK&&isAndroid()) return 'guide'; return ''; }  /* داخل متصفحات التطبيقات يتولّى شريط «افتح في المتصفح» الموجود مسبقًا الأمر */
   function hide(){ var b=document.getElementById('pl-inst'); if(b) b.remove(); document.documentElement.classList.remove('pl-inst'); shown=false; }
   function sheet(m,cu){ var L=T[LGs()], el=document.createElement('div'); el.id='pl-inst-sh'; if(cu){ L={h:cu.h,ios:cu.st,x:L.x}; }
     el.style.cssText='position:fixed;inset:0;z-index:2147483100;background:rgba(2,6,23,.78);display:flex;align-items:flex-end;justify-content:center;direction:'+(LGs()==='ar'?'rtl':'ltr');
     var st=L.ios.map(function(x,i){ return '<div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0"><span style="flex:none;width:30px;height:30px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900">'+(i+1)+'</span><span style="line-height:1.6;font-size:14.5px">'+x+'</span></div>'; }).join('');
     el.innerHTML='<div style="width:100%;max-width:460px;background:#0f172a;color:#f2f5ff;border-radius:22px 22px 0 0;padding:20px 20px 26px;font-family:Tajawal,system-ui,sans-serif"><b style="font-size:17px">'+L.h+'</b><div style="margin-top:8px">'+st+'</div>'
-      +'<button id="pl-inst-cl" type="button" style="width:100%;margin-top:10px;border:1px solid #334155;border-radius:13px;padding:12px;font:800 14px inherit;background:transparent;color:#cbd5e1">'+L.x+'</button></div>';
+      +(cu&&isAndroid()?'<a id="pl-inst-ch" href="intent://'+location.host+location.pathname+'#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url='+encodeURIComponent(location.href.split('#')[0])+';end" style="display:block;text-align:center;text-decoration:none;margin-top:12px;border-radius:13px;padding:13px;font:900 14.5px inherit;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff">'+({ar:'🌐 فتح في Chrome للتثبيت',en:'🌐 Open in Chrome to install',fr:'🌐 Ouvrir dans Chrome'}[LGs()])+'</a>':'')+'<button id="pl-inst-cl" type="button" style="width:100%;margin-top:10px;border:1px solid #334155;border-radius:13px;padding:12px;font:800 14px inherit;background:transparent;color:#cbd5e1">'+L.x+'</button></div>';
     el.addEventListener('click',function(e){ if(e.target===el||e.target.id==='pl-inst-cl') el.remove(); });
     document.body.appendChild(el);
   }
@@ -282,12 +284,12 @@ else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.docume
       +'<button id="pl-inst-go" type="button" style="flex:none;border:0;border-radius:99px;padding:9px 16px;font:900 13.5px inherit;background:#fff;color:#1e1b4b;cursor:pointer">'+L.b+'</button>'
       +'<button id="pl-inst-x" type="button" aria-label="'+L.x+'" style="flex:none;border:0;background:transparent;color:#fff;font-size:20px;opacity:.8;cursor:pointer;padding:4px">✕</button>';
     document.body.appendChild(b); document.documentElement.classList.add('pl-inst');
-    document.getElementById('pl-inst-x').onclick=function(){ try{ localStorage.setItem(KEY,String(Date.now())); }catch(e){} hide(); };
+    document.getElementById('pl-inst-x').onclick=function(){ DIS=true; hide(); };
     document.getElementById('pl-inst-go').onclick=function(){ var mm=mode();
-      if(mm==='prompt'&&DEF){ if(prompting) return; prompting=true; var d=DEF; try{ d.prompt(); d.userChoice.then(function(c){ prompting=false; DEF=null; if(c&&c.outcome==='accepted'){ setInstalled(true); hide(); } else { try{ localStorage.setItem(KEY,String(Date.now())); }catch(e){} hide(); } }).catch(function(){ prompting=false; }); }catch(e){ prompting=false; } }
-      else if(mm==='ios') sheet('ios'); };
+      if(mm==='prompt'&&DEF){ if(prompting) return; prompting=true; var d=DEF; try{ d.prompt(); d.userChoice.then(function(c){ prompting=false; DEF=null; if(c&&c.outcome==='accepted'){ setInstalled(true); hide(); } }).catch(function(){ prompting=false; }); }catch(e){ prompting=false; } }
+      else if(mm==='ios') sheet('ios'); else if(mm==='guide') sheet('guide',GD[LGs()]||GD.ar); };
   }catch(e){} }
-  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); DEF=e; setInstalled(false); try{ sessionStorage.removeItem('pl-ins-note'); }catch(x){} var n=document.getElementById('pl-inst-note'); if(n) n.remove(); document.documentElement.classList.remove('pl-inst'); if(document.readyState!=='loading') render(); try{ plInstRow(); }catch(x){} });
+  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); DEF=e; setInstalled(false); CHK=true; try{ sessionStorage.removeItem('pl-ins-note'); }catch(x){} var n=document.getElementById('pl-inst-note'); if(n) n.remove(); document.documentElement.classList.remove('pl-inst'); if(document.readyState!=='loading') render(); try{ plInstRow(); }catch(x){} });
   window.addEventListener('appinstalled',function(){ DEF=null; prompting=false; setInstalled(true); try{ localStorage.removeItem(KEY); }catch(e){} hide(); try{ plInstRow(); }catch(e){} });
   try{ matchMedia('(display-mode: standalone)').addEventListener('change',function(){ if(standalone()) hide(); }); }catch(e){}
   document.addEventListener('DOMContentLoaded',function(){ var st=document.createElement('style'); st.textContent='html.pl-inst body{padding-top:58px} html.pl-inst #auth-gate{top:58px}'; document.head.appendChild(st); setTimeout(function(){ detect(); render(); try{ plInstRow(); }catch(e){} },1200); });
@@ -315,10 +317,11 @@ else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.docume
     document.getElementById('pl-inst-nx').onclick=function(){ try{ sessionStorage.setItem('pl-ins-note','1'); }catch(e){} b.remove(); document.documentElement.classList.remove('pl-inst'); };
   }catch(e){} }
   function detect(){ try{
-    if(standalone()){ setInstalled(true); return; }
-    if(navigator.getInstalledRelatedApps){ navigator.getInstalledRelatedApps().then(function(a){ var ok=!!(a&&a.length); setInstalled(ok); if(ok){ hide(); note(); } else { var n=document.getElementById('pl-inst-note'); if(n){ n.remove(); document.documentElement.classList.remove('pl-inst'); } } try{ plInstRow(); }catch(e){} }).catch(function(){ note(); });
-    } else note();
-  }catch(e){} }
+    if(standalone()){ setInstalled(true); CHK=true; return; }
+    var done=function(){ CHK=true; try{ hide(); render(); plInstRow(); }catch(e){} };
+    if(navigator.getInstalledRelatedApps){ navigator.getInstalledRelatedApps().then(function(a){ var ok=!!(a&&a.length); setInstalled(ok); if(ok){ hide(); note(); CHK=true; try{ plInstRow(); }catch(e){} } else { var n=document.getElementById('pl-inst-note'); if(n){ n.remove(); document.documentElement.classList.remove('pl-inst'); } done(); } }).catch(function(){ done(); });
+    } else done();
+  }catch(e){ CHK=true; } }
   window.__plInstDetect=detect;
   window.__plInstRender=render;
 }catch(e){} })();</script>
