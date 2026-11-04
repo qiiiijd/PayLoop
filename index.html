@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.04-r111';
+window.PL_BUILD='2026.11.04-r113';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12757,23 +12757,54 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     if(r&&(r.http===403||/forbidden/i.test(m))) return L('ليست لديك صلاحية','Not allowed','Non autorisé');
     return L('تعذّر التنفيذ','Failed','Échec')+(r&&(r.http||m)?' ['+(r.http||'')+' '+m.slice(0,90)+']':'');
   }
+  /* حالة الشبكة الآن: أي ألعابي لم تعد موجودة هناك (انتهت/أُزيلت)، وأي عروض جديدة ظهرت. للقراءة فقط */
+  function seenKey(){ return 'pl-owm-seen:'+(M.cc||'DZ'); }
+  function seenGet(){ try{ var v=JSON.parse(localStorage.getItem(seenKey())||'null'); return Array.isArray(v)?v:null; }catch(e){ return null; } }
+  function seenSet(ids){ try{ localStorage.setItem(seenKey(),JSON.stringify(ids.slice(0,800))); }catch(e){} }
+  function netInfo(items){
+    var byId={}, ids=[]; (items||[]).forEach(function(it){ byId[it.id]=it; ids.push(it.id); });
+    var seen=seenGet(), fresh=[];
+    if(seen){ var ss={}; seen.forEach(function(x){ ss[x]=1; }); (items||[]).forEach(function(it){ if(!ss[it.id]&&!it.added&&it.flag!=='blocked'&&it.flag!=='over_cap'&&it.flag!=='type_off') fresh.push(it.id); }); }
+    else seenSet(ids);   /* أول مرة: نحفظ ما هو موجود الآن كمعروف، فلا يُعدّ كله «جديدًا» */
+    return {byId:byId,ids:ids,fresh:fresh};
+  }
   window.owmMgOpen=function(){
     mcard('<div style="padding:24px;text-align:center">'+L('جارٍ التحميل…','Loading…','Chargement…')+'</div>','🎮 '+L('ألعاب Offerwall.me','Offerwall.me games','Jeux Offerwall.me'));
+    var cc=M.cc||'DZ';
     Promise.resolve(SRV.rpc('owm_games_admin_list',{})).then(function(r){
       if(!Array.isArray(r)){ mcard('<div style="padding:18px;text-align:center">'+esc(mwhy(r))+'</div>','🎮'); return; }
-      M.rows=r; mList();
+      M.rows=r; M.net=null; mList();
+      /* نجلب حالة الشبكة بعد عرض القائمة حتى لا نؤخّرها؛ فشلها لا يغيّر شيئًا */
+      Promise.resolve(SRV.tok()).then(function(t){ return fetch(fn('offerwallme_admin_list&country='+cc),{headers:hdr(t)}); }).then(function(x){ return x.json(); }).then(function(j){
+        if(j&&j.ok===true&&Array.isArray(j.items)){ M.net=netInfo(j.items); M.netCc=cc; if(document.getElementById('owm-st')) mList(); }
+      }).catch(function(){});
     }).catch(function(){ mcard('<div style="padding:18px;text-align:center">'+esc(L('تعذّر التحميل','Could not load','Échec'))+'</div>','🎮'); });
+  };
+  window.owmMgNew=function(){ M.pf='new'; M.q=''; window.owmMgPick(); window.owmMgLoad(); };
+  window.owmMgPurge=function(){
+    var gone=M.rows.filter(function(g){ return M.net&&!M.net.byId[g.ext]; });
+    if(!gone.length||!confirm(L('حذف '+gone.length+' لعبة غير موجودة في الشبكة الآن؟ لا يمكن التراجع.','Delete '+gone.length+' games no longer on the network? This cannot be undone.','Supprimer ?'))) return;
+    var done=0, k=0;
+    (function next(){
+      if(k>=gone.length){ toast(L('✅ حُذفت '+done+' لعبة','✅ Deleted '+done,'✅ Supprimé '+done)); window.owmMgOpen(); return; }
+      var g=gone[k++];
+      Promise.resolve(SRV.rpc('owm_game_delete',{p_id:g.id})).then(function(r){ if(r&&r.ok===true) done++; }).catch(function(){}).then(next);
+    })();
   };
   function mList(){
     var h='<button class="adm-new" style="width:100%;margin-bottom:12px" onclick="owmMgPick()">+ '+L('إضافة لعبة','Add a game','Ajouter un jeu')+'</button>';
     h+='<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgDiag()">🩺 '+L('فحص: لماذا لا تظهر لعبتي للمستخدمين؟','Check: why is my game not visible?','Diagnostic')+'</button>'+
-    '<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgDiag()">🩺 '+L('فحص: لماذا لا تظهر لعبتي للمستخدمين؟','Check: why is my game not visible?','Diagnostic')+'</button>'+
     '<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(56,189,248,.12);color:#7dd3fc" onclick="owmMgSet()">⚙️ '+L('الإعدادات: النسبة والكلمات المحظورة','Settings: share and blocked words','Réglages')+'</button>';
+    var ng=0; if(M.net) M.rows.forEach(function(g){ if(!M.net.byId[g.ext]) ng++; });
+    h+='<div id="owm-st">';
+    if(M.net&&M.net.fresh.length) h+='<div style="padding:11px 12px;border-radius:12px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4);margin-bottom:10px"><b style="color:#4ade80">🆕 '+L('ظهر '+M.net.fresh.length+' عرض جديد في الشبكة','new offers on the network: '+M.net.fresh.length,'Nouvelles offres : '+M.net.fresh.length)+'</b><button class="adm-new sm" style="margin:8px 0 0;width:100%" onclick="owmMgNew()">'+L('عرض الجديد وإضافته','See and add the new ones','Voir')+'</button></div>';
+    if(ng) h+='<div style="padding:11px 12px;border-radius:12px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.45);margin-bottom:10px"><b style="color:#fbbf24">⛔ '+L(ng+' لعبة غير متاحة في الشبكة لبلد '+(M.netCc||'DZ')+' الآن (انتهت أو أُزيلت)','games no longer available for '+(M.netCc||'DZ')+': '+ng,'Indisponibles : '+ng)+'</b><div style="font-size:12px;color:#d6c08a;margin-top:3px">'+L('هذه لا تظهر للمستخدمين تلقائيًا، وتعود فور رجوعها في الشبكة.','They are hidden from users automatically and return when the network lists them again.','Masquées automatiquement.')+'</div><button class="adm-new sm" style="margin:8px 0 0;width:100%;background:rgba(239,68,68,.15);color:#fca5a5" onclick="owmMgPurge()">🧹 '+L('حذف المنتهية من قائمتي','Remove them from my list','Retirer')+'</button></div>';
+    h+='</div>';
     if(!M.rows.length) h+='<div style="padding:18px;text-align:center;color:var(--muted)">'+L('لم تضف أي لعبة بعد. لن يرى المستخدمون ألعابًا حتى تضيف.','No games yet. Users will see none until you add some.','Aucun jeu.')+'</div>';
     M.rows.forEach(function(g,i){
       h+='<div style="display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--border)">'+
         '<div style="width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,.06);overflow:hidden;flex:none;display:flex;align-items:center;justify-content:center">'+(g.img?'<img src="'+esc(g.img)+'" style="width:100%;height:100%;object-fit:cover" referrerpolicy="no-referrer" onerror="this.remove()">':(g.kind==='survey'?'📝':'🎮'))+'</div>'+
-        '<div style="flex:1;min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(g.name||g.ext)+'</div>'+
+        '<div style="flex:1;min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(g.name||g.ext)+(M.net&&!M.net.byId[g.ext]?' <span style="font-size:11px;color:#fbbf24;font-weight:800">⛔ '+L('منتهية','ended','terminée')+'</span>':'')+'</div>'+
         '<div style="font-size:12px;color:var(--muted)">'+L('الترتيب','order','ordre')+' '+g.sort+' · <b style="color:#38bdf8">'+pl(g.place)+'</b> · '+ptxt(g.platform||'auto')+' · '+(g.active?'<b style="color:#22c55e">'+L('نشطة','active','active')+'</b>':'<b style="color:#f59e0b">'+L('متوقفة','paused','pause')+'</b>')+'</div></div>'+
         '<button class="mm-x" onclick="owmMgFeat('+i+')" style="'+(g.featured?'':'opacity:.4')+'">⭐</button>'+
         '<button class="mm-x" onclick="owmMgTog('+i+')">'+(g.active?'⏸':'▶️')+'</button>'+
@@ -12875,23 +12906,32 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
       M.pick=j.items||[]; M.share=j.share||M.share; mPickList();
     }).catch(function(){ var b3=document.getElementById('owm-pl'); if(b3) b3.textContent=L('تعذّر تحميل العروض','Could not load offers','Échec'); });
   };
-  function mPickList(){
+  function mPickList(keep){
     var b=document.getElementById('owm-pl'); if(!b) return;
     if(!M.pick.length){ b.textContent=L('لا عروض لهذا البلد الآن.','No offers for this country now.','Aucune offre.'); return; }
-    b.innerHTML='<input id="owm-q" type="text" placeholder="'+esc(L('بحث بالاسم…','Search…','Rechercher…'))+'" value="'+esc(M.q)+'" oninput="owmMgQ(this.value)" style="width:100%;box-sizing:border-box;padding:9px;border-radius:10px;border:1px solid #243252;background:#0d1627;color:#fff;margin-bottom:6px"><div style="display:flex;gap:6px;margin-bottom:6px">'+[['','📱 '+L('الكل','All','Tous')],['ios','🍎 '+L('آيفون','iPhone','iPhone')],['android','🤖 '+L('أندرويد','Android','Android')]].map(function(o){ return '<button class="adm-new sm" style="margin:0;flex:1;'+(M.pf===o[0]?'':'opacity:.55')+'" onclick="owmMgPf(\''+o[0]+'\')">'+o[1]+'</button>'; }).join('')+'</div><div id="owm-pr"></div>';
+    b.innerHTML='<input id="owm-q" type="text" placeholder="'+esc(L('بحث بالاسم…','Search…','Rechercher…'))+'" value="'+esc(M.q)+'" oninput="owmMgQ(this.value)" style="width:100%;box-sizing:border-box;padding:9px;border-radius:10px;border:1px solid #243252;background:#0d1627;color:#fff;margin-bottom:6px"><div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">'+[['','📱 '+L('الكل','All','Tous')],['new','🆕 '+L('جديد','New','Nouveau')],['survey','📝 '+L('استطلاعات','Surveys','Sondages')],['ios','🍎 '+L('آيفون','iPhone','iPhone')],['android','🤖 '+L('أندرويد','Android','Android')]].map(function(o){ return '<button class="adm-new sm" style="margin:0;flex:1;min-width:30%;'+(M.pf===o[0]?'':'opacity:.55')+'" onclick="owmMgPf(\''+o[0]+'\')">'+o[1]+'</button>'; }).join('')+'</div><div id="owm-pr"></div>';
+    if(!keep){ try{ var sv=seenGet(); M.newSet={}; if(sv){ var ss={}; sv.forEach(function(x){ ss[x]=1; }); M.pick.forEach(function(it){ if(!ss[it.id]&&!it.added) M.newSet[it.id]=1; }); } seenSet(M.pick.map(function(it){ return it.id; })); }catch(e){} }
     mPickRows();
   }
-  window.owmMgPf=function(v){ M.pf=v; mPickList(); };
+  window.owmMgPf=function(v){ M.pf=v; mPickList(true); };
   window.owmMgQ=function(v){ M.q=String(v||'').toLowerCase(); mPickRows(); };
   function mPickRows(){
     var el=document.getElementById('owm-pr'); if(!el) return;
-    var q=M.q, list=[]; M.pick.forEach(function(it,i){ if(M.pf&&it.plat&&it.plat!=='all'&&it.plat!==M.pf) return; if(!q||String(it.title||'').toLowerCase().indexOf(q)>=0) list.push([it,i]); });
+    var q=M.q, list=[], SVR=/survey|poll|questionnaire|استطلاع|استبيان|sondage/i;
+    M.pick.forEach(function(it,i){
+      if(M.pf==='new'){ if(!(M.newSet&&M.newSet[it.id])) return; }
+      else if(M.pf==='survey'){ if(!(it.kind==='survey'||SVR.test(String(it.title||'')+' '+String(it.desc||'')))) return; }
+      else if(M.pf&&it.plat&&it.plat!=='all'&&it.plat!==M.pf) return;
+      if(!q||String(it.title||'').toLowerCase().indexOf(q)>=0) list.push([it,i]);
+    });
+    if(M.newSet) list.sort(function(a,b){ return (M.newSet[b[0].id]?1:0)-(M.newSet[a[0].id]?1:0); });
     el.innerHTML=list.slice(0,80).map(function(p){
       var it=p[0], i=p[1], im=it.image?'<img src="'+esc(it.image)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(it.kind==='survey'?'📝':'🎮');
-      var warn=it.flag==='blocked'?' · 🚫':it.flag==='over_cap'?' · ⚠️ >$20':'';
+      var warn=(M.newSet&&M.newSet[it.id]?' · <b style="color:#4ade80">🆕</b>':'')+(it.kind==='survey'?' · 📝':'')+(it.flag==='blocked'?' · 🚫':it.flag==='over_cap'?' · ⚠️ >$20':'');
       return '<div class="owm-r"><div class="im">'+im+'</div><div class="tx"><b dir="auto">'+esc(it.title)+'</b>'+L('تدفع لك','pays you','vous paie')+' '+usd(it.raw)+' · '+L('للمستخدم','user','user')+' '+usd(it.usd)+(it.multi?' · 🎯'+it.nsteps:'')+' · '+ptxt(it.plat||'all')+warn+'</div>'
         +(it.added?'<span style="font-size:12px;color:#34d399">✅</span>':'<button class="adm-new sm" style="margin:0;flex:none" onclick="owmMgAdd('+i+')">'+L('إضافة','Add','Ajouter')+'</button>')+'</div>';
     }).join('');
+    if(!list.length) el.innerHTML='<div style="padding:14px;text-align:center;color:#9fb3d9">'+(M.pf==='new'?L('لا توجد عروض جديدة منذ آخر مرة.','No new offers since last time.','Rien de nouveau.'):M.pf==='survey'?L('لا استطلاعات في هذه القائمة الآن.','No surveys in this list now.','Aucun sondage.'):L('لا نتائج.','No results.','Aucun résultat.'))+'</div>';
   }
   window.owmMgAdd=function(i){ var it=M.pick[i]; if(!it) return; M.cur={ext:it.id,title:it.title,row:null,image:it.image||'',usd:it}; mForm(); };
   function mForm(){
@@ -13884,29 +13924,23 @@ function openOfferwall(){
     var st=mine(c), my=c.my||{};
     var im=c.img?'<img src="'+esc(c.img)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':'🎬';
     var G=nf(c.goal), R=usd(c.reward);
-    var stp=function(n,ic,t,dd){ return '<div class="cmp-st"><div class="cmp-n">'+ic+'</div><div><b>'+t+'</b><span>'+dd+'</span></div></div>'; };
-    var h='<div class="cmp-hero"><div class="cmp-im">'+im+'</div><div class="cmp-ht"><div class="cmp-k">🎬 '+L('حملة فيديو','Video campaign','Campagne vidéo')+(c.featured?' · ⭐ '+L('مميزة','Featured','Vedette'):'')+'</div><h3>'+esc(c.title||'')+'</h3></div>'
-      +'<div class="cmp-rw"><small>'+L('اربح','You earn','Vous gagnez')+'</small><b>'+R+'</b></div></div>'
-      +'<div class="cmp-chips"><span>👁 '+G+' '+L('مشاهدة مطلوبة','views required','vues requises')+'</span><span>👥 '+L('متاحة للجميع','Open to everyone','Ouvert à tous')+'</span><span>☝️ '+L('مرة واحدة لكل مستخدم','Once per user','Une fois par personne')+'</span></div>'
-      +'<div class="cmp-box cmp-what"><b>🎯 '+L('ما المطلوب منك؟','What do you need to do?','Que faut-il faire ?')+'</b><p>'+L('انشر فيديو قصير على حسابك يتضمن الإعلان الموجود أدناه. عندما يصل الفيديو إلى '+G+' مشاهدة حقيقية، أرسل رابطه هنا وتحصل على '+R+'.','Post a short video on your account that includes the ad below. When it reaches '+G+' real views, send its link here and earn '+R+'.','Publiez une courte vidéo avec la publicité ci-dessous. À '+G+' vues réelles, envoyez le lien et gagnez '+R+'.')+'</p></div>';
-    if(c.descr) h+='<div class="cmp-box"><b>📌 '+L('تفاصيل من الإدارة','Notes from the team','Détails')+'</b><p style="white-space:pre-wrap">'+esc(c.descr)+'</p></div>';
+    var stp=function(n,t,dd){ return '<div class="cmp-st"><div class="cmp-n">'+n+'</div><div><b>'+t+'</b>'+(dd?'<span>'+dd+'</span>':'')+'</div></div>'; };
+    var h='<div class="cmp-hero"><div class="cmp-im">'+im+'</div><div class="cmp-ht"><div class="cmp-k">🎬 '+L('حملة فيديو','Video campaign','Campagne vidéo')+(c.featured?' · ⭐':'')+'</div><h3>'+esc(c.title||'')+'</h3></div>'
+      +'<div class="cmp-earn"><div class="cmp-e1">'+L('عن كل','For every','Pour chaque')+' <b>'+G+'</b> '+L('مشاهدة','views','vues')+'</div><div class="cmp-e2">'+R+'</div><div class="cmp-e3">'+L('تُضاف لرصيدك','added to your balance','ajoutés à votre solde')+'</div></div></div>';
+    if(c.descr) h+='<div class="cmp-box"><p style="white-space:pre-wrap">'+esc(c.descr)+'</p></div>';
     if(c.ad_text||c.ad_url){
       h+='<div class="cmp-box"><b>📣 '+L('الإعلان الذي تنشره','The ad you post','La publicité')+'</b>'
-        +(c.ad_text?'<div id="camp-ad" class="cmp-ad">'+esc(c.ad_text)+'</div><div class="cmp-btns"><button type="button" class="camp-btn" onclick="campCopy()">📋 '+L('نسخ نص الإعلان','Copy ad text','Copier')+'</button>':'<div class="cmp-btns">')
-        +(httpsOk(c.ad_url)?'<a class="camp-btn" href="'+esc(c.ad_url)+'" target="_blank" rel="noopener noreferrer">🔗 '+L('فتح رابط الإعلان','Open ad link','Ouvrir le lien')+'</a>':'')+'</div></div>';
+        +(c.ad_text?'<div id="camp-ad" class="cmp-ad">'+esc(c.ad_text)+'</div><div class="cmp-btns"><button type="button" class="camp-btn" onclick="campCopy()">📋 '+L('نسخ الإعلان','Copy ad','Copier')+'</button>':'<div class="cmp-btns">')
+        +(httpsOk(c.ad_url)?'<a class="camp-btn" href="'+esc(c.ad_url)+'" target="_blank" rel="noopener noreferrer">🔗 '+L('فتح الرابط','Open link','Ouvrir')+'</a>':'')+'</div></div>';
     }
-    h+='<div class="cmp-box"><b>🪜 '+L('الخطوات بالترتيب','Steps in order','Étapes')+'</b>'
-      +stp(1,'1',L('انسخ الإعلان','Copy the ad','Copiez la pub'),L('انسخ النص أعلاه وافتح الرابط إن وُجد.','Copy the text above and open the link if provided.','Copiez le texte.'))
-      +stp(2,'2',L('انشر الفيديو','Post the video','Publiez'),L('على TikTok أو YouTube أو Instagram أو Facebook، بحساب عام ويظهر فيه الإعلان.','On TikTok, YouTube, Instagram or Facebook, public and showing the ad.','Sur TikTok, YouTube, Instagram ou Facebook.'))
-      +stp(3,'3',L('انتظر '+G+' مشاهدة','Reach '+G+' views','Atteignez '+G+' vues'),L('يجب أن تكون المشاهدات حقيقية وبلا شراء أو تلاعب.','Views must be real, without buying or manipulation.','Vues réelles uniquement.'))
-      +stp(4,'4',L('أرسل الرابط','Send the link','Envoyez le lien'),L('اضغط الزر أسفل الصفحة وأرسل رابط الفيديو وعدد المشاهدات.','Tap the button below and send the video link and view count.','Envoyez le lien et le nombre de vues.'))
-      +stp(5,'5',L('نراجعه ونصرف '+R,'We review and pay '+R,'Nous validons et payons '+R),L('تُراجَع الطلبات يدويًا، وعند القبول تُضاف المكافأة إلى رصيدك تلقائيًا.','Requests are reviewed manually; once approved the reward is added to your balance.','Validation manuelle puis paiement.'))+'</div>';
-    h+='<div class="cmp-dd"><div class="cmp-do"><b>✅ '+L('افعل','Do','À faire')+'</b><span>'+L('فيديو حقيقي وعام على حسابك','A real public video on your account','Vidéo réelle et publique')+'</span><span>'+L('أبقِ الفيديو منشورًا حتى المراجعة','Keep it online until reviewed','Gardez-la en ligne')+'</span><span>'+L('أرسل عدد المشاهدات الصحيح','Send the true view count','Vues exactes')+'</span></div>'
-      +'<div class="cmp-dont"><b>❌ '+L('لا تفعل','Don’t','À éviter')+'</b><span>'+L('شراء مشاهدات أو استخدام برامج','Buying views or using bots','Acheter des vues')+'</span><span>'+L('رابط فيديو لشخص آخر','Someone else’s video','Vidéo d’un autre')+'</span><span>'+L('إرسال الفيديو نفسه مرتين','Sending the same video twice','Même vidéo deux fois')+'</span></div></div>';
+    h+='<div class="cmp-box"><b>✨ '+L('3 خطوات فقط','Just 3 steps','3 étapes')+'</b>'
+      +stp(1,L('انشر فيديو فيه الإعلان','Post a video with the ad','Publiez une vidéo avec la pub'),L('على TikTok أو YouTube أو Instagram، بحساب عام.','On TikTok, YouTube or Instagram, public account.','Sur TikTok, YouTube ou Instagram.'))
+      +stp(2,L('وصّله إلى '+G+' مشاهدة','Reach '+G+' views','Atteignez '+G+' vues'),L('مشاهدات حقيقية فقط.','Real views only.','Vues réelles uniquement.'))
+      +stp(3,L('أرسل الرابط واستلم '+R,'Send the link and get '+R,'Envoyez le lien et recevez '+R),L('نراجعه، وتصلك المكافأة عند القبول.','We review it and pay you once approved.','Nous validons puis payons.'))+'</div>';
     if(st==='pending') h+='<div class="sc" style="border-color:#7c5a12;background:#2a2108"><b style="color:#fbbf24">⏳ '+L('طلبك قيد المراجعة','Your submission is under review','En cours de revue')+'</b><div dir="ltr" style="word-break:break-all;font-size:12.5px;color:#cbd5e1">'+esc(my.url||'')+'</div><div style="font-size:12.5px;color:#9fb3d9;margin-top:4px">👁 '+nf(my.views||0)+'</div></div>';
     if(st==='approved') h+='<div class="sc" style="border-color:#14532d;background:#08261a"><b style="color:#4ade80">✅ '+L('تم قبول فيديوك','Your video was approved','Vidéo approuvée')+'</b>'+L('أُضيف '+usd(my.reward||c.reward)+' إلى رصيدك.',usd(my.reward||c.reward)+' was added to your balance.','Ajouté à votre solde.')+'</div>';
     if(st==='rejected') h+='<div class="sc" style="border-color:#7f1d1d;background:#2a0d0d"><b style="color:#f87171">'+L('لم يُقبل طلبك السابق','Your previous submission was rejected','Refusé')+'</b>'+(my.reason?esc(my.reason):L('تحقق من أن الفيديو عام وأن عدد المشاهدات صحيح، ثم أعد الإرسال.','Make sure the video is public and the views are real, then resend.','Vérifiez puis renvoyez.'))+'</div>';
-    h+='<div class="cmp-note">'+L('أي تلاعب في المشاهدات أو الروابط يُرفض ويعرّض الحساب للإيقاف.','Any manipulation of views or links is rejected and may lead to a ban.','Toute fraude est refusée et peut entraîner une suspension.')+'</div>';
+    h+='<div class="cmp-note">'+L('⚠️ شراء المشاهدات أو التلاعب = رفض وإيقاف الحساب.','⚠️ Buying views or cheating = rejection and a ban.','⚠️ Acheter des vues ou tricher = refus et suspension.')+'</div>';
     d.innerHTML=h; d.scrollTop=0;
     if(st==='pending') foot(o,'⏳ '+L('قيد المراجعة','Under review','En revue'),null,true);
     else if(st==='approved') foot(o,'✅ '+L('تم صرف المكافأة','Reward paid','Payé'),null,true);
@@ -14123,6 +14157,7 @@ function openOfferwall(){
 #svy-g .sg-i.sg-bad{background:#2a1115;border-color:rgba(239,68,68,.35)}
 #svy-g .sg-i.sg-bad>b{background:#b91c1c}
 #svy-g .sg-go{display:block;width:calc(100% - 28px);margin:12px 14px 0;border:0;border-radius:15px;padding:15px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-size:16.5px;font-weight:900;box-shadow:0 12px 24px -10px rgba(34,197,94,.6)}
+#svy-g .sg-warn{font-size:12.8px;font-weight:700;color:#fecaca;background:#2a1115;border:1px solid rgba(239,68,68,.35);border-radius:14px;padding:10px 12px;margin:0 0 4px}
 #svy-g .sg-no{display:block;width:100%;margin-top:4px;border:0;background:none;color:#8aa0c8;padding:10px;font-size:13px}
 </style>
 <div id="svy-g"><div class="sg" id="svy-sg"></div></div>
@@ -14133,28 +14168,32 @@ function openOfferwall(){
   function html(){
     var t=function(a,e,f){ return L(a,e,f); };
     var it=function(ic,cl,h,b){ return '<div class="sg-i'+(cl?' '+cl:'')+'"><b>'+ic+'</b><div><strong>'+h+'</strong>'+b+'</div></div>'; };
-    return '<div class="sg-hd"><div class="sg-ic">📝</div><h3>'+t('كيف تعمل الاستطلاعات؟','How do surveys work?','Comment fonctionnent les sondages ?')+'</h3>'
-      +'<p class="sg-s">'+t('شركات تريد معرفة رأي الناس، فتدفع لك مبلغًا مقابل إجابتك عن أسئلة قصيرة. اقرأ هذه النقاط سريعًا قبل أن تبدأ.','Companies want to know what people think, so they pay you for answering short questions. Read these quick points before you start.','Des entreprises veulent connaître l’avis des gens et vous paient pour répondre à de courtes questions.')+'</p></div>'
-      +'<div class="sg-body"><div class="sg-pills"><span>⏱ '+t('من 5 إلى 15 دقيقة','5–15 min','5–15 min')+'</span><span>💰 '+t('ترى المكافأة قبل أن تبدأ','See the reward first','Récompense visible avant')+'</span><span>✅ '+t('تُضاف لرصيدك تلقائيًا','Added to your balance','Ajoutée automatiquement')+'</span></div>'
-      +it('💬','',t('عبّر عن رأيك الحقيقي وكن صادقًا','Give your real opinion and be honest','Donnez votre vrai avis'),t('لا توجد إجابة صحيحة أو خاطئة؛ أجب بما يخصّك فعلًا. تُراجَع الإجابات، والعشوائية أو المتناقضة منها تُرفض.','There are no right or wrong answers; answer about yourself. Answers are checked, and random or contradictory ones are rejected.','Pas de bonne ou mauvaise réponse ; répondez pour vous.'))
-      +it('🏁','sg-ok',t('أكمل الاستطلاع حتى النهاية','Finish the survey to the end','Terminez le sondage'),t('تحصل على المكافأة فقط إذا أكملت كل الأسئلة حتى الصفحة الأخيرة. إن خرجت في المنتصف لا تُحتسب.','You are paid only if you complete every question up to the last page. If you leave halfway, it does not count.','Vous êtes payé uniquement si vous terminez toutes les questions.'))
-      +it('🔍','sg-amb',t('قد يُقال لك «غير مناسب»','You may be told “not a match”','On peut vous dire « non éligible »'),t('في أول الاستطلاع تُطرح أسئلة تعريفية، وإذا لم يناسب ملفّك الاستطلاع ينتهي بلا مكافأة. هذا طبيعي، جرّب استطلاعًا آخر من القائمة.','At the start, a few profile questions decide if the survey fits you. If not, it ends without a reward. This is normal, try another survey from the list.','Si le sondage ne vous convient pas, il se termine sans récompense. Essayez-en un autre.'))
-      +it('⛔','sg-bad',t('حالات الرفض','When it is rejected','Cas de refus'),t('يُرفض الاستطلاع إذا أجبت بسرعة كبيرة أو بعشوائية، أو ناقضت إجاباتك، أو استخدمت أكثر من حساب أو غششت.','A survey is rejected if you answer too fast or randomly, contradict yourself, use more than one account, or cheat.','Refus si vous répondez trop vite ou au hasard, vous contredisez, utilisez plusieurs comptes ou trichez.'))+'</div>'
-      +'<button type="button" class="sg-go" id="svy-go">'+t('بدء الاستطلاع','Start survey','Commencer le sondage')+'</button>'
+    return '<div class="sg-hd"><div class="sg-ic">📝</div><h3>'+t('الاستطلاعات باختصار','Surveys in short','Les sondages en bref')+'</h3>'
+      +'<p class="sg-s">'+t('أجب عن أسئلة قصيرة، وتصلك مكافأة تراها قبل أن تبدأ.','Answer short questions and earn a reward you see before you start.','Répondez à de courtes questions et gagnez une récompense visible avant de commencer.')+'</p></div>'
+      +'<div class="sg-body">'
+      +it('💬','',t('أجب بصدق','Be honest','Soyez honnête'),t('الإجابات تُراجَع، والعشوائية تُرفض.','Answers are checked; random ones are rejected.','Les réponses sont vérifiées.'))
+      +it('🏁','sg-ok',t('أكمل حتى النهاية','Finish to the end','Terminez le sondage'),t('تُصرف المكافأة عند الصفحة الأخيرة فقط.','You are paid on the last page only.','Paiement à la dernière page seulement.'))
+      +it('🔍','sg-amb',t('ظهر لك «غير مناسب»؟ هذا طبيعي','Told “not a match”? That’s normal','Non éligible ? C’est normal'),t('جرّب استطلاعًا آخر من القائمة.','Just try another survey from the list.','Essayez-en un autre.'))
+      +'<div class="sg-warn">⛔ '+t('الغش أو أكثر من حساب = رفض.','Cheating or multiple accounts = rejection.','Triche ou plusieurs comptes = refus.')+'</div></div>'
+      +'<button type="button" class="sg-go" id="svy-go">'+t('بدء الاستطلاع','Start survey','Commencer')+'</button>'
       +'<button type="button" class="sg-no" id="svy-no">'+t('رجوع','Back','Retour')+'</button>';
   }
   function close(){ var g=document.getElementById('svy-g'); if(g) g.classList.remove('on'); NEXT=null; }
-  function show(fn){
+  var SEEN={};
+  function seenKey(n){ var u=''; try{ u=(RealAuth.getSession()||{}).uid||''; }catch(e){} return 'pl-svy-seen:'+n+':'+u; }
+  function isSeen(n){ if(SEEN[n]) return true; try{ return localStorage.getItem(seenKey(n))==='1'; }catch(e){ return false; } }
+  function mark(n){ SEEN[n]=true; try{ localStorage.setItem(seenKey(n),'1'); }catch(e){} }
+  function show(fn,n){
     NEXT=fn; var g=document.getElementById('svy-g'), b=document.getElementById('svy-sg'); if(!g||!b){ fn(); return; }
     b.innerHTML=html();
-    document.getElementById('svy-go').onclick=function(){ var f=NEXT; close(); try{ f&&f(); }catch(e){} };
+    document.getElementById('svy-go').onclick=function(){ var f=NEXT; mark(n); close(); try{ f&&f(); }catch(e){} };
     document.getElementById('svy-no').onclick=close;
     g.onclick=function(ev){ if(ev.target===g) close(); };
     g.classList.add('on');
   }
   ['openCpx','openTheorem'].forEach(function(n){
     var o=window[n]; if(typeof o!=='function') return;
-    window[n]=function(){ var a=arguments, self=this; show(function(){ return o.apply(self,a); }); };
+    window[n]=function(){ var a=arguments, self=this; var run=function(){ return o.apply(self,a); }; if(isSeen(n)) return run(); show(run,n); };
   });
 })();
 </script>
@@ -14213,6 +14252,11 @@ html:not(.pl-lite) .page.active{animation:plPg .22s ease-out}
 #camp-ov .cmp-rw{width:100%;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.08);border-radius:14px;padding:8px 14px}
 #camp-ov .cmp-rw small{font-size:13px;color:#d8ccff;font-weight:700}
 #camp-ov .cmp-rw b{font-size:26px;color:#5df0a0;font-weight:900;letter-spacing:-.3px}
+#camp-ov .cmp-earn{width:100%;text-align:center;background:rgba(255,255,255,.09);border-radius:16px;padding:12px 10px}
+#camp-ov .cmp-e1{font-size:14px;font-weight:800;color:#e3dcff}
+#camp-ov .cmp-e1 b{color:#fff;font-size:17px}
+#camp-ov .cmp-e2{font-size:40px;font-weight:900;color:#5df0a0;line-height:1.15;letter-spacing:-.5px;margin:2px 0}
+#camp-ov .cmp-e3{font-size:12.5px;color:#c9bff5;font-weight:700}
 #camp-ov .cmp-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 #camp-ov .cmp-chips span{font-size:12.5px;font-weight:700;background:#111b33;border:1px solid #28406e;color:#bcd0f5;padding:6px 11px;border-radius:999px}
 #camp-ov .cmp-box{background:#0f1a31;border:1px solid #23375f;border-radius:18px;padding:14px;margin-bottom:10px}
@@ -14251,6 +14295,24 @@ html:not(.pl-lite) .page.active{animation:plPg .22s ease-out}
 #auth-gate .ax-field>label{font-weight:800;letter-spacing:.1px}
 #auth-gate .au-btn{background:linear-gradient(135deg,#0ea5e9,#2563eb 55%,#7c3aed);box-shadow:0 16px 32px -14px rgba(79,70,229,.75)}
 #auth-gate .ax-tc a{color:#38bdf8;font-weight:800}
+</style>
+
+<style id="pl-motion">
+/* ===== r112: صور الرئيسية تتحرك بهدوء (تكبير/تحريك بطيء + لمعة تمرّ على الواجهة). transform فقط، فتبقى خفيفة حتى على الهاتف الضعيف ===== */
+@keyframes plKB{0%{transform:scale(1.03) translate3d(0,0,0)}100%{transform:scale(1.13) translate3d(-2.2%,-1.6%,0)}}
+@keyframes plKB2{0%{transform:scale(1.03) translate3d(0,0,0)}100%{transform:scale(1.12) translate3d(2%,-1.4%,0)}}
+@keyframes plSweep{0%{transform:translate3d(-140%,0,0) skewX(-18deg)}60%,100%{transform:translate3d(260%,0,0) skewX(-18deg)}}
+@keyframes plFloat{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-3px,0)}}
+#page-home{overflow-x:clip}
+#art-home{overflow:hidden}
+#art-home>img.card-artwork,html.pl-lite #art-home>img.card-artwork{will-change:transform;animation:plKB 14s ease-in-out infinite alternate !important;transform-origin:60% 40%}
+#art-home:after{content:"";position:absolute;top:0;bottom:0;left:0;width:38%;z-index:3;pointer-events:none;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.16),rgba(255,255,255,0));animation:plSweep 7s ease-in-out infinite !important;will-change:transform}
+html.pl-lite #art-home:after{animation:plSweep 7s ease-in-out infinite !important}
+#page-home .art{overflow:hidden}
+#page-home .art>img.card-artwork,html.pl-lite #page-home .art>img.card-artwork{will-change:transform;animation:plKB2 16s ease-in-out infinite alternate !important}
+#page-home .art:nth-child(even)>img.card-artwork,html.pl-lite #page-home .art:nth-child(even)>img.card-artwork{animation-name:plKB !important;animation-duration:18s !important}
+#page-home .m-icon.art,html.pl-lite #page-home .m-icon.art{animation:plFloat 4.5s ease-in-out infinite !important}
+@media (prefers-reduced-motion:reduce){#art-home>img.card-artwork,#art-home:after,#page-home .art>img.card-artwork,#page-home .m-icon.art{animation:none !important}}
 </style>
 </body>
 </html>
