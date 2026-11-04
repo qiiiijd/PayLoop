@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.04-r103';
+window.PL_BUILD='2026.11.04-r106';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -420,6 +420,19 @@ button:active,.mini-btn:active{transform:scale(.97); opacity:.92;}
 #camp-ov .gs{flex:none;position:static;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:#0b1220;border-top:1px solid #1f2d4a}
 #camp-ov .gs button{width:100%;border:0;border-radius:14px;padding:14px;background:#16a05f;color:#fff;font:inherit;font-size:16px;font-weight:800}
 #camp-ov.on{animation:plUp .22s ease-out}
+.au-btn.au-off{opacity:.55;filter:saturate(.55)}
+.ax-terms{margin:12px 0 4px}
+.ax-tc{align-items:flex-start;font-size:12.5px;line-height:1.7;font-weight:700;color:var(--text)}
+.ax-tc i{margin-top:2px}
+.ax-tc a{color:#38bdf8;text-decoration:underline;font-weight:800}
+#pl-terms-ov{position:fixed;inset:0;z-index:2147483200;background:#05070d;display:none;flex-direction:column}
+#pl-terms-ov .pt-h{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top,0px));background:#0c1424;color:#fff;font-size:16px}
+#pl-terms-ov .pt-x{border:0;border-radius:10px;width:36px;height:36px;background:#1e2a47;color:#fff;font-size:16px}
+#pl-terms-ov .pt-f{flex:1;width:100%;border:0;background:#05070d}
+#pl-terms-ov .pt-b{display:flex;gap:10px;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:#0c1424;border-top:1px solid #1c2740}
+#pl-terms-ov .pt-ok{flex:2;border:0;border-radius:14px;padding:14px;background:#16a05f;color:#fff;font:inherit;font-size:15.5px;font-weight:800}
+#pl-terms-ov .pt-cl{flex:1;border:1px solid #2b3c62;border-radius:14px;padding:14px;background:transparent;color:#cbd5e1;font:inherit;font-size:14px;font-weight:700}
+.pl-dwn{display:flex;gap:6px;align-items:center;margin:0 0 6px;padding:5px 9px;border-radius:9px;background:#2a0c10;border:1px solid rgba(239,68,68,.35);color:#fca5a5;font-size:10.5px;line-height:1.45;font-weight:600}.pl-dwn span:first-child{font-size:12px;flex:none}
 .camp-chip{display:inline-block;padding:6px 11px;border-radius:99px;background:#17233d;border:1px solid #22304f;color:#cfe0ff;font-size:12.5px;font-weight:700}
 .camp-btn{display:inline-block;border:1px solid #2b3c62;background:#17233d;color:#e8eefc;border-radius:11px;padding:9px 13px;font:inherit;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer}
 .trow.camp-row{position:relative}
@@ -6716,11 +6729,12 @@ function renderAuth(){
         '<div class="ax-in"><input id="au-phone" type="tel" inputmode="tel" dir="ltr" placeholder="555 123 456" autocomplete="tel" style="padding-inline-start:64px" onkeydown="if(event.key===\'Enter\'){doRegister()}"><span class="ax-ic" style="margin-inline-end:0">'+IC_PHONE+'</span><span class="au-dial" id="au-dial" style="position:absolute; inset-inline-start:11px; top:50%; transform:translateY(-50%); background:rgba(148,163,184,.12); border:1px solid var(--border); border-radius:9px; padding:5px 8px; font-size:12px; font-weight:900; direction:ltr; pointer-events:none;">+213</span></div>'+
         '<div class="ax-ferr" id="au-err-phone"></div></div>'+
     '</div></details>'+
+    '<div class="ax-field ax-terms"><label class="ax-check ax-tc"><input type="checkbox" id="au-terms" onchange="auTermsLive()"><i></i><span>'+L('أوافق على','I agree to the','J’accepte les')+' <a href="javascript:void(0)" onclick="plTermsOpen(event)">'+L('الشروط والأحكام','Terms & Conditions','Conditions générales')+'</a> '+L('وسياسة الاستخدام الأمين للمكافآت','and the fair-use rewards policy','et la politique d’usage équitable')+' <b style="color:#f87171">*</b></span></label><div class="ax-ferr" id="au-err-terms"></div></div>'+
     '<button class="au-btn" id="au-btn" onclick="doRegister()"><span class="ax-btn-t">🚀 '+L('إنشاء الحساب','Create account','Créer le compte')+'</span><span class="ax-spin"></span></button>'+
-    '<p style="text-align:center; font-size:10.8px; color:var(--muted); font-weight:700; line-height:1.8; margin:10px 0 0">'+L('بإنشاء حسابك أنت توافق على الشروط والأحكام وسياسة الاستخدام الأمين للمكافآت.','By creating an account you agree to the Terms and fair-use reward policy.','En créant un compte, vous acceptez les conditions.')+'</p>'+
     '<div class="ax-or"><span>'+L('أو','or','ou')+'</span></div>'+
     '<button class="ax-switch" onclick="authMode(\'login\')">🔐 '+L('لدي حساب بالفعل — تسجيل الدخول','I already have an account — sign in','J\'ai déjà un compte')+'</button>'+
     '</div>';
+  try{ auTermsLive(); }catch(e){}
   auNameLive(); auCtyChange(); mountPdd('au-cty', L('اختر الدولة','Choose your country','Choisissez le pays')); mountPdd('au-wil', L('اختر الولاية','Choose your wilaya','Choisissez la wilaya'));
   auStrength();
   try{ if(PENDING_REF) auRefLive(true); }catch(e){}
@@ -7461,6 +7475,23 @@ function newLocalId(){
 }
 function fieldErr(fid, msg){ axErr(fid, msg); try{ const bx=document.getElementById('au-err-'+fid); const el=(bx&&bx.closest('.ax-field'))||document.getElementById('au-'+fid); if(el&&msg) el.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){} }
 
+function auTermsLive(){
+  const c=document.getElementById('au-terms'), b=document.getElementById('au-btn'); if(!c) return;
+  if(b) b.classList.toggle('au-off',!c.checked);
+  if(c.checked) axErr('terms','');
+}
+function plTermsOpen(ev){
+  try{ if(ev){ ev.preventDefault(); ev.stopPropagation(); } }catch(e){}
+  let o=document.getElementById('pl-terms-ov');
+  if(!o){ o=document.createElement('div'); o.id='pl-terms-ov'; document.body.appendChild(o); }
+  const lg=(function(){ try{ const l=localStorage.getItem('r7-lang'); return (l==='en'||l==='fr')?'en':'ar'; }catch(e){ return 'ar'; } })();
+  o.innerHTML='<div class="pt-h"><b>'+L('الشروط والأحكام','Terms & Conditions','Conditions générales')+'</b><button type="button" class="pt-x" onclick="plTermsClose()">✕</button></div>'
+    +'<iframe class="pt-f" title="terms" src="terms.html?embed=1#'+lg+'"></iframe>'
+    +'<div class="pt-b"><button type="button" class="pt-ok" onclick="plTermsAgree()">✓ '+L('قرأتُ وأوافق','I have read and agree','J’ai lu et j’accepte')+'</button><button type="button" class="pt-cl" onclick="plTermsClose()">'+L('إغلاق','Close','Fermer')+'</button></div>';
+  o.style.display='flex';
+}
+function plTermsClose(){ const o=document.getElementById('pl-terms-ov'); if(o){ o.style.display='none'; o.innerHTML=''; } }
+function plTermsAgree(){ const c=document.getElementById('au-terms'); if(c){ c.checked=true; try{ auTermsLive(); }catch(e){} } plTermsClose(); }
 async function doRegister(){
   if(DataGateway._regBusy) return; DataGateway._regBusy=true;
   const btn=document.getElementById('au-btn');
@@ -7478,6 +7509,7 @@ async function doRegister(){
     if(!cty){ fieldErr('cty', L('اختر دولتك — تحدد طرق السحب المتاحة لك','Choose your country — it decides your withdrawal methods','Choisissez votre pays')); bad=true; }
     const phRaw=av('au-phone').trim(); let phNorm=phRaw?normalizePhone(phRaw, cty):'';
     if(phNorm){ const nd=phNorm.replace(/\D/g,''); if(nd.length<7||nd.length>15){ fieldErr('phone', L('رقم هاتف غير صالح','Invalid phone number','Numéro invalide')); bad=true; } }
+    { const tc=document.getElementById('au-terms'); if(!tc||!tc.checked){ fieldErr('terms', L('يجب الموافقة على الشروط والأحكام لإنشاء الحساب','You must accept the Terms & Conditions to create an account','Vous devez accepter les conditions pour créer un compte')); bad=true; } }
     if(bad){ return; }
     const ref=av('au-ref').trim().toUpperCase();
 
@@ -11899,6 +11931,7 @@ async function openCpx(){
     cb.onclick=function(){ ov.classList.remove('on'); fr.src='about:blank'; try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} };
     var s=null; try{ s=RealAuth.getSession(); }catch(e){}
     if(!s||!s.access_token){ toast(L('سجّل الدخول أولاً','Please sign in first','Connectez-vous d\'abord')); return; }
+    try{ var nt=document.getElementById('ow-note'); if(nt&&window.plDeviceNote) nt.innerHTML=window.plDeviceNote(); }catch(e){}
     ld.textContent=L('جارٍ التحميل…','Loading…','Chargement…'); ld.style.display='block';
     ov.classList.add('on'); fr.src='about:blank';
     try{ await RealAuth.ensureFresh(); s=RealAuth.getSession()||s; }catch(e){}
@@ -12520,10 +12553,10 @@ async function openCpx(){
       return out.join('. ');
     }catch(e){ return null; }
   };
-  window.plDeviceWarn=function(){
+  window.plDeviceWarn=function(){ return ''; };   /* لم يعد يُعرض داخل المحتوى؛ الملاحظة الصغيرة تظهر أسفل النافذة فوق زر البدء */
+  window.plDeviceNote=function(){
     var e=function(x){ return String(x).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
-    return '<div style="margin:10px 0;padding:12px;border-radius:14px;background:#2a1215;border:1px solid #7f1d1d;color:#fca5a5;font-size:13px;line-height:1.8"><b style="display:block;color:#f87171;font-size:13.5px;margin-bottom:4px">⚠️ '+e(L('تنبيه مهم: حساب واحد لكل هاتف','Important: one account per phone','Important : un compte par téléphone'))+'</b>'
-      +e(L('يُمنع استعمال هذا الهاتف لحسابين مختلفين. الشبكات تكتشف ذلك وترفض العرض أو لا تدفع المكافأة، وقد يُحظر الحساب. إن ظهرت لك رسالة 429 (This device already started this offer with a different account) فمعناها أن هذا الهاتف بدأ هذا العرض بحساب آخر، ولا يمكن إكماله من هنا.','Using one phone for two different accounts is forbidden. Networks detect it and reject the offer or withhold the reward, and the account may be banned. If you see error 429 (This device already started this offer with a different account), this phone already started this offer with another account and it cannot be completed here.','Un téléphone ne peut pas servir à deux comptes. Le réseau refuse l\'offre ou ne paie pas, et le compte peut être bloqué.'))+'</div>';
+    return '<div class="pl-dwn"><span>⚠️</span><span>'+e(L('تنبيه: يُسمح بحساب واحد فقط لكل هاتف. استخدام حساب آخر قد يؤدي إلى رفض المكافأة أو حظر الحساب. لا تنشئ حساب آخر بهاتفك هذا.','Warning: only one account is allowed per phone. Using another account may get the reward rejected or the account banned. Do not create another account on this phone.','Attention : un seul compte par téléphone. Utiliser un autre compte peut entraîner le refus de la récompense ou un bannissement. Ne créez pas un autre compte sur ce téléphone.'))+'</span></div>';
   };
   window.plStepHtml=function(txt){
     var e=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
@@ -12613,8 +12646,8 @@ async function openCpx(){
     h+='<div class="sc" style="font-size:13px;color:#9fb3d9">'+L('المكافأة تصل تلقائيًا إلى رصيدك بعد أن تؤكد الشبكة الإنجاز (قد يستغرق دقائق وأحيانًا أكثر). لا تحذف اللعبة قبل إنهاء المراحل.','The reward is added automatically once the network confirms completion (minutes, sometimes longer). Do not uninstall the game before finishing.','La récompense est ajoutée après confirmation du réseau.')+'</div>';
     try{ if(window.plDeviceWarn) h+=window.plDeviceWarn(); }catch(e){}
     d.innerHTML=h; d.scrollTop=0;
-    var bar=document.createElement('div'); bar.className='gs'; bar.innerHTML='<button type="button"></button>'; bar.firstChild.textContent=(g.btn&&String(g.btn).trim())||L('ابدأ','Start','Commencer');
-    bar.firstChild.onclick=function(){ go(g.id); }; try{ Array.prototype.forEach.call(ov.querySelectorAll('.gs'),function(e){ e.remove(); }); }catch(e){} ov.appendChild(bar);
+    var bar=document.createElement('div'); bar.className='gs'; bar.innerHTML=(window.plDeviceNote?window.plDeviceNote():'')+'<button type="button"></button>'; var _bt=bar.querySelector('button'); _bt.textContent=(g.btn&&String(g.btn).trim())||L('ابدأ','Start','Commencer');
+    _bt.onclick=function(){ go(g.id); }; try{ Array.prototype.forEach.call(ov.querySelectorAll('.gs'),function(e){ e.remove(); }); }catch(e){} ov.appendChild(bar);
     ov.classList.add('on');
   };
   async function go(id){
@@ -12895,7 +12928,7 @@ async function openCpx(){
 #ow-ov iframe{flex:1;width:100%;border:0;background:#0b1220}
 #ow-ov .ow-load{position:absolute;top:60px;left:0;right:0;text-align:center;color:#9fb3d9;padding:20px;pointer-events:none}
 </style>
-<div id="ow-ov"><div class="ow-bar"><span id="ow-t"></span><button class="ow-x" id="ow-close" type="button"></button></div><div class="ow-load" id="ow-load"></div><iframe id="ow-fr" allow="clipboard-write"></iframe></div>
+<div id="ow-ov"><div class="ow-bar"><span id="ow-t"></span><button class="ow-x" id="ow-close" type="button"></button></div><div class="ow-load" id="ow-load"></div><iframe id="ow-fr" allow="clipboard-write"></iframe><div id="ow-note" style="padding:6px 10px calc(6px + env(safe-area-inset-bottom,0px));background:#0b1220"></div></div>
 <script>
 /* ===== Offerwall.GG: جدار ألعاب ومهام. المفتاح العام فقط هنا (مكانه الطبيعي في الرابط). السرّ لا يغادر الخادم أبدًا.
    المكافأة لا تُمنح من هنا: تصل فقط عبر postback موقَّع إلى الخادم. ===== */
@@ -13217,8 +13250,8 @@ function openOfferwall(){
     if(o.ready&&o.url){
       var used=!o.multi&&!goals.length&&done['']!==undefined;
       var bar=document.createElement('div'); bar.className='g-start';
-      bar.innerHTML='<button type="button">'+esc(used?L('أنجزتها','Completed','Terminé'):(Object.keys(done).length?L('تابع اللعب','Continue','Continuer'):L('ابدأ اللعب','Start playing','Jouer')))+'</button>';
-      var btn=bar.firstChild; if(used){ btn.disabled=true; btn.style.opacity='.5'; }
+      bar.innerHTML=(window.plDeviceNote?window.plDeviceNote():'')+'<button type="button">'+esc(used?L('أنجزتها','Completed','Terminé'):(Object.keys(done).length?L('تابع اللعب','Continue','Continuer'):L('ابدأ اللعب','Start playing','Jouer')))+'</button>';
+      var btn=bar.querySelector('button'); if(used){ btn.disabled=true; btn.style.opacity='.5'; }
       btn.onclick=function(){ try{ window.owMarkStarted(o.ext); }catch(e){} try{ var w=window.open(o.url,'_blank','noopener'); if(!w) location.href=o.url; }catch(e){ location.href=o.url; } };
       sh.appendChild(bar);
     }
