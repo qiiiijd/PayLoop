@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.03-r102';
+window.PL_BUILD='2026.11.04-r103';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -385,6 +385,46 @@ button{font-family:inherit; cursor:pointer; border:none;}
 button,.mini-btn{-webkit-tap-highlight-color:transparent; transition:transform .1s ease, opacity .1s ease;}
 button:active,.mini-btn:active{transform:scale(.97); opacity:.92;}
 @media (prefers-reduced-motion:reduce){ button,.mini-btn{transition:none} }
+/* ===== حملات الفيديو ===== */
+#camp-ov{position:fixed;inset:0;z-index:99998;background:#0b1220;display:none;flex-direction:column}
+#camp-ov.on{display:flex}
+#camp-ov .ob{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top,0px));background:#111a2e;color:#fff;font-weight:800}
+#camp-ov .ox{border:0;border-radius:10px;padding:8px 14px;background:#1e2a47;color:#fff;font:inherit;font-size:14px}
+#camp-ov .ot{display:flex;gap:8px;padding:10px 12px;background:#0e1626}
+#camp-ov .ot button{flex:1;border:1px solid #243252;border-radius:12px;padding:9px 6px;background:#101a2f;color:#b8c6e6;font:inherit;font-size:13.5px;font-weight:700}
+#camp-ov .ot button.on{background:#ea580c;border-color:#ea580c;color:#fff}
+#camp-ov .ol{flex:1;overflow:auto;padding:10px 12px 28px;-webkit-overflow-scrolling:touch}
+#camp-ov .oi{display:flex;gap:10px;align-items:center;padding:11px;margin-bottom:9px;border:1px solid #1f2d4a;border-radius:14px;background:#0f192d;color:#e6edfb;cursor:pointer}
+#camp-ov .oi .im{flex:none;width:52px;height:52px;border-radius:12px;background:#17233d;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden}
+#camp-ov .oi .im img{width:100%;height:100%;object-fit:cover}
+#camp-ov .oi .tx{flex:1;min-width:0}
+#camp-ov .oi h4{margin:0 0 3px;font-size:14.5px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#camp-ov .oi p{margin:0;font-size:12px;color:#8fa3c8;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#camp-ov .oi .mt{margin-top:4px;font-size:11px;color:#6f84ad}
+#camp-ov .oi .rw{flex:none;padding:8px 10px;border-radius:11px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:900;font-size:14px;white-space:nowrap}
+#camp-ov .oe{padding:40px 16px;text-align:center;color:#8fa3c8;line-height:1.7}
+#camp-ov .ob button{cursor:pointer}
+#camp-ov .od{flex:1;overflow:auto;padding:12px 12px 16px;-webkit-overflow-scrolling:touch;color:#e8eefc}
+#camp-ov .oh{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+#camp-ov .oh .im{width:80px;height:80px;border-radius:16px;background:#17233d;display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden;flex:none}
+#camp-ov .oh .im img{width:100%;height:100%;object-fit:cover}
+#camp-ov .oh h3{margin:0 0 4px;font-size:17px;line-height:1.4}
+#camp-ov .sc{background:#131f38;border:1px solid #22304f;border-radius:14px;padding:12px;margin-bottom:10px;font-size:14px;line-height:1.8}
+#camp-ov .sc b{display:block;margin-bottom:4px;color:#9fb3d9;font-size:12px}
+#camp-ov .st{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid #22304f}
+#camp-ov .st:first-of-type{border-top:0}
+#camp-ov .st .n{flex:none;width:24px;height:24px;border-radius:50%;background:#1e2a47;display:flex;align-items:center;justify-content:center;font-size:13px}
+#camp-ov .st .d{flex:1}
+#camp-ov .st .r{flex:none;font-weight:800;color:#5df0a0}
+#camp-ov .od{min-height:0;overscroll-behavior:contain}
+#camp-ov .gs{flex:none;position:static;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:#0b1220;border-top:1px solid #1f2d4a}
+#camp-ov .gs button{width:100%;border:0;border-radius:14px;padding:14px;background:#16a05f;color:#fff;font:inherit;font-size:16px;font-weight:800}
+#camp-ov.on{animation:plUp .22s ease-out}
+.camp-chip{display:inline-block;padding:6px 11px;border-radius:99px;background:#17233d;border:1px solid #22304f;color:#cfe0ff;font-size:12.5px;font-weight:700}
+.camp-btn{display:inline-block;border:1px solid #2b3c62;background:#17233d;color:#e8eefc;border-radius:11px;padding:9px 13px;font:inherit;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer}
+.trow.camp-row{position:relative}
+.trow.camp-feat{border:1.5px solid #f59e0b!important;background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,0) 60%)!important;box-shadow:0 0 0 1px rgba(245,158,11,.25),0 8px 22px rgba(245,158,11,.12)}
+.camp-star{position:absolute;top:8px;inset-inline-end:12px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-size:11px;font-weight:900;padding:3px 10px;border-radius:99px;z-index:2;box-shadow:0 4px 12px rgba(0,0,0,.35)}
 /* وضع خفيف للهواتف الضعيفة (يُفعَّل تلقائيًا): يوقف الحركات الزخرفية المتكررة والتمويه الثقيل فقط */
 html.pl-lite .adm-nd.hot,
 html.pl-lite .atb .htk-n,
@@ -9266,7 +9306,7 @@ function renderAdmTasks(){
   let html='<div class="admt-head">'+
     '<div><h3 class="admt-title">'+L('إدارة المهام','Task management','Gestion des tâches')+'</h3>'+
     '<span class="admt-sub">'+total+' '+(total===1?L('مهمة','task','tâche'):L('مهام','tasks','tâches'))+'</span></div>'+
-    '<div class="admt-headb">'+tabBtn('tasks','📋 '+L('المهام','Tasks','Tâches'))+tabBtn('nets','🔗 '+L('الشبكات','Networks','Réseaux'))+'<button class="admt-vtab" onclick="owAdmOpen()">🎮 '+L('ألعاب Offerwall','Offerwall games','Jeux Offerwall')+'</button>'+'<button class="admt-vtab" onclick="owmMgOpen()">🌐 '+L('ألعاب Offerwall.me','Offerwall.me games','Jeux Offerwall.me')+'</button>'+
+    '<div class="admt-headb">'+tabBtn('tasks','📋 '+L('المهام','Tasks','Tâches'))+tabBtn('nets','🔗 '+L('الشبكات','Networks','Réseaux'))+'<button class="admt-vtab" onclick="owAdmOpen()">🎮 '+L('ألعاب Offerwall','Offerwall games','Jeux Offerwall')+'</button>'+'<button class="admt-vtab" onclick="owmMgOpen()">🌐 '+L('ألعاب Offerwall.me','Offerwall.me games','Jeux Offerwall.me')+'</button>'+'<button class="admt-vtab" onclick="campMgOpen()">🎬 '+L('حملات الفيديو','Video campaigns','Campagnes vidéo')+'</button>'+
     (ADM_TVIEW==='nets'?'':'<button class="adm-new" onclick="admTaskModal(-1)">+ '+L('إضافة مهمة','Add task','Ajouter une tâche')+'</button>')+'</div></div>';
   if(ADM_TVIEW==='nets'){ box.innerHTML=html+admNetsHTML(); return; }
   try{ if(window.__LS_PERSIST===false){ html+='<div class="st-warn"><span>⚠️ '+L('هذا العارض لا يحفظ البيانات بعد إغلاق الصفحة. افتح الملف من متصفح Chrome ليبقى كل شيء محفوظًا.','This viewer does not keep data after closing. Open the file in Chrome to keep everything saved.','Ce lecteur ne conserve pas les données. Ouvrez le fichier dans Chrome.')+'</span></div>'; } }catch(e){}
@@ -13708,6 +13748,304 @@ function openOfferwall(){
   window.plAdsShow=function(p){ try{ if(p==='tasks') watch('pl-ad-tasks'); }catch(e){} };
   var _go=window.go; if(typeof _go==='function'){ window.go=function(p){ var r=_go.apply(this,arguments); try{ setTimeout(function(){ window.plAdsShow(p); },900); }catch(e){} return r; }; }
   window.addEventListener('load',function(){ setTimeout(function(){ try{ var a=document.querySelector('.page.active'); if(a&&a.id==='page-tasks') window.plAdsShow('tasks'); }catch(e){} },4500); });
+})();
+</script>
+<script>
+/* ===== حملات الفيديو: الأدمن يكتب الحملة (المبلغ، المشاهدات، الإعلان)، المستخدم ينشر فيديو ويرسل رابطه، الأدمن يراجع ثم تُصرف المكافأة ===== */
+(function(){
+  var C=null, CT=0, LOADING=false, BUSY=false;
+  function uid(){ try{ return (RealAuth.getSession()||{}).uid||''; }catch(e){ return ''; } }
+  function ck(){ return 'pl-camp:'+uid(); }
+  function usd(n){ n=Number(n)||0; return '$'+(n>=0.01?n.toFixed(2):n.toFixed(3)); }
+  function nf(n){ try{ return Number(n).toLocaleString('en-US'); }catch(e){ return String(n); } }
+  function httpsOk(u){ return /^https:\/\/[^\s]+$/i.test(String(u||'')); }
+  function redraw(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
+  function readCache(){ try{ var c=JSON.parse(localStorage.getItem(ck())||'null'); if(c&&Array.isArray(c.items)&&Date.now()-c.t<86400000){ C=c.items; CT=0; } }catch(e){} }
+  function saveCache(){ try{ var t=JSON.stringify({t:Date.now(),items:C}); if(t.length<300000) localStorage.setItem(ck(),t); }catch(e){} }
+  function load(force){
+    if(LOADING) return; if(!force&&C&&CT&&Date.now()-CT<60000) return;
+    try{ if(!SRV||!SRV.on()||!SESSION) return; }catch(e){ return; }
+    LOADING=true;
+    Promise.resolve(SRV.rpc('camp_list',{})).then(function(r){ LOADING=false; if(Array.isArray(r)){ C=r; CT=Date.now(); saveCache(); redraw(); } }).catch(function(){ LOADING=false; });
+  }
+  window.campReload=function(){ load(true); };
+  function mine(c){ return c&&c.my&&c.my.status?c.my.status:''; }
+  function tabNow(cat){ var t='new'; try{ if(cat!=='ads'&&cat!=='survey'&&typeof taskTab!=='undefined') t=taskTab; }catch(e){} return t; }
+  function eligible(cat){
+    if(!C||!C.length) return [];
+    var tab=tabNow(cat);
+    return C.filter(function(c){
+      if(tab!=='new') return false;
+      if(cat==='camps') return true;
+      var st=mine(c); if(st==='pending'||st==='approved') return false;
+      if((Number(c.slots_left)||0)<=0) return false;
+      if(c.place==='all') return true;
+      if(c.place==='new') return cat==='all';
+      return false;
+    });
+  }
+  var GO='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+  function tag(st,c){
+    if(st==='pending') return '<span class="t-tag" style="background:#f59e0b22;color:#f59e0b">⏳ '+L('قيد المراجعة','Under review','En revue')+'</span>';
+    if(st==='approved') return '<span class="t-tag" style="background:#22c55e22;color:#22c55e">✅ '+L('تم الصرف','Paid','Payé')+'</span>';
+    if(st==='rejected') return '<span class="t-tag" style="background:#ef444422;color:#f87171">'+L('مرفوض — أعد المحاولة','Rejected — retry','Refusé')+'</span>';
+    if((Number(c.slots_left)||0)<=0) return '<span class="t-tag" style="background:#64748b33;color:#94a3b8">'+L('اكتملت المقاعد','Full','Complet')+'</span>';
+    return '<span class="t-tag" style="background:#22c55e22;color:#22c55e">'+L('جديد','New','Nouveau')+'</span>';
+  }
+  function card(c){
+    var st=mine(c), img=c.img?'<img decoding="async" class="card-artwork" src="'+esc(c.img)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':'<span style="font-size:30px">🎬</span>';
+    return '<div class="trow camp-row'+(c.featured?' camp-feat':'')+'" data-cid="'+esc(c.id)+'" onclick="campOpen(this.getAttribute(\'data-cid\'))">'
+      +(c.featured?'<span class="camp-star">⭐ '+L('عرض مميز','Top offer','Offre vedette')+'</span>':'')
+      +'<div class="t-icon art'+(c.img?' has-img':'')+'">'+img+'</div>'
+      +'<div class="t-info"><div class="t-head"><b class="t-amt">'+usd(c.reward)+'</b><span class="t-amtl">'+L('المكافأة','Reward','Gain')+'</span></div>'
+      +'<h4>'+esc(c.title||'')+'</h4>'+tag(st,c)+'<span class="t-tag" style="background:#6366f122;color:#a5b4fc">🎬 '+L('حملة','Campaign','Campagne')+'</span>'
+      +'<div class="meta"><span>👁 '+nf(c.goal)+' '+L('مشاهدة','views','vues')+'</span><span>🎟 '+nf(Math.max(0,Number(c.slots_left)||0))+' '+L('مقعد','spots','places')+'</span></div></div>'+GO+'</div>';
+  }
+  window.campInject=function(cat){
+    try{
+      if(!C) readCache();
+      load(false);
+      var box=document.getElementById('tlist'); if(!box) return;
+      var show=eligible(cat); if(!show.length) return;
+      var html='';
+      show.forEach(function(c){ if(!box.querySelector('.camp-row[data-cid="'+String(c.id).replace(/"/g,'')+'"]')) html+=card(c); });
+      if(!html) return;
+      try{ var _e=box.querySelector('.te-wrap,.tempty'); if(_e&&(cat==='camps'||!box.querySelector('.trow'))) _e.remove(); }catch(e){}
+      box.insertAdjacentHTML('afterbegin',html);
+    }catch(e){}
+  };
+
+  /* ===== نافذة تفاصيل الحملة (للمستخدم) ===== */
+  function ov(){
+    var o=document.getElementById('camp-ov');
+    if(!o){ o=document.createElement('div'); o.id='camp-ov'; o.innerHTML='<div class="ob"><span id="camp-t"></span><button class="ox" id="camp-x" type="button"></button></div><div class="od" id="camp-d"></div>'; document.body.appendChild(o); }
+    return o;
+  }
+  function byId(id){ for(var i=0;C&&i<C.length;i++) if(String(C[i].id)===String(id)) return C[i]; return null; }
+  function foot(o,label,fn,dis){
+    try{ Array.prototype.forEach.call(o.querySelectorAll('.gs'),function(e){ e.remove(); }); }catch(e){}
+    var bar=document.createElement('div'); bar.className='gs'; bar.innerHTML='<button type="button"></button>'; var b=bar.firstChild; b.textContent=label;
+    if(dis){ b.disabled=true; b.style.background='#334155'; b.style.opacity='.85'; } else b.onclick=fn;
+    o.appendChild(bar); return b;
+  }
+  function close(){ var o=document.getElementById('camp-ov'); if(o) o.classList.remove('on'); }
+  window.campOpen=function(id){
+    var c=byId(id); if(!c) return; var o=ov(), d=document.getElementById('camp-d');
+    document.getElementById('camp-t').textContent=L('حملة فيديو','Video campaign','Campagne vidéo');
+    var x=document.getElementById('camp-x'); x.textContent=L('رجوع','Back','Retour'); x.onclick=close;
+    var st=mine(c), my=c.my||{};
+    var im=c.img?'<img src="'+esc(c.img)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':'🎬';
+    var h='<div class="oh"><div class="im">'+im+'</div><div><h3>'+(c.featured?'⭐ ':'')+esc(c.title||'')+'</h3>'
+      +'<div style="font-size:13px;color:#9fb3d9">'+L('المكافأة','Reward','Gain')+': <b style="color:#5df0a0">'+usd(c.reward)+'</b></div></div></div>'
+      +'<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><span class="camp-chip">👁 '+nf(c.goal)+' '+L('مشاهدة مطلوبة','views required','vues requises')+'</span><span class="camp-chip">🎟 '+nf(Math.max(0,Number(c.slots_left)||0))+' '+L('مقعد متبقٍّ','spots left','places')+'</span></div>';
+    if(c.descr) h+='<div class="sc"><b>'+L('عن الحملة','About','À propos')+'</b><div style="white-space:pre-wrap">'+esc(c.descr)+'</div></div>';
+    if(c.ad_text||c.ad_url){
+      h+='<div class="sc"><b>'+L('الإعلان الذي تنشره','The ad you post','La publicité')+'</b>'
+        +(c.ad_text?'<div id="camp-ad" style="white-space:pre-wrap;background:#0e1a30;border:1px dashed #2b3c62;border-radius:10px;padding:10px;margin-bottom:8px">'+esc(c.ad_text)+'</div><button type="button" class="camp-btn" onclick="campCopy()">📋 '+L('نسخ نص الإعلان','Copy ad text','Copier')+'</button> ':'')
+        +(httpsOk(c.ad_url)?'<a class="camp-btn" href="'+esc(c.ad_url)+'" target="_blank" rel="noopener noreferrer">🔗 '+L('فتح رابط الإعلان','Open ad link','Ouvrir le lien')+'</a>':'')+'</div>';
+    }
+    h+='<div class="sc"><b>'+L('كيف تربح؟','How to earn','Comment gagner')+'</b>'
+      +'<div class="st"><div class="n">1</div><div class="d">'+L('انشر فيديو يحتوي الإعلان أعلاه على حسابك (TikTok، YouTube، Instagram…) ويبقى عامًا.','Post a video with the ad above on your account and keep it public.','Publiez une vidéo avec la publicité.')+'</div></div>'
+      +'<div class="st"><div class="n">2</div><div class="d">'+L('عندما يصل فيديوك إلى '+nf(c.goal)+' مشاهدة، أرسل رابطه وعدد المشاهدات هنا.','When it reaches '+nf(c.goal)+' views, send its link and view count here.','Envoyez le lien à '+nf(c.goal)+' vues.')+'</div></div>'
+      +'<div class="st"><div class="n">3</div><div class="d">'+L('نراجع الفيديو، وعند القبول يُضاف '+usd(c.reward)+' إلى رصيدك تلقائيًا.','We review it, and on approval '+usd(c.reward)+' is added to your balance.','Après validation, '+usd(c.reward)+' sont ajoutés.')+'</div></div></div>';
+    if(st==='pending') h+='<div class="sc" style="border-color:#7c5a12;background:#2a2108"><b style="color:#fbbf24">⏳ '+L('طلبك قيد المراجعة','Your submission is under review','En cours de revue')+'</b><div dir="ltr" style="word-break:break-all;font-size:12.5px;color:#cbd5e1">'+esc(my.url||'')+'</div><div style="font-size:12.5px;color:#9fb3d9;margin-top:4px">👁 '+nf(my.views||0)+'</div></div>';
+    if(st==='approved') h+='<div class="sc" style="border-color:#14532d;background:#08261a"><b style="color:#4ade80">✅ '+L('تم قبول فيديوك','Your video was approved','Vidéo approuvée')+'</b>'+L('أُضيف '+usd(my.reward||c.reward)+' إلى رصيدك.',usd(my.reward||c.reward)+' was added to your balance.','Ajouté à votre solde.')+'</div>';
+    if(st==='rejected') h+='<div class="sc" style="border-color:#7f1d1d;background:#2a0d0d"><b style="color:#f87171">'+L('لم يُقبل طلبك السابق','Your previous submission was rejected','Refusé')+'</b>'+(my.reason?esc(my.reason):L('تحقق من أن الفيديو عام وأن عدد المشاهدات صحيح، ثم أعد الإرسال.','Make sure the video is public and the views are real, then resend.','Vérifiez puis renvoyez.'))+'</div>';
+    h+='<div class="sc" style="font-size:12.5px;color:#9fb3d9">'+L('تُراجَع الطلبات يدويًا. يجب أن يكون الفيديو حقيقيًا ومنشورًا على حسابك وأن تكون المشاهدات فعلية؛ أي تلاعب يُرفض ويعرّض الحساب للإيقاف.','Submissions are reviewed manually. The video must be real, public and on your account, with genuine views; cheating is rejected and may get the account suspended.','Revue manuelle. Toute triche est refusée.')+'</div>';
+    d.innerHTML=h; d.scrollTop=0;
+    if(st==='pending') foot(o,'⏳ '+L('قيد المراجعة','Under review','En revue'),null,true);
+    else if(st==='approved') foot(o,'✅ '+L('تم صرف المكافأة','Reward paid','Payé'),null,true);
+    else if((Number(c.slots_left)||0)<=0) foot(o,L('اكتملت المقاعد','Spots are full','Complet'),null,true);
+    else foot(o,'🎬 '+L('إرسال فيديو الحملة','Submit campaign video','Envoyer la vidéo'),function(){ form(c); },false);
+    o.classList.add('on');
+  };
+  window.campCopy=function(){ try{ var e=document.getElementById('camp-ad'); if(e){ copyText(e.textContent); } }catch(x){} };
+  function why(w){
+    var m={auth:L('سجّل الدخول أولًا','Sign in first','Connectez-vous'),missing:L('هذه الحملة لم تعد متاحة','Campaign unavailable','Campagne indisponible'),blocked:L('حسابك غير مؤهل حاليًا','Your account is not eligible','Compte non éligible'),
+      url:L('الرابط غير صالح — يجب أن يبدأ بـ https://','Invalid link — must start with https://','Lien invalide'),views_low:L('عدد المشاهدات أقل من المطلوب','Views are below the requirement','Vues insuffisantes'),
+      limit:L('لديك طلبات كثيرة قيد المراجعة','Too many pending submissions','Trop de demandes'),full:L('اكتملت مقاعد هذه الحملة','This campaign is full','Complet'),already:L('أرسلت هذا الفيديو أو هذه الحملة من قبل','Already submitted','Déjà envoyé')};
+    return m[w]||L('تعذّر الإرسال','Could not submit','Échec');
+  }
+  function form(c){
+    var o=ov(), d=document.getElementById('camp-d');
+    var x=document.getElementById('camp-x'); x.textContent=L('رجوع','Back','Retour'); x.onclick=function(){ window.campOpen(c.id); };
+    var ta='width:100%;padding:12px 14px;border-radius:13px;background:#0e1a30;border:1.5px solid #2b3c62;color:#e8eefc;font-family:inherit;font-size:14px;outline:none;box-sizing:border-box';
+    d.innerHTML='<div class="oh"><div class="im">🎬</div><div><h3>'+esc(c.title||'')+'</h3><div style="font-size:13px;color:#9fb3d9">'+L('أرسل فيديوك للمراجعة','Send your video for review','Envoyez votre vidéo')+'</div></div></div>'
+      +'<div class="sc"><b>'+L('رابط الفيديو (https)','Video link (https)','Lien de la vidéo')+'</b><input id="cp-u" dir="ltr" inputmode="url" maxlength="500" placeholder="https://" style="'+ta+'"></div>'
+      +'<div class="sc"><b>'+L('عدد المشاهدات الحالي (على الأقل '+nf(c.goal)+')','Current views (at least '+nf(c.goal)+')','Vues actuelles')+'</b><input id="cp-v" dir="ltr" inputmode="numeric" maxlength="12" placeholder="'+nf(c.goal)+'" style="'+ta+'"></div>'
+      +'<div class="sc"><b>'+L('ملاحظة (اختياري)','Note (optional)','Note')+'</b><textarea id="cp-n" rows="2" maxlength="300" style="'+ta+'"></textarea></div>'
+      +'<div class="sc" style="font-size:12.5px;color:#9fb3d9">'+L('سيُفتح الرابط من الأدمن للتحقق من الفيديو وعدد المشاهدات قبل صرف المكافأة.','The admin will open the link to verify the video and views before paying.','L’admin vérifiera avant paiement.')+'</div>';
+    foot(o,L('إرسال للمراجعة','Send for review','Envoyer'),async function(){
+      if(BUSY) return;
+      var u=(document.getElementById('cp-u').value||'').trim(), v=parseInt(String(document.getElementById('cp-v').value||'').replace(/[^0-9]/g,''),10)||0, n=(document.getElementById('cp-n').value||'').trim();
+      if(!httpsOk(u)||u.length<12){ toast(why('url')); return; }
+      if(v<Number(c.goal)){ toast(why('views_low')); return; }
+      BUSY=true; var b=document.querySelector('#camp-ov .gs button'); if(b){ b.disabled=true; b.textContent='…'; }
+      try{
+        var r=await SRV.rpc('camp_submit',{p_id:Number(c.id),p_url:u,p_views:v,p_note:n});
+        if(r&&r.ok===true){ toast('✅ '+L('أُرسل فيديوك للمراجعة','Sent for review','Envoyé')); c.my={status:'pending',url:u,views:v}; c.slots_left=Math.max(0,(Number(c.slots_left)||0)-1); saveCache(); load(true); window.campOpen(c.id); redraw(); }
+        else{ toast('⚠️ '+why(r&&r.why)); if(b){ b.disabled=false; b.textContent=L('إرسال للمراجعة','Send for review','Envoyer'); } }
+      }catch(e){ toast('⚠️ '+why('')); if(b){ b.disabled=false; b.textContent=L('إرسال للمراجعة','Send for review','Envoyer'); } }
+      BUSY=false;
+    },false);
+  }
+
+  /* ===== لوحة تحكم الأدمن ===== */
+  var M={rows:[],cur:null,img:''};
+  var PLC=[['camps','🎬','قسم الحملات فقط','Campaigns tab only'],['new','🆕','الحملات + المهام الجديدة (الكل)','Campaigns + new tasks (All)'],['all','🌐','كل الأقسام (يظهر في كل مكان)','Everywhere']];
+  function plc(k){ for(var i=0;i<PLC.length;i++) if(PLC[i][0]===k) return PLC[i][1]+' '+L(PLC[i][2],PLC[i][3],PLC[i][3]); return k; }
+  function mroot(){ var o=document.getElementById('adm-modal'); if(!o){ o=document.createElement('div'); o.id='adm-modal'; document.body.appendChild(o); } o.className='adm-modal'; o.style.display='flex'; return o; }
+  function mcard(inner,title){ mroot().innerHTML='<div class="mm-card" style="max-height:90vh;overflow-y:auto;width:min(560px,95vw)"><div class="mm-h"><b>'+title+'</b><button class="mm-x" onclick="admModalClose()">✕</button></div>'+inner+'</div>'; }
+  function mwhy(r){
+    var w=r&&r.why, m=String((r&&(r.msg||r.message||r.error))||'');
+    if(r&&(r.http===404||/could not find|does not exist|PGRST202|42883|42P01/i.test(m))) return L('شغّل ملف 77_campaigns.sql في Supabase أولًا','Run 77_campaigns.sql in Supabase first','Exécutez 77_campaigns.sql');
+    if(r&&(r.http===403||/forbidden/i.test(m))) return L('ليست لديك صلاحية','Not allowed','Non autorisé');
+    var t={bad_title:'العنوان من 3 إلى 80 حرفًا',bad_reward:'المكافأة بين 0.01 و10000',bad_goal:'عدد المشاهدات غير صالح',bad_max:'عدد المقاعد من 1 إلى 1000000',bad_number:'أرقام غير صالحة',bad_place:'مكان العرض غير صالح',bad_len:'نص طويل جدًا',bad_adurl:'رابط الإعلان يجب أن يبدأ بـ https://',bad_img:'الصورة: رابط https أو ملف صورة صغير',max_low:'المقاعد أقل من المقبولين فعلًا',locked:'عليها طلبات — أوقفها بدل الحذف',missing:'غير موجودة',done:'تمت مراجعته من قبل',full:'اكتملت المقاعد'};
+    if(w&&t[w]) return t[w];
+    return L('تعذّر التنفيذ','Failed','Échec')+(r&&(r.http||m)?' ['+(r.http||'')+' '+m.slice(0,90)+']':'');
+  }
+  window.campMgOpen=function(){
+    mcard('<div style="padding:24px;text-align:center">'+L('جارٍ التحميل…','Loading…','Chargement…')+'</div>','🎬 '+L('حملات الفيديو','Video campaigns','Campagnes vidéo'));
+    Promise.resolve(SRV.rpc('camp_admin_list',{})).then(function(r){
+      if(!Array.isArray(r)){ mcard('<div style="padding:18px;text-align:center">'+esc(mwhy(r))+'</div>','🎬'); return; }
+      M.rows=r; mList();
+    }).catch(function(){ mcard('<div style="padding:18px;text-align:center">'+esc(L('تعذّر التحميل','Could not load','Échec'))+'</div>','🎬'); });
+  };
+  function mList(){
+    var pend=0; M.rows.forEach(function(c){ pend+=Number(c.pending)||0; });
+    var h='<button class="adm-new" style="width:100%;margin-bottom:10px" onclick="campMgNew()">+ '+L('إضافة حملة','Add a campaign','Ajouter')+'</button>'
+      +'<button class="adm-new" style="width:100%;margin-bottom:12px;background:rgba(245,158,11,.14);color:#fbbf24" onclick="campMgSubs(-1,\'pending\')">📥 '+L('طلبات المراجعة','Review requests','Demandes')+(pend?' <b>('+pend+')</b>':'')+'</button>';
+    if(!M.rows.length) h+='<div style="padding:18px;text-align:center;color:var(--muted)">'+L('لا توجد حملات بعد. أضف أول حملة.','No campaigns yet.','Aucune campagne.')+'</div>';
+    M.rows.forEach(function(c,i){
+      h+='<div style="display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--border)">'
+        +'<div style="width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,.06);overflow:hidden;flex:none;display:flex;align-items:center;justify-content:center">'+(c.img?'<img src="'+esc(c.img)+'" style="width:100%;height:100%;object-fit:cover" referrerpolicy="no-referrer" onerror="this.remove()">':'🎬')+'</div>'
+        +'<div style="flex:1;min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(c.featured?'⭐ ':'')+esc(c.title)+'</div>'
+        +'<div style="font-size:12px;color:var(--muted)">'+usd(c.reward)+' · 👁 '+nf(c.goal)+' · '+L('مقبول','approved','validés')+' '+c.approved+'/'+c.max+' · '+(c.active?'<b style="color:#22c55e">'+L('نشطة','active','active')+'</b>':'<b style="color:#f59e0b">'+L('متوقفة','paused','pause')+'</b>')+'</div>'
+        +'<div style="font-size:11.5px;color:#38bdf8">'+plc(c.place)+(Number(c.pending)?' · <b style="color:#fbbf24">'+c.pending+' '+L('بانتظار المراجعة','pending','en attente')+'</b>':'')+'</div></div>'
+        +'<button class="mm-x" title="'+L('الطلبات','Requests','Demandes')+'" onclick="campMgSubs('+i+',\'pending\')">📥</button>'
+        +'<button class="mm-x" onclick="campMgFeat('+i+')" style="'+(c.featured?'':'opacity:.4')+'">⭐</button>'
+        +'<button class="mm-x" onclick="campMgTog('+i+')">'+(c.active?'⏸':'▶️')+'</button>'
+        +'<button class="mm-x" onclick="campMgEdit('+i+')">✏️</button>'
+        +'<button class="mm-x" onclick="campMgDel('+i+')">🗑️</button></div>';
+    });
+    mcard(h,'🎬 '+L('حملات الفيديو','Video campaigns','Campagnes vidéo'));
+  }
+  function rowPayload(c,over){
+    var p={id:c.id,title:c.title,descr:c.descr||'',ad_text:c.ad_text||'',ad_url:c.ad_url||'',img:c.img||'',reward:c.reward,goal:c.goal,max:c.max,place:c.place,featured:!!c.featured,active:!!c.active,sort:c.sort,ends:c.ends||''};
+    for(var k in over) p[k]=over[k]; return p;
+  }
+  function save(p,done){
+    Promise.resolve(SRV.rpc('camp_admin_save',{p:p})).then(function(r){
+      if(r&&r.ok===true){ toast('✅ '+L('تم الحفظ','Saved','Enregistré')); done&&done(); try{ load(true); }catch(e){} }
+      else toast('⚠️ '+mwhy(r));
+    }).catch(function(){ toast('⚠️ '+L('تعذّر الحفظ','Save failed','Échec')); });
+  }
+  window.campMgFeat=function(i){ var c=M.rows[i]; if(c) save(rowPayload(c,{featured:!c.featured}),campMgOpen); };
+  window.campMgTog=function(i){ var c=M.rows[i]; if(c) save(rowPayload(c,{active:!c.active}),campMgOpen); };
+  window.campMgDel=function(i){
+    var c=M.rows[i]; if(!c) return; if(!confirm(L('حذف الحملة نهائيًا؟','Delete this campaign?','Supprimer ?'))) return;
+    Promise.resolve(SRV.rpc('camp_admin_delete',{p_id:c.id})).then(function(r){ if(r&&r.ok===true){ toast('✅'); campMgOpen(); try{ load(true); }catch(e){} } else toast('⚠️ '+mwhy(r)); }).catch(function(){ toast('⚠️'); });
+  };
+  window.campMgNew=function(){ M.cur={row:null}; mForm(); };
+  window.campMgEdit=function(i){ M.cur={row:M.rows[i]}; mForm(); };
+  function toLocal(s){ try{ if(!s) return ''; var d=new Date(s); if(isNaN(d)) return ''; var p=function(n){ return String(n).padStart(2,'0'); }; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes()); }catch(e){ return ''; } }
+  function mForm(){
+    var r=M.cur.row||{}; M.img='';
+    var ta='width:100%;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none;resize:vertical;box-sizing:border-box';
+    var opts=PLC.map(function(p){ return '<option value="'+p[0]+'"'+((r.place||'camps')===p[0]?' selected':'')+'>'+p[1]+' '+L(p[2],p[3],p[3])+'</option>'; }).join('');
+    var h='<div class="au-f full"><label>'+L('عنوان الحملة','Campaign title','Titre')+'</label><input id="cg-t" maxlength="80" value="'+esc(r.title||'')+'" placeholder="'+esc(L('مثال: انشر فيديو عن PayLoop واربح','e.g. Post a video about PayLoop','ex'))+'"></div>'
+      +'<div class="au-f full"><label>'+L('شرح الحملة (تكتبه أنت)','Description (you write it)','Description')+'</label><textarea id="cg-d" rows="3" maxlength="2000" style="'+ta+'">'+esc(r.descr||'')+'</textarea></div>'
+      +'<div class="au-f full"><label>'+L('نص الإعلان الذي ينشره المستخدم','Ad text users must post','Texte de la pub')+'</label><textarea id="cg-a" rows="3" maxlength="1500" style="'+ta+'">'+esc(r.ad_text||'')+'</textarea></div>'
+      +'<div class="au-f full"><label>'+L('رابط الإعلان (https، اختياري)','Ad link (https, optional)','Lien (optionnel)')+'</label><input id="cg-l" dir="ltr" maxlength="500" value="'+esc(r.ad_url||'')+'" placeholder="https://"></div>'
+      +'<div class="au-f full"><label>'+L('صورة الحملة (رابط https أو ارفع صورة، اختياري)','Image (https link or upload, optional)','Image')+'</label><div style="display:flex;align-items:center;gap:10px"><input id="cg-i" dir="ltr" maxlength="500" value="'+esc(/^https:/.test(r.img||'')?r.img:'')+'" placeholder="https://" style="flex:1"><label class="mm-x" style="width:auto;padding:7px 10px;display:inline-flex;align-items:center;cursor:pointer">📷<input type="file" accept="image/*" style="display:none" onchange="campMgImg(this)"></label></div><div id="cg-iu" style="font-size:12px;color:#22c55e;margin-top:4px">'+(r.img&&/^data:/.test(r.img)?'✅ '+esc(L('صورة محفوظة','Image saved','Image enregistrée')):'')+'</div></div>'
+      +'<div style="display:flex;gap:10px"><div class="au-f" style="flex:1"><label>💰 '+L('المكافأة بالدولار','Reward (USD)','Gain (USD)')+'</label><input id="cg-r" inputmode="decimal" dir="ltr" value="'+(r.reward!=null?r.reward:'')+'" placeholder="5"></div>'
+      +'<div class="au-f" style="flex:1"><label>👁 '+L('عدد المشاهدات المطلوب','Views required','Vues requises')+'</label><input id="cg-g" inputmode="numeric" dir="ltr" value="'+(r.goal!=null?r.goal:'')+'" placeholder="1000"></div></div>'
+      +'<div style="display:flex;gap:10px"><div class="au-f" style="flex:1"><label>🎟 '+L('عدد الفائزين الأقصى','Max winners','Gagnants max')+'</label><input id="cg-m" inputmode="numeric" dir="ltr" value="'+(r.max!=null?r.max:100)+'"></div>'
+      +'<div class="au-f" style="flex:1"><label>'+L('الترتيب (الأصغر أولًا)','Order','Ordre')+'</label><input id="cg-s" inputmode="numeric" dir="ltr" value="'+(r.sort!=null?r.sort:100)+'"></div></div>'
+      +'<div class="au-f full"><label>📍 '+L('أين تظهر؟','Where does it appear?','Où ?')+'</label><select id="cg-p">'+opts+'</select></div>'
+      +'<div class="au-f full"><label>⏰ '+L('تنتهي في (اختياري)','Ends at (optional)','Fin (optionnel)')+'</label><input id="cg-e" type="datetime-local" dir="ltr" value="'+toLocal(r.ends)+'"></div>'
+      +'<label style="display:flex;gap:8px;align-items:center;margin:8px 0;font-size:14px"><input type="checkbox" id="cg-f"'+(r.featured?' checked':'')+'> ⭐ '+L('مميزة (تظهر أولًا بنجمة بارزة)','Featured (pinned first with a star)','Vedette')+'</label>'
+      +'<label style="display:flex;gap:8px;align-items:center;margin:8px 0;font-size:14px"><input type="checkbox" id="cg-ac"'+(r.id==null||r.active?' checked':'')+'> '+L('نشطة','Active','Active')+'</label>'
+      +(r.id==null?'<label style="display:flex;gap:8px;align-items:center;margin:8px 0;font-size:14px"><input type="checkbox" id="cg-an" checked> 🔔 '+L('أرسل إشعارًا للجميع بهذه الحملة','Notify everyone','Notifier tout le monde')+'</label>':'')
+      +'<div style="display:flex;gap:10px;margin-top:12px"><button class="adm-new" style="flex:1" onclick="campMgSave()">💾 '+L('حفظ','Save','Enregistrer')+'</button><button class="adm-new" style="flex:1;background:rgba(255,255,255,.08)" onclick="campMgOpen()">'+L('رجوع','Back','Retour')+'</button></div>';
+    mcard(h,(r.id==null?'+ ':'✏️ ')+L('حملة فيديو','Video campaign','Campagne'));
+  }
+  window.campMgImg=function(inp){
+    var f=inp.files&&inp.files[0]; if(!f) return;
+    if(!/^image\//.test(f.type)){ toast(L('الملف ليس صورة','Not an image','Pas une image')); return; }
+    var rd=new FileReader();
+    rd.onload=function(ev){
+      var raw=String((ev&&ev.target&&ev.target.result)||'');
+      var ok=function(d){ return /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(d)&&d.length<=38000; };
+      imgShrink(raw,200,0.7,true,function(d){
+        var fin=function(x){ M.img=x; var e=document.getElementById('cg-iu'); if(e) e.textContent='✅ '+L('ستُحفظ هذه الصورة','This image will be saved','Image prête'); };
+        if(ok(d)){ fin(d); return; }
+        imgShrink(raw,120,0.5,true,function(d2){ if(ok(d2)) fin(d2); else toast(L('الصورة كبيرة، استعمل رابطًا','Image too large, use a link','Image trop grande')); });
+      });
+    };
+    rd.readAsDataURL(f);
+  };
+  window.campMgSave=function(){
+    var g=function(id){ var e=document.getElementById(id); return e?e.value:''; }, r=M.cur.row||{};
+    var ends=g('cg-e'); try{ ends=ends?new Date(ends).toISOString():''; }catch(e){ ends=''; }
+    var img=M.img||g('cg-i').trim()||(/^data:/.test(r.img||'')&&!g('cg-i').trim()?r.img:'');
+    var p={id:r.id||null,title:g('cg-t').trim(),descr:g('cg-d').trim(),ad_text:g('cg-a').trim(),ad_url:g('cg-l').trim(),img:img,
+      reward:String(g('cg-r')).replace(',','.').trim(),goal:String(g('cg-g')).replace(/[^0-9]/g,''),max:String(g('cg-m')).replace(/[^0-9]/g,''),sort:String(g('cg-s')).replace(/[^0-9-]/g,''),
+      place:g('cg-p'),ends:ends,featured:!!document.getElementById('cg-f').checked,active:!!document.getElementById('cg-ac').checked,
+      announce:!!(document.getElementById('cg-an')&&document.getElementById('cg-an').checked)};
+    save(p,campMgOpen);
+  };
+  var SU={cid:null,st:'pending'};
+  window.campMgSubs=function(i,st){
+    SU.cid=(i>=0&&M.rows[i])?M.rows[i].id:null; SU.st=st||'pending'; subs();
+  };
+  function subs(){
+    mcard('<div style="padding:24px;text-align:center">'+L('جارٍ التحميل…','Loading…','Chargement…')+'</div>','📥 '+L('طلبات الحملات','Campaign requests','Demandes'));
+    Promise.resolve(SRV.rpc('camp_admin_subs',{p_id:SU.cid,p_status:SU.st,p_limit:30,p_offset:0})).then(function(r){
+      if(!Array.isArray(r)){ mcard('<div style="padding:18px;text-align:center">'+esc(mwhy(r))+'</div><button class="adm-new" style="width:100%" onclick="campMgOpen()">'+L('رجوع','Back','Retour')+'</button>','📥'); return; }
+      M.subs=r;
+      var chip=function(k,t){ return '<button class="mm-x" style="width:auto;padding:0 12px;'+(SU.st===k?'background:#ea580c;color:#fff;border-color:#ea580c':'')+'" onclick="campSubSt(\''+k+'\')">'+t+'</button>'; };
+      var h='<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">'+chip('pending',L('بانتظار المراجعة','Pending','En attente'))+chip('approved',L('مقبول','Approved','Validé'))+chip('rejected',L('مرفوض','Rejected','Refusé'))+'</div>';
+      if(!r.length) h+='<div style="padding:18px;text-align:center;color:var(--muted)">'+L('لا توجد طلبات هنا.','Nothing here.','Rien ici.')+'</div>';
+      r.forEach(function(s,k){
+        var ok=Number(s.views)>=Number(s.goal);
+        h+='<div style="border-top:1px solid var(--border);padding:12px 0">'
+          +'<div style="font-weight:800">'+esc(s.name)+' <span style="font-weight:400;color:var(--muted);font-size:12px" dir="ltr">#'+esc(s.pid||'')+'</span>'+(s.risk&&s.risk!=='low'?' <b style="color:#f87171;font-size:12px">⚠ '+esc(s.risk)+'</b>':'')+'</div>'
+          +'<div style="font-size:12.5px;color:var(--muted);margin:2px 0">🎬 '+esc(s.ctitle)+' · '+usd(s.reward)+'</div>'
+          +'<div style="font-size:13px;margin:4px 0">👁 <b style="color:'+(ok?'#22c55e':'#f87171')+'">'+nf(s.views)+'</b> / '+nf(s.goal)+'</div>'
+          +(httpsOk(s.url)?'<a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer" dir="ltr" style="display:block;word-break:break-all;font-size:12.5px;color:#38bdf8;margin:4px 0">🔗 '+esc(s.url)+'</a>':'')
+          +(s.note?'<div style="font-size:12.5px;color:#cbd5e1">📝 '+esc(s.note)+'</div>':'')
+          +(s.reason?'<div style="font-size:12.5px;color:#f59e0b">'+esc(s.reason)+'</div>':'')
+          +(s.status==='pending'?'<div style="display:flex;gap:8px;margin-top:8px"><button class="adm-new" style="flex:1;background:rgba(34,197,94,.16);color:#4ade80" onclick="campSubDo('+k+',true)">✅ '+L('قبول وصرف','Approve & pay','Valider')+'</button><button class="adm-new" style="flex:1;background:rgba(239,68,68,.14);color:#f87171" onclick="campSubDo('+k+',false)">❌ '+L('رفض','Reject','Refuser')+'</button></div>':'<div style="font-size:12px;color:var(--muted);margin-top:4px">'+(s.status==='approved'?'✅ '+usd(s.paid):'❌')+'</div>')
+          +'</div>';
+      });
+      h+='<button class="adm-new" style="width:100%;margin-top:10px;background:rgba(255,255,255,.08)" onclick="campMgOpen()">'+L('رجوع','Back','Retour')+'</button>';
+      mcard(h,'📥 '+L('طلبات الحملات','Campaign requests','Demandes'));
+    }).catch(function(){ mcard('<div style="padding:18px;text-align:center">'+esc(L('تعذّر التحميل','Could not load','Échec'))+'</div>','📥'); });
+  }
+  window.campSubSt=function(st){ SU.st=st; subs(); };
+  window.campSubDo=function(k,okk){
+    var s=(M.subs||[])[k]; if(!s) return;
+    var reason='';
+    if(okk){ if(!confirm(L('تأكيد: صرف '+usd(s.reward)+' إلى '+s.name+'؟ تأكد أنك فتحت الفيديو وتحققت من المشاهدات.','Pay '+usd(s.reward)+' to '+s.name+'? Make sure you verified the video and its views.','Payer ?'))) return; }
+    else { var r=prompt(L('سبب الرفض (يصل للمستخدم، اختياري)','Reason (sent to the user, optional)','Motif'),''); if(r===null) return; reason=r; }
+    Promise.resolve(SRV.rpc('camp_admin_review',{p_sub:s.id,p_ok:!!okk,p_reason:reason})).then(function(r){
+      if(r&&r.ok===true){ toast(okk?'✅ '+L('تم الصرف','Paid','Payé'):'✅'); subs(); }
+      else toast('⚠️ '+mwhy(r));
+    }).catch(function(){ toast('⚠️ '+L('تعذّر التنفيذ','Failed','Échec')); });
+  };
+
+  /* ربط القوائم: بعد رسم المهام نحقن بطاقات الحملات */
+  try{
+    var _rt=window.renderTasks;
+    if(typeof _rt==='function'){
+      window.renderTasks=function(cat){
+        _rt.apply(this,arguments);
+        try{ window.campInject(cat); }catch(e){}
+      };
+    }
+  }catch(e){}
+  try{ document.addEventListener('visibilitychange',function(){ if(!document.hidden&&C&&CT&&Date.now()-CT>120000) load(true); }); }catch(e){}
 })();
 </script>
 </body>
