@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.04-r106';
+window.PL_BUILD='2026.11.04-r110';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -11931,7 +11931,6 @@ async function openCpx(){
     cb.onclick=function(){ ov.classList.remove('on'); fr.src='about:blank'; try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} };
     var s=null; try{ s=RealAuth.getSession(); }catch(e){}
     if(!s||!s.access_token){ toast(L('سجّل الدخول أولاً','Please sign in first','Connectez-vous d\'abord')); return; }
-    try{ var nt=document.getElementById('ow-note'); if(nt&&window.plDeviceNote) nt.innerHTML=window.plDeviceNote(); }catch(e){}
     ld.textContent=L('جارٍ التحميل…','Loading…','Chargement…'); ld.style.display='block';
     ov.classList.add('on'); fr.src='about:blank';
     try{ await RealAuth.ensureFresh(); s=RealAuth.getSession()||s; }catch(e){}
@@ -11958,6 +11957,14 @@ async function openCpx(){
 @keyframes owHotRing{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.7);opacity:0}}
 @media (prefers-reduced-motion:reduce){.trow .ow-hot,.trow .ow-hot::after{animation:none}}
 </style>
+
+<style>
+.t-icon.art img.net-logo{width:100%;height:100%;object-fit:contain;background:#fff;border-radius:inherit;padding:8%;box-sizing:border-box;display:block}
+</style>
+<script>
+/* شعار الشبكة على بطاقة الاستطلاع: ضع ملف الشعار الرسمي بجانب index.html باسم net-cpx.png (CPX) أو net-theorem.png (TheoremReach). إن لم يوجد الملف تظهر الأيقونة القديمة تلقائيًا. */
+window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" decoding="async" onerror="this.outerHTML=window.__plSvArt||\'\'">'; };
+</script>
 <script>
 (function(){
   var KEY='pl-cpx-on', TTL=30*60000;
@@ -11996,8 +12003,9 @@ async function openCpx(){
         if(box && !box.querySelector('.cpx-row')){
           var art=''; try{ art=artHTML('survey'); }catch(e){}
           var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+          window.__plSvArt=art;
           var card='<div class="trow cpx-row" onclick="openCpx()">'
-            +'<div class="t-icon art">'+art+'</div>'
+            +'<div class="t-icon art">'+window.plNetLogo('net-cpx.png')+'</div>'
             +'<div class="t-info"><h4>'+L('استطلاعات مدفوعة','Paid surveys','Sondages rémunérés')+'</h4>'
             +'<div class="svy-sub">'+L('استطلاعات قصيرة تناسب ملفك — تعرف المكافأة قبل أن تبدأ','Short surveys matched to your profile — see the reward before you start','Sondages courts adaptés à votre profil — récompense visible avant de commencer')+'</div>'+'<div class="svy-pills"><span>🔓 '+L('مفتوحة الآن','Open now','Ouvert')+'</span><span>⏱ '+L(CPX_UI.time[0],CPX_UI.time[1],CPX_UI.time[2])+'</span></div></div>'
             +go+'</div>';
@@ -12082,8 +12090,9 @@ async function openCpx(){
       var box=document.getElementById('tlist'); if(!box||box.querySelector('.tr-row')) return;
       var art=''; try{ art=artHTML('survey'); }catch(e){}
       var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+      window.__plSvArt=art;
       var card='<div class="trow tr-row" onclick="openTheorem()">'
-        +'<div class="t-icon art">'+art+'</div>'
+        +'<div class="t-icon art">'+window.plNetLogo('net-theorem.png')+'</div>'
         +'<div class="t-info"><h4>'+L('استبيانات إضافية','More surveys','Plus de sondages')+'</h4>'
         +'<div class="svy-sub">'+L('استبيانات إضافية — التوفر والمكافأة حسب بلدك وملفك','More surveys — availability and reward depend on your country and profile','Plus de sondages — selon votre pays et profil')+'</div>'+'<div class="svy-pills"><span>🔓 '+L('مفتوحة الآن','Open now','Ouvert')+'</span></div></div>'
         +go+'</div>';
@@ -12942,6 +12951,7 @@ function openOfferwall(){
     cb.onclick=function(){ ov.classList.remove('on'); fr.src='about:blank'; try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} try{ if(SRV&&SRV.cycle) SRV.cycle(true); }catch(e){} };
     var uid=owUid();
     if(!uid){ toast(L('سجّل الدخول أولاً','Please sign in first','Connectez-vous d\'abord')); return; }
+    try{ var nt=document.getElementById('ow-note'); if(nt&&window.plDeviceNote) nt.innerHTML=window.plDeviceNote(); }catch(e){}
     ld.textContent=L('جارٍ التحميل…','Loading…','Chargement…'); ld.style.display='block';
     ov.classList.add('on');
     fr.onload=function(){ ld.style.display='none'; };
@@ -14081,5 +14091,109 @@ function openOfferwall(){
   try{ document.addEventListener('visibilitychange',function(){ if(!document.hidden&&C&&CT&&Date.now()-CT>120000) load(true); }); }catch(e){}
 })();
 </script>
+
+<style>
+#svy-g{position:fixed;inset:0;z-index:100001;background:rgba(3,8,20,.78);display:none;align-items:flex-end;justify-content:center}
+#svy-g.on{display:flex}
+#svy-g .sg{width:100%;max-width:520px;max-height:92vh;overflow:auto;background:#0f1a30;border:1px solid #223559;border-radius:22px 22px 0 0;padding:18px 16px calc(14px + env(safe-area-inset-bottom,0px));color:#e6edff}
+#svy-g h3{margin:0 0 4px;font-size:18px;font-weight:800}
+#svy-g .sg-s{font-size:13px;color:#9fb3d9;margin:0 0 12px;line-height:1.7}
+#svy-g .sg-i{display:flex;gap:10px;align-items:flex-start;padding:10px 11px;margin:0 0 8px;border-radius:13px;background:#13213d;border:1px solid #1f3258;font-size:13.5px;line-height:1.7}
+#svy-g .sg-i>b{flex:none;width:26px;height:26px;border-radius:50%;background:#0e7490;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+#svy-g .sg-i strong{display:block;font-size:14px;margin-bottom:1px}
+#svy-g .sg-i.bad{background:#2a1115;border-color:rgba(239,68,68,.3)}
+#svy-g .sg-i.bad>b{background:#b91c1c}
+#svy-g .sg-go{display:block;width:100%;margin-top:10px;border:0;border-radius:14px;padding:14px;background:#16a34a;color:#fff;font-size:16px;font-weight:800}
+#svy-g .sg-no{display:block;width:100%;margin-top:6px;border:0;background:none;color:#8aa0c8;padding:9px;font-size:13px}
+</style>
+<div id="svy-g"><div class="sg" id="svy-sg"></div></div>
+<script>
+/* ===== شرح قبل الاستطلاعات: يظهر عند الضغط، ولا يفتح الاستطلاع إلا بعد «بدء الاستطلاع» ===== */
+(function(){
+  var NEXT=null;
+  function html(){
+    var t=function(a,e,f){ return L(a,e,f); };
+    var it=function(n,h,b,bad){ return '<div class="sg-i'+(bad?' bad':'')+'"><b>'+n+'</b><div><strong>'+h+'</strong>'+b+'</div></div>'; };
+    return '<h3>📝 '+t('ما هي الاستطلاعات؟','What are surveys?','Que sont les sondages ?')+'</h3>'
+      +'<p class="sg-s">'+t('شركات تريد معرفة رأي الناس، فتدفع لك مبلغًا مقابل إجابتك عن أسئلة قصيرة. اقرأ هذه النقاط قبل أن تبدأ:','Companies want to know what people think, so they pay you for answering short questions. Read these points before you start:','Des entreprises veulent connaître l’avis des gens et vous paient pour répondre à de courtes questions. Lisez ceci avant de commencer :')+'</p>'
+      +it(1,t('عبّر عن رأيك الحقيقي وكن صادقًا','Give your real opinion and be honest','Donnez votre vrai avis, soyez honnête'),t('لا توجد إجابة صحيحة أو خاطئة؛ أجب بما يخصّك فعلًا. تُراجَع الإجابات، والإجابات العشوائية أو المتناقضة تُرفض.','There are no right or wrong answers; answer about yourself. Answers are checked, and random or contradictory ones are rejected.','Pas de bonne ou mauvaise réponse ; répondez pour vous. Les réponses sont vérifiées, les réponses aléatoires ou contradictoires sont rejetées.'))
+      +it(2,t('أكمل الاستطلاع حتى النهاية','Finish the survey to the end','Terminez le sondage'),t('تحصل على المكافأة فقط إذا أكملت كل الأسئلة حتى الصفحة الأخيرة. إن خرجت في المنتصف لا تُحتسب.','You are paid only if you complete every question up to the last page. If you leave halfway, it does not count.','Vous êtes payé uniquement si vous terminez toutes les questions. Si vous quittez en cours de route, rien n’est compté.'))
+      +it(3,t('قد يُقال لك «غير مناسب»','You may be told “not a match”','On peut vous dire « non éligible »'),t('في أول الاستطلاع تُطرح أسئلة تعريفية، وإذا لم يناسب ملفّك الاستطلاع ينتهي بلا مكافأة. هذا طبيعي، جرّب استطلاعًا آخر من القائمة.','At the start, a few profile questions decide if the survey fits you. If not, it ends without a reward. This is normal, just try another survey from the list.','Au début, quelques questions de profil décident si le sondage vous convient. Sinon il se termine sans récompense. C’est normal, essayez-en un autre.'))
+      +it(4,t('حالات الرفض','When it is rejected','Cas de refus'),t('يُرفض الاستطلاع إذا أجبت بسرعة كبيرة أو بعشوائية، أو ناقضت إجاباتك، أو استخدمت أكثر من حساب أو غششت.','A survey is rejected if you answer too fast or randomly, contradict yourself, use more than one account, or cheat.','Un sondage est refusé si vous répondez trop vite ou au hasard, vous contredisez, utilisez plusieurs comptes ou trichez.'),true)
+      +'<button type="button" class="sg-go" id="svy-go">'+t('بدء الاستطلاع','Start survey','Commencer le sondage')+'</button>'
+      +'<button type="button" class="sg-no" id="svy-no">'+t('رجوع','Back','Retour')+'</button>';
+  }
+  function close(){ var g=document.getElementById('svy-g'); if(g) g.classList.remove('on'); NEXT=null; }
+  function show(fn){
+    NEXT=fn; var g=document.getElementById('svy-g'), b=document.getElementById('svy-sg'); if(!g||!b){ fn(); return; }
+    b.innerHTML=html();
+    document.getElementById('svy-go').onclick=function(){ var f=NEXT; close(); try{ f&&f(); }catch(e){} };
+    document.getElementById('svy-no').onclick=close;
+    g.onclick=function(ev){ if(ev.target===g) close(); };
+    g.classList.add('on');
+  }
+  ['openCpx','openTheorem'].forEach(function(n){
+    var o=window[n]; if(typeof o!=='function') return;
+    window[n]=function(){ var a=arguments, self=this; show(function(){ return o.apply(self,a); }); };
+  });
+})();
+</script>
+
+<style id="pl-polish">
+/* ===== لمسة تصميم (r109): ألوان أوضح، أرقام ثابتة العرض، ضغطات ناعمة. تعمل بـ transform/opacity فقط، وتُلغى في الوضع الخفيف ===== */
+img{filter:none !important;image-rendering:auto}
+img[src^="data:"],.t-icon img,.m-icon img{image-rendering:-webkit-optimize-contrast}
+.balance-card .amount,.tt-card b,.tt-card .amt,.trow .t-pay,.t-pay{font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.balance-card{background-image:radial-gradient(120% 160% at 100% 0%,rgba(99,102,241,.22) 0%,rgba(99,102,241,0) 55%),radial-gradient(90% 120% at 0% 100%,rgba(34,211,238,.10) 0%,rgba(34,211,238,0) 60%),linear-gradient(135deg,var(--card),var(--card2)) !important;border-color:rgba(122,140,200,.28) !important}
+.hero{border-color:rgba(122,140,200,.28) !important;box-shadow:0 14px 34px rgba(2,6,23,.45)}
+#page-tasks .page-title{color:#7dd3fc}
+.trow{border-color:rgba(122,140,200,.22);box-shadow:0 6px 18px rgba(2,6,23,.28),inset 0 1px 0 rgba(255,255,255,.04)}
+.t-icon{box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),0 4px 12px rgba(2,6,23,.35)}
+.t-icon img{object-fit:cover}
+.bottomnav{background:#0a0f1b;border-top:1px solid rgba(122,140,200,.22)}
+.nav-btn.active{color:#60a5fa}
+.nav-btn.active svg{filter:none;transform:translateY(-1px)}
+html:not(.pl-lite) .trow,html:not(.pl-lite) .nav-btn,html:not(.pl-lite) .method-card,html:not(.pl-lite) button{transition:transform .14s ease,opacity .14s ease,color .2s}
+html:not(.pl-lite) .trow:active,html:not(.pl-lite) .method-card:active{transform:scale(.985)}
+html:not(.pl-lite) button:active{transform:scale(.97)}
+html:not(.pl-lite) .page.active{animation:plPg .22s ease-out}
+@keyframes plPg{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.page.active{animation:none !important}.trow,.nav-btn,button{transition:none !important}}
+</style>
+
+<style id="pl-bold">
+/* ===== r110: هوية أجرأ وأكثر فخامة. تدرجات ثابتة فقط (بلا blur ولا ظلال ثقيلة) لتبقى خفيفة على الهاتف الضعيف ===== */
+:root{--bg:#070b14;--bg2:#0a1020;--card:#141f3a;--card2:#1b2a52;--border:#2f4175;--accent:#4f7cff;--accent2:#9b5cff;--gold:#ffc24a}
+html,body{background:#070b14}
+/* بطاقة الرصيد: بنفسجي-أزرق نابض */
+.balance-card{background:linear-gradient(135deg,#2f3fe0 0%,#6a3df2 55%,#b04cf0 100%) !important;border:1px solid rgba(255,255,255,.22) !important;box-shadow:0 14px 30px -12px rgba(106,61,242,.65),inset 0 1px 0 rgba(255,255,255,.28) !important;position:relative;overflow:hidden}
+.balance-card:after{content:"";position:absolute;top:-60%;inset-inline-end:-20%;width:70%;height:200%;background:radial-gradient(closest-side,rgba(255,255,255,.18),rgba(255,255,255,0));pointer-events:none}
+.balance-card .label{color:rgba(255,255,255,.82) !important}
+.balance-card .amount{color:#fff !important;font-size:30px !important;text-shadow:0 2px 12px rgba(0,0,0,.25)}
+.balance-card .pts{color:#ffe08a !important}
+.balance-card .start-btn{background:#fff !important;color:#4a2fd9 !important;box-shadow:0 8px 18px -6px rgba(0,0,0,.45) !important}
+/* أزرار رئيسية */
+.start-btn{background:linear-gradient(135deg,#4f7cff,#9b5cff) !important;box-shadow:0 10px 22px -8px rgba(122,92,255,.7) !important}
+/* بطاقة الواجهة */
+.hero{border:1px solid rgba(155,92,255,.45) !important;box-shadow:0 16px 34px -14px rgba(106,61,242,.55) !important}
+.hero-badge{background:rgba(255,194,74,.16) !important;border-color:rgba(255,194,74,.55) !important;color:#ffd978 !important}
+/* بطاقات المهام: خلفية متدرجة وشريط لوني جانبي */
+.trow{background:linear-gradient(135deg,#18264a,#101a35) !important;border:1px solid rgba(110,130,255,.3) !important;position:relative}
+
+.trow .go{background:linear-gradient(135deg,#4f7cff,#9b5cff) !important;box-shadow:0 8px 16px -6px rgba(122,92,255,.7)}
+.trow .t-pay,.trow [class*="pay"],.trow .pill-gold{box-shadow:0 6px 14px -6px rgba(255,194,74,.6)}
+/* تبويبات التصنيف والأقسام */
+.tab.active{background:linear-gradient(135deg,#4f7cff,#9b5cff) !important;box-shadow:0 12px 24px -10px rgba(122,92,255,.8),inset 0 1px 0 rgba(255,255,255,.3) !important}
+.seg button.on{background:linear-gradient(135deg,#4f7cff,#9b5cff) !important}
+/* بطاقة رصيد صفحة المهام */
+.tt-card{border-color:rgba(255,194,74,.45) !important;background:linear-gradient(135deg,#1a2548,#121b36) !important}
+/* الشريط السفلي: مؤشر علوي للصفحة الحالية */
+.nav-btn{position:relative}
+.nav-btn.active{color:#8fb0ff !important}
+.nav-btn.active:before{content:"";position:absolute;top:-1px;left:28%;right:28%;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,#4f7cff,#9b5cff)}
+.bottomnav{border-top:1px solid rgba(110,130,255,.3) !important}
+/* عنوان الأقسام */
+.t-sec{color:#cfd8ff}
+</style>
 </body>
 </html>
