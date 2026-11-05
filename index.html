@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.05-r119';
+window.PL_BUILD='2026.11.05-r120';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -13605,7 +13605,7 @@ function openOfferwall(){
   };
   /* ---------- تصفّح ألعاب الشبكة ---------- */
   /* r118: منتقي ألعاب واستطلاعات Offerwall.GG بفلاتر مثل Offerwall.me: القسم (ألعاب/استطلاعات/تطبيقات)، جديد، آيفون، أندرويد. الجلب من الخادم الحالي دون تغييره. */
-  var GCATS=[['games','🎮',L('الألعاب','Games','Jeux'),'games'],['survey','📝',L('استطلاعات','Surveys','Sondages'),'surveys'],['apps','📲',L('تطبيقات','Apps','Apps'),'apps']];
+  var GCATS=[['games','🎮',L('الألعاب','Games','Jeux'),'games'],['survey','📝',L('استطلاعات','Surveys','Sondages'),'surveys,survey'],['apps','📲',L('تطبيقات','Apps','Apps'),'apps,app']];
   function gSeenKey(c){ return 'pl-owg-seen:'+c; }
   function gSeenGet(c){ try{ return JSON.parse(localStorage.getItem(gSeenKey(c))||'null'); }catch(e){ return null; } }
   function gSeenSet(c,ids){ try{ var o={}; ids.slice(0,600).forEach(function(i){ o[i]=1; }); localStorage.setItem(gSeenKey(c),JSON.stringify(o)); }catch(e){} }
@@ -13632,6 +13632,7 @@ function openOfferwall(){
     if(P.busy) h+='<div style="text-align:center;padding:12px;color:var(--muted)">…</div>';
     else if(P.page<P.pages) h+='<button class="adm-new" style="width:100%;margin-top:8px" onclick="owAdmPickMore()">'+L('عرض المزيد','Show more','Plus')+'</button>';
     if(!P.busy&&!rows.length) h+='<div style="text-align:center;padding:14px;color:var(--muted);line-height:1.8">'+(P.cat!=='games'&&!P.items.length?L('لا توجد نتائج في هذا القسم. قد لا تدعمه الشبكة أو لا يوجد فيه عروض لبلدك.','No results here. The network may not support this section.','Aucun résultat.'):L('لا نتائج','No results','Aucun résultat'))+'</div>';
+    if(P.dbg) h+='<div dir="auto" style="font-size:11px;color:#93c5fd;margin-top:8px;line-height:1.7">ℹ️ '+v(P.dbg)+'</div>';
     h+='<div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.7">'+L('الآيفون/الأندرويد: يُحدَّد حسب ما تعيده الشبكة لجهازك أنت الآن، وقد لا تظهر عروض الجهاز الآخر.','iOS/Android is based on what the network returns for your current device.','iOS/Android selon votre appareil.')+'</div>';
     h+='<button class="adm-new" style="width:100%;margin-top:10px;background:rgba(255,255,255,.08)" onclick="owAdmFormDraw()">'+L('رجوع','Back','Retour')+'</button>';
     card(h,'🔎 '+L('عروض Offerwall.GG','Offerwall.GG offers','Offres Offerwall.GG'));
@@ -13642,17 +13643,23 @@ function openOfferwall(){
   window.owAdmPickSearch=function(){ var P=A.pick; P.q=($('owa-q').value||'').trim().slice(0,80); P.items=[]; P.page=0; P.pages=1; P.newIds={}; owAdmPickMore(); };
   window.owAdmPickMore=function(){
     var P=A.pick; if(P.busy) return; P.busy=true; P.err=''; owAdmPickDraw();
-    var cat=(GCATS.filter(function(c){ return c[0]===P.cat; })[0]||GCATS[0])[3];
-    call('action=ow_offers&category='+cat+'&sort=newest&page='+(P.page+1)+(P.q?'&search='+encodeURIComponent(P.q):'')).then(function(j){
-      P.busy=false;
-      if(j&&j.ok){
-        P.page=j.page; P.pages=j.pages; var seen={}; P.items.forEach(function(x){ seen[x.id]=1; });
-        if(P.seen===null) P.seen=gSeenGet(P.cat)||{}; var hadSeen=Object.keys(P.seen).length>0;
-        (j.offers||[]).forEach(function(x,ix){ if(seen[x.id]) return; P.items.push(x); if(hadSeen?!P.seen[x.id]:(P.page<=1&&ix<12)) P.newIds[x.id]=1; });
-        if(!P.q) gSeenSet(P.cat,P.items.map(function(x){ return x.id; }).concat(Object.keys(P.seen)));
-      } else P.err=why(j&&j.why);
-      owAdmPickDraw();
-    });
+    var cats=String((GCATS.filter(function(c){ return c[0]===P.cat; })[0]||GCATS[0])[3]).split(','); if(P.ci==null||P.page===0) P.ci=0;
+    function go(){
+      var cat=cats[P.ci];
+      call('action=ow_offers&category='+encodeURIComponent(cat)+'&page='+(P.page+1)+(P.q?'&search='+encodeURIComponent(P.q):'')).then(function(j){
+        if(j&&j.ok&&!(j.offers||[]).length&&P.page===0&&P.ci<cats.length-1){ P.ci++; return go(); }
+        P.busy=false;
+        if(j&&j.ok){
+          P.page=j.page; P.pages=j.pages; var seen={}; P.items.forEach(function(x){ seen[x.id]=1; });
+          if(P.seen===null) P.seen=gSeenGet(P.cat)||{}; var hadSeen=Object.keys(P.seen).length>0;
+          (j.offers||[]).forEach(function(x,ix){ if(seen[x.id]) return; P.items.push(x); if(hadSeen?!P.seen[x.id]:(P.page<=1&&ix<12)) P.newIds[x.id]=1; });
+          if(!P.q&&P.items.length) gSeenSet(P.cat,P.items.map(function(x){ return x.id; }).concat(Object.keys(P.seen)));
+          P.dbg=L('ردّت الشبكة: قسم «','Network replied: category "','Réponse: catégorie "')+cat+L('» · الإجمالي ','" · total ','" · total ')+(j.total!=null?j.total:'?')+L(' · بلدك ',' · country ',' · pays ')+(j.country||'?')+L(' · جهازك ',' · device ',' · appareil ')+(j.device||'?');
+        } else { P.err=why(j&&j.why)+(j&&j.why?' ['+j.why+(j.http?' '+j.http:'')+']':''); P.dbg=''; }
+        owAdmPickDraw();
+      });
+    }
+    go();
   };
   window.owAdmPickUse=function(i){ var x=A.pick.items[i]; if(!x) return; A.g.offer_id=x.id; try{ A.g.place=A.pick.cat; }catch(e){} A.err=''; owAdmFormDraw(); owAdmFetch(String(x.id)); };
 })();
