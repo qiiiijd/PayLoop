@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.05-r114';
+window.PL_BUILD='2026.11.05-r117';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -4158,7 +4158,7 @@ function cdTickerStart(){
           tn=document.createElement('span'); tn.className='cdt'; el.appendChild(tn);
         }
         if(tn.textContent!==txt) tn.textContent=txt;
-        if(end>0&&end<=Date.now()&&el.getAttribute('data-exp')!=='1'){ el.setAttribute('data-exp','1'); flipped=true; }
+        if(end>0&&end<=Date.now()&&el.getAttribute('data-exp')!=='1'){ el.setAttribute('data-exp','1'); var _fm=(window.__cdDone=window.__cdDone||{}); if(!_fm[end]){ _fm[end]=1; flipped=true; } }
       });
       document.querySelectorAll('[data-cdgrid]').forEach(function(el){
         const end=parseInt(el.getAttribute('data-cdgrid'),10)||0;
@@ -5353,7 +5353,7 @@ function homeGuideDraw(){ try{
     +st(3,'💸',L('اسحب أرباحك','Withdraw your money','Retirez vos gains'),(L('من «السحب» ابتداءً من $3.','From “Withdraw”, from $3.','Dès 3 $.')+(mr?L(' تحتاج أيضًا '+mr+' أصدقاء سجّلوا برابط دعوتك.',' You also need '+mr+' friends who joined with your invite link.',' Il faut aussi '+mr+' amis inscrits via votre lien.'):'')))
     +'<button type="button" onclick="go(\'tasks\')" style="width:100%;margin-top:6px;border:0;border-radius:13px;padding:12px;font:900 15px inherit;background:#38bdf8;color:#082f49;cursor:pointer">'+L('ابدأ الآن ←','Start now →','Commencer →')+'</button></div>';
 }catch(e){} }
-try{ document.addEventListener('DOMContentLoaded',function(){ setTimeout(function(){ homeGuideDraw(); szDraw(); },1200); }); setInterval(function(){ homeGuideDraw(); szDraw(); },4000); }catch(e){}
+try{ document.addEventListener('DOMContentLoaded',function(){ setTimeout(function(){ homeGuideDraw(); szDraw(); },1200); }); setInterval(function(){ if(document.hidden) return; homeGuideDraw(); szDraw(); },4000); }catch(e){}
 /* ---- r58: شرط الأصدقاء + الرسوم ---- */
 function wdFeeOf(v,k){ const R=SRV.wdRules; if(!R||!(R.fee_pct>0)||(k!=='ccp'&&k!=='pp'&&k!=='usdt')||!(v>0)) return 0; return Math.round(v*R.fee_pct/100*10000)/10000; }
 function wdRefsLock(){ const R=SRV.wdRules; if(!R||R.exempt||!(R.min_refs>0)) return null; return R.refs<R.min_refs?{have:R.refs,need:R.min_refs}:null; }
@@ -5377,7 +5377,7 @@ function wdRateDraw(){ try{
   t.textContent=L('سعر الصرف عند السحب: 1$ = '+WD_DZD+' دج','Withdrawal rate: $1 = '+WD_DZD+' DZD','Taux de retrait : 1 $ = '+WD_DZD+' DA');
   u.textContent=L('مثال: سحب $5 = '+(5*WD_DZD)+' دج. ينطبق على السحب إلى CCP. أما شحن Flexy فله باقاته المحددة.','Example: $5 = '+(5*WD_DZD)+' DZD. Applies to CCP withdrawals. Flexy top-ups have their own fixed packs.','Exemple : 5 $ = '+(5*WD_DZD)+' DA. Pour les retraits CCP. Les recharges Flexy ont leurs forfaits.');
 }catch(e){} }
-try{ document.addEventListener('DOMContentLoaded',wdRateDraw); window.addEventListener('load',wdRateDraw); setInterval(wdRateDraw,3000); }catch(e){}
+try{ document.addEventListener('DOMContentLoaded',wdRateDraw); window.addEventListener('load',wdRateDraw); setInterval(function(){ if(!document.hidden) wdRateDraw(); },3000); }catch(e){}
 function wdCheck(k){
   const inp=document.getElementById('wd-amt-'+k); if(!inp) return;
   const help=document.getElementById('wd-help-'+k), btn=document.getElementById('wd-btn-'+k);
@@ -11317,7 +11317,7 @@ setInterval(function(){
     if(document.hidden) return;
     const els=document.querySelectorAll('[data-cd]'); if(!els.length) return;
     let flip=false; const n=ctNow();
-    els.forEach(function(el){ const t=Number(el.getAttribute('data-cd'))||0, left=t-n; el.textContent=ctFmt(left); if(left<=0&&!el.getAttribute('data-z')){ el.setAttribute('data-z','1'); flip=true; } });
+    els.forEach(function(el){ const t=Number(el.getAttribute('data-cd'))||0, left=t-n; el.textContent=ctFmt(left); if(left<=0&&!el.getAttribute('data-z')){ el.setAttribute('data-z','1'); var _zm=(window.__ctDone=window.__ctDone||{}); if(!_zm[t]||Date.now()-_zm[t]>60000){ _zm[t]=Date.now(); flip=true; } } });
     if(flip) setTimeout(function(){ CT.busy=false; ctLoad(); CH.busy=false; chLoad(); },1200);
   }catch(e){}
 },1000);
@@ -14322,5 +14322,32 @@ html.pl-lite #art-home:after{animation:plSweep 7s ease-in-out infinite !importan
   document.addEventListener('visibilitychange',function(){ if(!document.hidden) setTimeout(warm,600); });
 })();
 </script>
+<script>
+/* r115: تجميع إعادة رسم المهام — إن تكرر الاستدعاء خلال أقل من 0.4 ثانية يُنفَّذ رسم واحد أخير بدل رسمات متتالية (يمنع وميض الصور) */
+(function(){
+  var f=window.renderTasks; if(typeof f!=='function'||f.__pl) return;
+  var last=0,tm=0;
+  var w=function(){ var now=Date.now(),a=arguments,self=this; if(now-last>400){ last=now; clearTimeout(tm); return f.apply(self,a); } clearTimeout(tm); tm=setTimeout(function(){ last=Date.now(); try{ f.apply(self,a); }catch(e){} },420); };
+  w.__pl=1; window.renderTasks=w;
+})();
+</script>
+<script>
+/* r116: توفير بطارية وبيانات: صور القوائم تُحمَّل عند الحاجة فقط (lazy) وبفك ترميز غير متزامن، دون تغيير الشكل */
+(function(){
+  function fix(root){ try{ (root.querySelectorAll?root.querySelectorAll('img:not([loading])'):[]).forEach(function(i){ if(i.closest&&i.closest('#tlist,#featlist,.hist,#page-home')){ i.loading='lazy'; i.decoding='async'; } }); }catch(e){} }
+  try{ var mo=new MutationObserver(function(ms){ ms.forEach(function(m){ m.addedNodes.forEach(function(n){ if(n.nodeType===1){ if(n.tagName==='IMG'&&!n.hasAttribute('loading')&&n.closest&&n.closest('#tlist,#featlist,.hist')){ n.loading='lazy'; n.decoding='async'; } else fix(n); } }); }); });
+    document.addEventListener('DOMContentLoaded',function(){ var t=document.getElementById('tlist'); if(t) mo.observe(t,{childList:true,subtree:true}); }); }catch(e){}
+})();
+</script>
+<style id="pl-smooth">
+/* r117: سلاسة التصفح والتنقل — تخفيف ما يثقل الهاتف الضعيف أثناء التمرير والانتقال، دون تغيير الألوان أو التصميم */
+#tlist .trow,#featlist .trow{contain:layout style}
+html.pl-lite *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html.pl-lite .trow,html.pl-lite .nc-card,html.pl-lite .card{box-shadow:none!important;transition:none!important}
+html.pl-lite .page.active{animation:none!important}
+html.pl-lite .trow:active,html.pl-lite .nav-btn:active{transform:scale(.985)}
+.page{scroll-behavior:auto}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
 </body>
 </html>
