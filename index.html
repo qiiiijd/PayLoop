@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.04-r113';
+window.PL_BUILD='2026.11.05-r114';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -2773,7 +2773,7 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
 #page-tasks .t-sec:before{content:"";width:4px;height:16px;border-radius:4px;background:var(--acc,#2563eb)}
 #page-tasks .t-resume{border-radius:16px}
 @keyframes tkIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-#page-tasks.tk-in .trow:nth-child(-n+8){animation:tkIn .3s ease both}
+#page-tasks.tk-in .trow:nth-child(-n+8){animation:none}
 #page-tasks.tk-in .trow:nth-child(2){animation-delay:.03s}#page-tasks.tk-in .trow:nth-child(3){animation-delay:.06s}#page-tasks.tk-in .trow:nth-child(4){animation-delay:.09s}
 #page-tasks.tk-in .trow:nth-child(5){animation-delay:.12s}#page-tasks.tk-in .trow:nth-child(6){animation-delay:.15s}#page-tasks.tk-in .trow:nth-child(7){animation-delay:.18s}#page-tasks.tk-in .trow:nth-child(8){animation-delay:.21s}
 @media (prefers-reduced-motion:reduce){#page-tasks .trow{animation:none!important;transition:none!important}}
@@ -12972,7 +12972,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     var c=M.cur; if(!c) return; var g=function(id){ return String((document.getElementById(id)||{}).value||'').trim(); };
     var name=g('owm-f-n'); if(!name){ toast(L('اكتب اسم اللعبة بالعربية','Enter the game name','Entrez le nom')); return; }
     var o={ext:c.ext,name:name,descr:g('owm-f-d'),task:g('owm-f-t'),img:(M.imgUp||g('owm-f-i')),btn:g('owm-f-b'),platform:g('owm-f-pf')||'auto',place:g('owm-f-p')||'games',sort:parseInt(g('owm-f-s'),10)||100,featured:g('owm-f-f')==='1',active:g('owm-f-a')!=='0'};
-    mSave(o,function(ok){ if(ok){ toast(L('✅ تم الحفظ','✅ Saved','✅ Enregistré')); window.owmMgOpen(); } });
+    mSave(o,function(ok){ if(ok){ try{ if(o.active&&o.active!==false&&typeof plAnnounceNew==='function') plAnnounceNew(o.place||'games',o.name,'owm:'+o.ext); }catch(e){} toast(L('✅ تم الحفظ','✅ Saved','✅ Enregistré')); window.owmMgOpen(); } });
   };
 })();
 </script>
@@ -14214,7 +14214,7 @@ img[src^="data:"],.t-icon img,.m-icon img{image-rendering:-webkit-optimize-contr
 html:not(.pl-lite) .trow,html:not(.pl-lite) .nav-btn,html:not(.pl-lite) .method-card,html:not(.pl-lite) button{transition:transform .14s ease,opacity .14s ease,color .2s}
 html:not(.pl-lite) .trow:active,html:not(.pl-lite) .method-card:active{transform:scale(.985)}
 html:not(.pl-lite) button:active{transform:scale(.97)}
-html:not(.pl-lite) .page.active{animation:plPg .22s ease-out}
+html:not(.pl-lite) .page.active:not(#page-tasks){animation:plPg .22s ease-out}
 @keyframes plPg{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.page.active{animation:none !important}.trow,.nav-btn,button{transition:none !important}}
 </style>
@@ -14314,5 +14314,13 @@ html.pl-lite #art-home:after{animation:plSweep 7s ease-in-out infinite !importan
 #page-home .m-icon.art,html.pl-lite #page-home .m-icon.art{animation:plFloat 4.5s ease-in-out infinite !important}
 @media (prefers-reduced-motion:reduce){#art-home>img.card-artwork,#art-home:after,#page-home .art>img.card-artwork,#page-home .m-icon.art{animation:none !important}}
 </style>
+<script>
+/* r114: تحميل مسبق لعناصر Offerwall.me/.gg بالخلفية حتى تكون جاهزة قبل فتح المهام */
+(function(){
+  function warm(){ try{ if(document.hidden) return; if(typeof window.owmGamesLoad==='function') window.owmGamesLoad(false); if(typeof window.renderTasks==='function'&&!(document.getElementById('page-tasks')||{classList:{contains:function(){return false;}}}).classList.contains('active')) window.renderTasks(typeof curCat!=='undefined'?curCat:'all'); }catch(e){} }
+  setTimeout(warm,2500); setTimeout(warm,9000);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) setTimeout(warm,600); });
+})();
+</script>
 </body>
 </html>
