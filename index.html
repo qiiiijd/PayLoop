@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.05-r120';
+window.PL_BUILD='2026.11.05-r122';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -12254,77 +12254,6 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
 })();
 </script>
 <script>
-/* ===== Monlix: عروض واستطلاعات إضافية. الرابط يأتي من الخادم (لا سرّ في التطبيق).
-   المكافأة لا تُمنح من هنا: تصل فقط عبر postback موقَّع إلى الخادم ثم تظهر في رصيدك.
-   البطاقة لا تظهر أبدًا ما لم تكن الشبكة مفعّلة ومكتملة الإعداد في الخادم. ===== */
-(function(){
-  var KEY='pl-mx-on', TTL=30*60000;
-  function fnUrl(q){ return RealAuth.base()+'/functions/v1/'+encodeURIComponent((typeof net2Fn==='function'?net2Fn():'super-worker'))+'?action=monlix_link'+(q||''); }
-  function cached(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o&&typeof o.on==='boolean'&&Date.now()-o.t<(o.on?TTL:120000)) return o; }catch(e){} return null; }
-  function again(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
-  window.mxProbe=function(){
-    try{
-      var c=cached(); if(c){ window.__mxOn=c.on; return; }
-      if(window.__mxProbing||typeof SRV==='undefined'||!SRV||!SRV.on||!SRV.on()) return;
-      window.__mxProbing=true;
-      Promise.resolve(SRV.tok()).then(function(t){
-        if(!t) return;
-        return fetch(fnUrl('&probe=1'),{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()}}).then(function(r){ return r.ok?r.json():null; }).then(function(j){
-          if(!j||j.ok!==true) return;
-          var was=!!window.__mxOn; window.__mxOn=j.on===true;
-          try{ localStorage.setItem(KEY,JSON.stringify({on:window.__mxOn,t:Date.now()})); }catch(e){}
-          if(window.__mxOn&&!was) again();
-        });
-      }).catch(function(){}).then(function(){ window.__mxProbing=false; });
-    }catch(e){ window.__mxProbing=false; }
-  };
-  window.openMonlix=async function(){
-    if(window.__mxBusy) return; window.__mxBusy=true;
-    var w=null; try{ w=window.open('about:blank','_blank'); }catch(e){}
-    var fail=function(m){ try{ if(w) w.close(); }catch(e){} toast(m||L('تعذّر فتح العروض الآن','Could not open offers now','Impossible d\'ouvrir les offres')); };
-    try{
-      var s=null; try{ s=RealAuth.getSession(); }catch(e){}
-      if(!s||!s.access_token){ fail(L('سجّل الدخول أولاً','Please sign in first','Connectez-vous d\'abord')); return; }
-      try{ await RealAuth.ensureFresh(); s=RealAuth.getSession()||s; }catch(e){}
-      var r=await fetch(fnUrl(),{headers:{'Authorization':'Bearer '+s.access_token,'apikey':RealAuth.key()}});
-      var j=await r.json().catch(function(){ return {}; });
-      if(j&&j.why==='network_off'){ try{ localStorage.setItem(KEY,JSON.stringify({on:false,t:Date.now()})); }catch(e){} window.__mxOn=false; fail(L('العروض الإضافية غير متاحة الآن','Extra offers are unavailable right now','Offres indisponibles')); again(); return; }
-      if(!r.ok||!j||j.ok!==true||typeof j.url!=='string'||j.url.indexOf('https://offers.monlix.com/?')!==0){ fail(); return; }
-      window.__mxAt=Date.now();
-      if(w){ try{ w.opener=null; }catch(e){} try{ w.location.href=j.url; return; }catch(e){} }
-      if(!openTaskUrl(j.url)) fail();
-    }catch(e){ fail(); }
-    finally{ window.__mxBusy=false; }
-  };
-  /* عند العودة من الجدار: حدّث الرصيد (المكافأة تصل من الخادم، قد تتأخر ثوانٍ) */
-  try{ document.addEventListener('visibilitychange',function(){
-    if(document.hidden||!window.__mxAt||Date.now()-window.__mxAt>7200000) return;
-    if(Date.now()-(window.__mxSync||0)<20000) return; window.__mxSync=Date.now();
-    setTimeout(function(){ try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} try{ if(SRV&&SRV.cycle) SRV.cycle(true); }catch(e){} },2500);
-  }); }catch(e){}
-  var _rt3=window.renderTasks; if(typeof _rt3!=='function') return;
-  window.renderTasks=function(cat){
-    _rt3.apply(this,arguments);
-    try{
-      if(cat!=='games') return;
-      if(typeof taskTab!=='undefined'&&taskTab!=='new') return;
-      window.mxProbe();
-      if(!window.__mxOn) return;
-      var box=document.getElementById('tlist'); if(!box||box.querySelector('.mx-row')) return;
-      var art=''; try{ art=artHTML('games'); }catch(e){}
-      var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
-      var card='<div class="trow mx-row" onclick="openMonlix()">'
-        +'<div class="t-icon art">'+art+'</div>'
-        +'<div class="t-info"><h4>'+L('استطلاعات وعروض إضافية','Surveys & more offers','Sondages et offres')+'</h4>'
-        +'<div class="meta"><span>🔓 '+L('فتح العروض','Open offers','Ouvrir les offres')+'</span><span>'+L('التوفر والمكافأة حسب بلدك وجهازك','Availability and reward depend on your country and device','Selon votre pays et appareil')+'</span></div></div>'
-        +go+'</div>';
-      try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
-      var _ag=box.querySelector('.ay-row')||box.querySelector('.ag-row'); if(_ag) _ag.insertAdjacentHTML('afterend',card); else box.insertAdjacentHTML('afterbegin',card);
-    }catch(e){}
-  };
-})();
-</script>
-<script>
 /* ===== CPAGrip: عروض إضافية (جدار على نطاق منفصل). الرابط يأتي من الخادم (لا سرّ في التطبيق).
    المكافأة لا تُمنح من هنا: تصل فقط عبر postback موقَّع إلى الخادم ثم تظهر في رصيدك.
    البطاقة لا تظهر أبدًا ما لم تكن الشبكة مفعّلة ومكتملة الإعداد في الخادم. ===== */
@@ -12390,7 +12319,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
         +'<div class="meta"><span>🔓 '+L('فتح العروض','Open offers','Ouvrir les offres')+'</span><span>'+L('التوفر والمكافأة حسب بلدك وجهازك','Availability and reward depend on your country and device','Selon votre pays et appareil')+'</span></div></div>'
         +go+'</div>';
       try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
-      var _ag=box.querySelector('.mx-row')||box.querySelector('.ay-row')||box.querySelector('.ag-row'); if(_ag) _ag.insertAdjacentHTML('afterend',card); else box.insertAdjacentHTML('afterbegin',card);
+      var _ag=box.querySelector('.ay-row')||box.querySelector('.ag-row'); if(_ag) _ag.insertAdjacentHTML('afterend',card); else box.insertAdjacentHTML('afterbegin',card);
     }catch(e){}
   };
 })();
@@ -12462,7 +12391,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
         +'<div class="meta"><span>🔓 '+L('فتح العروض','Open offers','Ouvrir les offres')+'</span><span>'+L('التوفر والمكافأة حسب بلدك وجهازك','Availability and reward depend on your country and device','Selon votre pays et appareil')+'</span></div></div>'
         +go+'</div>';
       try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){}
-      var _ag=box.querySelector('.cg-row')||box.querySelector('.mx-row')||box.querySelector('.ay-row')||box.querySelector('.ag-row'); if(_ag) _ag.insertAdjacentHTML('afterend',card); else box.insertAdjacentHTML('afterbegin',card);
+      var _ag=box.querySelector('.cg-row')||box.querySelector('.ay-row')||box.querySelector('.ag-row'); if(_ag) _ag.insertAdjacentHTML('afterend',card); else box.insertAdjacentHTML('afterbegin',card);
     }catch(e){}
   };
 })();
@@ -13357,11 +13286,11 @@ function openOfferwall(){
       busy:L('الخدمة مشغولة، حاول بعد دقيقة','Busy, retry in a minute','Occupé'),network_off:L('شبكة Offerwall.GG غير مفعّلة','Offerwall.GG is off','Réseau inactif'),bad_id:L('رقم غير صحيح','Invalid number','Numéro invalide'),old_server:L('الخادم لم يُحدَّث بعد: ارفع ملف super-worker الجديد في Supabase (Edge Functions ← super-worker ← Deploy) ثم أعد المحاولة','Server not updated: deploy the new super-worker','Serveur non mis à jour'),api_denied:L('Offerwall.GG رفض الطلب. تأكد أن موقعك «مفعّل» في لوحة Offerwall.GG وأن المفتاح السري صحيح','Offerwall.GG denied the request','Refusé par Offerwall.GG'),api_error:L('ردّ Offerwall.GG غير متوقع، حاول بعد قليل','Unexpected network reply, retry later','Réponse inattendue'),exception:L('خطأ في الخادم، حاول مرة أخرى','Server error, retry','Erreur serveur'),net:L('لا يوجد اتصال بالإنترنت أو الخادم لا يستجيب','No connection or server not responding','Pas de connexion'),timeout:L('الخادم تأخر في الرد (أكثر من 20 ثانية). حاول مرة أخرى','Server timed out, retry','Délai dépassé'),no_token:L('انتهت الجلسة، سجّل الدخول من جديد','Session expired, log in again','Session expirée'),bad_token:L('انتهت الجلسة، سجّل الدخول من جديد','Session expired, log in again','Session expirée'),not_allowed:L('الحساب غير مسموح','Account not allowed','Compte non autorisé'),no_fn28:L('ملف 28 لم يُشغَّل في Supabase (SQL Editor). شغّله ثم احفظ مرة أخرى','SQL file 28 not run','Fichier 28 non exécuté'),no_fn:L('ملف 27 لم يُشغَّل في Supabase (SQL Editor). شغّله ثم أعد المحاولة','SQL file 27 not run','Fichier 27 non exécuté'),bad_steps:L('بيانات المراحل غير صالحة','Invalid steps','Étapes invalides'),bad_place:L('مكان الظهور غير صالح','Invalid place','Emplacement invalide')};
     return m[w]||L('تعذّر التنفيذ','Failed','Échec');
   }
-  function call(q){
+  function call(q,fnName){
     return Promise.resolve(SRV.tok()).then(function(t){
       if(!t) return {ok:false,why:'no_token'};
       var ac=(typeof AbortController!=='undefined')?new AbortController():null, tm=ac?setTimeout(function(){ try{ ac.abort(); }catch(e){} },20000):0;
-      return fetch(RealAuth.base()+'/functions/v1/'+encodeURIComponent(net2Fn())+'?'+q,{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()},signal:ac?ac.signal:undefined})
+      return fetch(RealAuth.base()+'/functions/v1/'+encodeURIComponent(fnName||net2Fn())+'?'+q,{headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key()},signal:ac?ac.signal:undefined})
         .then(function(r){ clearTimeout(tm); return r.text().then(function(tx){ var j=null; try{ j=JSON.parse(tx); }catch(e){}
           if(j&&typeof j==='object') return j;
           return {ok:false,why:'old_server',http:r.status}; }); })
@@ -13622,7 +13551,7 @@ function openOfferwall(){
       '<div style="display:flex;gap:8px;margin-bottom:10px">'+[['','📱 '+L('الكل','All','Tous')],['new','🆕 '+L('جديد','New','Nouveau')],['ios','🍎 '+L('آيفون','iPhone','iPhone')],['android','🤖 '+L('أندرويد','Android','Android')]].map(function(f){ return gChip(P.flt===f[0],f[1],"owAdmPickFlt('"+f[0]+"')"); }).join('')+'</div>'+
       '<div style="display:flex;gap:8px;margin-bottom:10px"><input id="owa-q" value="'+v(P.q)+'" placeholder="'+L('ابحث بالاسم (إنجليزي)','Search by name','Rechercher')+'" style="flex:1 1 auto;min-width:0;width:auto;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none" dir="ltr"><button class="adm-new" style="flex:none;width:auto;padding:10px 16px" onclick="owAdmPickSearch()">'+L('بحث','Search','OK')+'</button></div>';
     if(P.err) h+='<div style="color:#f87171;margin:6px 0 10px;font-weight:700;line-height:1.7">'+v(P.err)+'</div>';
-    var rows=P.items.filter(function(x){ if(P.flt==='new') return !!P.newIds[x.id]; if(P.flt==='ios') return gPlat(x)!=='android'; if(P.flt==='android') return gPlat(x)!=='ios'; return true; });
+    var rows=P.items.filter(function(x){ if(P.flt==='new') return !!P.newIds[x.id]; return true; });
     rows.forEach(function(x){
       var i=P.items.indexOf(x), pl=gPlat(x), add=gAdded(x.id);
       h+='<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--border)"><div style="width:44px;height:44px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.06);flex:none">'+(x.img?'<img src="'+v(x.img)+'" style="width:100%;height:100%;object-fit:cover" referrerpolicy="no-referrer" loading="lazy">':'')+'</div>'+
@@ -13632,6 +13561,8 @@ function openOfferwall(){
     if(P.busy) h+='<div style="text-align:center;padding:12px;color:var(--muted)">…</div>';
     else if(P.page<P.pages) h+='<button class="adm-new" style="width:100%;margin-top:8px" onclick="owAdmPickMore()">'+L('عرض المزيد','Show more','Plus')+'</button>';
     if(!P.busy&&!rows.length) h+='<div style="text-align:center;padding:14px;color:var(--muted);line-height:1.8">'+(P.cat!=='games'&&!P.items.length?L('لا توجد نتائج في هذا القسم. قد لا تدعمه الشبكة أو لا يوجد فيه عروض لبلدك.','No results here. The network may not support this section.','Aucun résultat.'):L('لا نتائج','No results','Aucun résultat'))+'</div>';
+    h+='<button type="button" class="adm-new" style="width:100%;margin-top:10px;background:rgba(59,130,246,.18)" onclick="owAdmPickDiag()">🩺 '+L('فحص الشبكة (يبيّن ما تردّ به Offerwall.GG)','Network check','Diagnostic réseau')+'</button>';
+    if(P.diag) h+='<div style="font-size:11px;color:#93c5fd;margin-top:8px;line-height:1.7;overflow-x:auto">'+P.diag+'</div>';
     if(P.dbg) h+='<div dir="auto" style="font-size:11px;color:#93c5fd;margin-top:8px;line-height:1.7">ℹ️ '+v(P.dbg)+'</div>';
     h+='<div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.7">'+L('الآيفون/الأندرويد: يُحدَّد حسب ما تعيده الشبكة لجهازك أنت الآن، وقد لا تظهر عروض الجهاز الآخر.','iOS/Android is based on what the network returns for your current device.','iOS/Android selon votre appareil.')+'</div>';
     h+='<button class="adm-new" style="width:100%;margin-top:10px;background:rgba(255,255,255,.08)" onclick="owAdmFormDraw()">'+L('رجوع','Back','Retour')+'</button>';
@@ -13639,14 +13570,15 @@ function openOfferwall(){
   }
   window.owAdmFormDraw=owAdmFormDraw;
   window.owAdmPickCat=function(c){ var P=A.pick; if(P.busy||P.cat===c) return; P.cat=c; P.items=[]; P.page=0; P.pages=1; P.newIds={}; P.seen=null; P.first=true; P.err=''; owAdmPickMore(); };
-  window.owAdmPickFlt=function(f){ A.pick.flt=f; owAdmPickDraw(); };
+  window.owAdmPickFlt=function(f){ var P=A.pick, was=(P.flt==='ios'||P.flt==='android')?P.flt:''; P.flt=f; var now=(f==='ios'||f==='android')?f:''; if(was!==now&&!P.busy){ P.items=[]; P.page=0; P.pages=1; P.newIds={}; P.seen=null; owAdmPickMore(); } else owAdmPickDraw(); };
   window.owAdmPickSearch=function(){ var P=A.pick; P.q=($('owa-q').value||'').trim().slice(0,80); P.items=[]; P.page=0; P.pages=1; P.newIds={}; owAdmPickMore(); };
   window.owAdmPickMore=function(){
     var P=A.pick; if(P.busy) return; P.busy=true; P.err=''; owAdmPickDraw();
     var cats=String((GCATS.filter(function(c){ return c[0]===P.cat; })[0]||GCATS[0])[3]).split(','); if(P.ci==null||P.page===0) P.ci=0;
+    var dev=(P.flt==='ios'||P.flt==='android')?P.flt:'';
     function go(){
       var cat=cats[P.ci];
-      call('action=ow_offers&category='+encodeURIComponent(cat)+'&page='+(P.page+1)+(P.q?'&search='+encodeURIComponent(P.q):'')).then(function(j){
+      call('action=owgg_offers&category='+encodeURIComponent(cat)+(dev?'&device='+dev:'')+'&page='+(P.page+1)+(P.q?'&search='+encodeURIComponent(P.q):''),'rapid-api').then(function(j){
         if(j&&j.ok&&!(j.offers||[]).length&&P.page===0&&P.ci<cats.length-1){ P.ci++; return go(); }
         P.busy=false;
         if(j&&j.ok){
@@ -13654,12 +13586,24 @@ function openOfferwall(){
           if(P.seen===null) P.seen=gSeenGet(P.cat)||{}; var hadSeen=Object.keys(P.seen).length>0;
           (j.offers||[]).forEach(function(x,ix){ if(seen[x.id]) return; P.items.push(x); if(hadSeen?!P.seen[x.id]:(P.page<=1&&ix<12)) P.newIds[x.id]=1; });
           if(!P.q&&P.items.length) gSeenSet(P.cat,P.items.map(function(x){ return x.id; }).concat(Object.keys(P.seen)));
-          P.dbg=L('ردّت الشبكة: قسم «','Network replied: category "','Réponse: catégorie "')+cat+L('» · الإجمالي ','" · total ','" · total ')+(j.total!=null?j.total:'?')+L(' · بلدك ',' · country ',' · pays ')+(j.country||'?')+L(' · جهازك ',' · device ',' · appareil ')+(j.device||'?');
-        } else { P.err=why(j&&j.why)+(j&&j.why?' ['+j.why+(j.http?' '+j.http:'')+']':''); P.dbg=''; }
+          var dr=j.dropped||{}, drs=Object.keys(dr).map(function(k){ return k+'='+dr[k]; }).join(' ');
+          P.dbg=L('ردّت الشبكة: قسم «','Network replied: category "','Réponse: catégorie "')+cat+L('» · أعادت ','" · returned ','" · reçu ')+(j.returned!=null?j.returned:'?')+L(' · ظهر ',' · shown ',' · affiché ')+(j.offers||[]).length+L(' · الإجمالي ',' · total ',' · total ')+(j.total!=null?j.total:'?')+L(' · بلدك ',' · country ',' · pays ')+(j.country||'?')+L(' · جهاز ',' · device ',' · appareil ')+(j.device||'?')+(drs?L(' · سقط: ',' · dropped: ',' · écartés: ')+drs:'');
+        } else { P.err=why(j&&j.why)+(j&&j.why?' ['+j.why+(j.http?' '+j.http:'')+(j.msg?' — '+j.msg:'')+']':''); P.dbg=''; }
         owAdmPickDraw();
       });
     }
     go();
+  };
+  window.owAdmPickDiag=function(){
+    var P=A.pick; if(P.busy) return; P.busy=true; P.diag='…'; owAdmPickDraw();
+    call('action=owgg_offers&diag=1','rapid-api').then(function(j){
+      P.busy=false;
+      if(!(j&&j.ok)){ P.diag='❌ '+why(j&&j.why)+(j&&j.why?' ['+j.why+']':''); owAdmPickDraw(); return; }
+      var h='<div style="font-weight:800;margin-bottom:4px">'+L('بلد الطلب','Country','Pays')+' '+v(j.country)+' · '+L('جهاز','device','appareil')+' '+v(j.device)+' · '+(j.enabled?L('الشبكة مفعّلة','network on','réseau actif'):L('الشبكة غير مفعّلة','network OFF','réseau inactif'))+'</div>';
+      (j.diag||[]).forEach(function(d){ var dr=Object.keys(d.dropped||{}).map(function(k){ return k+'='+d.dropped[k]; }).join(' ');
+        h+='<div dir="ltr" style="text-align:left;border-top:1px solid var(--border);padding:4px 0">'+v(d.v)+' → HTTP '+d.http+' · success='+d.success+' · returned='+d.returned+' · shown='+d.shown+' · total='+d.total+(d.msg?' · msg='+v(d.msg):'')+(d.raw?' · raw='+v(d.raw):'')+(dr?' · dropped: '+dr:'')+(d.cats&&d.cats.length?' · cats: '+v(d.cats.join(',')):'')+'</div>'; });
+      P.diag=h; owAdmPickDraw();
+    });
   };
   window.owAdmPickUse=function(i){ var x=A.pick.items[i]; if(!x) return; A.g.offer_id=x.id; try{ A.g.place=A.pick.cat; }catch(e){} A.err=''; owAdmFormDraw(); owAdmFetch(String(x.id)); };
 })();
