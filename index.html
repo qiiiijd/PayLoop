@@ -15,7 +15,7 @@ if(u&&String(u)!=='about:blank'){go(u);return st;}
 var loc={replace:go,assign:go,reload:function(){}};Object.defineProperty(loc,'href',{get:function(){return 'about:blank';},set:go});
 st.location=loc;return st;};}catch(e){}})();
 </script>
-<script>(function(){try{var n=navigator,c=n.connection||{},ios=/iPad|iPhone|iPod/.test(n.userAgent||'')||(n.platform==='MacIntel'&&n.maxTouchPoints>1);var low=(!ios&&((n.deviceMemory&&n.deviceMemory<=2)||(n.hardwareConcurrency&&n.hardwareConcurrency<=4)))||c.saveData||/(^|-)2g$/.test(c.effectiveType||'')||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);if(low)document.documentElement.classList.add('lite');}catch(e){}})();</script>
+<script>(function(){try{var n=navigator,c=n.connection||{},ios=/iPad|iPhone|iPod/.test(n.userAgent||'')||(n.platform==='MacIntel'&&n.maxTouchPoints>1);var low=(!ios&&(n.deviceMemory&&n.deviceMemory<=2))||c.saveData||/(^|-)2g$/.test(c.effectiveType||'')||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);if(low)document.documentElement.classList.add('lite');}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://yqzndgfpasmwgcxekskv.supabase.co" crossorigin>
@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.07-r129';
+window.PL_BUILD='2026.11.07-r131';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -242,7 +242,8 @@ else{document.documentElement.setAttribute('data-nf','1');if(_ss)document.docume
 <meta name="theme-color" content="#090d14">
 <script>/* كشف الهاتف الضعيف مبكرًا: ذاكرة ≤4GB أو ≤4 أنوية أو توفير البيانات. الإعداد اليدوي: localStorage pl-lite = 1 أو 0 */
 try{var _m=navigator.deviceMemory,_c=navigator.hardwareConcurrency,_cn=navigator.connection,_o=null;try{_o=localStorage.getItem('pl-lite');}catch(e){}
-if(_o==='1'||(_o!=='0'&&((_m&&_m<=4)||(_c&&_c<=4)||(_cn&&_cn.saveData)))) document.documentElement.classList.add('pl-lite');}catch(e){}</script>
+if(_o==='1'||(_o!=='0'&&((_m&&_m<=2)||(_cn&&_cn.saveData)))) document.documentElement.classList.add('pl-lite');
+else if(_o!=='0'&&((_m&&_m<=4)||(_c&&_c<=4))) document.documentElement.classList.add('pl-mid');}catch(e){}</script>
 <script>/* r62: تثبيت التطبيق على الهاتف (PWA). يظهر شريط «حمّل التطبيق» في الأعلى فقط إذا لم يكن التطبيق مثبّتًا/مفتوحًا كتطبيق.
    - أندرويد (Chrome/Samsung): المتصفح نفسه لا يطلق حدث التثبيت إن كان التطبيق مثبّتًا، فلا يظهر الشريط؛ وإن حُذف التطبيق يعود الحدث فيظهر الشريط من جديد. لا نحفظ «تم التثبيت» أبدًا.
    - آيفون: لا يوجد حدث تثبيت؛ نعرض شرح «إضافة إلى الشاشة الرئيسية». داخل متصفحات التطبيقات (ماسنجر/فيسبوك…) نشرح فتحه في المتصفح.
@@ -432,7 +433,7 @@ button:active,.mini-btn:active{transform:scale(.97); opacity:.92;}
 #pl-terms-ov .pt-b{display:flex;gap:10px;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:#0c1424;border-top:1px solid #1c2740}
 #pl-terms-ov .pt-ok{flex:2;border:0;border-radius:14px;padding:14px;background:#16a05f;color:#fff;font:inherit;font-size:15.5px;font-weight:800}
 #pl-terms-ov .pt-cl{flex:1;border:1px solid #2b3c62;border-radius:14px;padding:14px;background:transparent;color:#cbd5e1;font:inherit;font-size:14px;font-weight:700}
-.pl-dwn{display:flex;gap:6px;align-items:center;margin:0 0 6px;padding:5px 9px;border-radius:9px;background:#2a0c10;border:1px solid rgba(239,68,68,.35);color:#fca5a5;font-size:10.5px;line-height:1.45;font-weight:600}.pl-dwn span:first-child{font-size:12px;flex:none}
+.pl-dwn{display:flex;gap:10px;align-items:flex-start;margin:0 0 8px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,#2a0c10,#190a10);border:1px solid rgba(239,68,68,.32);border-inline-start:4px solid #ef4444;box-shadow:0 2px 10px rgba(0,0,0,.28)}.pl-dwn i{flex:none;width:28px;height:28px;border-radius:50%;background:rgba(239,68,68,.16);display:flex;align-items:center;justify-content:center;font-size:14px;font-style:normal}.pl-dwn div{flex:1;min-width:0}.pl-dwn b{display:block;color:#fecaca;font-size:13px;font-weight:800;margin-bottom:2px}.pl-dwn span{display:block;color:#fca5a5;font-size:12px;line-height:1.55;font-weight:600}
 .camp-chip{display:inline-block;padding:6px 11px;border-radius:99px;background:#17233d;border:1px solid #22304f;color:#cfe0ff;font-size:12.5px;font-weight:700}
 .camp-btn{display:inline-block;border:1px solid #2b3c62;background:#17233d;color:#e8eefc;border-radius:11px;padding:9px 13px;font:inherit;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer}
 .trow.camp-row{position:relative}
@@ -460,7 +461,8 @@ html.pl-lite .vip-hero h2 b,
 html.pl-lite .wv-card.pending .wv-cico,
 html.pl-lite .wv-cico .wv-cico-main{animation:none!important}
 html.pl-lite *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-html.pl-lite .balance-card,html.pl-lite .hero{box-shadow:none}
+html.pl-lite .balance-card,html.pl-lite .hero{box-shadow:0 2px 8px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04)}
+html.pl-mid *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .start-btn{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-weight:800; font-size:13px; padding:12px 18px; border-radius:14px; box-shadow:0 6px 18px rgba(59,130,246,.3);}
 
 .section{padding:6px 18px 4px;}
@@ -2777,7 +2779,7 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
 #page-tasks.tk-in .trow:nth-child(2){animation-delay:.03s}#page-tasks.tk-in .trow:nth-child(3){animation-delay:.06s}#page-tasks.tk-in .trow:nth-child(4){animation-delay:.09s}
 #page-tasks.tk-in .trow:nth-child(5){animation-delay:.12s}#page-tasks.tk-in .trow:nth-child(6){animation-delay:.15s}#page-tasks.tk-in .trow:nth-child(7){animation-delay:.18s}#page-tasks.tk-in .trow:nth-child(8){animation-delay:.21s}
 @media (prefers-reduced-motion:reduce){#page-tasks .trow{animation:none!important;transition:none!important}}
-html.lite #page-tasks .trow{animation:none!important;box-shadow:none!important;transition:none!important}
+html.lite #page-tasks .trow{animation:none!important;box-shadow:0 2px 8px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04)!important;transition:none!important}
 html.lite #page-tasks .tabs{-webkit-mask-image:none;mask-image:none}
 [data-theme=light] #page-tasks .trow{background:#fff;box-shadow:0 8px 22px -18px rgba(15,23,42,.35)}
 
@@ -8461,7 +8463,7 @@ const RISK_LBL={
 };
 function riskPill(score){ const lv=score>=60?'high':score>=30?'medium':'low'; const t=lv==='high'?L('خطر مرتفع','High risk','Risque élevé'):lv==='medium'?L('يحتاج مراجعة','Needs review','À vérifier'):L('منخفض','Low','Faible'); return '<span class="rk-pill '+lv+'">'+(lv==='high'?'🔴':lv==='medium'?'🟠':'🟢')+' '+t+' · '+score+'/100</span>'; }
 function riskFlagsHtml(flags){ const a=(flags||[]).map(function(f){ const fn=RISK_LBL[f.k]; return fn?'<div class="rk-fl">⚠️ '+esc(fn(f))+'</div>':''; }).join(''); return a||'<div class="rk-fl ok">✅ '+L('لا توجد مؤشرات مشبوهة','No suspicious indicators','Aucun indicateur suspect')+'</div>'; }
-function usdF(v){ return '$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function usdF(v){ return '$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:4,maximumFractionDigits:4}); }
 function admDt(x){ try{ return x?new Date(x).toLocaleString():'—'; }catch(e){ return '—'; } }
 function wdSt(){ return {pending:['⏳',L('قيد المعالجة','Pending','En cours')],accepted:['✅',L('مقبول','Approved','Approuvé')],rejected:['❌',L('مرفوض','Rejected','Rejeté')]}; }
 function admUProfHtml(u){
@@ -8787,10 +8789,10 @@ function renderAdmUserList(){
     const ini=esc((u.name||'?').trim().charAt(0));
     return '<div class="adm-row" onclick="ADM_UID=\''+u.id+'\'; document.getElementById(\'adm-search\').style.display=\'none\'; admUserDetail();">'+
       '<div class="adm-av'+(u.blocked?' bad':'')+'">'+ini+'</div>'+
-      '<div class="adm-rowi"><b>'+esc(u.name)+(u.role==='admin'?' 🔑':'')+(u.cloudOnly?' ☁️':'')+'</b><span>'+(u.pid?'<b class="pidtag">'+esc(u.pid)+'</b> · ':'')+esc(u.id)+(function(){ if(u.cloudOnly) return ''; const m=userMetrics(u.id); return ' · 💰 $'+m.bal.toFixed(2)+' · ✅ '+m.done+' · 🟡 '+m.prog+' · 💸 '+m.wd+(Math.abs(m.diff)>0.01?' · ⚠️':''); })()+'</span></div>'+
+      '<div class="adm-rowi"><b>'+esc(u.name)+(u.role==='admin'?' 🔑':'')+(u.cloudOnly?' ☁️':'')+'</b><span>'+(u.pid?'<b class="pidtag">'+esc(u.pid)+'</b> · ':'')+esc(u.id)+(function(){ if(u.cloudOnly) return ''; const m=userMetrics(u.id); return ' · 💰 $'+m.bal.toFixed(4)+' · ✅ '+m.done+' · 🟡 '+m.prog+' · 💸 '+m.wd+(Math.abs(m.diff)>0.01?' · ⚠️':''); })()+'</span></div>'+
       (u.blocked?'<span class="adm-badge red">'+L('محظور','Blocked','Bloqué')+'</span>':(admOnline(u)?'<span class="adm-badge grn">🟢 '+L('متصل الآن','Online','En ligne')+'</span>':'<span class="adm-badge" style="background:rgba(148,163,184,.18);color:#94a3b8">⚪ '+L('غير متصل','Offline','Hors ligne')+(u.last?' · '+admAgo(u.last):'')+'</span>'))+
       '<span class="adm-badge blu">👥 '+(u.refn||0)+'</span>'+
-      ((ADM_EARN.byUid[u.id]&&ADM_EARN.byUid[u.id].earned>0)?'<span class="adm-badge grn">💰 $'+Number(ADM_EARN.byUid[u.id].earned).toFixed(2)+'</span>':'')+
+      ((ADM_EARN.byUid[u.id]&&ADM_EARN.byUid[u.id].earned>0)?'<span class="adm-badge grn">💰 $'+Number(ADM_EARN.byUid[u.id].earned).toFixed(4)+'</span>':'')+
     '</div>';
   }).join('');
 }
@@ -8832,9 +8834,9 @@ function admUserDetail(){
     '<div class="adk"><span>'+L('رقم الهاتف','Phone','Téléphone')+'</span><b dir="ltr">'+esc(u.phone||'—')+'</b></div>'+
     '<div class="adk"><span>'+L('مرات الدخول','Logins','Connexions')+'</span><b>'+(u.cloudOnly?'—':(u.logins||0))+'</b></div>'+
     '<div class="adk"><span>'+L('آخر نشاط','Last activity','Dernière activité')+'</span><b>'+(u.last?fmtDate(u.last):'—')+'</b></div>'+
-    (u.cloudOnly?'':(function(){ const m=userMetrics(u.id); return '<div class="adk"><span>'+L('النقاط','Points','Points')+'</span><b>'+m.pts.toLocaleString('en-US')+'</b></div><div class="adk"><span>'+L('الرصيد المحسوب','Computed balance','Solde calculé')+'</span><b>$'+m.bal.toFixed(2)+'</b></div><div class="adk"><span>'+L('مهام مكتملة','Completed tasks','Tâches terminées')+'</span><b>'+m.done+'</b></div><div class="adk"><span>'+L('قيد التنفيذ','In progress','En cours')+'</span><b>'+m.prog+'</b></div><div class="adk"><span>'+L('طلبات السحب','Withdrawals','Retraits')+'</span><b>'+m.wd+'</b></div><div class="adk" style="grid-column:1/-1"><span>⚖️ '+L('مطابقة الرصيد مع سجل العمليات','Balance vs ledger','Solde vs journal')+'</span><b style="color:'+(Math.abs(m.diff)>0.01?'#f87171':'#34d399')+'">'+(Math.abs(m.diff)>0.01?('⚠️ '+L('فرق $','Gap $','Écart $')+m.diff.toFixed(2)+' — '+L('راجع الحساب','review account','vérifier')):'✓ '+L('مطابق','Matches','Conforme'))+'</b></div>'; })())+
+    (u.cloudOnly?'':(function(){ const m=userMetrics(u.id); return '<div class="adk"><span>'+L('النقاط','Points','Points')+'</span><b>'+m.pts.toLocaleString('en-US')+'</b></div><div class="adk"><span>'+L('الرصيد المحسوب','Computed balance','Solde calculé')+'</span><b>$'+m.bal.toFixed(4)+'</b></div><div class="adk"><span>'+L('مهام مكتملة','Completed tasks','Tâches terminées')+'</span><b>'+m.done+'</b></div><div class="adk"><span>'+L('قيد التنفيذ','In progress','En cours')+'</span><b>'+m.prog+'</b></div><div class="adk"><span>'+L('طلبات السحب','Withdrawals','Retraits')+'</span><b>'+m.wd+'</b></div><div class="adk" style="grid-column:1/-1"><span>⚖️ '+L('مطابقة الرصيد مع سجل العمليات','Balance vs ledger','Solde vs journal')+'</span><b style="color:'+(Math.abs(m.diff)>0.01?'#f87171':'#34d399')+'">'+(Math.abs(m.diff)>0.01?('⚠️ '+L('فرق $','Gap $','Écart $')+m.diff.toFixed(2)+' — '+L('راجع الحساب','review account','vérifier')):'✓ '+L('مطابق','Matches','Conforme'))+'</b></div>'; })())+
     '<div class="adk"><span>'+L('تاريخ الإنشاء','Created','Créé le')+'</span><b>'+(u.created?fmtDate(u.created):'—')+'</b></div>'+
-    ((ADM_EARN.byUid[u.id])?('<div class="adk"><span>'+L('الأرباح (من السجل المالي)','Earnings (from ledger)','Gains (registre)')+'</span><b>💰 $'+Number(ADM_EARN.byUid[u.id].earned).toFixed(2)+' · '+ADM_EARN.byUid[u.id].tasks+' '+L('مهمة','tasks','tâches')+' · '+ADM_EARN.byUid[u.id].refs+' '+L('إحالة','ref','parrainage')+((ADM_EARN.byUid[u.id].today>0)?(' · '+L('اليوم','Today','Aujourd\u2019hui')+' +$'+Number(ADM_EARN.byUid[u.id].today).toFixed(2)):'')+'</b></div>'):'')+
+    ((ADM_EARN.byUid[u.id])?('<div class="adk"><span>'+L('الأرباح (من السجل المالي)','Earnings (from ledger)','Gains (registre)')+'</span><b>💰 $'+Number(ADM_EARN.byUid[u.id].earned).toFixed(4)+' · '+ADM_EARN.byUid[u.id].tasks+' '+L('مهمة','tasks','tâches')+' · '+ADM_EARN.byUid[u.id].refs+' '+L('إحالة','ref','parrainage')+((ADM_EARN.byUid[u.id].today>0)?(' · '+L('اليوم','Today','Aujourd\u2019hui')+' +$'+Number(ADM_EARN.byUid[u.id].today).toFixed(2)):'')+'</b></div>'):'')+
     '<div class="adk"><span>'+L('رمز الدعوة','Invite code','Code')+'</span><b>'+esc(u.code||'—')+'</b></div>'+
     '<div class="adk"><span>'+L('سجّل عبر','Registered via','Inscrit via')+'</span><b>'+(u.by?esc(u.by):L('رابط مباشر','Direct','Direct'))+'</b></div>'+
     '</div>'+
@@ -9048,7 +9050,7 @@ function admActBlockCloud(u){
     refguard:['🛡️', L('حارس إحالة','Referral guard','Garde'), '#64748b']
   };
   const cards=
-    '<div class="asum"><i>💰</i><b>$'+(b?Number(b.earned).toFixed(2):'0.00')+'</b><span>'+L('أرباح','Earnings','Gains')+'</span></div>'+
+    '<div class="asum"><i>💰</i><b>$'+(b?Number(b.earned).toFixed(4):'0.0000')+'</b><span>'+L('أرباح','Earnings','Gains')+'</span></div>'+
     '<div class="asum"><i>🧩</i><b>'+(b?+(b.tasks||0):0)+'</b><span>'+L('مهام','Tasks','Tâches')+'</span></div>'+
     '<div class="asum"><i>👥</i><b>'+(b?+(b.refs||0):0)+'</b><span>'+L('إحالات','Referrals','Parrainages')+'</span></div>'+
     '<div class="asum"><i>📊</i><b>$'+(b?Number(b.net).toFixed(2):'0.00')+'</b><span>'+L('صافي السجل','Net ledger','Net registre')+'</span></div>';
@@ -9079,7 +9081,7 @@ function admActBlockCloud(u){
   return '<div class="adk-sec">'+
     '<div class="adk-sech">📊 '+L('سجل نشاط الربح — من السجل المالي الحيّ','Earnings activity log — from the live ledger','Journal des gains — registre en direct')+'</div>'+
     '<div class="asum-row">'+cards+'</div>'+
-    '<div class="adk-drow"><div class="adk-donut" style="background:'+grad+'"><div class="adk-din"><b>$'+(b?Number(b.earned).toFixed(2):'0.00')+'</b><span>'+L('أرباح مسجّلة','Recorded earnings','Gains enregistrés')+'</span></div></div><div class="adk-dleg">'+legs+'</div></div>'+
+    '<div class="adk-drow"><div class="adk-donut" style="background:'+grad+'"><div class="adk-din"><b>$'+(b?Number(b.earned).toFixed(4):'0.0000')+'</b><span>'+L('أرباح مسجّلة','Recorded earnings','Gains enregistrés')+'</span></div></div><div class="adk-dleg">'+legs+'</div></div>'+
     table+
   '</div>';
 }
@@ -9087,7 +9089,7 @@ function admActBlockCloud(u){
 /* ===================== الإحصائيات الجديدة: بسيطة وواضحة ===================== */
 let ADM_SP='d', ADM_UCH='d';
 const AR_MN_S=['ينا','فبر','مار','أبر','ماي','يون','يول','أغس','سبت','أكت','نوف','ديس'];
-function fmU(v){ v=Number(v)||0; return '$'+((v>0&&v<0.01)?v.toFixed(3):v.toFixed(2)); }
+function fmU(v){ v=Number(v)||0; return '$'+v.toFixed(4); }
 function admSP(m){ ADM_SP=m; renderAdmAnalytics(); }
 function admUCh(m){ ADM_UCH=m; admUserDetail(); }
 function earnSeries(R, mode){
@@ -11908,9 +11910,10 @@ try{ setTimeout(function(){ autoLangFromIP(); },400); }catch(e){}
 #cpx-ov .cpx-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top,0px));background:#111a2e;color:#fff;font-weight:700}
 #cpx-ov .cpx-x{border:0;border-radius:10px;padding:8px 14px;background:#1e2a47;color:#fff;font-size:15px}
 #cpx-ov iframe{flex:1;width:100%;border:0;background:#fff}
+#cpx-ov .cpx-tip{background:#0f1830;color:#9fb3d9;font-size:12.5px;line-height:1.5;text-align:center;padding:7px 14px}
 #cpx-ov .cpx-load{position:absolute;top:60px;left:0;right:0;text-align:center;color:#9fb3d9;padding:20px}
 </style>
-<div id="cpx-ov"><div class="cpx-bar"><span id="cpx-t"></span><button class="cpx-x" id="cpx-close" type="button"></button></div><div class="cpx-load" id="cpx-load"></div><iframe id="cpx-fr" allow="clipboard-write"></iframe></div>
+<div id="cpx-ov"><div class="cpx-bar"><span id="cpx-t"></span><button class="cpx-x" id="cpx-close" type="button"></button></div><div class="cpx-tip" id="cpx-tip"></div><div class="cpx-load" id="cpx-load"></div><iframe id="cpx-fr" allow="clipboard-write"></iframe></div>
 <script>
 /* ===== إشعار «استطلاعات جديدة»: يسأل الخادم (لا يقرر التطبيق شيئًا). الخادم يقارن بأرقام الاستطلاعات ويضيف الإشعار ===== */
 function cpxWatch(){
@@ -11934,6 +11937,7 @@ async function openCpx(){
   try{
     var ov=document.getElementById('cpx-ov'), fr=document.getElementById('cpx-fr'), ld=document.getElementById('cpx-load');
     document.getElementById('cpx-t').textContent=L('الاستطلاعات','Surveys','Sondages');
+    document.getElementById('cpx-tip').textContent=L('💪 لم تتأهل لاستطلاع؟ هذا طبيعي ويحدث للجميع — جرّب استطلاعاً آخر.','💪 Did not qualify for a survey? That happens to everyone — try another one.','💪 Pas éligible à un sondage ? Ça arrive à tout le monde — essayez-en un autre.');
     var cb=document.getElementById('cpx-close'); cb.textContent=L('إغلاق','Close','Fermer');
     cb.onclick=function(){ ov.classList.remove('on'); fr.src='about:blank'; try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} };
     var s=null; try{ s=RealAuth.getSession(); }catch(e){}
@@ -12501,7 +12505,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
   window.plDeviceWarn=function(){ return ''; };   /* لم يعد يُعرض داخل المحتوى؛ الملاحظة الصغيرة تظهر أسفل النافذة فوق زر البدء */
   window.plDeviceNote=function(){
     var e=function(x){ return String(x).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
-    return '<div class="pl-dwn"><span>⚠️</span><span>'+e(L('تنبيه: يُسمح بحساب واحد فقط لكل هاتف. استخدام حساب آخر قد يؤدي إلى رفض المكافأة أو حظر الحساب. لا تنشئ حساب آخر بهاتفك هذا.','Warning: only one account is allowed per phone. Using another account may get the reward rejected or the account banned. Do not create another account on this phone.','Attention : un seul compte par téléphone. Utiliser un autre compte peut entraîner le refus de la récompense ou un bannissement. Ne créez pas un autre compte sur ce téléphone.'))+'</span></div>';
+    return '<div class="pl-dwn"><i>⚠️</i><div><b>'+e(L('تنبيه مهم','Important notice','Avis important'))+'</b><span>'+e(L('يُسمح بحساب واحد فقط لكل هاتف. استخدام حساب آخر قد يؤدي إلى رفض المكافأة أو حظر الحساب. لا تنشئ حساباً آخر بهاتفك هذا.','Only one account is allowed per phone. Using another account may get the reward rejected or the account banned. Do not create another account on this phone.','Un seul compte par téléphone. Utiliser un autre compte peut entraîner le refus de la récompense ou un bannissement. Ne créez pas un autre compte sur ce téléphone.'))+'</span></div></div>';
   };
   window.plStepHtml=function(txt){
     var e=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
@@ -13175,12 +13179,16 @@ function openOfferwall(){
 #owg-ov .g-h .g-img{width:80px;height:80px}
 #owg-ov .g-sec{background:#131f38;border:1px solid #22304f;border-radius:14px;padding:12px;margin-bottom:10px;font-size:14px;line-height:1.8}
 #owg-ov .g-sec b{display:block;margin-bottom:4px;color:#9fb3d9;font-size:12px}
-#owg-ov .g-step{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid #22304f}
-#owg-ov .g-step:first-of-type{border-top:0}
-#owg-ov .g-ck{flex:none;width:24px;height:24px;border-radius:50%;background:#1e2a47;display:flex;align-items:center;justify-content:center;font-size:13px}
-#owg-ov .g-step.done .g-ck{background:#16a05f}
-#owg-ov .g-step .g-d{flex:1}
-#owg-ov .g-step .g-r{flex:none;font-weight:800;color:#5df0a0}
+#owg-ov .g-prog{height:7px;border-radius:99px;background:#1b2a49;overflow:hidden;margin:6px 0 12px}
+#owg-ov .g-prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#16a05f,#5df0a0)}
+#owg-ov .g-step{display:flex;gap:11px;align-items:center;padding:10px 11px;margin-bottom:8px;border-radius:13px;background:#0f1a31;border:1px solid #22304f}
+#owg-ov .g-step.done{background:linear-gradient(135deg,#0f2a24,#0f1a31);border-color:rgba(93,240,160,.40)}
+#owg-ov .g-ck{flex:none;width:28px;height:28px;border-radius:50%;background:#1e2a47;color:#9fb3d9;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+#owg-ov .g-step.done .g-ck{background:#16a05f;color:#fff}
+#owg-ov .g-step .g-d{flex:1;min-width:0;line-height:1.55;font-size:14px}
+#owg-ov .g-step .g-r{flex:none;min-width:62px;text-align:center;font-weight:800;color:#5df0a0;background:rgba(93,240,160,.10);border:1px solid rgba(93,240,160,.28);border-radius:99px;padding:4px 10px;font-size:13.5px}
+#owg-ov .g-step .g-r.z{color:#7f93bb;background:transparent;border-color:#22304f;font-weight:600}
+#owg-ov .g-step.done .g-r:not(.z){background:rgba(93,240,160,.18)}
 #owg-ov .g-tot{flex:none;text-align:center;line-height:1.2}
 #owg-ov .g-tot small{display:block;font-size:11px;color:#9fb3d9;font-weight:400}
 #owg-ov .g-start{flex:none;position:static;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:#0b1220;border-top:1px solid #1f2d4a}
@@ -13314,10 +13322,10 @@ function openOfferwall(){
       h+='<div class="g-sec">'+esc(L('تفاصيل المراحل غير متاحة حاليًا. حاول لاحقًا.','Level details are not available right now. Try again later.','Détails indisponibles pour le moment.'))+'</div>';
     } else if(goals.length){
       var nd=goals.filter(function(g){ return done[g.id]!==undefined; }).length;
-      h+='<div class="g-sec"><b>'+esc(L('المكافآت','Rewards','Récompenses'))+' — '+esc(L('أنجزت '+nd+' من '+goals.length,nd+' of '+goals.length+' done',nd+' sur '+goals.length))+'</b>';
+      h+='<div class="g-sec"><b>'+esc(L('المكافآت','Rewards','Récompenses'))+' — '+esc(L('أنجزت '+nd+' من '+goals.length,nd+' of '+goals.length+' done',nd+' sur '+goals.length))+'</b><div class="g-prog"><i style="width:'+Math.round(100*nd/goals.length)+'%"></i></div>';
       goals.forEach(function(g,n){
         var dn=done[g.id]!==undefined;
-        h+='<div class="g-step'+(dn?' done':'')+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+(window.plGgStepHtml?window.plGgStepHtml(g.d||('#'+(n+1))):esc(g.d||('#'+(n+1))))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+'</div><div class="g-r">'+esc(money(g.r))+'</div></div>';
+        h+='<div class="g-step'+(dn?' done':'')+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+(window.plGgStepHtml?window.plGgStepHtml(g.d||('#'+(n+1))):esc(g.d||('#'+(n+1))))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+'</div><div class="g-r'+((Number(g.r)>0)?'':' z')+'">'+((Number(g.r)>0)?esc(money(g.r)):'—')+'</div></div>';
       });
       h+='</div>';
       if(o.reward!=null) h+='<div class="g-sec"><b>'+esc(L('مجموع المكافآت الممكنة','Total possible rewards','Total possible'))+'</b><span style="font-size:20px;font-weight:800;color:#5df0a0">'+esc(money(o.reward))+'</span><br><small style="color:#9fb3d9">'+esc(L('لا يُمنح كاملًا إلا بعد إكمال كل المراحل والشروط، وتصلك كل مرحلة فقط بعد تأكيد الشبكة لها.','Not paid in full until every level is completed; each level is paid only after the network confirms it.','Versé en totalité après tous les niveaux; chaque niveau après confirmation du réseau.'))+'</small></div>';
@@ -14595,7 +14603,7 @@ html.pl-lite #art-home:after{animation:plSweep 7s ease-in-out infinite !importan
 /* r117: سلاسة التصفح والتنقل — تخفيف ما يثقل الهاتف الضعيف أثناء التمرير والانتقال، دون تغيير الألوان أو التصميم */
 #tlist .trow,#featlist .trow{contain:layout style}
 html.pl-lite *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-html.pl-lite .trow,html.pl-lite .nc-card,html.pl-lite .card{box-shadow:none!important;transition:none!important}
+html.pl-lite .trow,html.pl-lite .nc-card,html.pl-lite .card{box-shadow:0 2px 8px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04)!important;transition:none!important}
 html.pl-lite .page.active{animation:none!important}
 html.pl-lite .trow:active,html.pl-lite .nav-btn:active{transform:scale(.985)}
 .page{scroll-behavior:auto}
