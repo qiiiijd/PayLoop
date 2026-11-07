@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.07-r125';
+window.PL_BUILD='2026.11.07-r126';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -14058,6 +14058,36 @@ function openOfferwall(){
   }
   var _rt=window.renderTasks; if(typeof _rt==='function'){ window.renderTasks=function(cat){ var r=_rt.apply(this,arguments); try{ syncAds(cat); }catch(e){} return r; }; }
   window.plAdsShow=function(p){ try{ if(p==='tasks') watch('pl-ad-tasks'); }catch(e){} };
+  /* إعلان عائم تلقائي غير مزعج: بعد دقيقتين من فتح التطبيق، مرتان كحدّ أقصى في الجلسة، بينهما 5 دقائق على الأقل، بزر إغلاق، ويختفي وحده بعد 12 ثانية.
+     لا يظهر في السحب ولا في المهام ولا في الإدارة ولا للمدير، ويتبع زر تشغيل/إيقاف الإعلانات في لوحة التحكم (الإيقاف يوقفه فورًا). */
+  (function(){
+    var START=Date.now(), FIRST=120000, GAP=300000, MAX=2, K='pl-ad-auto', BAD={'page-withdraw':1,'page-admin':1,'page-task':1,'page-tasks':1,'page-settings':1};
+    function st(){ try{ return JSON.parse(sessionStorage.getItem(K)||'{}')||{}; }catch(e){ return {}; } }
+    function sv(o){ try{ sessionStorage.setItem(K,JSON.stringify(o)); }catch(e){} }
+    function closeIt(){ var e=document.getElementById('pl-ad-float'); if(e&&e.parentNode) e.parentNode.removeChild(e); }
+    function tick(){
+      try{
+        if(document.getElementById('pl-ad-float')) return;
+        var o=st(), n=o.n||0, now=Date.now();
+        if(n>=MAX||now-START<FIRST||(o.t&&now-o.t<GAP)||!ok()) return;
+        var a=document.querySelector('.page.active'); if(!a||BAD[a.id]) return;
+        var m=document.getElementById('mnt-ov'); if(m&&getComputedStyle(m).display!=='none') return;
+        if(document.getElementById('pp-card')) return;
+        flag(function(on){
+          if(!on||!ok()||document.getElementById('pl-ad-float')) return;
+          var a2=document.querySelector('.page.active'); if(!a2||BAD[a2.id]) return;
+          var d=document.createElement('div'); d.id='pl-ad-float';
+          d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:7000;background:#101a2e;border:1px solid #334155;border-radius:14px;padding:6px 6px 8px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:94vw;text-align:center';
+          d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#94a3b8;padding:0 4px 4px"><span>'+lg('إعلان','Ad','Annonce')+'</span><button type="button" aria-label="close" style="all:unset;cursor:pointer;color:#e2e8f0;font-size:18px;line-height:1;padding:2px 8px">✕</button></div>';
+          d.querySelector('button').onclick=closeIt;
+          var f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.setAttribute('title','إعلان'); f.setAttribute('referrerpolicy','no-referrer-when-downgrade');
+          f.style.cssText='width:320px;max-width:100%;height:50px;border:0;display:block;margin:0 auto;background:transparent'; f.src=AD_PAGE; d.appendChild(f);
+          document.body.appendChild(d); sv({n:n+1,t:Date.now()}); setTimeout(closeIt,12000);
+        });
+      }catch(e){}
+    }
+    setInterval(tick,15000);
+  })();
   var _go=window.go; if(typeof _go==='function'){ window.go=function(p){ var r=_go.apply(this,arguments); try{ setTimeout(function(){ window.plAdsShow(p); },900); }catch(e){} return r; }; }
   window.addEventListener('load',function(){ setTimeout(function(){ try{ var a=document.querySelector('.page.active'); if(a&&a.id==='page-tasks') window.plAdsShow('tasks'); }catch(e){} },4500); });
 })();
