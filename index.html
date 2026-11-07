@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.07-r128';
+window.PL_BUILD='2026.11.07-r129';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -14077,7 +14077,7 @@ function openOfferwall(){
           if(!on||!ok()||document.getElementById('pl-ad-float')) return;
           var a2=document.querySelector('.page.active'); if(!a2||BAD[a2.id]) return;
           var d=document.createElement('div'); d.id='pl-ad-float';
-          d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:7000;background:#101a2e;border:1px solid #334155;border-radius:14px;padding:6px 6px 8px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:94vw;text-align:center';
+          d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:7000;background:#101a2e;border:1px solid #334155;border-radius:14px;padding:6px 6px 8px;box-shadow:0 10px 30px rgba(0,0,0,.5);width:340px;max-width:94vw;box-sizing:border-box;text-align:center';
           d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#94a3b8;padding:0 4px 4px"><span>'+lg('إعلان','Ad','Annonce')+'</span><button type="button" aria-label="close" style="all:unset;cursor:pointer;color:#e2e8f0;font-size:18px;line-height:1;padding:2px 8px">✕</button></div>';
           d.querySelector('button').onclick=closeIt;
           var f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.setAttribute('title','إعلان'); f.setAttribute('referrerpolicy','no-referrer-when-downgrade');
@@ -14086,7 +14086,7 @@ function openOfferwall(){
         });
       }catch(e){}
     }
-    setInterval(tick,15000);
+    setInterval(tick,5000); setTimeout(tick,3000);
   })();
   var _go=window.go; if(typeof _go==='function'){ window.go=function(p){ var r=_go.apply(this,arguments); try{ setTimeout(function(){ window.plAdsShow(p); },900); }catch(e){} return r; }; }
   window.addEventListener('load',function(){ setTimeout(function(){ try{ var a=document.querySelector('.page.active'); if(a&&a.id==='page-tasks') window.plAdsShow('tasks'); }catch(e){} },4500); });
