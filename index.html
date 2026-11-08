@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.08-r137';
+window.PL_BUILD='2026.11.08-r139';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -3459,6 +3459,13 @@ html.lite .vip-hero:before{display:none}
       <span class="sl"><i>🔔</i><span data-i18n="set.notif">الإشعارات</span></span>
       <label class="sw"><input type="checkbox" id="sw-notif"><i></i></label>
     </div>
+    <div class="set-row" id="cc-row">
+      <span class="sl"><i>🌍</i><span>بلد العروض</span></span>
+      <select id="pl-cc" onchange="plCCSet(this.value)" style="max-width:55%;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.06);color:inherit;border:1px solid var(--border);font:inherit;font-size:13px">
+        <option value="">🤖 تلقائي (حسب موقعك)</option>
+        <option value="DZ">🇩🇿 الجزائر</option><option value="MA">🇲🇦 المغرب</option><option value="TN">🇹🇳 تونس</option><option value="EG">🇪🇬 مصر</option><option value="SA">🇸🇦 السعودية</option><option value="AE">🇦🇪 الإمارات</option><option value="QA">🇶🇦 قطر</option><option value="KW">🇰🇼 الكويت</option><option value="IQ">🇮🇶 العراق</option><option value="JO">🇯🇴 الأردن</option><option value="LY">🇱🇾 ليبيا</option><option value="MR">🇲🇷 موريتانيا</option><option value="TR">🇹🇷 تركيا</option><option value="FR">🇫🇷 فرنسا</option><option value="DE">🇩🇪 ألمانيا</option><option value="GB">🇬🇧 بريطانيا</option><option value="ES">🇪🇸 إسبانيا</option><option value="IT">🇮🇹 إيطاليا</option><option value="US">🇺🇸 أمريكا</option><option value="CA">🇨🇦 كندا</option><option value="BR">🇧🇷 البرازيل</option><option value="IN">🇮🇳 الهند</option><option value="ID">🇮🇩 إندونيسيا</option>
+      </select>
+    </div>
     <div class="set-row" id="push-row">
       <span class="sl"><i>📲</i><span id="push-lbl">إشعارات الهاتف</span></span>
       <label class="sw"><input type="checkbox" id="sw-push" onchange="Push.toggle(this.checked)"><i></i></label>
@@ -3581,6 +3588,7 @@ html.lite .vip-hero:before{display:none}
     <button class="atb" data-t="insights" onclick="admTab('insights')">🧠 رؤى ذكية</button>
     <button class="atb" data-t="vip" onclick="admTab('vip')">👑 VIP</button>
     <button class="atb" data-t="pub" onclick="admTab('pub')">🌟 الناشرون</button>
+    <button class="atb" data-t="soc" onclick="admTab('soc')">🔗 مهام اجتماعية</button>
     <button class="atb" data-t="fraud" onclick="admTab('fraud')">🛡️ الحماية</button>
     <button class="atb" data-t="health" onclick="admTab('health')">🩺 صحة النظام</button>
     <button class="atb" data-t="logs" onclick="admTab('logs')">📋 سجلات</button>
@@ -8550,6 +8558,7 @@ function renderAdmin(t){
     else if(ADM_TAB==='fraud') renderAdmFraud();
     else if(ADM_TAB==='vip') renderAdmVip();
     else if(ADM_TAB==='pub') renderAdmPub();
+    else if(ADM_TAB==='soc') renderAdmSoc();
     else if(ADM_TAB==='logs') renderAdmLogs();
   }catch(e){ try{ console.warn('[adm-err]', e); }catch(_){} }
 }
@@ -12824,7 +12833,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     busy=true; LT=Date.now(); LOADING=!G;
     Promise.resolve(SRV.tok()).then(function(t){
       if(!t) return;
-      return fetch(fn('offerwallme_offers'),{headers:hdr(t)}).then(function(r){ return r.json(); }).then(function(j){
+      return fetch(fn('offerwallme_offers'+(window.plCC&&window.plCC()?'&country='+window.plCC():'')),{headers:hdr(t)}).then(function(r){ return r.json(); }).then(function(j){
         if(j&&j.ok===true&&Array.isArray(j.items)){ G=j.items; GT=Date.now(); saveCache(); redraw(); }
       });
     }).catch(function(){}).then(function(){ busy=false; if(LOADING){ LOADING=false; redraw(); } });
@@ -13939,7 +13948,7 @@ function openOfferwall(){
     var names=pkNames(cat), i=0;
     function go(){
       var c=names[i];
-      return call('action=owgg_offers&category='+encodeURIComponent(c)+(dev?'&device='+dev:'')+'&page='+page+(q?'&search='+encodeURIComponent(q):''),'rapid-api').then(function(j){
+      return call('action=owgg_offers&category='+encodeURIComponent(c)+(window.plCC&&window.plCC()?'&country='+window.plCC():'')+(dev?'&device='+dev:'')+'&page='+page+(q?'&search='+encodeURIComponent(q):''),'rapid-api').then(function(j){
         if(j&&j.ok&&!(j.offers||[]).length&&page===1&&i<names.length-1){ i++; return go(); }
         return {j:j,cat:c};
       });
@@ -14603,6 +14612,198 @@ function openOfferwall(){
 })();
 </script>
 
+<script>
+/* ===== المهام الاجتماعية: متابعة تيك توك / تلغرام / يوتيوب… بضغطة (الصرف والحماية في الخادم) ===== */
+(function(){
+  var S=null, LOADING=false, ST=0, PROMO_SHOWN=false, CUR=null, TM=null;
+  var PM={telegram:['✈️','#229ED9,#1d6fa5','Telegram','تلغرام'],tiktok:['🎵','#111827,#fe2c55','TikTok','تيك توك'],youtube:['▶️','#ff0000,#8a0000','YouTube','يوتيوب'],
+    instagram:['📸','#f58529,#dd2a7b 55%,#8134af','Instagram','إنستغرام'],facebook:['📘','#1877f2,#0b3d91','Facebook','فيسبوك'],x:['𝕏','#111827,#374151','X','إكس'],other:['🔗','#2563eb,#4338ca','Link','رابط']};
+  function pm(k){ return PM[k]||PM.other; }
+  function usd(n){ n=Number(n)||0; return '$'+(n>=0.01?n.toFixed(2):n.toFixed(4)); }
+  function httpsOk(u){ return /^https:\/\/[^\s]+$/i.test(String(u||'')); }
+  function redraw(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
+  function load(force){
+    if(LOADING) return; if(!force&&S&&Date.now()-ST<90000) return;
+    try{ if(!SRV||!SRV.on()||!SESSION) return; }catch(e){ return; }
+    LOADING=true;
+    Promise.resolve(SRV.rpc('social_list',{})).then(function(r){ LOADING=false; if(Array.isArray(r)){ S=r; ST=Date.now(); redraw(); promoMaybe(); } else { if(!S) S=[]; ST=Date.now(); } }).catch(function(){ LOADING=false; if(!S) S=[]; ST=Date.now(); });
+  }
+  window.socReload=function(){ load(true); };
+  function tabNow(cat){ var t='new'; try{ if(cat!=='ads'&&cat!=='survey'&&typeof taskTab!=='undefined') t=taskTab; }catch(e){} return t; }
+  function eligible(cat){
+    if(!S||!S.length) return []; var tab=tabNow(cat);
+    return S.filter(function(t){
+      if(!(cat==='all'||t.place==='all'||t.place===cat)) return false;
+      if(tab==='new') return !t.done; if(tab==='done') return !!t.done; return false;
+    });
+  }
+  var GO='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+  function card(t){
+    var m=pm(t.platform);
+    return '<div class="trow soc-row" data-sid="'+esc(t.id)+'" onclick="socOpen(this.getAttribute(\'data-sid\'))">'
+      +'<div class="t-icon art" style="background:linear-gradient(135deg,'+m[1]+');display:flex;align-items:center;justify-content:center"><span style="font-size:28px">'+m[0]+'</span></div>'
+      +'<div class="t-info"><div class="t-head"><b class="t-amt">'+(t.reward>0?usd(t.reward):'—')+'</b><span class="t-amtl">'+L('المكافأة','Reward','Gain')+'</span></div>'
+      +'<h4>'+esc(t.title||'')+'</h4>'
+      +(t.done?'<span class="t-tag" style="background:#22c55e22;color:#22c55e">✅ '+L('تم الاستلام','Claimed','Reçu')+'</span>':'<span class="t-tag" style="background:#22c55e22;color:#22c55e">'+L('جديد','New','Nouveau')+'</span>')
+      +'<span class="t-tag" style="background:#6366f122;color:#a5b4fc">'+m[0]+' '+L(m[3],m[2],m[2])+'</span>'
+      +'<div class="meta"><span>⚡ '+L('ضغطة واحدة','One tap','Un clic')+'</span></div></div>'+GO+'</div>';
+  }
+  window.socInject=function(cat){
+    try{
+      load(false);
+      var box=document.getElementById('tlist'); if(!box) return;
+      var show=eligible(cat); if(!show.length) return; var html='';
+      show.forEach(function(t){ if(!box.querySelector('.soc-row[data-sid="'+String(t.id).replace(/"/g,'')+'"]')) html+=card(t); });
+      if(!html) return;
+      try{ var _e=box.querySelector('.te-wrap,.tempty'); if(_e&&!box.querySelector('.trow')) _e.remove(); }catch(e){}
+      box.insertAdjacentHTML('afterbegin',html);
+    }catch(e){}
+  };
+  /* ---------- النافذة ---------- */
+  function ov(){
+    var o=document.getElementById('soc-ov');
+    if(!o){ o=document.createElement('div'); o.id='soc-ov'; o.innerHTML='<div class="so-box" id="soc-box"></div>'; o.addEventListener('click',function(e){ if(e.target===o) socClose(); }); document.body.appendChild(o); }
+    return o;
+  }
+  function byId(id){ for(var i=0;S&&i<S.length;i++) if(String(S[i].id)===String(id)) return S[i]; return null; }
+  window.socClose=function(){ var o=document.getElementById('soc-ov'); if(o) o.classList.remove('on'); if(TM){ clearInterval(TM); TM=null; } CUR=null; };
+  function openLink(u){ try{ var a=document.createElement('a'); a.href=u; a.target='_blank'; a.rel='noopener noreferrer'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){ try{ window.open(u,'_blank'); }catch(_){} } }
+  function paint(promo){
+    var t=CUR; if(!t) return; var m=pm(t.platform), box=document.getElementById('soc-box'); if(!box) return;
+    var rem=0; if(t.started){ rem=Math.max(0,Math.ceil((t.started+10000-Date.now())/1000)); }
+    var btn, hint;
+    if(t.done){ btn='<button type="button" class="so-go dis" disabled>✅ '+L('تم استلام المكافأة','Reward claimed','Récompense reçue')+'</button>'; hint=''; }
+    else if(!t.started){ btn='<button type="button" class="so-go" onclick="socGo()">'+m[0]+' '+L('افتح وتابع','Open & follow','Ouvrir et suivre')+'</button>'; hint=L('اضغط الزر ليفتح الرابط، ثم ارجع إلى هنا لاستلام مكافأتك.','Tap to open the link, then come back here to claim your reward.','Ouvrez le lien puis revenez réclamer.'); }
+    else if(rem>0){ btn='<button type="button" class="so-go dis" disabled>⏳ '+L('استلام المكافأة بعد ','Claim in ','Réclamer dans ')+rem+'s</button>'; hint=L('أنهِ المتابعة ثم ارجع إلى هنا.','Finish following, then return here.','Terminez puis revenez.'); }
+    else { btn='<button type="button" class="so-go claim" onclick="socClaim()">💰 '+L('استلم ','Claim ','Réclamer ')+(t.reward>0?usd(t.reward):'')+'</button>'; hint=''; }
+    box.innerHTML='<div class="so-hd" style="background:linear-gradient(135deg,'+m[1]+')"><button type="button" class="so-x" onclick="socClose()">×</button><div class="so-ic">'+m[0]+'</div>'
+      +'<div class="so-pl">'+(promo?'⭐ '+L('قناتنا الرسمية','Our official channel','Notre canal officiel'):L(m[3],m[2],m[2]))+'</div><h3>'+esc(t.title)+'</h3>'
+      +(t.reward>0?'<div class="so-rw">+'+usd(t.reward)+'</div>':'')+'</div>'
+      +'<div class="so-bd">'+(t.descr?'<p class="so-ds">'+esc(t.descr)+'</p>':'')
+      +'<div class="so-st"><span>1</span><div>'+L('اضغط «افتح وتابع» وسيُفتح الرابط','Tap “Open & follow” to open the link','Appuyez sur « Ouvrir »')+'</div></div>'
+      +'<div class="so-st"><span>2</span><div>'+L('ارجع إلى PayLoop واستلم مكافأتك في رصيدك','Return to PayLoop and claim your reward','Revenez et réclamez')+'</div></div>'
+      +(hint?'<div class="so-ht">'+hint+'</div>':'')+btn
+      +((t.started&&!t.done)?'<button type="button" class="so-re" onclick="socReopen()">'+L('إعادة فتح الرابط','Open the link again','Rouvrir le lien')+'</button>':'')
+      +(promo&&!t.done?'<button type="button" class="so-re" onclick="socClose()">'+L('لاحقاً','Later','Plus tard')+'</button>':'')+'</div>';
+    if(t.started&&!t.done&&rem>0&&!TM){ TM=setInterval(function(){ if(!CUR||CUR.done){ clearInterval(TM); TM=null; return; } if(Date.now()>=CUR.started+10000){ clearInterval(TM); TM=null; } paint(promo); },500); }
+  }
+  function show(t,promo){ CUR=t; ov().classList.add('on'); paint(promo); }
+  window.socOpen=function(id){ var t=byId(id); if(t) show(t,false); };
+  window.socGo=function(){
+    var t=CUR; if(!t||t.started||t.done) return; if(!httpsOk(t.url)){ toast('⚠️ '+L('الرابط غير صالح','Invalid link','Lien invalide')); return; }
+    openLink(t.url);
+    Promise.resolve(SRV.rpc('social_start',{p_id:t.id})).then(function(r){
+      if(r&&r.ok===true){ t.started=Number(r.started)||Date.now(); try{ var c=Date.now(); if(Math.abs(t.started-c)>60000) t.started=c; }catch(e){} paint(); }
+      else toast('⚠️ '+(r&&r.error==='blocked'?L('حسابك محظور','Account blocked','Compte bloqué'):L('تعذّر البدء','Could not start','Échec')));
+    }).catch(function(){ toast('⚠️ '+L('تعذّر البدء','Could not start','Échec')); });
+  };
+  window.socReopen=function(){ var t=CUR; if(t&&httpsOk(t.url)) openLink(t.url); };
+  window.socClaim=function(){
+    var t=CUR; if(!t||t.done) return;
+    Promise.resolve(SRV.rpc('social_claim',{p_id:t.id})).then(function(r){
+      if(r&&r.ok===true){ t.done=true; t.started=null; paint(); if(!r.already&&Number(r.reward)>0){ try{ window.__mvB=(Number(BAL)||0)+Number(r.reward); }catch(e){} toast('🎉 '+L('تمت إضافة ','Added ','Ajouté ')+usd(r.reward)+L(' إلى رصيدك',' to your balance',' à votre solde')); } try{ SRV.pullState(); }catch(e){} redraw(); }
+      else if(r&&r.error==='too_soon'){ t.started=Date.now()-(8-Number(r.wait||1))*1000; paint(); }
+      else toast('⚠️ '+L('تعذّر الاستلام','Could not claim','Échec'));
+    }).catch(function(){ toast('⚠️ '+L('تعذّر الاستلام','Could not claim','Échec')); });
+  };
+  /* ---------- نافذة ترحيب للمستخدم (ترويج قناتك): حتى 3 مرات، بينها 24 ساعة ---------- */
+  function promoMaybe(){
+    try{
+      if(PROMO_SHOWN||!S) return; var u=SESSION; if(!u) return;
+      var t=S.filter(function(x){ return x.promo&&!x.done; })[0]; if(!t) return;
+      var k='pl-soc-promo-'+t.id+'-'+u, o={n:0,t:0}; try{ o=JSON.parse(localStorage.getItem(k)||'null')||o; }catch(e){}
+      if(o.n>=3||Date.now()-o.t<864e5) return;
+      PROMO_SHOWN=true;
+      setTimeout(function(){
+        try{ var g=document.getElementById('auth-gate'); if(g&&getComputedStyle(g).display!=='none') return; if(document.getElementById('cpx-ov')&&document.getElementById('cpx-ov').classList.contains('on')) return; if(document.hidden) return;
+          o.n++; o.t=Date.now(); try{ localStorage.setItem(k,JSON.stringify(o)); }catch(e){} show(t,true); }catch(e){}
+      },7000);
+    }catch(e){}
+  }
+  try{ var _rt=window.renderTasks; if(typeof _rt==='function'){ window.renderTasks=function(cat){ _rt.apply(this,arguments); try{ window.socInject(cat); }catch(e){} }; } }catch(e){}
+  try{ document.addEventListener('DOMContentLoaded',function(){ setTimeout(function(){ load(false); },2500); }); setInterval(function(){ if(!document.hidden&&!S) load(false); },15000); }catch(e){}
+  try{ document.addEventListener('visibilitychange',function(){ if(!document.hidden&&S&&Date.now()-ST>180000) load(true); }); }catch(e){}
+
+  /* ---------- لوحة الإدارة ---------- */
+  var AD=null, ADT=0, EDIT=null, ARM='';
+  var PLACES=[['all','كل الأقسام','All sections'],['survey','الاستطلاعات','Surveys'],['games','الألعاب','Games'],['ads','الإعلانات','Ads'],['apps','التطبيقات','Apps'],['camps','حملات الربح','Campaigns'],['daily','المهام اليومية','Daily']];
+  function opt(list,sel,fi){ return list.map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===sel?' selected':'')+'>'+esc(L(o[1],o[fi||2]||o[1],o[fi||2]||o[1]))+'</option>'; }).join(''); }
+  window.renderAdmSoc=async function(force){
+    var box=document.getElementById('adm-body'); if(!box) return;
+    if(!SRV.on()){ box.innerHTML='<div class="adm-empty">'+L('هذه الصفحة تعمل مع قاعدة البيانات الحقيقية فقط','This page works with the live database only','Base réelle requise')+'</div>'; return; }
+    if(force||!AD||Date.now()-ADT>15000){ try{ var r=await SRV.rpc('social_admin_list',{}); if(r&&r.ok&&Array.isArray(r.rows)){ AD=r.rows; ADT=Date.now(); } }catch(e){} if(ADM_TAB!=='soc') return; }
+    if(!AD){ box.innerHTML='<div class="adm-empty">'+L('تعذّر التحميل — شغّل ملف 101_social_tasks.sql في Supabase','Could not load — run 101_social_tasks.sql in Supabase','Échec — exécutez 101_social_tasks.sql')+'</div>'; return; }
+    if(!document.getElementById('soc-form')||EDIT==='__redraw'){ if(EDIT==='__redraw') EDIT=null; formDraw(box); }
+    listDraw();
+  };
+  function formDraw(box){
+    var e=(EDIT&&typeof EDIT==='object')?EDIT:{platform:'telegram',title:'',descr:'',url:'',reward:0.01,place:'all',promo:false,active:true,sort:100};
+    var PF=[['telegram','تلغرام','Telegram'],['tiktok','تيك توك','TikTok'],['youtube','يوتيوب','YouTube'],['instagram','إنستغرام','Instagram'],['facebook','فيسبوك','Facebook'],['x','إكس','X'],['other','رابط آخر','Other']];
+    box.innerHTML='<div class="pb-intro">🔗 '+L('أنشئ مهمة متابعة (تلغرام، تيك توك، يوتيوب…). المستخدم يضغط فيُفتح الرابط ثم يستلم المكافأة مرة واحدة لكل حساب (بعد 8 ثوانٍ كحماية). لا يمكن التأكد أنه تابع فعلاً، فاجعل المكافآت صغيرة.','Create a follow task. The user taps, the link opens, then claims the reward once per account (8s safety delay). We cannot verify the follow, so keep rewards small.','Créez une tâche. Une récompense par compte.')+'</div>'
+      +'<div class="pb-add" id="soc-form"><b>'+(e.id?'✏️ '+L('تعديل مهمة','Edit task','Modifier'):'➕ '+L('مهمة جديدة','New task','Nouvelle tâche'))+'</b>'
+      +'<select id="sf-pf">'+opt(PF,e.platform,2)+'</select>'
+      +'<input id="sf-title" dir="auto" maxlength="80" placeholder="'+L('العنوان: مثل «تابع قناتنا الرسمية»','Title','Titre')+'" value="'+esc(e.title)+'">'
+      +'<textarea id="sf-descr" dir="auto" maxlength="600" rows="3" placeholder="'+L('وصف فخم قصير يشجّع المستخدم','Short premium description','Description')+'">'+esc(e.descr)+'</textarea>'
+      +'<input id="sf-url" dir="ltr" placeholder="https://t.me/yourchannel" value="'+esc(e.url)+'">'
+      +'<input id="sf-rw" dir="ltr" type="number" step="0.0001" min="0" max="5" placeholder="'+L('السعر بالدولار (حتى 5)','Reward USD (max 5)','Prix USD')+'" value="'+esc(e.reward)+'">'
+      +'<select id="sf-place">'+opt(PLACES,e.place,2)+'</select>'
+      +'<label class="sf-ck"><input id="sf-promo" type="checkbox"'+(e.promo?' checked':'')+'> '+L('نافذة ترحيب للمستخدمين (ترويج لقناتك)','Welcome popup for users (promote your channel)','Popup de bienvenue')+'</label>'
+      +'<label class="sf-ck"><input id="sf-act" type="checkbox"'+(e.active!==false?' checked':'')+'> '+L('فعّالة (ظاهرة للمستخدمين)','Active (visible)','Active')+'</label>'
+      +'<input id="sf-sort" dir="ltr" type="number" placeholder="'+L('الترتيب (الأصغر أولاً)','Order (small first)','Ordre')+'" value="'+esc(e.sort)+'">'
+      +'<button type="button" onclick="socSave('+(e.id?"'"+esc(e.id)+"'":"''")+')">💾 '+L('حفظ','Save','Enregistrer')+'</button>'
+      +(e.id?'<button type="button" style="background:rgba(255,255,255,.1);color:inherit" onclick="socEdit(\'\')">✖ '+L('إلغاء التعديل','Cancel edit','Annuler')+'</button>':'')+'</div><div id="soc-list"></div>';
+  }
+  function listDraw(){
+    var el=document.getElementById('soc-list'); if(!el) return; var rows=AD||[];
+    el.innerHTML=rows.map(function(t){ var m=pm(t.platform), armed=ARM===String(t.id);
+      return '<div class="pb-row"><div class="pb-top"><b>'+m[0]+' '+esc(t.title)+'</b><span class="pub-badge" style="margin:0;'+(t.active?'':'filter:grayscale(1);animation:none')+'">'+(t.active?L('فعّالة','Active','Active'):L('مخفية','Hidden','Masquée'))+'</span></div>'
+        +'<div class="pb-meta"><span>💰 '+usd(t.reward)+'</span><span>📍 '+esc(L((PLACES.filter(function(p){ return p[0]===t.place; })[0]||[0,t.place])[1],(PLACES.filter(function(p){ return p[0]===t.place; })[0]||[0,t.place,t.place])[2],t.place))+'</span>'
+        +'<span>👆 '+Number(t.opens||0)+' '+L('ضغطة','opened','ouvert')+'</span><span>✅ '+Number(t.claims||0)+' '+L('استلموا','claimed','reçu')+'</span>'+(t.promo?'<span>⭐ '+L('نافذة ترحيب','Welcome popup','Popup')+'</span>':'')+'</div>'
+        +'<div class="pb-note" dir="ltr">'+esc(t.url)+'</div>'
+        +'<div style="display:flex;gap:8px;margin-top:10px"><button type="button" class="pb-x" style="border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.1);color:#7dd3fc;margin-top:0" onclick="socEdit(\''+esc(t.id)+'\')">✏️ '+L('تعديل','Edit','Modifier')+'</button>'
+        +'<button type="button" class="pb-x'+(armed?' armed':'')+'" style="margin-top:0" onclick="socDel(\''+esc(t.id)+'\')">'+(armed?'✓ '+L('تأكيد الحذف','Confirm','Confirmer'):'🗑️ '+L('حذف','Delete','Suppr.'))+'</button></div></div>'; }).join('')
+      ||'<div class="up-em">'+L('لا مهام بعد — أنشئ أول مهمة من الأعلى','No tasks yet','Aucune tâche')+'</div>';
+  }
+  window.socEdit=function(id){ EDIT=id?((AD||[]).filter(function(t){ return String(t.id)===String(id); })[0]||null):null; var b=document.getElementById('adm-body'); if(b) formDraw(b); try{ b.scrollIntoView({block:'start'}); }catch(e){} listDraw(); };
+  window.socSave=async function(id){
+    var g=function(k){ return document.getElementById(k); };
+    var p={id:id||null,platform:g('sf-pf').value,title:g('sf-title').value.trim(),descr:g('sf-descr').value.trim(),url:g('sf-url').value.trim(),reward:g('sf-rw').value,place:g('sf-place').value,promo:g('sf-promo').checked,active:g('sf-act').checked,sort:g('sf-sort').value};
+    if(p.title.length<3){ toast(L('اكتب عنواناً (3 أحرف على الأقل)','Enter a title','Titre requis')); return; }
+    if(!httpsOk(p.url)){ toast(L('الرابط يجب أن يبدأ بـ https://','Link must start with https://','Le lien doit commencer par https://')); return; }
+    var rw=Number(p.reward); if(!(rw>=0&&rw<=5)){ toast(L('السعر بين 0 و 5 دولار','Reward must be 0–5 USD','Prix 0–5 USD')); return; }
+    try{ var r=await SRV.rpc('social_admin_save',{p:p}); if(r&&r.ok){ toast('✅ '+L('تم الحفظ','Saved','Enregistré')); EDIT='__redraw'; ADT=0; try{ ST=0; }catch(e){} window.renderAdmSoc(true); }
+      else toast('⚠️ '+L('تعذّر الحفظ','Could not save','Échec')+(r&&r.error?' ('+r.error+')':'')); }catch(e){ toast('⚠️ '+L('حدث خطأ','Error','Erreur')); }
+  };
+  window.socDel=async function(id){
+    if(ARM!==String(id)){ ARM=String(id); listDraw(); setTimeout(function(){ if(ARM===String(id)){ ARM=''; listDraw(); } },5000); return; }
+    ARM=''; try{ var r=await SRV.rpc('social_admin_delete',{p_id:Number(id)}); if(r&&r.ok){ toast(L('تم الحذف','Deleted','Supprimé')); ADT=0; window.renderAdmSoc(true); } else toast('⚠️ '+L('تعذّر الحذف','Failed','Échec')); }catch(e){}
+  };
+})();
+</script>
+
+<style>
+#soc-ov{position:fixed;inset:0;z-index:100002;background:rgba(3,8,20,.78);display:none;align-items:flex-end;justify-content:center}
+#soc-ov.on{display:flex}
+#soc-ov .so-box{width:100%;max-width:520px;max-height:94vh;overflow:auto;background:#0d1730;border:1px solid #27407a;border-radius:26px 26px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));color:#e6edff}
+#soc-ov .so-hd{position:relative;padding:26px 18px 20px;border-radius:26px 26px 0 0;text-align:center;color:#fff}
+#soc-ov .so-x{position:absolute;top:12px;inset-inline-end:14px;width:34px;height:34px;border:0;border-radius:50%;background:rgba(0,0,0,.28);color:#fff;font-size:22px;line-height:1;cursor:pointer}
+#soc-ov .so-ic{width:64px;height:64px;margin:0 auto 8px;border-radius:20px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#soc-ov .so-pl{font-size:12px;font-weight:800;opacity:.9;letter-spacing:.3px}
+#soc-ov .so-hd h3{margin:6px 0 0;font-size:19px;font-weight:900}
+#soc-ov .so-rw{display:inline-block;margin-top:10px;padding:6px 18px;border-radius:99px;font-size:20px;font-weight:900;color:#3b2a00;background:linear-gradient(135deg,#fde68a,#f59e0b);box-shadow:0 0 18px rgba(251,191,36,.55)}
+#soc-ov .so-bd{padding:16px 18px 4px}
+#soc-ov .so-ds{margin:0 0 12px;font-size:13.5px;line-height:1.85;color:#c3d0ec}
+#soc-ov .so-st{display:flex;gap:11px;align-items:center;padding:9px 0;font-size:13px;color:#dbe6ff}
+#soc-ov .so-st span{flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;background:rgba(56,189,248,.18);color:#7dd3fc}
+#soc-ov .so-ht{margin:6px 0 2px;font-size:12px;color:#9fb3d9;text-align:center}
+#soc-ov .so-go{width:100%;margin-top:12px;border:0;border-radius:15px;padding:15px;font:900 16px inherit;cursor:pointer;color:#fff;background:linear-gradient(135deg,#2563eb,#4f46e5);box-shadow:0 10px 24px -10px rgba(79,70,229,.8)}
+#soc-ov .so-go.claim{color:#3b2a00;background:linear-gradient(135deg,#fde68a,#f59e0b);box-shadow:0 10px 24px -10px rgba(245,158,11,.8)}
+#soc-ov .so-go.dis{background:#1e2a47;color:#8fa3c8;box-shadow:none;cursor:default}
+#soc-ov .so-re{width:100%;margin-top:8px;border:0;background:transparent;color:#7dd3fc;font:700 13px inherit;padding:8px;cursor:pointer}
+.pb-add select,.pb-add textarea{box-sizing:border-box;width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid rgba(148,163,184,.25);background:rgba(148,163,184,.08);color:var(--text);font:inherit;font-size:14px}
+.pb-add .sf-ck{display:flex;align-items:center;gap:8px;font-size:13px}
+</style>
+
 <style>
 #svy-g{position:fixed;inset:0;z-index:100001;background:rgba(3,8,20,.8);display:none;align-items:flex-end;justify-content:center}
 #svy-g.on{display:flex}
@@ -14814,5 +15015,13 @@ html.pl-lite .trow:active,html.pl-lite .nav-btn:active{transform:scale(.985)}
 .page{scroll-behavior:auto}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
+<script>
+/* بلد العروض: تلقائي من IP على الخادم، أو اختيار يدوي يُمرَّر كمعامل */
+window.plCC=function(){ try{ var c=localStorage.getItem('pl_cc')||''; return /^[A-Z]{2}$/.test(c)?c:''; }catch(e){ return ''; } };
+window.plCCSet=function(v){ try{ if(v) localStorage.setItem('pl_cc',v); else localStorage.removeItem('pl_cc'); }catch(e){}
+  try{ if(window.owmGamesLoad) window.owmGamesLoad(true); }catch(e){}
+  try{ toast('تم — سيتم تحديث العروض'); }catch(e){} };
+(function(){ function init(){ var e=document.getElementById('pl-cc'); if(e) e.value=window.plCC(); } if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init(); setTimeout(init,1500); })();
+</script>
 </body>
 </html>
