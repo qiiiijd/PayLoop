@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.07-r131';
+window.PL_BUILD='2026.11.08-r132';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -7873,6 +7873,10 @@ function plPushBanner(d){
     void el.offsetWidth; el.classList.add('on');
     if(_pbT) clearTimeout(_pbT); _pbT=setTimeout(hide,6000);
     try{ if(navigator.vibrate) navigator.vibrate([120,60,120]); }catch(e){}
+    try{ /* نغمة قصيرة لطيفة (الويب لا يسمح بتغيير صوت إشعار النظام، فنُسمِع نغمة داخل التطبيق) */
+      const AC=window.AudioContext||window.webkitAudioContext; if(AC){ const c=window.__plAC||(window.__plAC=new AC()); if(c.state==='suspended'&&c.resume) c.resume();
+        const t=c.currentTime; [[880,0],[1318,.13]].forEach(function(f){ const o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.value=f[0]; g.gain.setValueAtTime(0.0001,t+f[1]); g.gain.exponentialRampToValueAtTime(0.16,t+f[1]+.02); g.gain.exponentialRampToValueAtTime(0.0001,t+f[1]+.22); o.connect(g); g.connect(c.destination); o.start(t+f[1]); o.stop(t+f[1]+.25); }); }
+    }catch(e){}
   }catch(e){}
 }
 function pushGo(g){ if(!g) return; if(!SESSION){ _pendingGo=g; return; } try{ ntfNavigate(g); }catch(e){} }
@@ -13967,8 +13971,10 @@ function openOfferwall(){
   var LASTP=0; window.renderAdmMnt=function(){ var b=document.getElementById('adm-mnt'); mntAdmDraw(); if(Date.now()-LASTP>10000){ LASTP=Date.now(); pull(); } };
   window.__mntReady=function(){ var m=window.__MNT0; if(m&&m.flag) FLAG=m.flag; apply(); try{ mntAdmDraw(); }catch(e){} };
   if(window.__MNT0&&window.__MNT0.done) window.__mntReady();
-  setInterval(apply,2000); setInterval(pull,120000);
-  document.addEventListener('visibilitychange',function(){ if(!document.hidden) pull(); });
+  setInterval(apply,2000);
+  /* تخفيف الحمل: كل 3–5 دقائق بتوقيت عشوائي لكل مستخدم (بدل 2 دقيقة ثابتة) حتى لا تتزامن ملايين الطلبات */
+  (function tick(){ setTimeout(function(){ pull(); tick(); },180000+Math.floor(Math.random()*120000)); })();
+  var LASTV=0; document.addEventListener('visibilitychange',function(){ if(!document.hidden && Date.now()-LASTV>60000){ LASTV=Date.now(); pull(); } });
   if(!(window.__MNT0&&window.__MNT0.flag)) setTimeout(pull,300);
 }catch(e){ try{ console.warn('[mnt]',e); }catch(_){} }})();
 </script>
