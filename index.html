@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.08-r132';
+window.PL_BUILD='2026.11.08-r135';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -478,6 +478,29 @@ html.pl-mid *{-webkit-backdrop-filter:none!important;backdrop-filter:none!import
 .hscroll{display:flex; gap:12px; overflow-x:auto; padding:2px 18px 10px; scrollbar-width:none;}
 .hscroll::-webkit-scrollbar{display:none;}
 .task-card{min-width:200px; background:var(--card); border:1px solid var(--border); border-radius:18px; overflow:hidden; flex:0 0 auto;}
+.mv-card{margin:12px 18px 0;padding:14px 16px;border-radius:18px;border:1px solid rgba(74,222,128,.30);background:rgba(74,222,128,.06)}
+.mv-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mv-top b{font-size:14.5px}
+.mv-chip{font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;background:rgba(251,191,36,.15);color:#fbbf24;white-space:nowrap}
+.mv-bar{height:9px;border-radius:99px;background:rgba(255,255,255,.10);overflow:hidden;margin:10px 0 6px}
+.mv-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#38bdf8,#4ade80)}
+.mv-sub{font-size:12.5px;color:var(--muted);line-height:1.6}
+.mv-tip{font-size:12.5px;line-height:1.7;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(255,255,255,.12)}
+.mv-btns{display:flex;gap:8px;margin-top:10px}
+.mv-btns button{flex:1;border:0;border-radius:12px;padding:10px 6px;font:inherit;font-weight:900;font-size:13px;cursor:pointer;background:rgba(255,255,255,.08);color:inherit}
+.mv-btns button.p{background:#4ade80;color:#052e16}
+.ac-card{margin:12px 18px 0;padding:14px 16px;border-radius:18px;border:1px solid rgba(167,139,250,.30);background:rgba(167,139,250,.06)}
+.ac-lv{display:flex;align-items:center;gap:10px}
+.ac-lv .ic{flex:none;width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(135deg,#a78bfa,#6366f1)}
+.ac-lv b{font-size:14.5px;display:block}.ac-lv small{font-size:11.5px;color:var(--muted)}
+.ac-goal{margin-top:12px;font-size:12.5px}
+.ac-chips{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.ac-chips button{border:0;border-radius:99px;padding:5px 11px;font:inherit;font-weight:800;font-size:12px;cursor:pointer;background:rgba(255,255,255,.08);color:inherit}
+.ac-chips button.on{background:#a78bfa;color:#1e1b4b}
+.ac-badges{display:flex;gap:7px;margin-top:12px;overflow-x:auto;padding-bottom:2px}
+.ac-b{flex:none;width:62px;text-align:center;font-size:10.5px;line-height:1.35;color:var(--muted)}
+.ac-b i{display:flex;width:42px;height:42px;margin:0 auto 3px;border-radius:50%;align-items:center;justify-content:center;font-style:normal;font-size:20px;background:rgba(255,255,255,.07);filter:grayscale(1);opacity:.5}
+.ac-b.on{color:inherit}.ac-b.on i{filter:none;opacity:1;background:linear-gradient(135deg,#fbbf24,#f59e0b)}
 .task-banner{height:100px; background:linear-gradient(135deg,var(--accent2),var(--accent)); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;}
 .task-banner:before{content:""; position:absolute; inset:0; background-image:radial-gradient(circle at 20% 20%, rgba(255,255,255,.2), transparent 40%);}
 .task-banner svg{position:relative; transform:scale(1.6);}
@@ -3016,6 +3039,8 @@ html.lite .vip-hero:before{display:none}
     <button data-i18n="btn.start" class="start-btn" onclick="go('tasks')">ابدأ الربح</button>
   </div>
   
+  <div id="home-motive"></div>
+  <div id="home-achv"></div>
   <div id="home-guide"></div>
 
   <div class="section"><div class="section-title" data-i18n="sec.promo">🎁 مكافآت مميزة</div></div>
@@ -4783,7 +4808,67 @@ function updHeld(){
   he.className='w-held'+(h>0?' on':'');
   const v=document.getElementById('w-held-v'); if(v) v.textContent='$'+h.toFixed(2);
 }
+function motiveDraw(){
+  try{
+    const bx=document.getElementById('home-motive'); if(!bx) return;
+    const u=(typeof curUser==='function')?curUser():null; if(!u){ bx.innerHTML=''; return; }
+    const MIN=3, b=Math.max(0,Number(BAL)||0), left=Math.max(0,MIN-b), pc=Math.min(100,Math.round(b/MIN*100));
+    const dk=function(t){ const d=new Date(t); return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); };
+    const days={}; (TX||[]).forEach(function(x){ if(x&&x.u>0&&x.s==='done'&&x.at) days[dk(x.at)]=1; });
+    let st=0, t=Date.now(); if(!days[dk(t)]) t-=864e5; while(days[dk(t)]){ st++; t-=864e5; }
+    const doy=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/864e5);
+    const tips=[
+      L('📝 لم تتأهل لاستطلاع؟ هذا طبيعي ويحدث للجميع — جرّب استطلاعاً آخر، فكل محاولة تقرّبك.','📝 Didn’t qualify for a survey? That happens to everyone — try another one.','📝 Pas qualifié pour un sondage ? Ça arrive à tout le monde — essayez-en un autre.'),
+      L('🎮 في الألعاب تُضاف مكافأة كل مرحلة تُنجزها — تابع مرحلة بعد مرحلة.','🎮 In games each level you finish adds its reward — go level by level.','🎮 Dans les jeux, chaque niveau terminé ajoute sa récompense.'),
+      L('⏱️ حتى 10 دقائق يومياً تصنع فرقاً مع الوقت.','⏱️ Even 10 minutes a day adds up.','⏱️ Même 10 minutes par jour font la différence.'),
+      L('👥 ادعُ أصدقاءك: تحصل على 10% من أرباحهم دون أن ينقص من أرباحهم شيء.','👥 Invite friends: you get 10% of their earnings, at no cost to them.','👥 Invitez des amis : 10 % de leurs gains pour vous, sans rien leur retirer.'),
+      L('✅ اقرأ شروط المهمة جيداً قبل البدء — هكذا تضمن احتساب مكافأتك.','✅ Read the task conditions first — that’s how your reward gets counted.','✅ Lisez les conditions avant de commencer pour que la récompense soit comptée.')
+    ];
+    const sig=[Math.round(b*10000),st,doy%tips.length,(typeof LANG!=='undefined'?LANG:'')].join('|');
+    if(bx.getAttribute('data-sig')===sig) return; bx.setAttribute('data-sig',sig);
+    let head, sub;
+    if(b>=MIN){ head='🎉 '+L('رصيدك وصل للحد الأدنى للسحب!','You reached the minimum withdrawal!','Vous avez atteint le retrait minimum !'); sub=L('يمكنك طلب السحب الآن، أو واصل الربح لتسحب مبلغاً أكبر.','You can request a withdrawal now, or keep earning for more.','Vous pouvez retirer maintenant, ou continuer à gagner.'); }
+    else if(b>0){ head='🚀 '+L('باقي $'+fm(left)+' فقط للسحب','Only $'+fm(left)+' left to withdraw','Plus que '+fm(left)+' $ pour retirer'); sub=L('رصيدك $'+fm(b)+' من $'+MIN+' — أنت تتقدّم!','You have $'+fm(b)+' of $'+MIN+' — you’re making progress!','Vous avez '+fm(b)+' $ sur '+MIN+' $ — ça avance !'); }
+    else { head='🌟 '+L('ابدأ أول مهمة اليوم','Start your first task today','Commencez votre première tâche'); sub=L('أول مكسب يقرّبك من حد السحب $'+MIN+'.','Your first earning moves you toward the $'+MIN+' minimum.','Votre premier gain vous rapproche du minimum de '+MIN+' $.'); }
+    bx.innerHTML='<div class="mv-card"><div class="mv-top"><b>'+head+'</b>'+(st>0?'<span class="mv-chip">🔥 '+st+' '+L(st===1?'يوم':'أيام','day'+(st>1?'s':''),st>1?'jours':'jour')+'</span>':'')+'</div>'
+      +'<div class="mv-bar"><i style="width:'+pc+'%"></i></div><div class="mv-sub">'+sub+'</div>'
+      +'<div class="mv-tip">'+tips[doy%tips.length]+'</div>'
+      +'<div class="mv-btns">'+(b>=MIN?'<button type="button" class="p" onclick="go(\'withdraw\')">💸 '+L('اسحب الآن','Withdraw','Retirer')+'</button>':'')
+      +'<button type="button"'+(b>=MIN?'':' class="p"')+' onclick="go(\'tasks\')">🎮 '+L('الألعاب والمهام','Games & tasks','Jeux et tâches')+'</button>'
+      +'<button type="button" onclick="openCpx()">📝 '+L('الاستطلاعات','Surveys','Sondages')+'</button></div></div>';
+  }catch(e){}
+}
+function plStreak(){
+  const dk=function(t){ const d=new Date(t); return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); };
+  const days={}; (TX||[]).forEach(function(x){ if(x&&x.u>0&&x.s==='done'&&x.at) days[dk(x.at)]=1; });
+  let st=0, t=Date.now(); if(!days[dk(t)]) t-=864e5; while(days[dk(t)]){ st++; t-=864e5; } return st;
+}
+function achvDraw(){
+  try{
+    const bx=document.getElementById('home-achv'); if(!bx) return;
+    const u=(typeof curUser==='function')?curUser():null; if(!u){ bx.innerHTML=''; return; }
+    const tot=Math.max(0,Number(earnTotal())||0), done=Number(DONE)||0, st=plStreak(), today=Math.max(0,Number(TODAY)||0);
+    const LV=[[0,'🌱',L('مبتدئ','Beginner','Débutant')],[1,'⚡',L('نشيط','Active','Actif')],[5,'🚀',L('محترف','Pro','Pro')],[15,'💎',L('خبير','Expert','Expert')],[40,'🏆',L('نجم','Star','Star')],[100,'👑',L('أسطورة','Legend','Légende')]];
+    let li=0; for(let i=0;i<LV.length;i++) if(tot>=LV[i][0]) li=i;
+    const nx=LV[li+1]; const lp=nx?Math.min(100,Math.round((tot-LV[li][0])/(nx[0]-LV[li][0])*100)):100;
+    let g=0; try{ g=parseFloat(LS.get('pl-goal'))||0; }catch(e){}
+    if(!(g>0)) g=0.25;
+    const bd=[['🎯',L('أول ربح','First earning','Premier gain'),tot>0||done>0],['💵',L('أول $1','First $1','Premier 1 $'),tot>=1],['💸',L('وصلت للسحب','Withdraw level','Niveau retrait'),tot>=3],
+      ['🔥',L('3 أيام','3-day streak','3 jours'),st>=3],['🌟',L('7 أيام','7-day streak','7 jours'),st>=7],['✅',L('10 مهام','10 tasks','10 tâches'),done>=10]];
+    const sig=[Math.round(tot*10000),done,st,Math.round(today*10000),g,(typeof LANG!=='undefined'?LANG:'')].join('|');
+    if(bx.getAttribute('data-sig')===sig) return; bx.setAttribute('data-sig',sig);
+    const gp=Math.min(100,Math.round(today/g*100)), gd=today>=g;
+    bx.innerHTML='<div class="ac-card"><div class="ac-lv"><div class="ic">'+LV[li][1]+'</div><div style="flex:1;min-width:0"><b>'+L('مستواك: ','Level: ','Niveau : ')+LV[li][2]+'</b><small>'+(nx?L('باقي $'+fm(nx[0]-tot)+' للمستوى التالي «'+nx[2]+'»','$'+fm(nx[0]-tot)+' to “'+nx[2]+'”','Encore '+fm(nx[0]-tot)+' $ pour « '+nx[2]+' »'):L('وصلت لأعلى مستوى 👑','Top level reached 👑','Niveau maximum 👑'))+'</small></div></div>'
+      +'<div class="mv-bar"><i style="width:'+lp+'%;background:linear-gradient(90deg,#a78bfa,#6366f1)"></i></div>'
+      +'<div class="ac-goal"><b>'+(gd?'✅ ':'🎯 ')+L('هدفك اليوم: $'+fm(g),'Today’s goal: $'+fm(g),'Objectif du jour : '+fm(g)+' $')+'</b> — '+(gd?L('أحسنت، حقّقته!','well done, you made it!','bravo, atteint !'):L('ربحت $'+fm(today)+' حتى الآن','you earned $'+fm(today)+' so far','vous avez gagné '+fm(today)+' $'))
+      +'<div class="mv-bar" style="margin:6px 0"><i style="width:'+gp+'%"></i></div>'
+      +'<div class="ac-chips">'+[0.1,0.25,0.5,1].map(function(v){ return '<button type="button"'+(v===g?' class="on"':'')+' onclick="plSetGoal('+v+')">$'+v+'</button>'; }).join('')+'</div></div>'
+      +'<div class="ac-badges">'+bd.map(function(x){ return '<div class="ac-b'+(x[2]?' on':'')+'"><i>'+x[0]+'</i>'+x[1]+'</div>'; }).join('')+'</div></div>';
+  }catch(e){}
+}
+function plSetGoal(v){ try{ LS.set('pl-goal',String(v)); }catch(e){} try{ achvDraw(); }catch(e){} }
 function homeSmart(){
+  try{ motiveDraw(); }catch(e){} try{ achvDraw(); }catch(e){}
   try{ plHeroBadge(); }catch(e){}
   const box=document.getElementById('home-hello'); if(!box) return;
   const u=(typeof curUser==='function')?curUser():null; if(!u){ box.innerHTML=''; return; }
@@ -4806,6 +4891,10 @@ function fm(v){ v=Number(v)||0; /* العرض: خانتان دائمًا، وخ�
 function refreshBAL(skipAnim){
   const set=(id,v)=>{ if(skipAnim&&(id==='bal-task'||id==='today-task')) return; const e=document.getElementById(id); if(e) e.textContent=v; };
   const earn='$'+earnTotal().toFixed(2);
+  try{ const _b=Number(BAL)||0; if(!window.__mvT0) window.__mvT0=Date.now();
+    if(window.__mvB!=null && Date.now()-window.__mvT0>10000 && _b>window.__mvB+0.00005 && !document.hidden){ const _g=_b-window.__mvB, _l=3-_b;
+      toast('🎉 '+L('أُضيف $'+fm(_g)+' إلى رصيدك','$'+fm(_g)+' added to your balance','+'+fm(_g)+' $ ajoutés à votre solde'), _l>0?L('باقي $'+fm(_l)+' للسحب','$'+fm(_l)+' left to withdraw','Plus que '+fm(_l)+' $ pour retirer'):L('يمكنك السحب الآن 💸','You can withdraw now 💸','Vous pouvez retirer 💸')); }
+    window.__mvB=_b; }catch(e){}
   set('bal-home','$'+fm(BAL)); try{ homeSmart(); }catch(e){}
   set('pts-home',L('أرباح المهام','Task earnings','Gains des tâches')+': $'+(PTS/10000).toFixed(2));
   set('bal-wd','$'+fm(BAL));
@@ -11954,9 +12043,48 @@ async function openCpx(){
     if(!r.ok||!j.ok||typeof j.url!=='string'||!/^https:\/\/offers\.cpx-research\.com\//.test(j.url)){ ov.classList.remove('on'); toast(L('تعذّر فتح الاستطلاعات الآن','Could not open surveys now','Impossible d\'ouvrir les sondages')); return; }
     fr.onload=function(){ ld.style.display='none'; };
     fr.src=j.url;
+    try{ if(!document.getElementById('cpx-help')){ var hb=document.createElement('button'); hb.id='cpx-help'; hb.type='button'; hb.className='cpx-x'; hb.style.cssText='margin-inline-start:auto;margin-inline-end:8px'; hb.textContent='💡 '+L('كيف أربح؟','How to earn','Astuces'); hb.onclick=function(){ plSvGuide(); }; cb.parentNode.insertBefore(hb,cb); } }catch(e){}
   }catch(e){ try{ document.getElementById('cpx-ov').classList.remove('on'); }catch(_){} try{ toast(L('حدث خطأ','Error','Erreur')); }catch(_){} }
 }
+/* ===== دليل الاستطلاعات: يظهر قبل أول استطلاع (مرتين كحد أقصى) وزر «كيف أربح؟» داخل الاستطلاعات ===== */
+function plSvGuide(go){
+  try{
+    var old=document.getElementById('sv-guide'); if(old) old.remove();
+    var st=[['🎯',L('أجب بصدق وبثبات','Answer honestly and consistently','Répondez honnêtement'),L('اكتب بياناتك (العمر، الدراسة، العمل) كما هي دائماً. تغيّرها بين استطلاع وآخر يُسقطك من الاستطلاع.','Always give the same details (age, study, job). Changing them between surveys disqualifies you.','Donnez toujours les mêmes informations. Les changer vous disqualifie.')],
+      ['📝',L('أكمل حتى النهاية','Finish to the end','Terminez jusqu’au bout'),L('المكافأة تُحتسب فقط بعد إنهاء الاستطلاع كاملاً. لا تغلق الصفحة قبل رسالة الشكر.','The reward counts only after you finish. Don’t close before the thank-you page.','La récompense compte seulement après la fin.')],
+      ['💪',L('«لم تتأهل» أمر طبيعي','“Not qualified” is normal','« Non qualifié » est normal'),L('أحياناً يُغلق الاستطلاع بعد بدايته لأن العدد المطلوب اكتمل. هذا يحدث للجميع — جرّب استطلاعاً آخر مباشرة.','Sometimes a survey closes after you start because it is full. It happens to everyone — just try another.','Cela arrive à tout le monde — essayez un autre sondage.')],
+      ['⏱️',L('الرصيد قد يتأخر قليلاً','Credit may take a moment','Le crédit peut tarder'),L('بعد الإنهاء قد تحتاج المكافأة من دقائق إلى وقت أطول لتظهر في رصيدك. لا تكرّر الاستطلاع نفسه.','After finishing, the reward may take a few minutes to appear. Don’t repeat the same survey.','La récompense peut mettre quelques minutes.')],
+      ['🛡️',L('بدون VPN ولا حسابات متعددة','No VPN, one account only','Pas de VPN, un seul compte'),L('استخدام VPN أو أكثر من حساب يؤدي إلى رفض المكافآت وقد يُوقف حسابك.','VPN or multiple accounts lead to rejected rewards and a possible ban.','VPN ou plusieurs comptes = récompenses refusées.')]];
+    var d=document.createElement('div'); d.id='sv-guide';
+    d.innerHTML='<div class="svg-box"><div class="svg-h"><i>📝</i><div><b>'+L('كيف تربح من الاستطلاعات؟','How to earn from surveys','Comment gagner avec les sondages')+'</b><small>'+L('5 نصائح تزيد فرصك','5 tips to improve your chances','5 conseils')+'</small></div></div>'
+      +st.map(function(x){ return '<div class="svg-s"><span>'+x[0]+'</span><div><b>'+x[1]+'</b><small>'+x[2]+'</small></div></div>'; }).join('')
+      +'<button type="button" class="svg-go">'+(go?L('فهمت، ابدأ الاستطلاعات ←','Got it, start →','Compris, commencer →'):L('إغلاق','Close','Fermer'))+'</button></div>';
+    d.querySelector('.svg-go').onclick=function(){ d.remove(); if(go) go(); };
+    d.addEventListener('click',function(e){ if(e.target===d){ d.remove(); if(go) go(); } });
+    document.body.appendChild(d);
+  }catch(e){ if(go) go(); }
+}
+var _openCpxReal=openCpx;
+openCpx=function(){
+  var n=0; try{ n=parseInt(localStorage.getItem('pl-sv-guide')||'0',10)||0; }catch(e){}
+  if(n>=2) return _openCpxReal();
+  try{ localStorage.setItem('pl-sv-guide',String(n+1)); }catch(e){}
+  plSvGuide(function(){ _openCpxReal(); });
+};
 </script>
+<style>
+#sv-guide{position:fixed;inset:0;z-index:100000;background:rgba(3,7,18,.78);display:flex;align-items:flex-end;justify-content:center;padding:0}
+#sv-guide .svg-box{width:100%;max-width:520px;max-height:92vh;overflow:auto;background:linear-gradient(180deg,#13203d,#0b1220);border:1px solid rgba(125,211,252,.25);border-radius:24px 24px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));color:#fff}
+#sv-guide .svg-h{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+#sv-guide .svg-h i{font-style:normal;font-size:24px;width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0ea5e9,#2563eb);flex:none}
+#sv-guide .svg-h b{font-size:16.5px;display:block}
+#sv-guide .svg-h small{font-size:12px;color:#9fb3d9}
+#sv-guide .svg-s{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid rgba(255,255,255,.07)}
+#sv-guide .svg-s>span{flex:none;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;background:rgba(56,189,248,.12)}
+#sv-guide .svg-s b{display:block;font-size:14px;margin-bottom:2px}
+#sv-guide .svg-s small{display:block;font-size:12.5px;line-height:1.65;color:#aebbd8}
+#sv-guide .svg-go{width:100%;margin-top:10px;border:0;border-radius:14px;padding:14px;font:900 15.5px inherit;background:linear-gradient(135deg,#38bdf8,#4ade80);color:#052e16;cursor:pointer}
+</style>
 
 <style>
 .cpx-banner{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,#0b86b0,#1747a6);color:#fff;cursor:pointer;box-shadow:0 6px 18px rgba(23,71,166,.35)}
@@ -13332,6 +13460,9 @@ function openOfferwall(){
         h+='<div class="g-step'+(dn?' done':'')+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+(window.plGgStepHtml?window.plGgStepHtml(g.d||('#'+(n+1))):esc(g.d||('#'+(n+1))))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+'</div><div class="g-r'+((Number(g.r)>0)?'':' z')+'">'+((Number(g.r)>0)?esc(money(g.r)):'—')+'</div></div>';
       });
       h+='</div>';
+      try{ var nx=goals.filter(function(g){ return done[g.id]===undefined&&Number(g.r)>0; })[0];
+        if(nd>0&&nd<goals.length&&nx) h+='<div class="g-sec" style="color:#5df0a0">🔥 '+esc(L('تقدّم رائع! المرحلة التالية تمنحك '+money(nx.r),'Great progress! The next stage gives you '+money(nx.r),'Bravo ! Le prochain niveau rapporte '+money(nx.r)))+'</div>';
+        else if(nd===0&&nx) h+='<div class="g-sec" style="color:#9fe3ff">💪 '+esc(L('ابدأ بالمرحلة الأولى — أول مكافأة '+money(nx.r),'Start with stage one — first reward '+money(nx.r),'Commencez par le niveau 1 — première récompense '+money(nx.r)))+'</div>'; }catch(e){}
       if(o.reward!=null) h+='<div class="g-sec"><b>'+esc(L('مجموع المكافآت الممكنة','Total possible rewards','Total possible'))+'</b><span style="font-size:20px;font-weight:800;color:#5df0a0">'+esc(money(o.reward))+'</span><br><small style="color:#9fb3d9">'+esc(L('لا يُمنح كاملًا إلا بعد إكمال كل المراحل والشروط، وتصلك كل مرحلة فقط بعد تأكيد الشبكة لها.','Not paid in full until every level is completed; each level is paid only after the network confirms it.','Versé en totalité après tous les niveaux; chaque niveau après confirmation du réseau.'))+'</small></div>';
     } else {
       var one=done['']!==undefined;
