@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.08-r135';
+window.PL_BUILD='2026.11.08-r137';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -501,6 +501,33 @@ html.pl-mid *{-webkit-backdrop-filter:none!important;backdrop-filter:none!import
 .ac-b{flex:none;width:62px;text-align:center;font-size:10.5px;line-height:1.35;color:var(--muted)}
 .ac-b i{display:flex;width:42px;height:42px;margin:0 auto 3px;border-radius:50%;align-items:center;justify-content:center;font-style:normal;font-size:20px;background:rgba(255,255,255,.07);filter:grayscale(1);opacity:.5}
 .ac-b.on{color:inherit}.ac-b.on i{filter:none;opacity:1;background:linear-gradient(135deg,#fbbf24,#f59e0b)}
+.st-row{margin:12px 18px 0;padding:10px 14px;border-radius:16px;display:flex;align-items:center;gap:10px;border:1px solid rgba(251,146,60,.28);background:rgba(251,146,60,.07)}
+.st-fire{font-size:22px}
+.st-t{display:flex;flex-direction:column;line-height:1.25;flex:1;min-width:0}
+.st-t b{font-size:17px;font-weight:900}
+.st-t small{font-size:11.5px;color:var(--muted)}
+.st-dots{display:flex;gap:5px}
+.st-dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.14)}
+.st-dots i.on{background:linear-gradient(135deg,#fb923c,#f59e0b)}
+.pub-badge{display:inline-flex;align-items:center;gap:4px;margin-inline-start:8px;padding:2px 11px;border-radius:99px;font-size:12px;font-weight:900;color:#3b2a00;vertical-align:middle;background:linear-gradient(135deg,#fde68a,#f59e0b 55%,#fbbf24);box-shadow:0 0 10px rgba(251,191,36,.65),inset 0 0 0 1px rgba(255,255,255,.4);animation:pubGlow 2.4s ease-in-out infinite}
+@keyframes pubGlow{0%,100%{box-shadow:0 0 8px rgba(251,191,36,.5),inset 0 0 0 1px rgba(255,255,255,.35)}50%{box-shadow:0 0 18px rgba(251,191,36,.95),inset 0 0 0 1px rgba(255,255,255,.5)}}
+#home-av.pub,#pf-av.pub{box-shadow:0 0 0 2px #fbbf24,0 0 14px rgba(251,191,36,.7)!important}
+html.lite .pub-badge,html.pl-lite .pub-badge{animation:none}
+@media (prefers-reduced-motion:reduce){.pub-badge{animation:none}}
+.pb-intro{margin:0 0 12px;padding:12px 14px;border-radius:14px;font-size:12.5px;line-height:1.8;color:var(--muted);border:1px solid rgba(251,191,36,.25);background:rgba(251,191,36,.06)}
+.pb-add{display:flex;flex-direction:column;gap:8px;margin:0 0 14px;padding:12px;border-radius:16px;border:1px solid var(--border);background:rgba(255,255,255,.03)}
+.pb-add input{box-sizing:border-box;width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid rgba(148,163,184,.25);background:rgba(148,163,184,.08);color:var(--text);font:inherit;font-size:14px;direction:ltr;text-align:start}
+.pb-add button{border:0;border-radius:12px;padding:12px;font:inherit;font-weight:900;font-size:14px;cursor:pointer;color:#3b2a00;background:linear-gradient(135deg,#fde68a,#f59e0b)}
+.pb-row{margin:0 0 10px;padding:12px 14px;border-radius:16px;border:1px solid rgba(251,191,36,.3);background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(255,255,255,.02))}
+.pb-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pb-top b{font-size:14.5px}
+.pb-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pb-meta span{font-size:11.5px;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.07)}
+.pb-note{margin-top:8px;font-size:12px;color:var(--muted)}
+.pb-x{margin-top:10px;width:100%;border:1.5px solid rgba(239,68,68,.45);border-radius:11px;padding:9px;background:rgba(239,68,68,.1);color:#f87171;font:inherit;font-weight:800;font-size:12.5px;cursor:pointer}
+.pb-x.armed{background:#ef4444;color:#fff}
+.ad-pub{flex:1;padding:13px;border-radius:13px;border:1.5px solid rgba(251,191,36,.55);background:rgba(251,191,36,.12);color:#fbbf24;font-weight:900;font-size:13.5px;font-family:inherit;cursor:pointer}
+.ad-pub.on{background:linear-gradient(135deg,#fde68a,#f59e0b);color:#3b2a00}
 .task-banner{height:100px; background:linear-gradient(135deg,var(--accent2),var(--accent)); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;}
 .task-banner:before{content:""; position:absolute; inset:0; background-image:radial-gradient(circle at 20% 20%, rgba(255,255,255,.2), transparent 40%);}
 .task-banner svg{position:relative; transform:scale(1.6);}
@@ -2000,6 +2027,10 @@ button.ad-ok.sm{width:auto; padding:8px 13px; border-radius:11px; border:1px sol
 [dir="rtl"] .ax-in .au-eye{left:9px; right:auto;}
 [dir="ltr"] .ax-ic{left:13px; right:auto;}
 [dir="ltr"] .ax-in .au-eye{right:9px; left:auto;}
+[dir="ltr"] .ax-field{text-align:left;}
+html[dir="ltr"] .ax-field > label, html[dir="ltr"] .ax-ferr{direction:ltr; text-align:left;}
+html[dir="ltr"] .au-refhint, html[dir="ltr"] .au-cap{direction:ltr; text-align:left;}
+html[dir="ltr"] .pdd-trigger{direction:ltr; text-align:left;}
 .au-cap{display:none; margin-top:7px; font-size:11.5px; font-weight:800; color:#fbbf24; background:rgba(245,158,11,.10);
   border:1px solid rgba(245,158,11,.3); border-radius:9px; padding:6px 9px;}
 .ax-row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:2px 2px 14px;}
@@ -3039,8 +3070,7 @@ html.lite .vip-hero:before{display:none}
     <button data-i18n="btn.start" class="start-btn" onclick="go('tasks')">ابدأ الربح</button>
   </div>
   
-  <div id="home-motive"></div>
-  <div id="home-achv"></div>
+  <div id="home-streak"></div>
   <div id="home-guide"></div>
 
   <div class="section"><div class="section-title" data-i18n="sec.promo">🎁 مكافآت مميزة</div></div>
@@ -3550,6 +3580,7 @@ html.lite .vip-hero:before{display:none}
     <button class="atb" data-t="contests" onclick="admTab('contests')">🏆 المسابقات</button>
     <button class="atb" data-t="insights" onclick="admTab('insights')">🧠 رؤى ذكية</button>
     <button class="atb" data-t="vip" onclick="admTab('vip')">👑 VIP</button>
+    <button class="atb" data-t="pub" onclick="admTab('pub')">🌟 الناشرون</button>
     <button class="atb" data-t="fraud" onclick="admTab('fraud')">🛡️ الحماية</button>
     <button class="atb" data-t="health" onclick="admTab('health')">🩺 صحة النظام</button>
     <button class="atb" data-t="logs" onclick="admTab('logs')">📋 سجلات</button>
@@ -4808,74 +4839,53 @@ function updHeld(){
   he.className='w-held'+(h>0?' on':'');
   const v=document.getElementById('w-held-v'); if(v) v.textContent='$'+h.toFixed(2);
 }
-function motiveDraw(){
+/* ===== ناشر: الحالة تأتي من الخادم (للعرض فقط) ===== */
+function plIsPub(){ try{ const u=curUser(); return !!(u&&localStorage.getItem('pl-pub-'+u.id)==='1'); }catch(e){ return false; } }
+var _pubAt=0;
+function plPubPaint(){ try{ const on=plIsPub(); ['home-av','pf-av'].forEach(function(id){ const e=document.getElementById(id); if(e) e.classList.toggle('pub',on); }); }catch(e){} }
+function plPubLoad(){
   try{
-    const bx=document.getElementById('home-motive'); if(!bx) return;
-    const u=(typeof curUser==='function')?curUser():null; if(!u){ bx.innerHTML=''; return; }
-    const MIN=3, b=Math.max(0,Number(BAL)||0), left=Math.max(0,MIN-b), pc=Math.min(100,Math.round(b/MIN*100));
-    const dk=function(t){ const d=new Date(t); return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); };
-    const days={}; (TX||[]).forEach(function(x){ if(x&&x.u>0&&x.s==='done'&&x.at) days[dk(x.at)]=1; });
-    let st=0, t=Date.now(); if(!days[dk(t)]) t-=864e5; while(days[dk(t)]){ st++; t-=864e5; }
-    const doy=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/864e5);
-    const tips=[
-      L('📝 لم تتأهل لاستطلاع؟ هذا طبيعي ويحدث للجميع — جرّب استطلاعاً آخر، فكل محاولة تقرّبك.','📝 Didn’t qualify for a survey? That happens to everyone — try another one.','📝 Pas qualifié pour un sondage ? Ça arrive à tout le monde — essayez-en un autre.'),
-      L('🎮 في الألعاب تُضاف مكافأة كل مرحلة تُنجزها — تابع مرحلة بعد مرحلة.','🎮 In games each level you finish adds its reward — go level by level.','🎮 Dans les jeux, chaque niveau terminé ajoute sa récompense.'),
-      L('⏱️ حتى 10 دقائق يومياً تصنع فرقاً مع الوقت.','⏱️ Even 10 minutes a day adds up.','⏱️ Même 10 minutes par jour font la différence.'),
-      L('👥 ادعُ أصدقاءك: تحصل على 10% من أرباحهم دون أن ينقص من أرباحهم شيء.','👥 Invite friends: you get 10% of their earnings, at no cost to them.','👥 Invitez des amis : 10 % de leurs gains pour vous, sans rien leur retirer.'),
-      L('✅ اقرأ شروط المهمة جيداً قبل البدء — هكذا تضمن احتساب مكافأتك.','✅ Read the task conditions first — that’s how your reward gets counted.','✅ Lisez les conditions avant de commencer pour que la récompense soit comptée.')
-    ];
-    const sig=[Math.round(b*10000),st,doy%tips.length,(typeof LANG!=='undefined'?LANG:'')].join('|');
-    if(bx.getAttribute('data-sig')===sig) return; bx.setAttribute('data-sig',sig);
-    let head, sub;
-    if(b>=MIN){ head='🎉 '+L('رصيدك وصل للحد الأدنى للسحب!','You reached the minimum withdrawal!','Vous avez atteint le retrait minimum !'); sub=L('يمكنك طلب السحب الآن، أو واصل الربح لتسحب مبلغاً أكبر.','You can request a withdrawal now, or keep earning for more.','Vous pouvez retirer maintenant, ou continuer à gagner.'); }
-    else if(b>0){ head='🚀 '+L('باقي $'+fm(left)+' فقط للسحب','Only $'+fm(left)+' left to withdraw','Plus que '+fm(left)+' $ pour retirer'); sub=L('رصيدك $'+fm(b)+' من $'+MIN+' — أنت تتقدّم!','You have $'+fm(b)+' of $'+MIN+' — you’re making progress!','Vous avez '+fm(b)+' $ sur '+MIN+' $ — ça avance !'); }
-    else { head='🌟 '+L('ابدأ أول مهمة اليوم','Start your first task today','Commencez votre première tâche'); sub=L('أول مكسب يقرّبك من حد السحب $'+MIN+'.','Your first earning moves you toward the $'+MIN+' minimum.','Votre premier gain vous rapproche du minimum de '+MIN+' $.'); }
-    bx.innerHTML='<div class="mv-card"><div class="mv-top"><b>'+head+'</b>'+(st>0?'<span class="mv-chip">🔥 '+st+' '+L(st===1?'يوم':'أيام','day'+(st>1?'s':''),st>1?'jours':'jour')+'</span>':'')+'</div>'
-      +'<div class="mv-bar"><i style="width:'+pc+'%"></i></div><div class="mv-sub">'+sub+'</div>'
-      +'<div class="mv-tip">'+tips[doy%tips.length]+'</div>'
-      +'<div class="mv-btns">'+(b>=MIN?'<button type="button" class="p" onclick="go(\'withdraw\')">💸 '+L('اسحب الآن','Withdraw','Retirer')+'</button>':'')
-      +'<button type="button"'+(b>=MIN?'':' class="p"')+' onclick="go(\'tasks\')">🎮 '+L('الألعاب والمهام','Games & tasks','Jeux et tâches')+'</button>'
-      +'<button type="button" onclick="openCpx()">📝 '+L('الاستطلاعات','Surveys','Sondages')+'</button></div></div>';
+    plPubPaint();
+    const u=curUser(); if(!u||!SRV||!SRV.on||!SRV.on()) return;
+    if(Date.now()-_pubAt<600000) return; _pubAt=Date.now();
+    SRV.rpc('my_publisher',{}).then(function(r){
+      if(!r||typeof r.publisher!=='boolean') return;
+      const was=plIsPub(); try{ localStorage.setItem('pl-pub-'+u.id,r.publisher?'1':'0'); }catch(e){}
+      plPubPaint(); if(was!==r.publisher){ try{ homeSmart(); }catch(e){} }
+    }).catch(function(){});
   }catch(e){}
 }
-function plStreak(){
-  const dk=function(t){ const d=new Date(t); return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate(); };
-  const days={}; (TX||[]).forEach(function(x){ if(x&&x.u>0&&x.s==='done'&&x.at) days[dk(x.at)]=1; });
-  let st=0, t=Date.now(); if(!days[dk(t)]) t-=864e5; while(days[dk(t)]){ st++; t-=864e5; } return st;
-}
-function achvDraw(){
+/* ===== أيام الدخول المتتالية (شريط صغير) — تُحفظ على هذا الجهاز لكل حساب ===== */
+function plLoginDays(){
   try{
-    const bx=document.getElementById('home-achv'); if(!bx) return;
-    const u=(typeof curUser==='function')?curUser():null; if(!u){ bx.innerHTML=''; return; }
-    const tot=Math.max(0,Number(earnTotal())||0), done=Number(DONE)||0, st=plStreak(), today=Math.max(0,Number(TODAY)||0);
-    const LV=[[0,'🌱',L('مبتدئ','Beginner','Débutant')],[1,'⚡',L('نشيط','Active','Actif')],[5,'🚀',L('محترف','Pro','Pro')],[15,'💎',L('خبير','Expert','Expert')],[40,'🏆',L('نجم','Star','Star')],[100,'👑',L('أسطورة','Legend','Légende')]];
-    let li=0; for(let i=0;i<LV.length;i++) if(tot>=LV[i][0]) li=i;
-    const nx=LV[li+1]; const lp=nx?Math.min(100,Math.round((tot-LV[li][0])/(nx[0]-LV[li][0])*100)):100;
-    let g=0; try{ g=parseFloat(LS.get('pl-goal'))||0; }catch(e){}
-    if(!(g>0)) g=0.25;
-    const bd=[['🎯',L('أول ربح','First earning','Premier gain'),tot>0||done>0],['💵',L('أول $1','First $1','Premier 1 $'),tot>=1],['💸',L('وصلت للسحب','Withdraw level','Niveau retrait'),tot>=3],
-      ['🔥',L('3 أيام','3-day streak','3 jours'),st>=3],['🌟',L('7 أيام','7-day streak','7 jours'),st>=7],['✅',L('10 مهام','10 tasks','10 tâches'),done>=10]];
-    const sig=[Math.round(tot*10000),done,st,Math.round(today*10000),g,(typeof LANG!=='undefined'?LANG:'')].join('|');
-    if(bx.getAttribute('data-sig')===sig) return; bx.setAttribute('data-sig',sig);
-    const gp=Math.min(100,Math.round(today/g*100)), gd=today>=g;
-    bx.innerHTML='<div class="ac-card"><div class="ac-lv"><div class="ic">'+LV[li][1]+'</div><div style="flex:1;min-width:0"><b>'+L('مستواك: ','Level: ','Niveau : ')+LV[li][2]+'</b><small>'+(nx?L('باقي $'+fm(nx[0]-tot)+' للمستوى التالي «'+nx[2]+'»','$'+fm(nx[0]-tot)+' to “'+nx[2]+'”','Encore '+fm(nx[0]-tot)+' $ pour « '+nx[2]+' »'):L('وصلت لأعلى مستوى 👑','Top level reached 👑','Niveau maximum 👑'))+'</small></div></div>'
-      +'<div class="mv-bar"><i style="width:'+lp+'%;background:linear-gradient(90deg,#a78bfa,#6366f1)"></i></div>'
-      +'<div class="ac-goal"><b>'+(gd?'✅ ':'🎯 ')+L('هدفك اليوم: $'+fm(g),'Today’s goal: $'+fm(g),'Objectif du jour : '+fm(g)+' $')+'</b> — '+(gd?L('أحسنت، حقّقته!','well done, you made it!','bravo, atteint !'):L('ربحت $'+fm(today)+' حتى الآن','you earned $'+fm(today)+' so far','vous avez gagné '+fm(today)+' $'))
-      +'<div class="mv-bar" style="margin:6px 0"><i style="width:'+gp+'%"></i></div>'
-      +'<div class="ac-chips">'+[0.1,0.25,0.5,1].map(function(v){ return '<button type="button"'+(v===g?' class="on"':'')+' onclick="plSetGoal('+v+')">$'+v+'</button>'; }).join('')+'</div></div>'
-      +'<div class="ac-badges">'+bd.map(function(x){ return '<div class="ac-b'+(x[2]?' on':'')+'"><i>'+x[0]+'</i>'+x[1]+'</div>'; }).join('')+'</div></div>';
+    const u=(typeof curUser==='function')?curUser():null; if(!u) return null;
+    const dk=function(t){ const d=new Date(t); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); };
+    const key='pl-days-'+u.id; let a=[]; try{ a=JSON.parse(localStorage.getItem(key)||'[]'); if(!Array.isArray(a)) a=[]; }catch(e){ a=[]; }
+    const today=dk(Date.now()); if(a.indexOf(today)<0){ a.push(today); if(a.length>90) a=a.slice(-90); try{ localStorage.setItem(key,JSON.stringify(a)); }catch(e){} }
+    const set={}; a.forEach(function(x){ set[x]=1; });
+    let st=0, t=Date.now(); while(set[dk(t)]){ st++; t-=864e5; }
+    const week=[]; for(let i=6;i>=0;i--) week.push(!!set[dk(Date.now()-i*864e5)]);
+    return {st:st,week:week};
+  }catch(e){ return null; }
+}
+function streakDraw(){
+  try{
+    const bx=document.getElementById('home-streak'); if(!bx) return;
+    const r=plLoginDays(); if(!r){ bx.innerHTML=''; return; }
+    const sig=r.st+'|'+r.week.join('')+'|'+(typeof LANG!=='undefined'?LANG:''); if(bx.getAttribute('data-sig')===sig) return; bx.setAttribute('data-sig',sig);
+    const lbl=r.st===1?L('يوم دخول','Login day','Jour de connexion'):L('أيام دخول متتالية','Login streak','Jours consécutifs');
+    bx.innerHTML='<div class="st-row"><span class="st-fire">🔥</span><div class="st-t"><b>'+r.st+'</b><small>'+lbl+'</small></div><div class="st-dots">'+r.week.map(function(x){ return '<i'+(x?' class="on"':'')+'></i>'; }).join('')+'</div></div>';
   }catch(e){}
 }
-function plSetGoal(v){ try{ LS.set('pl-goal',String(v)); }catch(e){} try{ achvDraw(); }catch(e){} }
 function homeSmart(){
-  try{ motiveDraw(); }catch(e){} try{ achvDraw(); }catch(e){}
+  try{ streakDraw(); }catch(e){} try{ plPubLoad(); }catch(e){}
   try{ plHeroBadge(); }catch(e){}
   const box=document.getElementById('home-hello'); if(!box) return;
   const u=(typeof curUser==='function')?curUser():null; if(!u){ box.innerHTML=''; return; }
   const nm=String(u.name||NAME||'').trim().split(/\s+/)[0]||'';
   let cont=null; try{ const B=taskBuckets('all'); if(B.started.length) cont=B.started[0]; }catch(e){}
   const ti=cont?TASKS.indexOf(cont):-1;
-  box.innerHTML='<div class="hs-greet"><div><div class="hs-hi">'+L('مرحبًا','Hello','Bonjour')+(nm?'، <b>'+esc(nm)+'</b>':'')+' 👋</div><small>'+L('جاهز لتربح اليوم؟','Ready to earn today?','Prêt à gagner aujourd’hui ?')+'</small></div></div>'+
+  box.innerHTML='<div class="hs-greet"><div><div class="hs-hi">'+L('مرحبًا','Hello','Bonjour')+(nm?'، <b>'+esc(nm)+'</b>'+(plIsPub()?'<span class="pub-badge">✦ '+L('ناشر','Creator','Créateur')+'</span>':''):'')+' 👋</div><small>'+L('جاهز لتربح اليوم؟','Ready to earn today?','Prêt à gagner aujourd’hui ?')+'</small></div></div>'+
     (cont&&ti>=0?'<div class="hs-card" style="padding:10px 12px"><button class="hs-go" style="margin-top:0" onclick="openTask('+ti+')">▶ '+L('تابع','Continue','Reprendre')+' · <span>'+esc(tr(cont.title))+'</span></button></div>':'');
 }
 /* شارة الواجهة تتبع دولة المستخدم: الجزائر تبقى كما هي، وأي دولة أخرى تظهر باسمها */
@@ -6785,12 +6795,12 @@ function renderAuth(){
         '<div class="ax-in"><input id="au-name" type="text" inputmode="email" dir="ltr" placeholder="name@gmail.com" autocomplete="username" onkeydown="if(event.key===\'Enter\'){doLogin()}"><span class="ax-ic">'+IC_MAIL+'</span></div>'+
         '<div class="ax-ferr" id="au-err-name"></div></div>'+
       '<div class="ax-field"><label>🔒 '+L('كلمة المرور','Password','Mot de passe')+'</label>'+
-        '<div class="ax-in"><input id="au-pass" type="password" dir="ltr" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key===\'Enter\'){doLogin()} auCaps(event)" onkeyup="auCaps(event)">'+EYE+'<span class="ax-ic" style="margin-inline-end:34px">'+IC_LOCK+'</span></div>'+
+        '<div class="ax-in"><input id="au-pass" type="password" dir="ltr" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key===\'Enter\'){doLogin()} auCaps(event)" onkeyup="auCaps(event)">'+EYE+'<span class="ax-ic">'+IC_LOCK+'</span></div>'+
         '<div class="au-cap" id="au-cap">⚠ '+L('تنبيه: Caps Lock مفعّل','Caps Lock is on','Caps Lock activé')+'</div>'+
         '<div class="ax-ferr" id="au-err-pass"></div></div>'+
       '<div class="ax-row">'+
         '<label class="ax-check"><input type="checkbox" id="au-remember" checked><i></i>'+L('تذكرني','Remember me','Se souvenir')+'</label>'+
-        '<a class="ax-link" href="javascript:void(0)" onclick="forgotPassword()">'+L('نسيت كلمة المرور؟','Forgot password?','Mot de passe oublié ?')+'</a>'+
+        '<a class="ax-link" dir="auto" href="javascript:void(0)" onclick="forgotPassword()">'+L('نسيت كلمة المرور؟','Forgot password?','Mot de passe oublié ?')+'</a>'+
       '</div>'+
       '<button class="au-btn" id="au-btn" onclick="doLogin()"><span class="ax-btn-t">🔐 '+L('تسجيل الدخول','Log in','Se connecter')+'</span><span class="ax-spin"></span></button>'+
       '<div class="ax-or"><span>'+L('أو','or','ou')+'</span></div>'+
@@ -6811,12 +6821,12 @@ function renderAuth(){
     '<div class="ax-field"><label>🌍 '+L('الدولة','Country','Pays')+' <span style="color:#f87171">*</span></label><div class="ax-in"><select id="au-cty" onchange="auCtyChange(); axErr(\'cty\',\'\')"><option value="">'+L('اختر الدولة','Choose your country','Choisissez le pays')+'</option>'+COUNTRIES.map(function(c){ return '<option value="'+esc(c)+'">'+esc((CF[c]||'🌐')+' '+c)+'</option>'; }).join('')+'</select></div><div class="ax-ferr" id="au-err-cty"></div></div>'+
 
     '<div class="ax-field"><label>🔒 '+L('كلمة المرور','Password','Mot de passe')+' <span style="color:#f87171">*</span></label>'+
-      '<div class="ax-in"><input id="au-pass" type="password" dir="ltr" placeholder="'+L('6 أحرف على الأقل','6+ characters','6+ caractères')+'" autocomplete="new-password" oninput="auStrength()" onkeydown="auCaps(event)" onkeyup="auCaps(event)">'+EYE+'<span class="ax-ic" style="margin-inline-end:34px">'+IC_LOCK+'</span></div>'+
+      '<div class="ax-in"><input id="au-pass" type="password" dir="ltr" placeholder="'+L('6 أحرف على الأقل','6+ characters','6+ caractères')+'" autocomplete="new-password" oninput="auStrength()" onkeydown="auCaps(event)" onkeyup="auCaps(event)">'+EYE+'<span class="ax-ic">'+IC_LOCK+'</span></div>'+
       '<div class="au-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="ax-strength-txt" id="au-mtip"></div>'+
       '<div class="au-cap" id="au-cap">⚠ '+L('تنبيه: Caps Lock مفعّل','Caps Lock is on','Caps Lock activé')+'</div>'+
       '<div class="ax-ferr" id="au-err-pass"></div></div>'+
     '<div class="ax-field"><label>🔁 '+L('تأكيد كلمة المرور','Confirm password','Confirmer le mot de passe')+' <span style="color:#f87171">*</span></label>'+
-      '<div class="ax-in"><input id="au-pass2" type="password" dir="ltr" placeholder="••••••••" autocomplete="new-password" oninput="auMatchLive()" onkeydown="if(event.key===\'Enter\'){doRegister()}">'+EYE+'</div>'+
+      '<div class="ax-in"><input id="au-pass2" type="password" dir="ltr" placeholder="••••••••" autocomplete="new-password" oninput="auMatchLive()" onkeydown="if(event.key===\'Enter\'){doRegister()}">'+EYE+'<span class="ax-ic">'+IC_LOCK+'</span></div>'+
       '<div class="ax-ferr" id="au-err-pass2"></div></div>'+
     '<div class="ax-field"><label>🎁 '+L('رمز دعوة صديق (اختياري)','Friend\'s invite code (optional)','Code d\'invitation d\'un ami (facultatif)')+'</label>'+
       '<div class="ax-in"><input id="au-ref" dir="ltr" placeholder="PAYLOOP-XXXXXX" value="'+esc(PENDING_REF)+'" autocomplete="off" autocapitalize="characters" oninput="auRefLive()" onkeydown="if(event.key===\'Enter\'){doRegister()}"></div>'+
@@ -8527,7 +8537,7 @@ function renderAdmin(t){
   try{
     try{ if(DataGateway.config.DATA_MODE!=='supabase') admEarnLocal(); }catch(e){}
     renderAdmStats();
-    if(ADM_TAB==='users'){ if(ADM_UID) admUserDetail(); else renderAdmUserList(); }
+    if(ADM_TAB==='users'){ if(ADM_UID){ try{ admPubLoad(); }catch(e){} admUserDetail(); } else renderAdmUserList(); }
     else if(ADM_TAB==='stats') renderAdmAnalytics();
     else if(ADM_TAB==='tasks') renderAdmTasks();
     else if(ADM_TAB==='wd'||ADM_TAB==='ff') renderAdmWd();
@@ -8539,6 +8549,7 @@ function renderAdmin(t){
     else if(ADM_TAB==='insights') renderAdmInsights();
     else if(ADM_TAB==='fraud') renderAdmFraud();
     else if(ADM_TAB==='vip') renderAdmVip();
+    else if(ADM_TAB==='pub') renderAdmPub();
     else if(ADM_TAB==='logs') renderAdmLogs();
   }catch(e){ try{ console.warn('[adm-err]', e); }catch(_){} }
 }
@@ -8940,6 +8951,7 @@ function admUserDetail(){
     '<div class="adk-refs"><span>👥 '+L('الإحالات ('+(u.refn||0)+')','Referrals ('+(u.refn||0)+')','Parrainages ('+(u.refn||0)+')')+'</span>'+refs+'</div>'+
     '<div class="adm-acts2">'+
     (isMe?'':'<button class="'+(u.blocked?'ad-un':'ad-block')+'" onclick="admBlock(\''+u.id+'\')">'+(u.blocked?'✅ '+L('رفع الحظر','Unblock','Débloquer'):'🚫 '+L('حظر المستخدم','Block user','Bloquer'))+'</button>')+
+    ((isMe||u.role==='admin'||!SRV.on())?'':'<button class="ad-pub'+(ADM_PUBSET[u.id]?' on':'')+'" onclick="admPubToggle(\''+u.id+'\')">🌟 '+(ADM_PUBSET[u.id]?L('إزالة صفة ناشر','Remove creator','Retirer créateur'):L('تفعيل «ناشر»','Make creator','Créateur'))+'</button>')+
     ((isMe||u.role==='admin')?'':'<button class="ad-del" onclick="admDelAsk(\''+u.id+'\')">🗑️ '+L('حذف الحساب','Delete account','Supprimer le compte')+'</button>')+
     '</div>'+
     '<div class="adm-hint">'+L('عند الحظر يظهر له «تم حظرك» — يستطيع فقط تقديم شكوى في الدعم والمساعدة، ولا مهام ولا سحب.','Blocked users see "You are blocked" — they can only file a support complaint; no tasks, no withdrawals.','Bloqué : « Vous êtes bloqué » — seulement un ticket support possible ; ni tâches ni retrait.')+'</div>'+
@@ -9779,6 +9791,62 @@ async function vipSubmit(){
 }
 async function vipCancel(){ try{ const r=await SRV.rpc('vip_cancel_order',{}); if(r&&r.ok){ VIP_MSG=''; await vipLoad(true); } }catch(e){} vipPaint(); }
 
+/* ===== لوحة الإدارة > الناشرون ===== */
+var ADM_PB=null, ADM_PB_AT=0, ADM_PB_BUSY=false, ADM_PB_ARM='', ADM_PUBSET={}, ADM_PUBAT=0;
+function admPubLoad(){
+  try{ if(!SRV.on()||Date.now()-ADM_PUBAT<30000) return; ADM_PUBAT=Date.now();
+    SRV.rpc('admin_publisher_ids',{}).then(function(a){ if(!Array.isArray(a)) return; const m={}; a.forEach(function(id){ m[String(id)]=1; });
+      const ch=JSON.stringify(Object.keys(m).sort())!==JSON.stringify(Object.keys(ADM_PUBSET).sort()); ADM_PUBSET=m;
+      if(ch&&ADM_TAB==='users'&&ADM_UID){ try{ admUserDetail(); }catch(e){} } }).catch(function(){}); }catch(e){}
+}
+async function renderAdmPub(force){
+  const box=document.getElementById('adm-body'); if(!box) return;
+  if(!SRV.on()){ box.innerHTML='<div class="adm-empty">'+L('هذه الصفحة تعمل مع قاعدة البيانات الحقيقية فقط','This page works with the live database only','Cette page nécessite la base de données réelle')+'</div>'; return; }
+  if(!ADM_PB_BUSY&&(force||Date.now()-ADM_PB_AT>15000)){
+    ADM_PB_BUSY=true; if(!ADM_PB) box.innerHTML='<div class="adm-empty">⏳</div>';
+    try{ const r=await SRV.rpc('admin_list_publishers',{}); if(r&&r.ok&&Array.isArray(r.rows)){ ADM_PB=r; ADM_PB_AT=Date.now(); const m={}; r.rows.forEach(function(x){ m[String(x.id)]=1; }); ADM_PUBSET=m; } }catch(e){}
+    ADM_PB_BUSY=false; if(ADM_TAB!=='pub') return;
+  }
+  if(!ADM_PB){ box.innerHTML='<div class="adm-empty">'+L('تعذّر التحميل — شغّل ملف 99_publishers.sql في Supabase','Could not load — run 99_publishers.sql in Supabase','Chargement impossible — exécutez 99_publishers.sql')+'</div>'; return; }
+  const rows=ADM_PB.rows||[], f=function(n){ return Number(n||0).toLocaleString('en-US'); };
+  const v1=(document.getElementById('apb-id')||{}).value||'', v2=(document.getElementById('apb-note')||{}).value||'';
+  const card=function(v,t,c){ return '<div class="adm-card '+(c||'')+'"><b>'+v+'</b><span>'+t+'</span></div>'; };
+  let refs=0, earned=0; rows.forEach(function(x){ refs+=Number(x.refs)||0; earned+=Number(x.earned_usd)||0; });
+  const cards='<div class="hl-cards">'+card(f(rows.length),L('ناشرون','Creators','Créateurs'),'gold')+card(f(refs),L('أشخاص دخلوا عبرهم','People they invited','Personnes invitées'))+card('$'+earned.toFixed(4),L('مجموع أرباحهم','Their total earnings','Gains totaux'))+'</div>';
+  const intro='<div class="pb-intro">🌟 '+L('هنا الناشرون فقط (يوتيوبرز، تيك توكرز، صنّاع محتوى). أضف أي شخص بإيميله أو رقمه PL-… فيظهر له وسم ذهبي متوهج بجانب اسمه، ويظهر لك هنا وحده مع عدد من دعاهم وأرباحهم.','Creators only (YouTubers, TikTokers…). Add anyone by email or PL-ID: they get a glowing gold badge and appear here with how many people they invited and their earnings.','Créateurs uniquement. Ajoutez quelqu’un par e-mail ou PL-ID : badge doré lumineux et suivi ici.')+'</div>';
+  const add='<div class="pb-add"><input id="apb-id" dir="ltr" autocomplete="off" placeholder="email@example.com  /  PL-12345678" value="'+esc(v1)+'"><input id="apb-note" dir="auto" autocomplete="off" maxlength="200" placeholder="'+L('ملاحظة (اختياري): مثل قناته على يوتيوب','Note (optional): e.g. his YouTube channel','Note (optionnel)')+'" value="'+esc(v2)+'"><button type="button" onclick="admPubAdd()">🌟 '+L('إضافة ناشر','Add creator','Ajouter')+'</button></div>';
+  const list=rows.map(function(x){
+    const armed=ADM_PB_ARM===x.id;
+    return '<div class="pb-row"><div class="pb-top"><b>✦ '+esc(x.full_name||x.email||'—')+'</b><span class="pub-badge" style="margin:0">'+L('ناشر','Creator','Créateur')+'</span></div>'+
+      '<div class="pb-meta"><span dir="ltr">'+esc(x.public_id||'')+'</span><span dir="ltr">'+esc(x.email||'')+'</span>'+(x.country?'<span>'+esc(x.country)+'</span>':'')+
+      '<span>👥 '+f(x.refs)+' '+L('دعاهم','invited','invités')+'</span><span>💰 $'+Number(x.earned_usd||0).toFixed(4)+'</span><span>'+L('منذ','since','depuis')+' '+esc(String(x.since||'').slice(0,10))+'</span>'+
+      (x.last_seen?'<span>'+L('آخر ظهور','last seen','vu')+' '+esc(String(x.last_seen).slice(0,10))+'</span>':'')+'</div>'+
+      (x.note?'<div class="pb-note">📝 '+esc(x.note)+'</div>':'')+
+      '<button type="button" class="pb-x'+(armed?' armed':'')+'" onclick="admPubRemove(\''+esc(x.id)+'\')">'+(armed?'✓ '+L('اضغط مرة أخرى للتأكيد','Tap again to confirm','Confirmer'):'🗑️ '+L('إزالة صفة ناشر','Remove creator','Retirer'))+'</button></div>';
+  }).join('')||'<div class="up-em">'+L('لا ناشرين بعد — أضف أول ناشر من الأعلى','No creators yet — add the first one above','Aucun créateur — ajoutez le premier')+'</div>';
+  box.innerHTML=cards+intro+add+list;
+}
+async function admPubAdd(){
+  const id=String((document.getElementById('apb-id')||{}).value||'').trim(), note=String((document.getElementById('apb-note')||{}).value||'').trim();
+  if(!id){ toast(L('اكتب الإيميل أو رقم PL-','Enter an email or PL-ID','Saisissez un e-mail ou PL-ID')); return; }
+  try{ const r=await SRV.rpc('admin_set_publisher',{p_ident:id,p_on:true,p_note:note||null});
+    if(r&&r.ok){ toast('🌟 '+L('تمت إضافة ','Added ','Ajouté ')+(r.name||'')); const a=document.getElementById('apb-id'), b=document.getElementById('apb-note'); if(a) a.value=''; if(b) b.value=''; ADM_PB_AT=0; renderAdmPub(true); }
+    else if(r&&r.error==='not_found') toast(L('لا يوجد مستخدم بهذا الإيميل/الرقم','No user with this email/ID','Aucun utilisateur'));
+    else toast(L('تعذّر الحفظ — شغّل 99_publishers.sql','Could not save — run 99_publishers.sql','Échec — exécutez 99_publishers.sql'));
+  }catch(e){ toast(L('حدث خطأ','Error','Erreur')); }
+}
+async function admPubRemove(id){
+  if(ADM_PB_ARM!==id){ ADM_PB_ARM=id; renderAdmPub(); setTimeout(function(){ if(ADM_PB_ARM===id){ ADM_PB_ARM=''; if(ADM_TAB==='pub') renderAdmPub(); } },5000); return; }
+  ADM_PB_ARM='';
+  try{ const r=await SRV.rpc('admin_set_publisher',{p_ident:id,p_on:false,p_note:null}); if(r&&r.ok){ toast(L('تمت الإزالة','Removed','Retiré')); ADM_PB_AT=0; renderAdmPub(true); } else toast(L('تعذّر الحفظ','Could not save','Échec')); }catch(e){ toast(L('حدث خطأ','Error','Erreur')); }
+}
+async function admPubToggle(id){
+  const on=!ADM_PUBSET[id];
+  try{ const r=await SRV.rpc('admin_set_publisher',{p_ident:id,p_on:on,p_note:null});
+    if(r&&r.ok){ if(on) ADM_PUBSET[id]=1; else delete ADM_PUBSET[id]; ADM_PB_AT=0; toast(on?'🌟 '+L('أصبح ناشرًا','Now a creator','Maintenant créateur'):L('أُزيلت صفة ناشر','Creator removed','Retiré')); try{ admUserDetail(); }catch(e){} }
+    else toast(L('تعذّر الحفظ — شغّل 99_publishers.sql','Could not save — run 99_publishers.sql','Échec — exécutez 99_publishers.sql'));
+  }catch(e){ toast(L('حدث خطأ','Error','Erreur')); }
+}
 /* ===== لوحة الإدارة > VIP ===== */
 var ADM_VIPSET=null, ADM_VIPAT=0, ADM_VP=null, ADM_VP_BUSY=false, ADM_VP_AT=0, ADM_VP_ARM='';
 function admVipLoad(){
