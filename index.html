@@ -81,7 +81,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.09-r148';
+window.PL_BUILD='2026.11.09-r149';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -535,6 +535,8 @@ html.lite .st-row::after,html.pl-lite .st-row::after{display:none}
 .as-msg b{color:#7dd3fc}.as-msg .g{color:#34d399;font-weight:900}.as-msg .r{color:#f87171;font-weight:900}.as-msg .y{color:#fbbf24;font-weight:900}
 .as-msg p{margin:0 0 8px}.as-msg p:last-child{margin:0}
 .as-msg small{display:block;color:#94a3b8;font-size:11.5px;line-height:1.7;margin-top:6px}
+.as-sh.as-inl{max-width:none;max-height:none;margin:10px 14px 4px;border-radius:20px}
+.as-sh.as-inl .as-sh-b{overflow:visible;max-height:none}
 .as-q{display:flex;gap:7px;flex-wrap:wrap;padding:10px 14px 16px;border-top:1px solid rgba(255,255,255,.08)}
 .as-q button{border:1px solid rgba(125,211,252,.35);background:rgba(14,165,233,.12);color:#e0f2fe;border-radius:99px;padding:8px 12px;font:800 12.5px inherit;cursor:pointer}
 .as-ok{font-size:12.5px;color:#34d399;font-weight:800}
@@ -1551,6 +1553,13 @@ body.gated{overflow:hidden;}
 .adm-search input:focus{border-color:#f59e0b;}
 .adm-row{display:flex; align-items:center; gap:11px; margin:0 16px 9px; padding:12px 13px; background:var(--card); border:1px solid var(--border); border-radius:16px; cursor:pointer; transition:border-color .15s;}
 .adm-row:hover{border-color:rgba(245,158,11,.5);}
+.adm-row.ur{flex-wrap:nowrap;align-items:center}
+.adm-row.ur .adm-rowi{overflow:hidden}
+.adm-row.ur .adm-rowi>span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adm-row.ur .adm-rowi .ur-m .adm-badge{display:inline-flex;width:auto;margin:0}
+.adm-row.ur .adm-rowi>span.ur-m{display:flex}
+.adm-row.ur .ur-m{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;overflow:visible;white-space:normal}
+.ur-bal{flex:none;min-width:68px;text-align:center;font-weight:900;font-size:15px;line-height:1.1;color:#34d399;padding:8px 10px;border-radius:12px;background:rgba(16,185,129,.13);border:1px solid rgba(16,185,129,.45);text-shadow:0 0 12px rgba(16,185,129,.35)}
 .adm-row.tall{flex-wrap:wrap; cursor:default;}
 .adm-row.off{opacity:.55;}
 .adm-av{width:40px; height:40px; flex:0 0 auto; border-radius:13px; background:linear-gradient(135deg,#0ea5e9,#2563eb); color:#fff; font-weight:900; font-size:17px; display:flex; align-items:center; justify-content:center;}
@@ -3611,12 +3620,12 @@ html.lite .vip-hero:before{display:none}
     <h1>🛠️ لوحة التحكم</h1>
     <button class="icon-btn" id="adm-bell" onclick="ntfOpen('admin')" aria-label="admin alerts" style="margin-inline-start:auto;position:relative"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9d3ea" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg><span class="nbadge" id="adm-bell-badge" style="display:none"></span></button>
   </div>
-  <div id="adm-assist"></div>
   <div id="adm-mnt"></div>
   <div id="adm-ads"></div>
   <div class="adm-tabs" id="adm-tabs">
     <button class="atb active" data-t="users" onclick="admTab('users')">👥 المستخدمون</button>
     <button class="atb" data-t="stats" onclick="admTab('stats')">📈 الإحصائيات</button>
+    <button class="atb" data-t="ai" onclick="admTab('ai')">🤖 المساعد الذكي</button>
     <button class="atb" data-t="tasks" onclick="admTab('tasks')">🧩 إدارة المهام</button>
     <button class="atb" data-t="wd" onclick="admTab('wd')">💸 السحب</button>
     <button class="atb" data-t="help" onclick="admTab('help')">✉️ المساعدة</button>
@@ -8583,7 +8592,7 @@ function admTab(t){ ADM_UID=null; ADM_TEDIT=null; ADM_HID=null; ADM_HUSER=null; 
 function renderAdmin(t){
   if(!isAdmin()){ go('more'); toast(L('غير مسموح','Not allowed','Non autorisé')); return; }
   ADM_TAB=t||ADM_TAB;
-  admDots(); admBellRefresh(); renderAdmAssist();
+  admDots(); admBellRefresh();
   try{ if(typeof renderAdmMnt==='function') renderAdmMnt(); }catch(e){}
   try{ if(typeof renderAdmAds==='function') renderAdmAds(); }catch(e){}
   try{ if(typeof renderAdmOwm==='function') renderAdmOwm(); }catch(e){}
@@ -8607,6 +8616,7 @@ function renderAdmin(t){
     else if(ADM_TAB==='vip') renderAdmVip();
     else if(ADM_TAB==='pub') renderAdmPub();
     else if(ADM_TAB==='soc') renderAdmSoc();
+    else if(ADM_TAB==='ai') renderAdmAI();
     else if(ADM_TAB==='logs') renderAdmLogs();
   }catch(e){ try{ console.warn('[adm-err]', e); }catch(_){} }
 }
@@ -8948,13 +8958,15 @@ function renderAdmUserList(){
   const _on=SHOW.filter(admOnline).length;
   box.innerHTML='<div style="padding:6px 14px;font-size:12px;font-weight:800;color:#4ade80">🟢 '+L('متصلون الآن في هذه القائمة: ','Online now in this list: ','En ligne dans cette liste : ')+_on+'</div>'+pager+SHOW.map(function(u){
     const ini=esc((u.name||'?').trim().charAt(0));
-    return '<div class="adm-row" onclick="ADM_UID=\''+u.id+'\'; document.getElementById(\'adm-search\').style.display=\'none\'; admUserDetail();">'+
+    const _balv=(typeof u._bal==='number')?u._bal:(u.cloudOnly?null:(function(){ try{ return userMetrics(u.id).bal; }catch(e){ return null; } })());
+    const _bals=(_balv===null)?'—':'$'+(Math.abs(_balv)>=1?_balv.toFixed(2):_balv.toFixed(4));
+    const _st=u.blocked?'<span class="adm-badge red">'+L('محظور','Blocked','Bloqué')+'</span>':(admOnline(u)?'<span class="adm-badge grn">🟢 '+L('متصل الآن','Online','En ligne')+'</span>':'<span class="adm-badge" style="background:rgba(148,163,184,.18);color:#94a3b8">⚪ '+L('غير متصل','Offline','Hors ligne')+(u.last?' · '+admAgo(u.last):'')+'</span>');
+    return '<div class="adm-row ur" onclick="ADM_UID=\''+u.id+'\'; document.getElementById(\'adm-search\').style.display=\'none\'; admUserDetail();">'+
       '<div class="adm-av'+(u.blocked?' bad':'')+'">'+ini+'</div>'+
-      '<div class="adm-rowi"><b>'+esc(u.name)+(u.role==='admin'?' 🔑':'')+(u.cloudOnly?' ☁️':'')+'</b><span>'+(u.pid?'<b class="pidtag">'+esc(u.pid)+'</b> · ':'')+esc(u.id)+(function(){ if(u.cloudOnly) return ''; const m=userMetrics(u.id); return ' · 💰 $'+m.bal.toFixed(4)+' · ✅ '+m.done+' · 🟡 '+m.prog+' · 💸 '+m.wd+(Math.abs(m.diff)>0.01?' · ⚠️':''); })()+'</span></div>'+
-      (u.blocked?'<span class="adm-badge red">'+L('محظور','Blocked','Bloqué')+'</span>':(admOnline(u)?'<span class="adm-badge grn">🟢 '+L('متصل الآن','Online','En ligne')+'</span>':'<span class="adm-badge" style="background:rgba(148,163,184,.18);color:#94a3b8">⚪ '+L('غير متصل','Offline','Hors ligne')+(u.last?' · '+admAgo(u.last):'')+'</span>'))+
-      '<span class="adm-badge blu">👥 '+(u.refn||0)+'</span>'+
-      ((typeof u._bal==='number')?'<span class="adm-badge" style="background:rgba(14,165,233,.16);color:#7dd3fc;border-color:rgba(14,165,233,.4)">💳 '+L('إجمالي الرصيد','Total balance','Solde total')+' $'+(u._bal>=1?u._bal.toFixed(2):u._bal.toFixed(4))+'</span>':'')+
-      ((ADM_EARN.byUid[u.id]&&ADM_EARN.byUid[u.id].earned>0)?'<span class="adm-badge grn">📈 '+L('كسب إجمالي','Total earned','Gains')+' $'+Number(ADM_EARN.byUid[u.id].earned).toFixed(2)+'</span>':'')+
+      '<div class="adm-rowi"><b>'+esc(u.name)+(u.role==='admin'?' 🔑':'')+(u.cloudOnly?' ☁️':'')+'</b>'+
+        '<span>'+(u.pid?'<b class="pidtag">'+esc(u.pid)+'</b>':esc(String(u.id).slice(0,8)))+'</span>'+
+        '<span class="ur-m">'+_st+'<span class="adm-badge blu">👥 '+(u.refn||0)+'</span></span></div>'+
+      '<div class="ur-bal" dir="ltr">'+_bals+'</div>'+
     '</div>';
   }).join('');
 }
@@ -11212,8 +11224,8 @@ function renderAdmAssist(noload){
         it.push({c:'amb',t:'tasks',i:'📡',h:L('شبكة «'+esc(String(x.n))+'» لم تسجّل شيئًا خلال 24 ساعة','Network "'+esc(String(x.n))+'" had no activity in 24h','Réseau « '+esc(String(x.n))+' » inactif 24h'),s:L('كانت نشطة هذا الأسبوع — تحقق من الرابط/الإعدادات','It was active this week — check its setup','Active cette semaine — vérifiez')});
       });
     }
-    const head='<div class="as-h"><i>🤖</i>'+L('مساعد الإدارة','Admin assistant','Assistant admin')+(d?'<button onclick="assOpen()" style="margin-inline-start:auto;border:0;border-radius:99px;padding:6px 13px;font:900 12px inherit;color:#fff;background:linear-gradient(135deg,#0ea5e9,#7c3aed);cursor:pointer">💬 '+L('تحدّث معي','Talk to me','Parlez-moi')+'</button>':'')+'</div>';
-    bx.innerHTML='<div class="as-box">'+head+(it.length?it.map(function(x){ const inner='<span style="font-size:20px">'+x.i+'</span><span style="flex:1"><b>'+x.h+'</b><small>'+x.s+'</small></span>'+(x.t?'<span>‹</span>':''); return x.t?'<button class="as-it '+x.c+'" onclick="'+(x.t==='__sec'?'assOpen(\'sec\')':'admTab(\''+x.t+'\')')+'">'+inner+'</button>':'<div class="as-it '+x.c+'" style="cursor:default">'+inner+'</div>'; }).join(''):'<div class="as-ok">✅ '+L('لا شيء ينتظرك الآن','Nothing needs you right now','Rien ne vous attend')+'</div>')+'</div>';
+    const head='<div class="as-h"><i>🤖</i>'+L('مساعد الإدارة','Admin assistant','Assistant admin')+''+'</div>';
+    bx.innerHTML='<div class="as-box">'+head+(it.length?it.map(function(x){ const inner='<span style="font-size:20px">'+x.i+'</span><span style="flex:1"><b>'+x.h+'</b><small>'+x.s+'</small></span>'+(x.t?'<span>‹</span>':''); return x.t?'<button class="as-it '+x.c+'" onclick="'+(x.t==='__sec'?'assAsk(\'sec\')':'admTab(\''+x.t+'\')')+'">'+inner+'</button>':'<div class="as-it '+x.c+'" style="cursor:default">'+inner+'</div>'; }).join(''):'<div class="as-ok">✅ '+L('لا شيء ينتظرك الآن','Nothing needs you right now','Rien ne vous attend')+'</div>')+'</div>';
     if(!noload) assLoad();
   }catch(e){}
 }
@@ -11232,11 +11244,18 @@ function assOpen(k0){
   document.getElementById('as-q').innerHTML=q.map(function(x){ return '<button onclick="assAsk(\''+x[0]+'\')">'+x[1]+'</button>'; }).join('');
   assAsk(typeof k0==='string'?k0:'sum');
 }
+function renderAdmAI(){
+  const box=document.getElementById('adm-body'); if(!box) return;
+  box.innerHTML='<div id="adm-assist"></div><div class="as-sh as-inl"><div class="as-sh-h"><span>🤖</span><span>'+L('محلّل الأعمال','Business analyst','Analyste')+'</span></div><div class="as-sh-b" id="as-body"></div><div class="as-q" id="as-q"></div></div>';
+  const q=[['sum','📋 ملخص كل شيء'],['app','📊 حال التطبيق'],['money','💵 الربح والخسارة'],['do','🎯 ماذا يفعل الناس؟'],['gone','👋 من غاب؟'],['sec','🛡️ الأمان والثغرات'],['forgot','🧐 ما الذي نسيته؟']];
+  document.getElementById('as-q').innerHTML=q.map(function(x){ return '<button onclick="assAsk(\''+x[0]+'\')">'+x[1]+'</button>'; }).join('');
+  renderAdmAssist(); assAsk('sum');
+}
 function assClose(){ const o=document.getElementById('as-ov'); if(o) o.classList.remove('on'); }
 function assMsg(html,q){ const b=document.getElementById('as-body'); if(!b) return; b.insertAdjacentHTML('beforeend',(q?'<div style="text-align:end;margin:0 0 8px"><span style="display:inline-block;background:linear-gradient(135deg,#0ea5e9,#7c3aed);border-radius:14px;padding:6px 12px;font-size:12.5px;font-weight:800">'+q+'</span></div>':'')+'<div class="as-msg">'+html+'</div>'); b.scrollTop=b.scrollHeight; }
 function assAsk(k){
   const d=ASS.d;
-  if(!d||!d.prof){ assMsg('<p>جارٍ قراءة أرقام قاعدة البيانات… ثانية واحدة.</p>'); try{ ASS.t=0; assLoad(); }catch(e){} setTimeout(function(){ if(ASS.d&&ASS.d.prof) assAsk(k); else assMsg('<p><span class="r">تعذّر تحميل الأرقام.</span> تأكد أنك شغّلت ملف 102_admin_assistant.sql في Supabase.</p>'); },2500); return; }
+  if(!d||!d.prof){ assMsg('<p>جارٍ قراءة أرقام قاعدة البيانات… ثانية واحدة.</p>'); try{ ASS.t=0; assLoad(); }catch(e){} let _n=0; const _iv=setInterval(function(){ _n++; if(ASS.d&&ASS.d.prof){ clearInterval(_iv); const _l=document.querySelector('#as-body .as-msg:last-child'); if(_l) _l.remove(); assAsk(k); } else if(_n>=20){ clearInterval(_iv); assMsg('<p><span class="r">تعذّر تحميل الأرقام.</span> تأكد أنك شغّلت ملف 102_admin_assistant.sql الأخير في Supabase، ثم أعد فتح هذا التبويب.</p>'); } },500); return; }
   const names={sum:'📋 ملخص كل شيء',app:'📊 كيف حال التطبيق؟',money:'💵 هل أربح؟',do:'🎯 ماذا يفعل الناس أكثر؟',gone:'👋 من غاب؟',sec:'🛡️ الأمان والثغرات',forgot:'🧐 ما الذي نسيته؟'};
   const fn={sum:assSum,app:assApp,money:assMoney,do:assDo,gone:assGone,sec:assSecH,forgot:assForgot}[k]; if(!fn) return;
   let h=''; try{ h=fn(d); }catch(e){ h='<p><span class="r">حدث خطأ في القراءة.</span></p>'; }
