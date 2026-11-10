@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="offerwall-verification" content="6ae6f174e5edac72e40ad339">
 <script>/* IAB-EARLY: خروج فوري من المتصفح الداخلي (أندرويد) قبل تحميل بقية الصفحة */
 (function(){try{var ua=navigator.userAgent||'';if(!/Android/i.test(ua)||/PayLoopApp/.test(ua))return;if(!/FBAN|FBAV|FB_IAB|Instagram|TikTok|musical_ly|Bytedance|Snapchat|Twitter|LinkedInApp|Pinterest|; wv\)/i.test(ua))return;
 var k='iab-try';try{if(sessionStorage.getItem(k)==='1')return;sessionStorage.setItem(k,'1');}catch(e){}
@@ -81,7 +82,7 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
 }catch(e){}})();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.09-r149';
+window.PL_BUILD='2026.11.10-r151';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -545,6 +546,40 @@ html.lite .st-row::after,html.pl-lite .st-row::after{display:none}
 #home-av.pub,#pf-av.pub{box-shadow:0 0 0 2px #fbbf24,0 0 14px rgba(251,191,36,.7)!important}
 html.lite .pub-badge,html.pl-lite .pub-badge{animation:none}
 @media (prefers-reduced-motion:reduce){.pub-badge{animation:none}}
+.wv-pause{margin:2px 14px 12px;padding:10px 12px;border-radius:12px;font-size:12.5px;line-height:1.75;font-weight:800;color:#fde68a;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.55)}
+.wv-method.wv-off{cursor:not-allowed}.wv-method.wv-off .wv-mhead,.wv-method.wv-off .w-banner{opacity:.5;filter:grayscale(.5)}
+.wdm{margin:0 0 14px;padding:13px;border-radius:16px;background:var(--card);border:1px solid var(--border)}.wdm-h{font-weight:900;font-size:15px;margin-bottom:4px}.wdm-s{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:10px}
+.wdm-r{padding:10px;margin-bottom:8px;border-radius:13px;background:rgba(0,0,0,.2);border:1px solid var(--border)}.wdm-r.off{border-color:rgba(251,191,36,.55);background:rgba(251,191,36,.07)}
+.wdm-t{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}.wdm-t em{font-style:normal;font-size:12px;font-weight:800}
+.wdm-r input{width:100%;box-sizing:border-box;padding:9px 11px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:#fff;font-size:13px;margin-bottom:8px}
+.wdm-r button{width:100%;padding:10px;border:0;border-radius:11px;font-weight:900;cursor:pointer}.wdm-r button.stop{background:rgba(251,191,36,.18);color:#fbbf24;border:1px solid rgba(251,191,36,.5)}.wdm-r button.on{background:rgba(74,222,128,.16);color:#4ade80;border:1px solid rgba(74,222,128,.45)}
+.pd{padding:4px 16px 8px}.pd-adm{margin:6px 0 10px;padding:9px 12px;border-radius:12px;font-size:12.5px;font-weight:700;color:#9fe3ff;background:rgba(56,189,248,.10);border:1px solid rgba(56,189,248,.35)}
+.pd-hero{position:relative;overflow:hidden;border-radius:22px;padding:20px 18px;margin:8px 0 12px;background:linear-gradient(135deg,#2a1d05 0%,#3a2907 45%,#1a1405 100%);border:1px solid rgba(251,191,36,.55);box-shadow:0 14px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12)}
+.pd-orb{position:absolute;top:-60px;inset-inline-end:-50px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,.45),rgba(251,191,36,0) 68%)}
+.pd-tag{position:relative;display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.3px;color:#fde68a;padding:3px 11px;border-radius:99px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.45)}
+.pd-hero h2{position:relative;margin:10px 0 4px;font-size:21px;font-weight:900;color:#fff3c4;line-height:1.35}
+.pd-nm{position:relative;font-size:14px;font-weight:700;color:#fde68a;margin-bottom:8px}.pd-hero p{position:relative;margin:0;font-size:13px;line-height:1.85;color:#e9d9a6}
+.pd-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.pd-c{border-radius:16px;padding:13px 12px;background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;gap:2px}.pd-c i{font-style:normal;font-size:19px}.pd-c b{font-size:22px;font-weight:900;color:#fff}.pd-c span{font-size:12px;color:var(--muted)}
+.pd-c.ok{border-color:rgba(74,222,128,.4)}.pd-c.ok b{color:#4ade80}.pd-c.wr{border-color:rgba(251,146,60,.4)}.pd-c.wr b{color:#fb923c}.pd-c.gold{border-color:rgba(251,191,36,.55);background:linear-gradient(135deg,rgba(251,191,36,.14),var(--card))}.pd-c.gold b{color:#fbbf24}
+.pd-card{border-radius:18px;padding:14px;margin-bottom:12px;background:var(--card);border:1px solid var(--border)}
+.pd-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}.pd-row.sm{font-size:12.5px;color:var(--muted);margin-top:8px}.pd-row.sm b{color:#fff}.pd-bal{font-size:22px;font-weight:900;color:#4ade80}
+.pd-bar{height:9px;border-radius:99px;background:rgba(148,163,184,.18);overflow:hidden;margin-top:9px}.pd-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#16a05f,#4ade80)}.pd-bar.gold i{background:linear-gradient(90deg,#f59e0b,#fde68a)}
+.pd-mini{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.pd-mini span{font-size:12px;padding:4px 10px;border-radius:99px;background:rgba(99,102,241,.12);color:#cbd5ff}
+.pd-btn{margin-top:12px;width:100%;padding:13px;border:0;border-radius:14px;font-weight:900;font-size:14.5px;cursor:pointer;color:#3b2a00;background:linear-gradient(135deg,#fde68a,#f59e0b)}.pd-btn.ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--border)}
+.pd-acts{display:flex;gap:9px}.pd-acts .pd-btn{margin-top:10px}
+.pd-link{margin-top:10px;padding:11px;border-radius:12px;font-size:12.5px;word-break:break-all;background:rgba(0,0,0,.28);border:1px dashed rgba(251,191,36,.5);color:#fde68a;text-align:left}
+.pd-how ol{margin:8px 0 0;padding-inline-start:20px;font-size:13px;line-height:2;color:var(--muted)}
+.pd-h{display:flex;align-items:center;justify-content:space-between;margin:16px 2px 8px;font-size:15px}.pd-h span{font-size:12.5px;padding:2px 10px;border-radius:99px;background:rgba(251,191,36,.16);color:#fbbf24;font-weight:800}
+.pd-flt{display:flex;gap:7px;overflow-x:auto;margin-bottom:10px;padding-bottom:2px}.pd-flt button{flex:none;padding:7px 13px;border-radius:99px;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--muted);background:var(--card);border:1px solid var(--border)}.pd-flt button.on{color:#3b2a00;background:linear-gradient(135deg,#fde68a,#f59e0b);border-color:transparent}.pd-flt small{opacity:.8}
+.pd-p{display:flex;align-items:center;gap:11px;padding:11px;margin-bottom:8px;border-radius:15px;background:var(--card);border:1px solid var(--border)}
+.pd-av{flex:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;background:#475569}.pd-av.ok{background:linear-gradient(135deg,#16a05f,#4ade80)}
+.pd-pi{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.pd-pi b{font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pd-pi span{font-size:11.5px;color:var(--muted)}.pd-pi small{font-size:11px;color:#7f93bb}
+.pd-ps{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:4px}.pd-ps em{font-style:normal;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:99px}.pd-ps em.ok{color:#4ade80;background:rgba(74,222,128,.12)}.pd-ps em.wr{color:#fb923c;background:rgba(251,146,60,.12)}.pd-ps b{font-size:13.5px;color:#fbbf24}
+.pd-no{text-align:center;padding:60px 20px;color:var(--muted);display:flex;flex-direction:column;gap:10px;align-items:center}
+.pd-back{margin:6px 14px 4px;padding:8px 14px;border-radius:99px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:700;cursor:pointer}
+.pb-v{margin:8px 0 0;width:100%;padding:10px;border-radius:12px;border:1px solid rgba(56,189,248,.45);background:rgba(56,189,248,.10);color:#9fe3ff;font-weight:800;cursor:pointer}
+html.lite .pd-orb{display:none}
 .pb-intro{margin:0 0 12px;padding:12px 14px;border-radius:14px;font-size:12.5px;line-height:1.8;color:var(--muted);border:1px solid rgba(251,191,36,.25);background:rgba(251,191,36,.06)}
 .pb-add{display:flex;flex-direction:column;gap:8px;margin:0 0 14px;padding:12px;border-radius:16px;border:1px solid var(--border);background:rgba(255,255,255,.03)}
 .pb-add input{box-sizing:border-box;width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid rgba(148,163,184,.25);background:rgba(148,163,184,.08);color:var(--text);font:inherit;font-size:14px;direction:ltr;text-align:start}
@@ -3180,7 +3215,7 @@ html.lite .vip-hero:before{display:none}
     </div>
     <div class="wv-prog" id="wv-prog"><div class="wv-prog-t"><span id="wv-prog-l"></span><b id="wv-prog-p" dir="ltr"></b></div><div class="wv-prog-bar"><i id="wv-prog-i"></i></div></div>
     <div class="wv-chips">
-      <span class="wv-chip gold" title="الحد الأدنى للسحب"><b data-i18n="wd.min">الحد الأدنى للسحب</b>&nbsp;<b dir="ltr">$3.00</b></span>
+      <span class="wv-chip gold" title="الحد الأدنى للسحب"><b data-i18n="wd.min">الحد الأدنى للسحب</b>&nbsp;<b dir="ltr" id="wd-minchip">$3.00</b></span>
       <span class="wv-chip vipchip" id="wv-vipchip" style="display:none">👑 <b data-vip-l>VIP</b></span>
       <span class="wv-chip" title="تُراجع الطلبات قبل التحويل">⏱ 48–72h</span>
     </div>
@@ -3577,6 +3612,15 @@ html.lite .vip-hero:before{display:none}
   <div style="height:24px"></div>
 </section>
 
+<section class="page" id="page-pubdash">
+  <div class="sub-header">
+    <button class="back" onclick="go('more')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1>🌟 ناشرون</h1>
+  </div>
+  <div id="pubdash-body"></div>
+  <div style="height:24px"></div>
+</section>
+
 <section class="page" id="page-contests">
   <div class="sub-header">
     <button class="back" onclick="go('more')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
@@ -3634,7 +3678,7 @@ html.lite .vip-hero:before{display:none}
     <button class="atb" data-t="contests" onclick="admTab('contests')">🏆 المسابقات</button>
     <button class="atb" data-t="insights" onclick="admTab('insights')">🧠 رؤى ذكية</button>
     <button class="atb" data-t="vip" onclick="admTab('vip')">👑 VIP</button>
-    <button class="atb" data-t="pub" onclick="admTab('pub')">🌟 الناشرون</button>
+    <button class="atb" data-t="pub" onclick="admTab('pub')">🌟 قسم الناشرين</button>
     <button class="atb" data-t="fraud" onclick="admTab('fraud')">🛡️ الحماية</button>
     <button class="atb" data-t="health" onclick="admTab('health')">🩺 صحة النظام</button>
     <button class="atb" data-t="logs" onclick="admTab('logs')">📋 سجلات</button>
@@ -3967,7 +4011,7 @@ function artHTML(key){
 const _hero=document.getElementById('art-home');
 if(_hero && !_hero.querySelector('.card-artwork')){ _hero.insertAdjacentHTML('afterbegin', `<img decoding="async" class="card-artwork" src="${HERO_IMG}" alt="">`); }
 
-const NAVMAP={vip:'more',admin:'more',invite:'invite',ff:'withdraw',profile:'more',settings:'more',history:'more',news:'more',contests:'more',info:'more',home:'home',tasks:'tasks',task:'tasks',withdraw:'withdraw',more:'more'};
+const NAVMAP={pubdash:'more',vip:'more',admin:'more',invite:'invite',ff:'withdraw',profile:'more',settings:'more',history:'more',news:'more',contests:'more',info:'more',home:'home',tasks:'tasks',task:'tasks',withdraw:'withdraw',more:'more'};
 function _pg(f){ try{ f(); }catch(e){ try{ console.warn('[page-err]', e); }catch(_){} } }
 /* حركة ظهور البطاقات تُشغَّل فقط عند فتح الصفحة أو تغيير القسم؛ إعادة الرسم الصامتة (مزامنة/فحص شبكات) لا تعيدها فلا يحدث «رمش» */
 function tkAnim(){ try{ var pg=document.getElementById('page-tasks'); if(!pg) return; pg.classList.add('tk-in'); clearTimeout(window.__tkT); window.__tkT=setTimeout(function(){ try{ pg.classList.remove('tk-in'); }catch(e){} },700); }catch(e){} }
@@ -3985,8 +4029,9 @@ function go(p){
   if(p==='contests'){ _pg(function(){ renderContests(); }); }
   if(p==='profile'){ _pg(function(){ renderProfile(); try{ vipApplyBadge(); vipLoad(); }catch(e){} }); }
   if(p==='vip'){ _pg(function(){ renderVip(); }); }
+  if(p==='pubdash'){ _pg(function(){ renderPubDash(true); }); }
   if(p==='admin'){ _pg(function(){ renderAdmin(ADM_TAB); try{ loadEarnings(); }catch(e){} }); }
-  if(p==='withdraw'){ _pg(function(){ renderWDReq(); wrSeenMark('wd'); try{ renderWDHistory(); }catch(e){} try{ applyGrants(); }catch(e){} try{ wrSyncNotify(); }catch(e){} }); }
+  if(p==='withdraw'){ _pg(function(){ wdmApply(); wdmLoad(true); renderWDReq(); wrSeenMark('wd'); try{ renderWDHistory(); }catch(e){} try{ applyGrants(); }catch(e){} try{ wrSyncNotify(); }catch(e){} }); }
   if(p==='ff'){ _pg(function(){ renderFFReq(); wrSeenMark('ff'); }); }
   if(window.scrollY){ window.scrollTo(0,0); }
   try{ blockedSync(); }catch(e){}
@@ -4647,6 +4692,7 @@ function renderMenu(){
   I.trophy=I.trophy||`<svg width="20" height="20" viewBox="0 0 24 24" ${S} stroke="#f59e0b"><path d="M7 4h10v5a5 5 0 01-10 0V4z"/><path d="M7 5.5H4.5V7a3.5 3.5 0 003.5 3.5M17 5.5h2.5V7a3.5 3.5 0 01-3.5 3.5"/><path d="M12 14v4M8.5 20h7"/></svg>`;
   I.shield=I.shield||`<svg width="20" height="20" viewBox="0 0 24 24" ${S} stroke="#f59e0b"><path d="M12 3l8 3v6c0 4.5-3.5 8-8 9-4.5-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>`;
   let items=MENU.slice();
+  try{ if(plIsPub()){ I.pub=I.pub||`<svg width="20" height="20" viewBox="0 0 24 24" ${S} stroke="#fbbf24"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.5 6.8 19.2l1-5.9L3.5 9.2l5.9-.8L12 3z"/></svg>`; items.splice(1,0,['pub','#fbbf24',['ناشرون (لوحة الشركاء)','Partners dashboard','Espace partenaires'],'pubdash']); } }catch(e){}
   try{ if(VIP&&(VIP.enabled||vipActive())) items.splice(1,0,['crown','#f5b942',['VIP','VIP','VIP'],'vip']); }catch(e){}
   if(isAdmin() && (DataGateway.config.DATA_MODE==='local' || (function(){ try{ var u=curUser(); return !!u && localStorage.getItem('r7-adm-rev')===String(u.id); }catch(e){ return false; } })()))
     items=items.concat([['shield','#f59e0b',['لوحة التحكم','Control Panel','Panneau de contrôle'],'admin']]);
@@ -4699,7 +4745,55 @@ document.getElementById('ff-pid').addEventListener('input', renderFFSummary);
 
 
 /* كل البطاقة (الصورة + العنوان + السهم) تفتح/تغلق النموذج */
+/* ===== إيقاف طرق السحب من لوحة التحكم (علم عام من الخادم: wd_methods) ===== */
+var WDM={}, WDM_AT=0, WDM_BUSY=false, WDM_NAMES={ccp:'CCP',pp:'PayPal',usdt:'USDT',flexy:'Flexy',ff:'Free Fire'};
+function wdmMsg(k){ var m=(WDM[k]&&WDM[k].msg)||''; return m||L('نعمل على هذه الطريقة حاليًا. يرجى استعمال طريقة سحب أخرى أو الانتظار.','We are working on this method right now. Please use another withdrawal method or wait.','Nous travaillons sur cette méthode. Utilisez une autre méthode ou patientez.'); }
+function wdmOff(k){ return !!(WDM[k]&&WDM[k].off); }
+function wdmApply(){
+  ['ccp','pp','usdt','flexy','ff'].forEach(function(k){
+    var m=document.getElementById('wm-'+k); if(!m) return;
+    if(m._oc===undefined) m._oc=m.getAttribute('onclick')||'';
+    var old=m.querySelector('.wv-pause'); if(old) old.remove();
+    if(wdmOff(k)){
+      m.classList.add('wv-off'); m.classList.remove('open'); var f=document.getElementById('wf-'+k); if(f) f.classList.remove('open');
+      m.setAttribute('onclick','wdmTap(\''+k+'\')');
+      var h=m.querySelector('.wv-mhead'); var d=document.createElement('div'); d.className='wv-pause'; d.textContent='⚠️ '+wdmMsg(k);
+      if(h) h.insertAdjacentElement('afterend',d); else m.appendChild(d);
+    } else { m.classList.remove('wv-off'); if(m._oc) m.setAttribute('onclick',m._oc); }
+  });
+}
+function wdmTap(k){ toast('⚠️ '+wdmMsg(k)); }
+async function wdmLoad(force){
+  try{
+    if(WDM_BUSY||!SRV||!SRV.on||!SRV.on()) return; if(!force&&Date.now()-WDM_AT<45000) return;
+    WDM_BUSY=true; var r=await SRV.rpc('wd_methods_status',{});
+    if(r&&typeof r==='object'&&!Array.isArray(r)){ WDM=r; WDM_AT=Date.now(); }
+  }catch(e){} WDM_BUSY=false; try{ wdmApply(); }catch(e){}
+}
+function wdmAdmHtml(){
+  var rows=['ccp','pp','usdt','flexy','ff'].map(function(k){
+    var off=wdmOff(k), cur=(WDM[k]&&WDM[k].msg)||'';
+    return '<div class="wdm-r'+(off?' off':'')+'"><div class="wdm-t"><b>'+WDM_NAMES[k]+'</b><em>'+(off?'⏸ '+L('موقوفة','Paused','En pause'):'🟢 '+L('تعمل','Active','Active'))+'</em></div>'+
+      '<input id="wdm-msg-'+k+'" maxlength="200" placeholder="'+L('رسالة للمستخدم (اختياري)','Message to users (optional)','Message (facultatif)')+'" value="'+esc(cur)+'">'+
+      '<button type="button" class="'+(off?'on':'stop')+'" onclick="wdmSet(\''+k+'\','+(off?'false':'true')+')">'+(off?'▶ '+L('تشغيل الطريقة','Turn on','Activer'):'⏸ '+L('إيقاف الطريقة','Pause method','Mettre en pause'))+'</button></div>';
+  }).join('');
+  return '<div class="wdm"><div class="wdm-h">🚦 '+L('التحكم في طرق السحب','Withdrawal methods control','Contrôle des méthodes de retrait')+'</div><div class="wdm-s">'+L('عند الإيقاف يرى المستخدم رسالة صفراء أن الطريقة قيد العمل ولا يستطيع استعمالها. غيرك (المدير) يستطيع الاختبار.','When paused, users see a yellow notice and cannot use the method. Admins can still test.','En pause : message jaune pour les utilisateurs.')+'</div>'+rows+'</div>';
+}
+function wdmSet(k,off){
+  var mi=document.getElementById('wdm-msg-'+k), msg=mi?String(mi.value||'').trim().slice(0,200):'';
+  ntfConfirm('🚦 '+WDM_NAMES[k], off?L('سيرى كل المستخدمين أن هذه الطريقة قيد العمل ولن يستطيعوا السحب بها. هل تريد الإيقاف؟','All users will see this method is under work and cannot withdraw with it. Pause it?','Tous les utilisateurs verront la pause. Confirmer ?'):L('ستعود هذه الطريقة للعمل لكل المستخدمين. هل تريد التشغيل؟','This method will work again for everyone. Turn it on?','La méthode sera réactivée. Confirmer ?'),
+    off?L('إيقاف','Pause','Pause'):L('تشغيل','Turn on','Activer'), off, async function(){
+      try{ ntfConfirmClose(); }catch(e){}
+      var r=null; try{ r=await SRV.rpc('admin_set_wd_method',{p_method:k,p_off:!!off,p_msg:msg}); }catch(e){}
+      if(r&&r.ok===true){ WDM=r.flags||WDM; WDM_AT=Date.now(); wdmApply(); try{ renderAdmWd(); }catch(e){} toast(off?L('⏸ تم إيقاف الطريقة','⏸ Method paused','⏸ Méthode en pause'):L('✅ عادت الطريقة للعمل','✅ Method is back','✅ Méthode réactivée')); }
+      else toast(L('تعذّر الحفظ — شغّل ملف 108_restore_wd_rules_and_pause.sql في Supabase','Could not save — run 108_restore_wd_rules_and_pause.sql','Échec — exécutez 108_restore_wd_rules_and_pause.sql'));
+    });
+}
+setInterval(function(){ try{ if(SESSION) wdmLoad(); }catch(e){} },180000);
+setTimeout(function(){ try{ if(SESSION) wdmLoad(true); }catch(e){} },6000);
+
 function wdCardTap(ev,k){
+  if(wdmOff(k)){ wdmTap(k); return; }
   try{ if(ev&&ev.target&&(!ev.target.isConnected||(ev.target.closest&&ev.target.closest('.wv-form')))) return; }catch(e){}
   toggleW(k);
   try{ const m=document.getElementById('wm-'+k); if(m&&m.classList.contains('open')) setTimeout(function(){ try{ m.scrollIntoView({behavior:'smooth',block:'nearest'}); }catch(e){} },360); }catch(e){}
@@ -4896,16 +4990,16 @@ function updHeld(){
 /* ===== ناشر: الحالة تأتي من الخادم (للعرض فقط) ===== */
 function plIsPub(){ try{ const u=curUser(); return !!(u&&localStorage.getItem('pl-pub-'+u.id)==='1'); }catch(e){ return false; } }
 var _pubAt=0;
-function plPubPaint(){ try{ const on=plIsPub(); ['home-av','pf-av'].forEach(function(id){ const e=document.getElementById(id); if(e) e.classList.toggle('pub',on); }); }catch(e){} }
+function plPubPaint(){ try{ const on=plIsPub(); ['home-av','pf-av'].forEach(function(id){ const e=document.getElementById(id); if(e) e.classList.toggle('pub',on); }); const mc=document.getElementById('wd-minchip'); if(mc) mc.textContent=on?'$5.00':'$3.00'; }catch(e){} }
 function plPubLoad(){
   try{
     plPubPaint();
     const u=curUser(); if(!u||!SRV||!SRV.on||!SRV.on()) return;
-    if(Date.now()-_pubAt<600000) return; _pubAt=Date.now();
+    if(Date.now()-_pubAt<600000) return;
     SRV.rpc('my_publisher',{}).then(function(r){
-      if(!r||typeof r.publisher!=='boolean') return;
+      if(!r||typeof r.publisher!=='boolean') return; _pubAt=Date.now();
       const was=plIsPub(); try{ localStorage.setItem('pl-pub-'+u.id,r.publisher?'1':'0'); }catch(e){}
-      plPubPaint(); if(was!==r.publisher){ try{ homeSmart(); }catch(e){} }
+      plPubPaint(); if(was!==r.publisher){ try{ homeSmart(); }catch(e){} try{ renderMenu(); }catch(e){} }
     }).catch(function(){});
   }catch(e){}
 }
@@ -9861,37 +9955,105 @@ async function vipSubmit(){
 }
 async function vipCancel(){ try{ const r=await SRV.rpc('vip_cancel_order',{}); if(r&&r.ok){ VIP_MSG=''; await vipLoad(true); } }catch(e){} vipPaint(); }
 
-/* ===== لوحة الإدارة > الناشرون ===== */
+/* ===== لوحة الناشر: صفحة «ناشرون» في المزيد + عرض المشرف لها (نفس الرسم تماماً) ===== */
+var PUBD=null, PUBD_AT=0, PUBD_BUSY=false, PUBD_F='all', PD_ADM=false;
+function pdM(v){ var n=Number(v||0); return '$'+((n>0&&n<0.01)?n.toFixed(4):n.toFixed(2)); }
+function pdD(t){ try{ var d=new Date(t); if(isNaN(d)) return ''; return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }catch(e){ return ''; } }
+function pdCopy(t){ try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t); } else { var a=document.createElement('textarea'); a.value=t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); } toast('📋 '+L('تم النسخ','Copied','Copié')); }catch(e){} }
+function pdShare(link){ try{ var m=L('انضم إلى PayLoop واربح من المهام والألعاب والاستطلاعات:','Join PayLoop and earn from tasks, games and surveys:','Rejoignez PayLoop et gagnez avec des tâches, jeux et sondages :'); if(navigator.share){ navigator.share({title:'PayLoop',text:m,url:link}).catch(function(){}); } else { pdCopy(m+' '+link); } }catch(e){} }
+function pdHtml(d,adm){
+  var f=function(n){ return Number(n||0).toLocaleString('en-US'); };
+  var tot=Number(d.total||0), act=Number(d.active||0), ina=Math.max(0,tot-act), pct=tot?Math.round(100*act/tot):0;
+  var bal=Number(d.balance||0), mn=Number(d.min_withdraw||5), wp=Math.max(0,Math.min(100,Math.round(100*bal/mn)));
+  var link=d.ref_code?inviteLink(d.ref_code):'', inv=Array.isArray(d.invitees)?d.invitees:[];
+  var h='<div class="pd">';
+  if(adm) h+='<div class="pd-adm">👁 '+L('هذا بالضبط ما يراه الناشر في صفحته','This is exactly what the creator sees','Exactement ce que voit le créateur')+'</div>';
+  h+='<div class="pd-hero"><div class="pd-orb"></div><div class="pd-tag">✦ '+L('برنامج الشركاء','Partner program','Programme partenaires')+'</div>'+
+     '<h2>'+L('مرحبًا بك في شركاء PayLoop','Welcome to PayLoop Partners','Bienvenue chez PayLoop Partners')+'</h2>'+
+     '<div class="pd-nm">'+esc(d.name||'')+'<span class="pub-badge">'+L('شريك ناشر','Creator partner','Partenaire')+'</span></div>'+
+     '<p>'+L('أنت تعمل معنا كشريك رسمي. ادعُ جمهورك عبر رابطك الخاص واربح عمولة 10% من أرباح كل من ينضم عبرك، وتُضاف لرصيدك تلقائيًا.','You work with us as an official partner. Invite your audience with your personal link and earn a 10% commission on everything each person earns.','Vous êtes partenaire officiel. Invitez votre audience avec votre lien et gagnez 10 % de leurs gains.')+'</p></div>';
+  h+='<div class="pd-grid">'+
+     '<div class="pd-c"><i>👥</i><b>'+f(tot)+'</b><span>'+L('إجمالي المدعوين','Total invited','Total invités')+'</span></div>'+
+     '<div class="pd-c ok"><i>✅</i><b>'+f(act)+'</b><span>'+L('أنجزوا مهمة','Completed a task','Ont fait une tâche')+'</span></div>'+
+     '<div class="pd-c wr"><i>⏳</i><b>'+f(ina)+'</b><span>'+L('لم ينجزوا شيئًا','Did nothing yet','Rien fait')+'</span></div>'+
+     '<div class="pd-c gold"><i>💰</i><b>'+pdM(d.earned)+'</b><span>'+L('أرباحك من دعواتك','Your invite earnings','Vos gains')+'</span></div></div>';
+  h+='<div class="pd-card"><div class="pd-row"><b>'+L('نسبة التفعيل','Activation rate','Taux d’activation')+'</b><span>'+pct+'%</span></div><div class="pd-bar"><i style="width:'+pct+'%"></i></div>'+
+     '<div class="pd-mini"><span>🆕 '+f(d.new24)+' '+L('اليوم','today','aujourd’hui')+'</span><span>📅 '+f(d.new7)+' '+L('هذا الأسبوع','this week','cette semaine')+'</span><span>💵 '+pdM(d.earned7)+' / 7 '+L('أيام','days','j')+'</span><span>📈 '+pdM(d.earned30)+' / 30 '+L('يومًا','days','j')+'</span></div></div>';
+  h+='<div class="pd-card"><div class="pd-row"><b>💳 '+L('رصيدك','Your balance','Votre solde')+'</b><span class="pd-bal">'+pdM(bal)+'</span></div>'+
+     '<div class="pd-row sm"><span>'+L('الحد الأدنى للسحب','Minimum withdrawal','Retrait minimum')+'</span><b dir="ltr">'+pdM(mn)+'</b></div><div class="pd-bar gold"><i style="width:'+wp+'%"></i></div>'+
+     '<div class="pd-row sm"><span>'+L('تم سحبه','Withdrawn','Retiré')+': <b>'+pdM(d.withdrawn)+'</b></span><span>'+L('قيد المراجعة','Pending','En attente')+': <b>'+pdM(d.pending_wd)+'</b></span></div>'+
+     (adm?'':'<button type="button" class="pd-btn" onclick="go(\'withdraw\')">'+(bal>=mn?L('اسحب أرباحك الآن','Withdraw now','Retirer maintenant'):L('باقي '+pdM(Math.max(0,mn-bal))+' للوصول للحد الأدنى','Need '+pdM(Math.max(0,mn-bal))+' more','Encore '+pdM(Math.max(0,mn-bal))))+'</button>')+'</div>';
+  if(link) h+='<div class="pd-card"><div class="pd-row"><b>🔗 '+L('رابطك الخاص','Your personal link','Votre lien')+'</b></div>'+
+     '<div class="pd-link" dir="ltr">'+esc(link)+'</div><div class="pd-row sm"><span>'+L('رمز الدعوة','Invite code','Code')+'</span><b dir="ltr">'+esc(d.ref_code)+'</b></div>'+
+     '<div class="pd-acts"><button type="button" class="pd-btn" onclick="pdCopy(\''+esc(link)+'\')">📋 '+L('نسخ الرابط','Copy link','Copier')+'</button><button type="button" class="pd-btn ghost" onclick="pdShare(\''+esc(link)+'\')">📤 '+L('مشاركة','Share','Partager')+'</button></div></div>';
+  h+='<div class="pd-card pd-how"><b>'+L('كيف تربح؟','How it works','Comment ça marche')+'</b><ol><li>'+L('شارك رابطك مع جمهورك.','Share your link with your audience.','Partagez votre lien.')+'</li><li>'+L('كل من يسجّل عبره يظهر في القائمة أدناه.','Everyone who signs up appears below.','Chaque inscrit apparaît ci-dessous.')+'</li><li>'+L('تربح 10% من كل مكافأة يحصل عليها المدعو.','You earn 10% of every reward they receive.','Vous gagnez 10 % de chaque gain.')+'</li></ol></div>';
+  var list=inv.filter(function(x){ return PUBD_F==='all'||(PUBD_F==='act'?x.active:!x.active); });
+  h+='<div class="pd-h"><b>👥 '+L('المدعوون','Invited people','Invités')+'</b><span>'+f(inv.length)+'</span></div>'+
+     '<div class="pd-flt">'+[['all',L('الكل','All','Tous'),inv.length],['act',L('أنجزوا مهمة','Active','Actifs'),act],['non',L('لم ينجزوا','Inactive','Inactifs'),ina]].map(function(t){ return '<button type="button" class="'+(PUBD_F===t[0]?'on':'')+'" onclick="pdFilter(\''+t[0]+'\')">'+t[1]+' <small>'+f(t[2])+'</small></button>'; }).join('')+'</div>';
+  h+=list.length?list.map(function(x){
+    var nm=x.name||'—';
+    return '<div class="pd-p"><div class="pd-av'+(x.active?' ok':'')+'">'+esc(String(nm).charAt(0).toUpperCase())+'</div><div class="pd-pi"><b>'+esc(nm)+'</b><span dir="ltr">'+esc(x.pid||'')+(x.country?' · '+esc(x.country):'')+'</span><small>'+L('انضم','Joined','Inscrit')+' '+esc(pdD(x.joined))+'</small></div>'+
+      '<div class="pd-ps"><em class="'+(x.active?'ok':'wr')+'">'+(x.active?'✅ '+L('أنجز '+f(x.tasks)+' مهمة','Did '+f(x.tasks)+' tasks',f(x.tasks)+' tâches'):'⏳ '+L('لم ينجز مهمة','No task yet','Aucune tâche'))+'</em><b>'+pdM(x.earned)+'</b></div></div>';
+  }).join(''):'<div class="up-em">'+(inv.length?L('لا أحد في هذه الفئة','No one in this group','Personne ici'):L('لم يسجّل أحد عبر رابطك بعد — شارك رابطك لتبدأ','No one has joined with your link yet — share it to start','Personne pour l’instant'))+'</div>';
+  return h+'</div>';
+}
+function pdFilter(k){ PUBD_F=k; try{ if(PD_ADM){ if(typeof admPubViewPaint==='function') admPubViewPaint(); } else paintPubDash(); }catch(e){} }
+function paintPubDash(){ var b=document.getElementById('pubdash-body'); if(!b) return; if(!PUBD){ b.innerHTML='<div class="adm-empty">⏳</div>'; return; } if(!PUBD.ok){ b.innerHTML='<div class="pd-no"><div style="font-size:42px">🌟</div><b>'+L('هذه الصفحة مخصّصة للناشرين فقط','This page is for creator partners only','Page réservée aux partenaires')+'</b></div>'; return; } PD_ADM=false; b.innerHTML=pdHtml(PUBD,false); }
+async function renderPubDash(force){
+  paintPubDash();
+  try{
+    if(!SRV||!SRV.on||!SRV.on()||PUBD_BUSY) return; if(!force&&PUBD&&Date.now()-PUBD_AT<20000) return;
+    PUBD_BUSY=true; const r=await SRV.rpc('publisher_dashboard',{}); if(r&&typeof r.ok==='boolean'){ PUBD=r; PUBD_AT=Date.now(); }
+  }catch(e){} PUBD_BUSY=false; paintPubDash();
+}
+
+/* ===== لوحة الإدارة > قسم الناشرين ===== */
+var ADM_PVID='', ADM_PV=null;
+async function admPubView(id){ ADM_PVID=id; ADM_PV=null; PUBD_F='all'; PD_ADM=true; admPubViewPaint(); try{ const r=await SRV.rpc('admin_publisher_detail',{p_id:id}); if(ADM_PVID===id) ADM_PV=r; }catch(e){} admPubViewPaint(); }
+function admPubViewPaint(){
+  const box=document.getElementById('adm-body'); if(!box||ADM_TAB!=='pub') return; PD_ADM=true;
+  const back='<button type="button" class="pd-back" onclick="ADM_PVID=\'\'; renderAdmPub(true)">← '+L('كل الناشرين','All creators','Tous les créateurs')+'</button>';
+  if(!ADM_PV){ box.innerHTML=back+'<div class="adm-empty">⏳</div>'; return; }
+  if(!ADM_PV.ok){ box.innerHTML=back+'<div class="adm-empty">'+L('تعذّر تحميل لوحته — شغّل ملف 107_publisher_dashboard.sql','Could not load — run 107_publisher_dashboard.sql','Chargement impossible — exécutez 107_publisher_dashboard.sql')+'</div>'; return; }
+  box.innerHTML=back+pdHtml(ADM_PV,true);
+}
 var ADM_PB=null, ADM_PB_AT=0, ADM_PB_BUSY=false, ADM_PB_ARM='', ADM_PUBSET={}, ADM_PUBAT=0;
 function admPubLoad(){
-  try{ if(!SRV.on()||Date.now()-ADM_PUBAT<30000) return; ADM_PUBAT=Date.now();
-    SRV.rpc('admin_publisher_ids',{}).then(function(a){ if(!Array.isArray(a)) return; const m={}; a.forEach(function(id){ m[String(id)]=1; });
+  try{ if(!SRV.on()||Date.now()-ADM_PUBAT<30000) return;
+    SRV.rpc('admin_publisher_ids',{}).then(function(a){ if(!Array.isArray(a)) return; ADM_PUBAT=Date.now(); const m={}; a.forEach(function(id){ m[String(id)]=1; });
       const ch=JSON.stringify(Object.keys(m).sort())!==JSON.stringify(Object.keys(ADM_PUBSET).sort()); ADM_PUBSET=m;
       if(ch&&ADM_TAB==='users'&&ADM_UID){ try{ admUserDetail(); }catch(e){} } }).catch(function(){}); }catch(e){}
 }
 async function renderAdmPub(force){
   const box=document.getElementById('adm-body'); if(!box) return;
+  if(ADM_PVID){ admPubViewPaint(); return; }
   if(!SRV.on()){ box.innerHTML='<div class="adm-empty">'+L('هذه الصفحة تعمل مع قاعدة البيانات الحقيقية فقط','This page works with the live database only','Cette page nécessite la base de données réelle')+'</div>'; return; }
   if(!ADM_PB_BUSY&&(force||Date.now()-ADM_PB_AT>15000)){
     ADM_PB_BUSY=true; if(!ADM_PB) box.innerHTML='<div class="adm-empty">⏳</div>';
-    try{ const r=await SRV.rpc('admin_list_publishers',{}); if(r&&r.ok&&Array.isArray(r.rows)){ ADM_PB=r; ADM_PB_AT=Date.now(); const m={}; r.rows.forEach(function(x){ m[String(x.id)]=1; }); ADM_PUBSET=m; } }catch(e){}
+    try{
+      let r=null; try{ r=await SRV.rpc('admin_publisher_report',{}); }catch(e){}
+      if(r&&r.ok&&Array.isArray(r.rows)){ ADM_PB={ok:true,rows:r.rows,v2:true,sum:r}; }
+      else { r=await SRV.rpc('admin_list_publishers',{}); if(r&&r.ok&&Array.isArray(r.rows)) ADM_PB=r; }
+      if(ADM_PB&&Array.isArray(ADM_PB.rows)){ ADM_PB_AT=Date.now(); const m={}; ADM_PB.rows.forEach(function(x){ m[String(x.id)]=1; }); ADM_PUBSET=m; }
+    }catch(e){}
     ADM_PB_BUSY=false; if(ADM_TAB!=='pub') return;
   }
   if(!ADM_PB){ box.innerHTML='<div class="adm-empty">'+L('تعذّر التحميل — شغّل ملف 99_publishers.sql في Supabase','Could not load — run 99_publishers.sql in Supabase','Chargement impossible — exécutez 99_publishers.sql')+'</div>'; return; }
   const rows=ADM_PB.rows||[], f=function(n){ return Number(n||0).toLocaleString('en-US'); };
   const v1=(document.getElementById('apb-id')||{}).value||'', v2=(document.getElementById('apb-note')||{}).value||'';
   const card=function(v,t,c){ return '<div class="adm-card '+(c||'')+'"><b>'+v+'</b><span>'+t+'</span></div>'; };
-  let refs=0, earned=0; rows.forEach(function(x){ refs+=Number(x.refs)||0; earned+=Number(x.earned_usd)||0; });
-  const cards='<div class="hl-cards">'+card(f(rows.length),L('ناشرون','Creators','Créateurs'),'gold')+card(f(refs),L('أشخاص دخلوا عبرهم','People they invited','Personnes invitées'))+card('$'+earned.toFixed(4),L('مجموع أرباحهم','Their total earnings','Gains totaux'))+'</div>';
+  let refs=0, earned=0; rows.forEach(function(x){ refs+=Number(x.refs)||0; earned+=Number(x.earned!=null?x.earned:x.earned_usd)||0; });
+  const cards='<div class="hl-cards">'+card(f(rows.length),L('ناشرون','Creators','Créateurs'),'gold')+card(f(refs),L('أشخاص دخلوا عبرهم','People they invited','Personnes invitées'))+card('$'+earned.toFixed(4),ADM_PB.v2?L('عمولات الإحالة التي ربحوها','Referral commissions earned','Commissions gagnées'):L('مجموع أرباحهم','Their total earnings','Gains totaux'))+'</div>';
   const intro='<div class="pb-intro">🌟 '+L('هنا الناشرون فقط (يوتيوبرز، تيك توكرز، صنّاع محتوى). أضف أي شخص بإيميله أو رقمه PL-… فيظهر له وسم ذهبي متوهج بجانب اسمه، ويظهر لك هنا وحده مع عدد من دعاهم وأرباحهم.','Creators only (YouTubers, TikTokers…). Add anyone by email or PL-ID: they get a glowing gold badge and appear here with how many people they invited and their earnings.','Créateurs uniquement. Ajoutez quelqu’un par e-mail ou PL-ID : badge doré lumineux et suivi ici.')+'</div>';
   const add='<div class="pb-add"><input id="apb-id" dir="ltr" autocomplete="off" placeholder="email@example.com  /  PL-12345678" value="'+esc(v1)+'"><input id="apb-note" dir="auto" autocomplete="off" maxlength="200" placeholder="'+L('ملاحظة (اختياري): مثل قناته على يوتيوب','Note (optional): e.g. his YouTube channel','Note (optionnel)')+'" value="'+esc(v2)+'"><button type="button" onclick="admPubAdd()">🌟 '+L('إضافة ناشر','Add creator','Ajouter')+'</button></div>';
   const list=rows.map(function(x){
     const armed=ADM_PB_ARM===x.id;
     return '<div class="pb-row"><div class="pb-top"><b>✦ '+esc(x.full_name||x.email||'—')+'</b><span class="pub-badge" style="margin:0">'+L('ناشر','Creator','Créateur')+'</span></div>'+
       '<div class="pb-meta"><span dir="ltr">'+esc(x.public_id||'')+'</span><span dir="ltr">'+esc(x.email||'')+'</span>'+(x.country?'<span>'+esc(x.country)+'</span>':'')+
-      '<span>👥 '+f(x.refs)+' '+L('دعاهم','invited','invités')+'</span><span>💰 $'+Number(x.earned_usd||0).toFixed(4)+'</span><span>'+L('منذ','since','depuis')+' '+esc(String(x.since||'').slice(0,10))+'</span>'+
+      '<span>👥 '+f(x.refs)+' '+L('دعاهم','invited','invités')+'</span><span>💰 $'+Number(x.earned!=null?x.earned:x.earned_usd||0).toFixed(4)+'</span>'+(ADM_PB.v2?'<span>✅ '+f(x.active)+' '+L('نشطون','active','actifs')+'</span><span>🆕 '+f(x.new24)+' '+L('اليوم','today','auj.')+'</span><span>💳 $'+Number(x.bal||0).toFixed(2)+'</span><span>🏦 '+L('سحب','withdrew','retiré')+' $'+Number(x.withdrawn||0).toFixed(2)+'</span>':'')+'<span>'+L('منذ','since','depuis')+' '+esc(String(x.since||'').slice(0,10))+'</span>'+
       (x.last_seen?'<span>'+L('آخر ظهور','last seen','vu')+' '+esc(String(x.last_seen).slice(0,10))+'</span>':'')+'</div>'+
       (x.note?'<div class="pb-note">📝 '+esc(x.note)+'</div>':'')+
+      (ADM_PB.v2?'<button type="button" class="pb-v" onclick="admPubView(\''+esc(x.id)+'\')">👁 '+L('عرض لوحته كما يراها','View his dashboard','Voir son tableau')+'</button>':'')+
       '<button type="button" class="pb-x'+(armed?' armed':'')+'" onclick="admPubRemove(\''+esc(x.id)+'\')">'+(armed?'✓ '+L('اضغط مرة أخرى للتأكيد','Tap again to confirm','Confirmer'):'🗑️ '+L('إزالة صفة ناشر','Remove creator','Retirer'))+'</button></div>';
   }).join('')||'<div class="up-em">'+L('لا ناشرين بعد — أضف أول ناشر من الأعلى','No creators yet — add the first one above','Aucun créateur — ajoutez le premier')+'</div>';
   box.innerHTML=cards+intro+add+list;
@@ -10647,7 +10809,8 @@ function renderAdmWd(){
     else sRej++; });
   const _ss=(SRV.on()&&SRV.stats&&typeof SRV.stats.wd_total==='number')?SRV.stats:null;
   if(_ss){ sPend=_ss.pending_wd; sPendAmt=Number(_ss.pending_wd_usd)||0; sDone=_ss.wd_done; sRej=_ss.wd_rejected; sPaid=Number(_ss.paid_wd_usd)||0; }
-  const stats='<div class="wda-cards">'+
+  try{ wdmLoad(); }catch(e){}
+  const stats=wdmAdmHtml()+'<div class="wda-cards">'+
     '<div class="wda-card blue"><i>📥</i><b>'+(_ss?_ss.wd_total:WRS.length).toLocaleString('en-US')+'</b><span>'+L('إجمالي الطلبات','Total requests','Total')+'</span></div>'+
     '<div class="wda-card amb"><i>⏳</i><b>'+sPend.toLocaleString('en-US')+'</b><u>'+money(sPendAmt)+'</u><span>'+L('قيد المعالجة','Pending','En cours')+'</span></div>'+
     '<div class="wda-card grn"><i>✅</i><b>'+sDone.toLocaleString('en-US')+'</b><span>'+L('المقبولة','Approved','Approuvées')+'</span></div>'+
@@ -13634,6 +13797,7 @@ function openOfferwall(){
 #owg-ov .g-sec b{display:block;margin-bottom:4px;color:#9fb3d9;font-size:12px}
 #owg-ov .g-prog{height:7px;border-radius:99px;background:#1b2a49;overflow:hidden;margin:6px 0 12px}
 #owg-ov .g-prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#16a05f,#5df0a0)}
+#owg-ov .g-grp{display:flex;align-items:center;gap:8px;margin:14px 2px 8px;font-weight:800;font-size:14px;color:#9fe3ff}#owg-ov .g-grp span{font-size:17px}#owg-ov .g-grp:first-child{margin-top:6px}
 #owg-ov .g-step{display:flex;gap:11px;align-items:center;padding:10px 11px;margin-bottom:8px;border-radius:13px;background:#0f1a31;border:1px solid #22304f}
 #owg-ov .g-step.done{background:linear-gradient(135deg,#0f2a24,#0f1a31);border-color:rgba(93,240,160,.40)}
 #owg-ov .g-ck{flex:none;width:28px;height:28px;border-radius:50%;background:#1e2a47;color:#9fb3d9;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
@@ -13752,6 +13916,26 @@ function openOfferwall(){
     return 'new';
   };
   window.openOwGame=function(gid){ S.pend=Number(gid)||null; window.openOwGames(''); };
+  /* ترتيب مراحل اللعبة: تجميع حسب النوع (مستويات/نجوم/جواهر/…) ثم ترتيب تصاعدي بالرقم — بدل ترتيب الشبكة العشوائي */
+  var GRP=[['start','📲',['البداية','Getting started','Démarrage']],['level','🏆',['المستويات','Levels','Niveaux']],['stars','⭐',['النجوم','Stars','Étoiles']],['gems','💎',['الجواهر','Gems','Gemmes']],['coins','🪙',['العملات','Coins','Pièces']],['points','🎯',['النقاط','Points','Points']],['other','📌',['مراحل أخرى','Other stages','Autres étapes']],['buy','🛒',['المشتريات','Purchases','Achats']]];
+  function grpOf(t){
+    t=String(t||'');
+    if(/purchase|spend|\bbuy\b|شراء|\$|usd|دولار/i.test(t)) return 'buy';
+    if(/star|نجم/i.test(t)) return 'stars';
+    if(/\bgem|diamond|جوهر|جواهر|ألماس/i.test(t)) return 'gems';
+    if(/coin|gold|\bcash\b|عملة|عملات|ذهب/i.test(t)) return 'coins';
+    if(/point|score|نقاط|نقطة/i.test(t)) return 'points';
+    if(/level|stage|chapter|world|rank|tier|مستوى|مرحلة|فصل|عالم/i.test(t)) return 'level';
+    if(/install|download|تثبيت|تنزيل|تحميل/i.test(t)) return 'start';
+    return 'other';
+  }
+  function numOf(t){ var m=String(t||'').replace(/(\d),(?=\d{3})/g,'$1').match(/\d+(?:\.\d+)?/); return m?parseFloat(m[0]):0; }
+  function orderGoals(goals){
+    var arr=goals.map(function(g,i){ return {g:g,i:i,k:grpOf(g.d),n:numOf(g.d)}; });
+    var rank={}; GRP.forEach(function(x,i){ rank[x[0]]=i; });
+    arr.sort(function(a,b){ return (rank[a.k]-rank[b.k])||(a.n-b.n)||(a.i-b.i); });
+    return arr;
+  }
   function sheet(o){
     S.cur=o; var sh=$('owg-sheet'); sh.classList.add('on'); sh.scrollTop=0;
     var img=o.img?'<img src="'+esc(o.img)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':'🎮';
@@ -13776,8 +13960,10 @@ function openOfferwall(){
     } else if(goals.length){
       var nd=goals.filter(function(g){ return done[g.id]!==undefined; }).length;
       h+='<div class="g-sec"><b>'+esc(L('المكافآت','Rewards','Récompenses'))+' — '+esc(L('أنجزت '+nd+' من '+goals.length,nd+' of '+goals.length+' done',nd+' sur '+goals.length))+'</b><div class="g-prog"><i style="width:'+Math.round(100*nd/goals.length)+'%"></i></div>';
-      goals.forEach(function(g,n){
-        var dn=done[g.id]!==undefined;
+      var _og=orderGoals(goals), _kinds={}; _og.forEach(function(x){ _kinds[x.k]=1; }); var _multi=Object.keys(_kinds).length>1, _last='', _gl={}; GRP.forEach(function(x){ _gl[x[0]]=x; });
+      _og.forEach(function(x,n){
+        var g=x.g, dn=done[g.id]!==undefined;
+        if(_multi&&x.k!==_last){ _last=x.k; var gg=_gl[x.k]; h+='<div class="g-grp"><span>'+gg[1]+'</span>'+esc(L(gg[2][0],gg[2][1],gg[2][2]))+'</div>'; }
         h+='<div class="g-step'+(dn?' done':'')+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+(window.plGgStepHtml?window.plGgStepHtml(g.d||('#'+(n+1))):esc(g.d||('#'+(n+1))))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+'</div><div class="g-r'+((Number(g.r)>0)?'':' z')+'">'+((Number(g.r)>0)?esc(money(g.r)):'—')+'</div></div>';
       });
       h+='</div>';
