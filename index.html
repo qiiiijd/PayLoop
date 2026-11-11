@@ -81,8 +81,47 @@ if(seen)return;d.classList.add('plsp');setTimeout(function(){d.classList.add('pl
     .catch(function(){}).then(function(){ clearTimeout(t); fin(); });
 }catch(e){}})();
 </script>
+<style>
+#vpn-block{display:none;position:fixed;inset:0;z-index:2147483000;align-items:center;justify-content:center;padding:28px;background:#fff;color:#3c4043;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",Tahoma,sans-serif;text-align:center}
+#vpn-block .vb-in{max-width:420px;width:100%}
+#vpn-block svg{width:84px;height:84px;margin:0 auto 22px;display:block;color:#80868b}
+#vpn-block h1{font-size:22px;font-weight:600;margin:0 0 12px;color:#202124}
+#vpn-block p{font-size:15px;line-height:1.7;margin:0 0 10px}
+#vpn-block .vb-s{font-size:12.5px;color:#80868b;margin-top:16px}
+#vpn-block button{margin-top:18px;padding:11px 30px;border-radius:99px;border:0;background:#1a73e8;color:#fff;font:inherit;font-size:14.5px;font-weight:600;cursor:pointer}
+#vpn-block button:disabled{opacity:.55}
+html.vpn-blk #vpn-block{display:flex}
+html.vpn-blk body>*:not(#vpn-block){display:none!important}
+html.vpn-blk,html.vpn-blk body{overflow:hidden;background:#fff}
+@media (prefers-color-scheme:dark){#vpn-block{background:#202124;color:#bdc1c6}#vpn-block h1{color:#e8eaed}#vpn-block svg,#vpn-block .vb-s{color:#9aa0a6}#vpn-block button{background:#8ab4f8;color:#202124}html.vpn-blk,html.vpn-blk body{background:#202124}}
+</style>
+<script>/* حجب VPN/Proxy/Tor: إن كان آخر فحص مؤكِّداً للحجب نُظهر شاشة الحجب فوراً قبل رسم التطبيق (يُصحَّح خلال ثوانٍ إن زال السبب). الفرض الحقيقي في الخادم. */
+try{ var _vf=localStorage.getItem('pl-vpn'); if(_vf&&Date.now()-Number(_vf)<6*3600000) document.documentElement.classList.add('vpn-blk'); }catch(e){}
+(function(){ try{
+  var of=window.fetch; if(!of||window.__plSecWrapped) return; window.__plSecWrapped=1;
+  var RE=/\b(vpn_blocked|need_check|task_hold)\b/;
+  window.fetch=function(input,init){
+    var url=''; try{ url=typeof input==='string'?input:((input&&input.url)||''); }catch(e){}
+    var p=of.apply(this,arguments);
+    if(url.indexOf('/rest/v1/')<0) return p;
+    return p.then(function(r){
+      try{
+        if(r.status<400) return r;
+        return r.clone().text().then(function(t){
+          var m=RE.exec(t||''); if(!m) return r; var code=m[1];
+          if(code==='need_check' && typeof input==='string' && typeof window.secGate==='function' && (!init||init.body==null||typeof init.body==='string')){
+            return window.secGate('recheck').then(function(g){ if(g&&g.blocked) return r; return of.call(window,input,init); }).catch(function(){ return r; });
+          }
+          try{ if(typeof window.secOnApiBlock==='function') window.secOnApiBlock(code); }catch(e){}
+          return r;
+        }).catch(function(){ return r; });
+      }catch(e){ return r; }
+    });
+  };
+}catch(e){} })();
+</script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.10-r151';
+window.PL_BUILD='2026.11.11-r154';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -565,6 +604,8 @@ html.lite .pub-badge,html.pl-lite .pub-badge{animation:none}
 .pd-card{border-radius:18px;padding:14px;margin-bottom:12px;background:var(--card);border:1px solid var(--border)}
 .pd-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}.pd-row.sm{font-size:12.5px;color:var(--muted);margin-top:8px}.pd-row.sm b{color:#fff}.pd-bal{font-size:22px;font-weight:900;color:#4ade80}
 .pd-bar{height:9px;border-radius:99px;background:rgba(148,163,184,.18);overflow:hidden;margin-top:9px}.pd-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#16a05f,#4ade80)}.pd-bar.gold i{background:linear-gradient(90deg,#f59e0b,#fde68a)}
+.owm-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}.owm-chips span{font-size:12.5px;padding:5px 11px;border-radius:99px;background:rgba(99,102,241,.14);color:#dbe4ff}.owm-chips b{color:#5df0a0}.owm-how{margin:6px 18px 0;padding:0;font-size:12.5px;line-height:1.8;color:#b6c4e4}
+.pd-spark{display:flex;align-items:flex-end;gap:4px;height:92px;margin-top:12px;direction:ltr}.pd-sb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}.pd-sb i{display:block;width:100%;border-radius:4px 4px 0 0;background:rgba(148,163,184,.25)}.pd-sb i.on{background:linear-gradient(180deg,#fbbf24,#f59e0b)}.pd-sb small{font-size:9px;opacity:.6;margin-top:3px}
 .pd-mini{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.pd-mini span{font-size:12px;padding:4px 10px;border-radius:99px;background:rgba(99,102,241,.12);color:#cbd5ff}
 .pd-btn{margin-top:12px;width:100%;padding:13px;border:0;border-radius:14px;font-weight:900;font-size:14.5px;cursor:pointer;color:#3b2a00;background:linear-gradient(135deg,#fde68a,#f59e0b)}.pd-btn.ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--border)}
 .pd-acts{display:flex;gap:9px}.pd-acts .pd-btn{margin-top:10px}
@@ -2873,6 +2914,19 @@ html[dir="ltr"] .pdd-trigger{direction:ltr; text-align:left;}
 .fr-set{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.07);font-size:12.5px}
 .fr-set input[type=number],.fr-set select{width:90px;padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:inherit;font-size:16px}
 .fr-set select{width:130px}.fr-set input[type=checkbox]{width:20px;height:20px}
+.sc-r{padding:3px 9px;border-radius:99px;font-size:11px;font-weight:800;white-space:nowrap}
+.sc-r.low{background:rgba(34,197,94,.15);color:#86efac}.sc-r.medium{background:rgba(245,158,11,.18);color:#fcd34d}.sc-r.high{background:rgba(249,115,22,.2);color:#fdba74}.sc-r.critical{background:rgba(220,38,38,.28);color:#fecaca;box-shadow:0 0 0 1px rgba(220,38,38,.5)}
+.sc-seg{display:flex;gap:6px;margin:6px 0}.sc-seg button{flex:1;padding:9px 6px;border-radius:11px;border:1px solid var(--border);background:var(--card);color:inherit;font:inherit;font-size:12.5px;font-weight:800;cursor:pointer}.sc-seg button.on{background:linear-gradient(135deg,#0ea5e9,#2563eb);color:#fff;border-color:transparent}.sc-seg button.on.enf{background:linear-gradient(135deg,#ef4444,#b91c1c)}.sc-seg button.on.off{background:#64748b}
+.sc-chip{display:inline-block;padding:4px 9px;margin:3px 0 0 4px;border-radius:99px;font-size:11px;font-weight:700;background:rgba(255,255,255,.07)}
+.sc-n.unread b::before{content:'●';color:#ef4444;margin-inline-end:5px}
+.atb-n{display:inline-block;min-width:18px;padding:1px 6px;margin-inline-start:4px;border-radius:99px;background:#ef4444;color:#fff;font-size:11px;font-weight:900;line-height:16px}
+.sc-kv{display:grid;grid-template-columns:105px 1fr;gap:5px 10px;font-size:12.5px;word-break:break-word}.sc-kv i{font-style:normal;opacity:.6}
+.sc-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.sc-in{padding:8px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:inherit;font-size:16px;width:100%;box-sizing:border-box;margin-top:8px}
+.sc-sel{padding:7px 8px;border-radius:9px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:inherit;font-size:16px}
+details.sc-d>summary{cursor:pointer;font-weight:800;font-size:13px;list-style:none}details.sc-d>summary::-webkit-details-marker{display:none}
+.sc-btn{padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:inherit;font:inherit;font-size:12.5px;font-weight:800;cursor:pointer}.sc-btn:active{opacity:.7}
+
 .in-row small{display:block;font-size:11px;opacity:.85;margin-top:2px}
 
 /* ===== r37: صفحة المهام — تنسيق احترافي (طبقة فوق الحالي؛ لا تغيّر أي منطق) ===== */
@@ -3080,6 +3134,7 @@ html.lite .vip-hero:before{display:none}
 </style>
 </head>
 <body>
+<div id="vpn-block" role="alert"><div class="vb-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8a15 15 0 0 0-11.5-4.7"/><path d="M5 12.5a10 10 0 0 1 3.1-2M19 12.5a10 10 0 0 0-5.5-2.8"/><path d="M8.5 16.1a5 5 0 0 1 2-1M15.5 16.1a5 5 0 0 0-1.4-.9"/><circle cx="12" cy="19.4" r="1" fill="currentColor"/><path d="M3 3l18 18"/></svg><h1 id="vb-t">تعذّر الاتصال بـ PayLoop</h1><p id="vb-m">تم اكتشاف اتصال VPN أو Proxy. يرجى إيقاف VPN وإعادة المحاولة للدخول إلى PayLoop.</p><p class="vb-s" id="vb-s">جارٍ إعادة الفحص تلقائياً…</p><button id="vb-b" type="button" onclick="try{vpnRetryNow()}catch(e){location.reload()}">إعادة المحاولة</button></div></div>
 <div id="boot-splash" aria-hidden="true">
 <style>
 #boot-splash .bs-logo{width:170px;height:170px;opacity:0;transform:scale(.82);animation:bsIn .7s cubic-bezier(.2,.8,.2,1) .05s forwards,bsGlow 2.6s ease-in-out .8s infinite;filter:drop-shadow(0 0 0 rgba(35,211,160,0))}
@@ -3175,7 +3230,7 @@ html.lite .vip-hero:before{display:none}
 
   <div class="section"><div class="section-title" data-i18n="sec.invite">دعوة الأصدقاء</div></div>
   <div class="ref-banner">
-    <div><h4 data-i18n="ref.h">ادعُ أصدقاءك واحصل على 10% من أرباحهم</h4><p data-i18n="ref.p">شارك رابطك الآن وابدأ الكسب</p></div>
+    <div><h4 data-i18n="ref.h">ادعُ أصدقاءك واحصل على 5% من أرباحهم</h4><p data-i18n="ref.p">شارك رابطك الآن وابدأ الكسب</p></div>
     <button data-i18n="ref.btn" class="small-btn" onclick="go('more')">دعوة</button>
   </div>
 </section>
@@ -3380,7 +3435,7 @@ html.lite .vip-hero:before{display:none}
     <div class="content">
       <div class="hero-badge" style="position:relative; margin:0 0 10px" data-i18n="inv.badge">✦ نظام الدعوات الذكي</div>
       <h1 data-i18n="t.invite">دعوة الأصدقاء</h1>
-      <p data-i18n="inv.p">اربح 10% من أرباح كل صديق تدعوته — مدى الحياة</p>
+      <p data-i18n="inv.p">اربح 5% من أرباح كل صديق تدعوته — مدى الحياة</p>
     </div>
   </div>
 
@@ -3410,7 +3465,7 @@ html.lite .vip-hero:before{display:none}
     <div class="ref-steps">
       <div class="step"><i>1</i><p data-i18n="inv.step1">شارك رمزك أو رابط الدعوة مع أصدقائك</p></div>
       <div class="step"><i>2</i><p data-i18n="inv.step2">يسجّل صديقك في التطبيق وأنجز أول مهمة</p></div>
-      <div class="step"><i>3</i><p data-i18n="inv.step3">يُضاف 10% من أرباحه إلى رصيدك تلقائياً — مدى الحياة</p></div>
+      <div class="step"><i>3</i><p data-i18n="inv.step3">يُضاف 5% من أرباحه إلى رصيدك تلقائياً — مدى الحياة</p></div>
     </div>
   </div>
 
@@ -3424,7 +3479,7 @@ html.lite .vip-hero:before{display:none}
   <div class="section"><div class="section-title" data-i18n="inv.sec5">👥 أصدقاء ينجزون المهام وأنت تربح</div></div>
   <div class="ref-sec">
     <div class="inv-illus"><img src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 640 320%22%3E%3Cdefs%3E%3ClinearGradient id=%22bg%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%230a1a4a%22/%3E%3Cstop offset=%22.55%22 stop-color=%22%23143a9a%22/%3E%3Cstop offset=%221%22 stop-color=%22%230b2266%22/%3E%3C/linearGradient%3E%3CradialGradient id=%22gl%22 cx=%22.5%22 cy=%22.5%22 r=%22.5%22%3E%3Cstop offset=%220%22 stop-color=%22%235b9bff%22 stop-opacity=%22.55%22/%3E%3Cstop offset=%221%22 stop-color=%22%235b9bff%22 stop-opacity=%220%22/%3E%3C/radialGradient%3E%3ClinearGradient id=%22gold%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%23fde68a%22/%3E%3Cstop offset=%22.55%22 stop-color=%22%23fbbf24%22/%3E%3Cstop offset=%221%22 stop-color=%22%23d97706%22/%3E%3C/linearGradient%3E%3ClinearGradient id=%22ph%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%231e293b%22/%3E%3Cstop offset=%221%22 stop-color=%22%230f172a%22/%3E%3C/linearGradient%3E%3ClinearGradient id=%22scr%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%2360a5fa%22/%3E%3Cstop offset=%221%22 stop-color=%22%232563eb%22/%3E%3C/linearGradient%3E%3Cfilter id=%22sh%22 x=%22-30%25%22 y=%22-30%25%22 width=%22160%25%22 height=%22170%25%22%3E%3CfeDropShadow dx=%220%22 dy=%226%22 stdDeviation=%226%22 flood-color=%22%23000%22 flood-opacity=%22.4%22/%3E%3C/filter%3E%3Cg id=%22coin%22%3E%3Ccircle r=%2215%22 fill=%22url%28%23gold%29%22 stroke=%22%23fff%22 stroke-opacity=%22.6%22 stroke-width=%221.6%22/%3E%3Ccircle r=%2210%22 fill=%22none%22 stroke=%22%23b45309%22 stroke-opacity=%22.5%22 stroke-width=%221.5%22/%3E%3Ctext y=%226%22 text-anchor=%22middle%22 font-family=%22Arial,sans-serif%22 font-weight=%22900%22 font-size=%2216%22 fill=%22%2392400e%22%3E%24%3C/text%3E%3C/g%3E%3Cg id=%22phone%22%3E%3Crect x=%22-17%22 y=%22-28%22 width=%2234%22 height=%2256%22 rx=%227%22 fill=%22url%28%23ph%29%22 stroke=%22%2394a3b8%22 stroke-opacity=%22.6%22 stroke-width=%221.5%22/%3E%3Crect x=%22-13%22 y=%22-22%22 width=%2226%22 height=%2240%22 rx=%223%22 fill=%22url%28%23scr%29%22/%3E%3Ccircle cx=%220%22 cy=%2223%22 r=%222.2%22 fill=%22%2394a3b8%22/%3E%3Cpath d=%22M-6 -2 l4.5 5 9 -10%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%223.4%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/g%3E%3C/defs%3E%3Crect width=%22640%22 height=%22320%22 fill=%22url%28%23bg%29%22/%3E%3Cg fill=%22%23fff%22 opacity=%22.07%22%3E%3Ccircle cx=%2240%22 cy=%2240%22 r=%222%22/%3E%3Ccircle cx=%22120%22 cy=%2290%22 r=%221.6%22/%3E%3Ccircle cx=%22580%22 cy=%2250%22 r=%222%22/%3E%3Ccircle cx=%22520%22 cy=%22280%22 r=%221.8%22/%3E%3Ccircle cx=%2290%22 cy=%22270%22 r=%222%22/%3E%3Ccircle cx=%22600%22 cy=%22170%22 r=%221.6%22/%3E%3C/g%3E%3Cellipse cx=%22320%22 cy=%22165%22 rx=%22250%22 ry=%22140%22 fill=%22url%28%23gl%29%22/%3E%3C%21-- links --%3E%3Cg fill=%22none%22 stroke=%22%239cc4ff%22 stroke-width=%222.4%22 stroke-dasharray=%222 9%22 stroke-linecap=%22round%22 opacity=%22.8%22%3E%3Cpath d=%22M135 105 C190 120 240 135 285 150%22/%3E%3Cpath d=%22M505 105 C450 120 400 135 355 150%22/%3E%3Cpath d=%22M135 235 C190 215 240 195 285 182%22/%3E%3Cpath d=%22M505 235 C450 215 400 195 355 182%22/%3E%3C/g%3E%3C%21-- center: you --%3E%3Cg transform=%22translate%28320 165%29%22 filter=%22url%28%23sh%29%22%3E%3Ccircle r=%2258%22 fill=%22%231d4ed8%22 stroke=%22%2393c5fd%22 stroke-width=%223%22 stroke-opacity=%22.8%22/%3E%3Ccircle cx=%220%22 cy=%22-14%22 r=%2219%22 fill=%22%23fcd9b6%22/%3E%3Cpath d=%22M-20 -17 C-19 -36 19 -36 20 -17 C12 -26 -12 -26 -20 -17Z%22 fill=%22%233b2a1d%22/%3E%3Cpath d=%22M-38 38 C-34 12 34 12 38 38 C26 52 -26 52 -38 38Z%22 fill=%22%23fbbf24%22/%3E%3Ccircle cx=%22-7%22 cy=%22-13%22 r=%222.2%22 fill=%22%233b2a1d%22/%3E%3Ccircle cx=%227%22 cy=%22-13%22 r=%222.2%22 fill=%22%233b2a1d%22/%3E%3Cpath d=%22M-6 -5 q6 6 12 0%22 fill=%22none%22 stroke=%22%239a3412%22 stroke-width=%222.2%22 stroke-linecap=%22round%22/%3E%3C/g%3E%3Cg transform=%22translate%28375 118%29 rotate%288%29%22%3E%3Crect x=%22-34%22 y=%22-17%22 width=%2268%22 height=%2234%22 rx=%2217%22 fill=%22%2322c55e%22 stroke=%22%23fff%22 stroke-opacity=%22.7%22 stroke-width=%222%22/%3E%3Ctext y=%227%22 text-anchor=%22middle%22 font-family=%22Arial,sans-serif%22 font-weight=%22900%22 font-size=%2220%22 fill=%22%23fff%22%3E%2B10%25%3C/text%3E%3C/g%3E%3C%21-- friends --%3E%3Cg transform=%22translate%2895 92%29%22 filter=%22url%28%23sh%29%22%3E%3Ccircle r=%2238%22 fill=%22%237c3aed%22 stroke=%22%23c4b5fd%22 stroke-width=%222.5%22/%3E%3Ccircle cy=%22-9%22 r=%2214%22 fill=%22%23f2c9a0%22/%3E%3Cpath d=%22M-15 -11 C-14 -27 14 -27 15 -11 C9 -18 -9 -18 -15 -11Z%22 fill=%22%23111827%22/%3E%3Cpath d=%22M-26 28 C-22 8 22 8 26 28 C16 38 -16 38 -26 28Z%22 fill=%22%23a78bfa%22/%3E%3C/g%3E%3Cg transform=%22translate%28545 92%29%22 filter=%22url%28%23sh%29%22%3E%3Ccircle r=%2238%22 fill=%22%230891b2%22 stroke=%22%23a5f3fc%22 stroke-width=%222.5%22/%3E%3Ccircle cy=%22-9%22 r=%2214%22 fill=%22%23c68642%22/%3E%3Cpath d=%22M-16 -8 C-18 -30 18 -30 16 -8 C10 -22 -10 -22 -16 -8Z%22 fill=%22%232b1b12%22/%3E%3Cpath d=%22M-26 28 C-22 8 22 8 26 28 C16 38 -16 38 -26 28Z%22 fill=%22%2367e8f9%22/%3E%3C/g%3E%3Cg transform=%22translate%2895 242%29%22 filter=%22url%28%23sh%29%22%3E%3Ccircle r=%2238%22 fill=%22%23db2777%22 stroke=%22%23fbcfe8%22 stroke-width=%222.5%22/%3E%3Ccircle cy=%22-9%22 r=%2214%22 fill=%22%23f5d0b0%22/%3E%3Cpath d=%22M-17 -6 C-20 -32 20 -32 17 -6 L19 12 C12 3 -12 3 -19 12Z%22 fill=%22%237c2d12%22/%3E%3Cpath d=%22M-26 28 C-22 8 22 8 26 28 C16 38 -16 38 -26 28Z%22 fill=%22%23f9a8d4%22/%3E%3C/g%3E%3Cg transform=%22translate%28545 242%29%22 filter=%22url%28%23sh%29%22%3E%3Ccircle r=%2238%22 fill=%22%2316a34a%22 stroke=%22%23bbf7d0%22 stroke-width=%222.5%22/%3E%3Ccircle cy=%22-9%22 r=%2214%22 fill=%22%238d5524%22/%3E%3Cpath d=%22M-15 -11 C-14 -27 14 -27 15 -11 C9 -18 -9 -18 -15 -11Z%22 fill=%22%230b0b0b%22/%3E%3Cpath d=%22M-26 28 C-22 8 22 8 26 28 C16 38 -16 38 -26 28Z%22 fill=%22%2386efac%22/%3E%3C/g%3E%3C%21-- phones with checks %2B coins --%3E%3Cuse href=%22%23phone%22 transform=%22translate%28150 128%29 rotate%28-10%29 scale%28.8%29%22 filter=%22url%28%23sh%29%22/%3E%3Cuse href=%22%23phone%22 transform=%22translate%28490 128%29 rotate%2810%29 scale%28.8%29%22 filter=%22url%28%23sh%29%22/%3E%3Cuse href=%22%23phone%22 transform=%22translate%28150 206%29 rotate%2810%29 scale%28.8%29%22 filter=%22url%28%23sh%29%22/%3E%3Cuse href=%22%23phone%22 transform=%22translate%28490 206%29 rotate%28-10%29 scale%28.8%29%22 filter=%22url%28%23sh%29%22/%3E%3Cuse href=%22%23coin%22 transform=%22translate%28195 150%29 scale%28.8%29%22/%3E%3Cuse href=%22%23coin%22 transform=%22translate%28447 150%29 scale%28.8%29%22/%3E%3Cuse href=%22%23coin%22 transform=%22translate%28205 188%29 scale%28.7%29%22/%3E%3Cuse href=%22%23coin%22 transform=%22translate%28437 188%29 scale%28.7%29%22/%3E%3Cuse href=%22%23coin%22 transform=%22translate%28268 60%29 scale%28.9%29%22/%3E%3Cuse href=%22%23coin%22 transform=%22translate%28370 262%29 scale%28.75%29%22/%3E%3C%21-- invitation envelope on top --%3E%3Cg transform=%22translate%28320 44%29%22 filter=%22url%28%23sh%29%22%3E%3Crect x=%22-26%22 y=%22-16%22 width=%2252%22 height=%2234%22 rx=%226%22 fill=%22%23fff%22/%3E%3Cpath d=%22M-26 -12 L0 6 L26 -12%22 fill=%22none%22 stroke=%22%232563eb%22 stroke-width=%223%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2220%22 cy=%2214%22 r=%229%22 fill=%22%2322c55e%22 stroke=%22%23fff%22 stroke-width=%222%22/%3E%3Cpath d=%22M15.5 14 l3 3 6 -6.5%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%222.4%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/g%3E%3Cg fill=%22%23fff%22%3E%3Cpath d=%22M240 40 l2.5 7 7 2.5 -7 2.5 -2.5 7 -2.5 -7 -7 -2.5 7 -2.5z%22 opacity=%22.8%22/%3E%3Cpath d=%22M410 286 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z%22 opacity=%22.7%22/%3E%3Cpath d=%22M30 160 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z%22 opacity=%22.6%22/%3E%3Cpath d=%22M610 160 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z%22 opacity=%22.6%22/%3E%3C/g%3E%3C/svg%3E" alt="" loading="lazy"></div>
-    <div class="note" data-i18n="inv.note5">كل صديق تدعوه ينجز العروض والتطبيقات والاستطلاعات، وتصلك 10% من أرباحه تلقائيًا بعد أن تؤكد الشبكة الشريكة إنجازه فعلاً. عدد الدعوات غير محدود — لكن يُمنع إنشاء حسابات وهمية، وقد يؤدي ذلك إلى حظر الحساب.</div>
+    <div class="note" data-i18n="inv.note5">كل صديق تدعوه ينجز العروض والتطبيقات والاستطلاعات، وتصلك 5% من أرباحه تلقائيًا بعد أن تؤكد الشبكة الشريكة إنجازه فعلاً. عدد الدعوات غير محدود — لكن يُمنع إنشاء حسابات وهمية، وقد يؤدي ذلك إلى حظر الحساب.</div>
   </div>
   <div style="height:16px"></div>
 </section>
@@ -3615,7 +3670,7 @@ html.lite .vip-hero:before{display:none}
 <section class="page" id="page-pubdash">
   <div class="sub-header">
     <button class="back" onclick="go('more')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
-    <h1>🌟 ناشرون</h1>
+    <h1>🌟 لوحة الناشر</h1>
   </div>
   <div id="pubdash-body"></div>
   <div style="height:24px"></div>
@@ -3947,7 +4002,8 @@ let NOTIF=(LS.get('r7-notif')||'1')==='1';
 let DONE=parseInt(LS.get('r7-done')||'0',10)||0;
 let TX=[];
 let curCat='all';
-function tr(a){ if(!Array.isArray(a)) return a; return (a[IDX[LANG]]!=null)?a[IDX[LANG]]:a[0]; }
+function rp(x){ try{ return (typeof x==='string'&&x.indexOf('@RP@')>-1)?x.split('@RP@').join((typeof plIsPub==='function'&&plIsPub())?'15%':'5%'):x; }catch(e){ return x; } }
+function tr(a){ if(!Array.isArray(a)) return a; return rp((a[IDX[LANG]]!=null)?a[IDX[LANG]]:a[0]); }
 function L(ar,en,fr){ return tr([ar,en,fr]); }
 function saveState(){ LS.set('r7-bal',String(BAL)); LS.set('r7-pts',String(PTS)); LS.set('r7-today',String(TODAY)); LS.set('r7-done',String(DONE)); if(TX.length>1000) TX.length=1000; LS.set('r7-tx',JSON.stringify(TX)); LS.set('r7-notif',NOTIF?'1':'0'); }
 function loadState(){
@@ -4990,7 +5046,8 @@ function updHeld(){
 /* ===== ناشر: الحالة تأتي من الخادم (للعرض فقط) ===== */
 function plIsPub(){ try{ const u=curUser(); return !!(u&&localStorage.getItem('pl-pub-'+u.id)==='1'); }catch(e){ return false; } }
 var _pubAt=0;
-function plPubPaint(){ try{ const on=plIsPub(); ['home-av','pf-av'].forEach(function(id){ const e=document.getElementById(id); if(e) e.classList.toggle('pub',on); }); const mc=document.getElementById('wd-minchip'); if(mc) mc.textContent=on?'$5.00':'$3.00'; }catch(e){} }
+function rpRefresh(){ try{ document.querySelectorAll('[data-i18n]').forEach(function(el){ const k=el.dataset.i18n; if(!/^(ref|inv)\./.test(k)) return; const d=T[LANG]||{}; const v=(d[k]!=null)?d[k]:T.ar[k]; if(v!=null&&String(v).indexOf('@RP@')>-1&&!el.querySelector('.ax-btn-t')) el.textContent=rp(v); }); }catch(e){} }
+function plPubPaint(){ try{ rpRefresh(); const on=plIsPub(); ['home-av','pf-av'].forEach(function(id){ const e=document.getElementById(id); if(e) e.classList.toggle('pub',on); }); const mc=document.getElementById('wd-minchip'); if(mc) mc.textContent=on?'$5.00':'$3.00'; }catch(e){} }
 function plPubLoad(){
   try{
     plPubPaint();
@@ -5907,7 +5964,7 @@ ar:{'nav.home':'الرئيسية','nav.tasks':'المهام','nav.with':'الس�
 'hero.h':'اربح أكثر، أنجز المهام واحصل على مكافآتك','hero.badge':'✦ منصة ربحية رقم 1 في الجزائر',
 'bal.cur':'الرصيد الحالي','btn.start':'ابدأ الربح','btn.back':'رجوع',
 'sec.promo':'🎁 مكافآت مميزة','sec.ways':'طرق الربح','sec.feat':'مهام مميزة','sec.invite':'دعوة الأصدقاء',
-'ref.h':'ادعُ أصدقاءك واحصل على 10% من أرباحهم','ref.p':'شارك رابطك الآن وابدأ الكسب','ref.btn':'دعوة',
+'ref.h':'ادعُ أصدقاءك واحصل على @RP@ من أرباحهم','ref.p':'شارك رابطك الآن وابدأ الكسب','ref.btn':'دعوة',
 'wd.bal':'الرصيد المتاح','wd.min':'الحد الأدنى للسحب','wd.ccp':'CCP الجزائر','wd.ccpd':'سحب أرباحك إلى حساب CCP',
 'wd.usdtd':'سحب الأرباح إلى محفظة USDT','wd.ffd':'تحويل الرصيد إلى جواهر Free Fire',
 'wd.lbl.ccp':'رقم CCP','wd.lbl.key':'المفتاح','wd.lbl.addr':'عنوان المحفظة','wd.lbl.net':'الشبكة (Network)','wd.lbl.amt':'المبلغ ($)',
@@ -5920,18 +5977,18 @@ ar:{'nav.home':'الرئيسية','nav.tasks':'المهام','nav.with':'الس�
 'btn.save':'حفظ','btn.cancel':'إلغاء','btn.copy':'نسخ',
 'set.title':'الإعدادات','set.theme':'المظهر','set.db':'قاعدة البيانات','set.db.local':'محلي — هذا الجهاز','set.db.cloud':'متصل بـ Supabase','set.dark':'داكن','set.light':'فاتح','set.lang':'اللغة','set.notif':'الإشعارات','set.auto':'توفير البطارية','set.ver':'إصدار التطبيق','set.priv':'الخصوصية والبيانات','set.note':'تُحفظ تفضيلاتك تلقائياً على هذا الجهاز.',
 'hist.title':'سجل المعاملات',
-'inv.badge':'✦ نظام الدعوات الذكي','inv.p':'اربح 10% من أرباح كل صديق تدعوته — مدى الحياة',
+'inv.badge':'✦ نظام الدعوات الذكي','inv.p':'اربح @RP@ من أرباح كل صديق تدعوته — مدى الحياة',
 'inv.s1':'أرباح الدعوات','inv.s2':'أصدقاء مدعوون','inv.s3':'إحالات نشطة',
-'inv.sec1':'🔗 رمزك ورابطك','inv.sec2':'⚙️ كيف يعمل النظام؟','inv.sec4':'🌐 شبكة الأصدقاء','inv.sec5':'👥 أصدقاء ينجزون المهام وأنت تربح','inv.note5':'كل صديق تدعوه ينجز العروض والتطبيقات والاستطلاعات، وتصلك 10% من أرباحه تلقائيًا بعد أن تؤكد الشبكة الشريكة إنجازه فعلاً. عدد الدعوات غير محدود — لكن يُمنع إنشاء حسابات وهمية، وقد يؤدي ذلك إلى حظر الحساب.',
+'inv.sec1':'🔗 رمزك ورابطك','inv.sec2':'⚙️ كيف يعمل النظام؟','inv.sec4':'🌐 شبكة الأصدقاء','inv.sec5':'👥 أصدقاء ينجزون المهام وأنت تربح','inv.note5':'كل صديق تدعوه ينجز العروض والتطبيقات والاستطلاعات، وتصلك @RP@ من أرباحه تلقائيًا بعد أن تؤكد الشبكة الشريكة إنجازه فعلاً. عدد الدعوات غير محدود — لكن يُمنع إنشاء حسابات وهمية، وقد يؤدي ذلك إلى حظر الحساب.',
 'inv.code':'رمز الدعوة الخاص بك','inv.copylink':'نسخ الدعوة','inv.share':'📤 مشاركة رابط الدعوة',
-'inv.step1':'شارك رمزك أو رابط الدعوة مع أصدقائك','inv.step2':'يسجّل صديقك في التطبيق وأنجز أول مهمة','inv.step3':'يُضاف 10% من أرباحه إلى رصيدك تلقائياً — مدى الحياة',
+'inv.step1':'شارك رمزك أو رابط الدعوة مع أصدقائك','inv.step2':'يسجّل صديقك في التطبيق وأنجز أول مهمة','inv.step3':'يُضاف @RP@ من أرباحه إلى رصيدك تلقائياً — مدى الحياة',
 'inv.bh':'كل صديق ينضم = دخل إضافي لك','inv.bs':'شارك رابطك في واتساب وفيسبوك وابدأ الربح الآن'},
 en:{'nav.home':'Home','nav.tasks':'Tasks','nav.with':'Withdraw','nav.inv':'Invite','nav.more':'More',
 't.tasks':'✅ Tasks','t.with':'Withdraw','t.invite':'Invite Friends',
 'hero.h':'Earn more, complete tasks & get rewarded','hero.badge':'✦ Algeria\'s #1 earning platform',
 'bal.cur':'Current balance','btn.start':'Start Earning','btn.back':'Back',
 'sec.promo':'🎁 Featured Rewards','sec.ways':'Ways to Earn','sec.feat':'Featured Tasks','sec.invite':'Invite Friends',
-'ref.h':'Invite friends & earn 10% of their earnings','ref.p':'Share your link and start earning','ref.btn':'Invite',
+'ref.h':'Invite friends & earn @RP@ of their earnings','ref.p':'Share your link and start earning','ref.btn':'Invite',
 'wd.bal':'Available balance','wd.min':'Minimum withdrawal','wd.ccp':'Algeria CCP','wd.ccpd':'Withdraw to your CCP account',
 'wd.usdtd':'Withdraw to your USDT wallet','wd.ffd':'Convert balance to Free Fire diamonds',
 'wd.lbl.ccp':'CCP number','wd.lbl.key':'Key','wd.lbl.addr':'Wallet address','wd.lbl.net':'Network','wd.lbl.amt':'Amount ($)',
@@ -5944,18 +6001,18 @@ en:{'nav.home':'Home','nav.tasks':'Tasks','nav.with':'Withdraw','nav.inv':'Invit
 'btn.save':'Save','btn.cancel':'Cancel','btn.copy':'Copy',
 'set.title':'Settings','set.theme':'Appearance','set.db':'Database','set.db.local':'Local — this device','set.db.cloud':'Connected to Supabase','set.dark':'Dark','set.light':'Light','set.lang':'Language','set.notif':'Notifications','set.auto':'Battery saver','set.ver':'App version','set.priv':'Privacy & data','set.note':'Your preferences are saved automatically on this device.',
 'hist.title':'Transaction History',
-'inv.badge':'✦ Smart referral system','inv.p':'Earn 10% of everything your friends earn — for life',
+'inv.badge':'✦ Smart referral system','inv.p':'Earn @RP@ of everything your friends earn — for life',
 'inv.s1':'Referral earnings','inv.s2':'Friends invited','inv.s3':'Active referrals',
-'inv.sec1':'🔗 Your code & link','inv.sec2':'⚙️ How it works','inv.sec4':'🌐 Friend network','inv.sec5':'👥 Friends do the tasks, you earn','inv.note5':'Every friend you invite completes offers, apps and surveys, and you automatically get 10% of their earnings once the partner network confirms the completion. Unlimited invites — but fake accounts are forbidden and may get you banned.',
+'inv.sec1':'🔗 Your code & link','inv.sec2':'⚙️ How it works','inv.sec4':'🌐 Friend network','inv.sec5':'👥 Friends do the tasks, you earn','inv.note5':'Every friend you invite completes offers, apps and surveys, and you automatically get @RP@ of their earnings once the partner network confirms the completion. Unlimited invites — but fake accounts are forbidden and may get you banned.',
 'inv.code':'Your invite code','inv.copylink':'Copy invite','inv.share':'📤 Share invite link',
-'inv.step1':'Share your code or invite link with friends','inv.step2':'Your friend signs up and completes a first task','inv.step3':'You automatically get 10% of their earnings — for life',
+'inv.step1':'Share your code or invite link with friends','inv.step2':'Your friend signs up and completes a first task','inv.step3':'You automatically get @RP@ of their earnings — for life',
 'inv.bh':'Every friend who joins = extra income','inv.bs':'Share your link on WhatsApp & Facebook and start now'},
 fr:{'nav.home':'Accueil','nav.tasks':'Tâches','nav.with':'Retrait','nav.inv':'Invitation','nav.more':'Plus',
 't.tasks':'✅ Tâches','t.with':'Retrait','t.invite':'Inviter des amis',
 'hero.h':'Gagnez plus, accomplissez des tâches et soyez récompensé','hero.badge':'✦ Plateforme n°1 de gains en Algérie',
 'bal.cur':'Solde actuel','btn.start':'Commencer','btn.back':'Retour',
 'sec.promo':'🎁 Récompenses vedettes','sec.ways':'Moyens de gagner','sec.feat':'Tâches en vedette','sec.invite':'Inviter des amis',
-'ref.h':'Invitez vos amis et gagnez 10% de leurs gains','ref.p':'Partagez votre lien et commencez à gagner','ref.btn':'Inviter',
+'ref.h':'Invitez vos amis et gagnez @RP@ de leurs gains','ref.p':'Partagez votre lien et commencez à gagner','ref.btn':'Inviter',
 'wd.bal':'Solde disponible','wd.min':'Retrait minimum','wd.ccp':'CCP Algérie','wd.ccpd':'Retirez vers votre compte CCP',
 'wd.usdtd':'Retirez vers votre wallet USDT','wd.ffd':'Convertissez en diamants Free Fire',
 'wd.lbl.ccp':'Numéro CCP','wd.lbl.key':'Clé','wd.lbl.addr':'Adresse du wallet','wd.lbl.net':'Réseau','wd.lbl.amt':'Montant ($)',
@@ -5968,11 +6025,11 @@ fr:{'nav.home':'Accueil','nav.tasks':'Tâches','nav.with':'Retrait','nav.inv':'I
 'btn.save':'Enregistrer','btn.cancel':'Annuler','btn.copy':'Copier',
 'set.title':'Paramètres','set.theme':'Apparence','set.db':'Base de données','set.db.local':'Local — cet appareil','set.db.cloud':'Connecté à Supabase','set.dark':'Sombre','set.light':'Clair','set.lang':'Langue','set.notif':'Notifications','set.auto':'Économie batterie','set.ver':'Version de l\'app','set.priv':'Confidentialité et données','set.note':'Vos préférences sont enregistrées automatiquement sur cet appareil.',
 'hist.title':'Historique des transactions',
-'inv.badge':'✦ Système de parrainage intelligent','inv.p':'Gagnez 10% des gains de vos amis — à vie',
+'inv.badge':'✦ Système de parrainage intelligent','inv.p':'Gagnez @RP@ des gains de vos amis — à vie',
 'inv.s1':'Gains de parrainage','inv.s2':'Amis invités','inv.s3':'Parrainages actifs',
-'inv.sec1':'🔗 Votre code et lien','inv.sec2':'⚙️ Comment ça marche','inv.sec4':'🌐 Réseau d\'amis','inv.sec5':'👥 Vos amis travaillent, vous gagnez','inv.note5':'Chaque ami invité réalise des offres et vous recevez 10 % de ses gains automatiquement une fois l’achèvement confirmé par le réseau partenaire. Invitations illimitées — les faux comptes sont interdits et peuvent entraîner un bannissement.',
+'inv.sec1':'🔗 Votre code et lien','inv.sec2':'⚙️ Comment ça marche','inv.sec4':'🌐 Réseau d\'amis','inv.sec5':'👥 Vos amis travaillent, vous gagnez','inv.note5':'Chaque ami invité réalise des offres et vous recevez @RP@ de ses gains automatiquement une fois l’achèvement confirmé par le réseau partenaire. Invitations illimitées — les faux comptes sont interdits et peuvent entraîner un bannissement.',
 'inv.code':'Votre code d\'invitation','inv.copylink':'Copier l\'invitation','inv.share':'📤 Partager le lien',
-'inv.step1':'Partagez votre code ou lien avec vos amis','inv.step2':'Votre ami s\'inscrit et accomplit sa première tâche','inv.step3':'Vous obtenez automatiquement 10% de ses gains — à vie',
+'inv.step1':'Partagez votre code ou lien avec vos amis','inv.step2':'Votre ami s\'inscrit et accomplit sa première tâche','inv.step3':'Vous obtenez automatiquement @RP@ de ses gains — à vie',
 'inv.bh':'Chaque ami = revenu en plus','inv.bs':'Partagez votre lien sur WhatsApp et Facebook'}
 };
 function segSet(id,val){
@@ -6024,7 +6081,7 @@ function setLang(lang, silent){
   i18nSoon();
   buildTabs(); filterTasks(curCat); renderMenu();
   document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k=el.dataset.i18n; const d=T[LANG]||{}; const v=(d[k]!=null)?d[k]:T.ar[k];
+    const k=el.dataset.i18n; const d=T[LANG]||{}; const v=rp((d[k]!=null)?d[k]:T.ar[k]);
     if(v!=null){ const tgt=el.querySelector('.ax-btn-t'); if(tgt){ tgt.textContent=v; } else { el.textContent=v; } }
   });
   try{ const _ag=document.getElementById('auth-gate'); if(_ag&&_ag.style.display!=='none'){ renderAuth(); } }catch(e){}
@@ -6203,7 +6260,7 @@ function openInfo(kind){
         [L('كم تستغرق معالجة طلبي؟','How long does a request take?','Combien de temps prend une demande ?'),L('من 48 ساعة إلى 72 ساعة لمعالجة طلب السحب ومراجعته.','From 48 to 72 hours to process and review your withdrawal.','De 48 à 72 heures pour traiter votre retrait.')]
       ]],
       [L('👥 الدعوات','👥 Invites','👥 Invitations'),[
-        [L('هل الدعوة مجانية؟','Is inviting free?','L\'invitation est-elle gratuite ?'),L('نعم، غير محدودة وتحصل على 10% من أرباح كل صديق مدى الحياة.','Yes, unlimited — you get 10% of each friend\'s earnings for life.','Oui, illimitée — 10% des gains de chaque ami à vie.')],
+        [L('هل الدعوة مجانية؟','Is inviting free?','L\'invitation est-elle gratuite ?'),L('نعم، غير محدودة وتحصل على @RP@ من أرباح كل صديق مدى الحياة.','Yes, unlimited — you get @RP@ of each friend\'s earnings for life.','Oui, illimitée — @RP@ des gains de chaque ami à vie.')],
         [L('كيف أدعو أصدقاءي؟','How do I invite friends?','Comment inviter mes amis ?'),L('من صفحة الدعوة: انسخ رمزك أو رابطك وشاركهما مع أصدقائك.','From the Invite page: copy your code or link and share it with your friends.','Depuis la page Invitation : copiez votre code ou lien et partagez-le.')],
         [L('متى أحصل على نسبة صديقي؟','When do I earn from my friend?','Quand gagnez-vous de votre ami ?'),L('فور إنجاز صديقك لأول مهمة تُضاف نسبته إلى رصيدك تلقائيًا.','As soon as your friend completes their first task, their share is added automatically.','Dès la première tâche de votre ami, sa part est ajoutée automatiquement.')]
       ]],
@@ -6386,7 +6443,7 @@ function pfExtra(){
       '<div><b>'+(days==null?'—':days)+'</b><span>'+L('يومًا منذ الانضمام','days since joining','jours depuis l\'inscription')+'</span></div>'+
       '<div><b>'+on+'/'+BADGES.length+'</b><span>'+L('الشارات','Badges','Badges')+'</span></div>'+
     '</div>'+
-    '<div class="pfx-inv"><h5>🎁 '+L('ادعُ أصدقاءك واربح 10% من أرباحهم','Invite friends and earn 10% of their earnings','Invitez vos amis et gagnez 10 % de leurs gains')+'</h5>'+
+    '<div class="pfx-inv"><h5>🎁 '+L('ادعُ أصدقاءك واربح @RP@ من أرباحهم','Invite friends and earn @RP@ of their earnings','Invitez vos amis et gagnez @RP@ de leurs gains')+'</h5>'+
       '<div class="pfx-code"><span>'+esc(u.code||'—')+'</span><span style="cursor:pointer" onclick="copyText(\''+esc(u.code||'')+'\')">⧉</span></div>'+
       '<div class="pfx-btns"><button onclick="pfShareInvite()">📤 '+L('مشاركة','Share','Partager')+'</button><button class="alt" onclick="go(\'invite\')">👥 '+L('صفحة الدعوة','Invite page','Page d\'invitation')+'</button></div>'+
       '<div class="pfx-st">'+L('الأصدقاء: ','Friends: ','Amis : ')+friends+' · '+L('أرباح الإحالات: ','Referral earnings: ','Gains de parrainage : ')+'$'+rEarn.toFixed(2)+'</div></div>';
@@ -7008,7 +7065,7 @@ function renderAuth(){
   Object.keys(AXE).forEach(function(k){ const m=AXE[k]; delete AXE[k]; axErr(k,m); });
 }
 
-function auRefDefault(){ return L('إن دعاك صديق أدخل رمزه — يربح 10% من أرباحك دون أن يُخصم منك شيء. وإن لم يدعُك أحد اتركه فارغًا.','If a friend invited you, enter their code — they earn 10% of your earnings at no cost to you. No invite? Leave it empty.','Si un ami vous a invité, entrez son code — il gagne 10% de vos gains sans rien vous retirer. Sinon laissez vide.'); }
+function auRefDefault(){ return L('إن دعاك صديق أدخل رمزه — يربح عمولة من أرباحك دون أن يُخصم منك شيء. وإن لم يدعُك أحد اتركه فارغًا.','If a friend invited you, enter their code — they earn a commission on your earnings at no cost to you. No invite? Leave it empty.','Si un ami vous a invité, entrez son code — il gagne une commission sur vos gains sans rien vous retirer. Sinon laissez vide.'); }
 let _arT=0,_arG=0;
 function auRefLive(now){
   clearTimeout(_arT); const el=document.getElementById('au-ref'), h=document.getElementById('au-refhint'); if(!el||!h) return;
@@ -7037,6 +7094,7 @@ const RealAuth={
   key(){ return DataGateway.config.SUPABASE_KEY; },
   async signUp(email,pw){
     try{
+      try{ const g=await secGate('signup'); if(g&&g.blocked) return {ok:false, err:{msg:'vpn_blocked'}}; }catch(e){}
       const r=await fetch(this.base()+'/auth/v1/signup',{method:'POST',headers:{'Content-Type':'application/json','apikey':this.key()},body:JSON.stringify({email:email,password:pw})});
       const j=await r.json().catch(function(){ return {}; });
       if(!r.ok) return {ok:false, err:j};
@@ -7049,6 +7107,7 @@ const RealAuth={
   },
   async signIn(email,pw){
     try{
+      try{ const g=await secGate('login'); if(g&&g.blocked) return {ok:false, err:{msg:'vpn_blocked'}}; }catch(e){}
       const r=await fetch(this.base()+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':this.key()},body:JSON.stringify({email:email,password:pw})});
       const j=await r.json().catch(function(){ return {}; });
       if(!r.ok) return {ok:false, err:j};
@@ -8291,9 +8350,9 @@ function renderInviteStats(){
   if(s3){ let n=0; if(ri&&typeof ri.active==='number') n=ri.active; else if(u) USERS.forEach(function(x){ if(x.by===u.code && (x.logins||0)>0) n++; }); s3.textContent=String(n); }
   const cl=document.getElementById('inv-claim');
   if(cl){
-    if(ri&&ri.can_set) cl.innerHTML='<div class="ref-sec" style="margin-top:0"><b style="font-size:14px">🎁 '+L('هل دعاك صديق؟','Did a friend invite you?','Un ami vous a invité ?')+'</b><div class="note" style="margin:4px 0 8px">'+L('أدخل رمزه خلال 3 أيام من التسجيل — يربح 10% من أرباحك دون أن يُخصم منك شيء. لا يمكن تغييره بعد الحفظ.','Enter their code within 3 days of sign-up — they earn 10% of your earnings at no cost to you. It cannot be changed once saved.','Entrez son code dans les 3 jours — il gagne 10% de vos gains sans rien vous retirer. Non modifiable.')+'</div>'+
+    if(ri&&ri.can_set) cl.innerHTML='<div class="ref-sec" style="margin-top:0"><b style="font-size:14px">🎁 '+L('هل دعاك صديق؟','Did a friend invite you?','Un ami vous a invité ?')+'</b><div class="note" style="margin:4px 0 8px">'+L('أدخل رمزه خلال 3 أيام من التسجيل — يربح عمولة من أرباحك دون أن يُخصم منك شيء. لا يمكن تغييره بعد الحفظ.','Enter their code within 3 days of sign-up — they earn a commission on your earnings at no cost to you. It cannot be changed once saved.','Entrez son code dans les 3 jours — il gagne une commission sur vos gains sans rien vous retirer. Non modifiable.')+'</div>'+
       '<div style="display:flex;gap:8px"><input id="inv-claim-in" dir="ltr" autocapitalize="characters" autocomplete="off" placeholder="PAYLOOP-XXXXXX" style="flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1px solid var(--border);background:rgba(148,163,184,.08);color:var(--text);font-family:inherit;font-size:13px"><button type="button" class="ref-copy" onclick="invClaim()">'+L('تفعيل','Apply','Valider')+'</button></div></div>';
-    else if(ri&&ri.referrer) cl.innerHTML='<div class="ref-sec" style="margin-top:0"><div class="note">🎁 '+L('دعاك صديق: ','Invited by: ','Invité par : ')+esc(ri.referrer)+' — '+L('يربح 10% من أرباحك دون أن يُخصم منك شيء.','they earn 10% of your earnings at no cost to you.','il gagne 10% de vos gains sans rien vous retirer.')+'</div></div>';
+    else if(ri&&ri.referrer) cl.innerHTML='<div class="ref-sec" style="margin-top:0"><div class="note">🎁 '+L('دعاك صديق: ','Invited by: ','Invité par : ')+esc(ri.referrer)+' — '+L('يربح عمولة من أرباحك دون أن يُخصم منك شيء.','they earn a commission on your earnings at no cost to you.','il gagne une commission sur vos gains sans rien vous retirer.')+'</div></div>';
     else cl.innerHTML='';
   }
 }
@@ -8963,7 +9022,7 @@ function ntfSendDraft(id){ ntfConfirm('📤 '+L('إرسال الإشعار','Sen
 const NTF_GO={vip:1,home:1,tasks:1,withdraw:1,invite:1,profile:1,news:1,history:1};
 const NTF_TPL=[
  ['💰','ابدأ الربح الآن','Start earning','Gagner',['مهمة جديدة 🎁','New tasks are waiting! 💰','De nouvelles tâches vous attendent ! 💰'],['أنجز مهمة واحدة اليوم واحصل على مكافأتك','Complete one task today and get your reward right away. Start now!','Terminez une tâche aujourd’hui et recevez votre récompense. Commencez !'],'task','tasks'],
- ['🎁','ادعُ صديقًا','Invite a friend','Parrainage',['ادعُ صديقًا واربح 🎁','Invite a friend and earn 🎁','Invitez un ami et gagnez 🎁'],['اربح 10% من أرباح كل صديق تدعوه — مدى الحياة. شارك رمزك الآن!','Earn 10% of every friend’s earnings — for life. Share your code now!','Gagnez 10 % des gains de chaque ami — à vie. Partagez votre code !'],'reward','invite'],
+ ['🎁','ادعُ صديقًا','Invite a friend','Parrainage',['ادعُ صديقًا واربح 🎁','Invite a friend and earn 🎁','Invitez un ami et gagnez 🎁'],['اربح @RP@ من أرباح كل صديق تدعوه — مدى الحياة. شارك رمزك الآن!','Earn @RP@ of every friend’s earnings — for life. Share your code now!','Gagnez @RP@ des gains de chaque ami — à vie. Partagez votre code !'],'reward','invite'],
  ['🔥','المكافأة اليومية','Daily bonus','Bonus du jour',['مكافأتك اليومية جاهزة 🔥','Your daily bonus is ready 🔥','Votre bonus du jour est prêt 🔥'],['ادخل الآن واحصل على مكافأة اليوم قبل أن تفوتك!','Open the app and claim today’s bonus before you miss it!','Ouvrez l’appli et récupérez le bonus du jour !'],'reward','tasks'],
  ['📝','استطلاعات جديدة','New surveys','Sondages',['استطلاعات جديدة بأرباح أعلى 📝','New surveys with higher rewards 📝','Nouveaux sondages mieux payés 📝'],['استطلاعات جديدة متاحة الآن. دقائق قليلة وتربح!','New surveys are available now. A few minutes and you earn!','De nouveaux sondages sont disponibles. Quelques minutes et vous gagnez !'],'task','tasks'],
  ['🎮','ألعاب جديدة','New games','Nouveaux jeux',['ألعاب جديدة تدفع لك 🎮','New games that pay you 🎮','De nouveaux jeux qui paient 🎮'],['العب ووصل لمراحل محددة واربح مكافآت حقيقية.','Play, reach milestones and earn real rewards.','Jouez, atteignez des paliers et gagnez de vraies récompenses.'],'game','tasks'],
@@ -9771,12 +9830,13 @@ async function renderAdmFraud(force){
   if(!ADM_FR_BUSY && (force||Date.now()-ADM_FR_AT>20000)){
     ADM_FR_BUSY=true; if(!ADM_FR) box.innerHTML='<div class="adm-empty">⏳ '+L('جارٍ التحميل…','Loading…','Chargement…')+'</div>';
     try{
-      const a=await Promise.all([SRV.rpc('admin_fraud_overview',{}),SRV.rpc('admin_fraud_users',{p_level:null,p_limit:60}),SRV.rpc('admin_fraud_wd',{p_limit:40}),SRV.rpc('admin_security_log',{p_limit:40}),SRV.rpc('admin_fraud_settings',{})]);
-      if(a[0]&&typeof a[0].tracked_users==='number'&&Array.isArray(a[1])){ ADM_FR={ov:a[0],users:a[1],wd:Array.isArray(a[2])?a[2]:[],log:Array.isArray(a[3])?a[3]:[],set:a[4]||{}}; ADM_FR_AT=Date.now(); }
+      const a=await Promise.all([SRV.rpc('admin_fraud_overview',{}),SRV.rpc('admin_fraud_users',{p_level:null,p_limit:60}),SRV.rpc('admin_fraud_wd',{p_limit:40}),SRV.rpc('admin_security_log',{p_limit:40}),SRV.rpc('admin_fraud_settings',{}),scLoad().catch(function(){ return null; })]);
+      if(a[0]&&typeof a[0].tracked_users==='number'&&Array.isArray(a[1])){ ADM_FR={ov:a[0],users:a[1],wd:Array.isArray(a[2])?a[2]:[],log:Array.isArray(a[3])?a[3]:[],set:a[4]||{},sc:a[5]||null}; ADM_FR_AT=Date.now(); }
     }catch(e){}
     ADM_FR_BUSY=false; if(ADM_TAB!=='fraud') return;
   }
   if(!ADM_FR){ box.innerHTML='<div class="adm-empty">'+L('تعذّر التحميل — شغّل ملف 39_fraud.sql في Supabase','Could not load — run 39_fraud.sql in Supabase','Chargement impossible — exécutez 39_fraud.sql')+'</div>'; return; }
+  if(ADM_SC_E){ renderSecEvent(); return; }
   if(ADM_FR_U){ renderAdmFraudUser(); return; }
   const o=ADM_FR.ov, st=ADM_FR.set, f=function(n){ return Number(n||0).toLocaleString('en-US'); };
   const rk=o.risk||{}, ev=o.events_24h||{};
@@ -9817,7 +9877,7 @@ async function renderAdmFraud(force){
     nm('w_reversal',L('نقاط: عملية مُلغاة (لكل واحدة)','Pts: reversal (each)','Pts : annulation'))+nm('w_no_ip_wd',L('نقاط: سحب بلا IP','Pts: withdrawal with no IP','Pts : retrait sans IP'))+nm('retention_days',L('مدة الاحتفاظ بالـIP (أيام)','IP retention (days)','Conservation IP (jours)'))+
     '<button class="btn" style="margin-top:8px" onclick="admFrRecalc()">🔄 '+L('أعد حساب المخاطر للجميع الآن','Recalculate all risk now','Recalculer maintenant')+'</button>'+
     '<div class="up-note">'+L('لا يوجد حظر تلقائي نهائي: النظام يعطي درجة وعلامة مراجعة فقط والقرار لك. الـIP وحده لا يكفي لاتخاذ قرار.','No automatic permanent ban: the system only scores and flags; you decide. IP alone is never enough.','Pas de bannissement automatique : le système note et signale seulement.')+'</div></div>';
-  box.innerHTML='<div class="hl-wrap adm-pad">'+al.join('')+cards+
+  box.innerHTML='<div class="hl-wrap adm-pad">'+secCenterHtml()+al.join('')+cards+
     '<div class="up-box"><div class="up-h">💸 '+L('سحوبات معلّقة تحتاج مراجعة','Pending withdrawals to review','Retraits à vérifier')+'</div>'+wdr+'</div>'+
     '<div class="up-box"><div class="up-h">🧠 '+L('حسابات مشبوهة','Suspicious accounts','Comptes suspects')+'</div><div class="up-note">'+L('نقاط من عدة مؤشرات معًا (IP، جهاز، VPN، دولة، تسجيل جماعي، عمليات مُلغاة). ليست دليل إدانة: شبكة واحدة قد تضم أسرة حقيقية.','Points from several signals combined. Not proof: one network can be a real family.','Points issus de plusieurs signaux. Pas une preuve.')+'</div>'+usr+'</div>'+
     '<div class="up-box"><div class="up-h">📨 '+L('إشعارات Postback آخر 24 ساعة','Postbacks last 24h','Postbacks 24 h')+'</div>'+pb+'</div>'+
@@ -9854,6 +9914,226 @@ async function admFrSet(k,v){
     else { toast(L('قيمة غير صالحة','Invalid value','Valeur invalide')); ADM_FR_AT=0; renderAdmFraud(true); } }catch(e){ toast(L('تعذّر الحفظ','Could not save','Échec')); }
 }
 async function admFrRecalc(){ try{ const r=await SRV.rpc('admin_fraud_recalc',{p_user:null}); toast(r&&r.ok?L('✅ أُعيد حساب '+r.n+' حساب','✅ Recalculated '+r.n,'✅ '+r.n+' recalculés'):L('تعذّر','Failed','Échec')); ADM_FR_AT=0; renderAdmFraud(true); }catch(e){} }
+
+/* ===== بوابة VPN/Proxy/Tor: الفرض الحقيقي في الخادم (db_pre_request + دالة vpn-gate)؛ هنا فقط العرض وإعادة الفحص ===== */
+var VPNG={busy:null,blocked:false,confirmed:false,at:0,timer:null,n:0};
+function vpnTxt(){ return {
+  t:L('تعذّر الاتصال بـ PayLoop','Can’t connect to PayLoop','Connexion à PayLoop impossible'),
+  m:L('تم اكتشاف اتصال VPN أو Proxy. يرجى إيقاف VPN وإعادة المحاولة للدخول إلى PayLoop.','A VPN or proxy connection was detected. Please turn off your VPN and try again to access PayLoop.','Connexion VPN ou proxy détectée. Veuillez désactiver votre VPN puis réessayer pour accéder à PayLoop.'),
+  s:L('جارٍ إعادة الفحص تلقائياً…','Re-checking automatically…','Nouvelle vérification automatique…'),
+  b:L('إعادة المحاولة','Try again','Réessayer')}; }
+function vpnPaint(){ try{ var x=vpnTxt(), set=function(i,v){ var e=document.getElementById(i); if(e) e.textContent=v; }; set('vb-t',x.t); set('vb-m',x.m); set('vb-s',x.s); set('vb-b',x.b); var b=document.getElementById('vpn-block'); if(b) b.setAttribute('dir',/^ar/i.test(document.documentElement.lang||'ar')?'rtl':'ltr'); }catch(e){} }
+function vpnBlockedNow(){ VPNG.blocked=true; VPNG.confirmed=true; try{ localStorage.setItem('pl-vpn',String(Date.now())); }catch(e){} document.documentElement.classList.add('vpn-blk'); vpnPaint(); vpnSchedule(); }
+function vpnUnblocked(){
+  var wasConfirmed=VPNG.confirmed; VPNG.blocked=false; VPNG.confirmed=false; VPNG.n=0;
+  if(VPNG.timer){ clearTimeout(VPNG.timer); VPNG.timer=null; }
+  try{ localStorage.removeItem('pl-vpn'); }catch(e){}
+  document.documentElement.classList.remove('vpn-blk');
+  if(wasConfirmed){ try{ location.reload(); }catch(e){} }      /* زال السبب: نعيد تحميل التطبيق نظيفاً */
+}
+function vpnSchedule(){
+  if(VPNG.timer) return; var d=[5,10,20,30,60][Math.min(VPNG.n,4)]*1000;
+  VPNG.timer=setTimeout(function(){ VPNG.timer=null; VPNG.n++; secGate('recheck').then(function(){ if(VPNG.blocked) vpnSchedule(); }); },d);
+}
+function vpnRetryNow(){
+  VPNG.n=0; if(VPNG.timer){ clearTimeout(VPNG.timer); VPNG.timer=null; }
+  var b=document.getElementById('vb-b'); if(b){ b.disabled=true; setTimeout(function(){ b.disabled=false; },1500); }
+  secGate('recheck').then(function(){ if(VPNG.blocked) vpnSchedule(); });
+}
+/* kind: open | login | signup | recheck. يرجع {ok,blocked}. أي فشل = السماح (لا نحجب بسبب عطل). */
+function secGate(kind){
+  if(VPNG.busy) return VPNG.busy;
+  var p=(async function(){
+    try{
+      if(!SRV.cfg()) return {ok:false};
+      if(kind==='open'){ try{ if(!document.documentElement.classList.contains('vpn-blk') && Date.now()-Number(localStorage.getItem('pl-vpn-ok')||0)<10*60000) return {ok:true,blocked:false,cached:true}; }catch(e){} }
+      var tk=''; try{ tk=await RealAuth.tok(); }catch(e){}
+      var ctl=(typeof AbortController!=='undefined')?new AbortController():null; var tm=setTimeout(function(){ try{ if(ctl) ctl.abort(); }catch(e){} },7000);
+      var r=await fetch(RealAuth.base()+'/functions/v1/rapid-service?e='+encodeURIComponent(kind||'open')+'&d='+encodeURIComponent(secDevId()),{headers:{'apikey':RealAuth.key(),'Authorization':'Bearer '+(tk||RealAuth.key())},signal:ctl?ctl.signal:undefined,cache:'no-store'});
+      clearTimeout(tm);
+      var j=await r.json().catch(function(){ return null; });
+      VPNG.at=Date.now();
+      if(j&&j.ok===true){
+        if(j.blocked){ vpnBlockedNow(); }
+        else { try{ localStorage.setItem('pl-vpn-ok',String(Date.now())); }catch(e){} if(VPNG.blocked||document.documentElement.classList.contains('vpn-blk')) vpnUnblocked(); }
+        return j;
+      }
+      if(!VPNG.confirmed && document.documentElement.classList.contains('vpn-blk')) vpnUnblocked();   /* فشل الفحص والحجب غير مؤكَّد في هذه الجلسة → السماح */
+      return {ok:false};
+    }catch(e){ if(!VPNG.confirmed && document.documentElement.classList.contains('vpn-blk')) vpnUnblocked(); return {ok:false}; }
+  })();
+  VPNG.busy=p; var clr=function(){ if(VPNG.busy===p) VPNG.busy=null; }; p.then(clr,clr); return p;
+}
+window.secGate=secGate;
+window.secOnApiBlock=function(code){
+  try{
+    if(code==='vpn_blocked'){ if(!VPNG.blocked) vpnBlockedNow(); }
+    else if(code==='task_hold'){ var t=Date.now(); if(t-(window.__holdToast||0)>8000){ window.__holdToast=t;
+      toast(L('⏸️ تم تعليق المهام مؤقتاً لمراجعة حسابك. رصيدك محفوظ، وتواصل مع الدعم إن كان هذا خطأً.','⏸️ Tasks are temporarily paused while your account is reviewed. Your balance is safe.','⏸️ Tâches suspendues temporairement pour vérification. Votre solde est intact.')); } }
+  }catch(e){}
+};
+window.addEventListener('online',function(){ try{ if(document.documentElement.classList.contains('vpn-blk')) vpnRetryNow(); else if(Date.now()-VPNG.at>60000) secGate('recheck'); }catch(e){} });
+document.addEventListener('visibilitychange',function(){ try{ if(document.hidden) return; if(document.documentElement.classList.contains('vpn-blk')) vpnRetryNow(); else if(Date.now()-VPNG.at>5*60000) secGate('recheck'); }catch(e){} });
+setInterval(function(){ try{ if(!document.hidden && navigator.onLine!==false && Date.now()-VPNG.at>14*60000) secGate('recheck'); }catch(e){} },60000);
+setTimeout(function(){ try{ vpnPaint(); secGate('open'); }catch(e){} },400);
+
+/* ===== مركز الأمان للمدير: إشعارات محفوظة في قاعدة البيانات + حوادث + مراجعة (لا يلمس أي رصيد) ===== */
+var SC_F={status:'',risk:''}, ADM_SC_E=null, SC_POLL={n:-1,busy:false};
+var SC_KIND={vpn_confirmed:'اتصال VPN/Proxy/Tor مؤكد',vpn_suspect:'اتصال مشتبه به',country_change:'تغيّر الدولة',multi_account:'حسابات متعددة',bot:'Bot / أداة آلية',task_hold:'تعليق مهام مؤقت',provider_error:'خطأ خدمة الفحص',admin_action:'إجراء مدير'};
+var SC_THREAT={vpn:'VPN',proxy:'Proxy',tor:'Tor',hosting:'مركز بيانات',relay:'Private Relay',mixed:'VPN/Proxy',country:'تغيّر دولة',multi:'حسابات متعددة',bot:'Bot',hold:'تعليق',quota:'انتهاء الحصة',auth:'مفتاح غير صالح',timeout:'مهلة',http:'خطأ شبكة',parse:'رد غير مفهوم'};
+var SC_RISK={low:'منخفض',medium:'متوسط',high:'مرتفع',critical:'خطير'};
+var SC_ACT={blocked:'تم منع الدخول',logged_only:'سُجّلت فقط (تجربة)',review:'قيد المراجعة',task_hold:'مهام معلّقة',none:'—',allow:'سماح',confirm:'تأكيد',dismiss:'إنذار كاذب',reopen:'إعادة فتح',lift_hold:'رفع التعليق',setting:'تغيير إعداد'};
+var SC_ST={'new':'جديد',reviewed:'تمت المراجعة',confirmed:'مؤكد',dismissed:'مُتجاهَل'};
+function scRisk(r){ return '<span class="sc-r '+esc(r||'low')+'">'+esc(SC_RISK[r]||r||'')+'</span>'; }
+function scUa(ua){ ua=String(ua||''); var os=/Android/i.test(ua)?'Android':/iPhone|iPad|iOS/i.test(ua)?'iOS':/Windows/i.test(ua)?'Windows':/Mac OS/i.test(ua)?'macOS':/Linux/i.test(ua)?'Linux':'';
+  var br=/Edg\//.test(ua)?'Edge':/OPR\/|Opera/.test(ua)?'Opera':/Firefox/.test(ua)?'Firefox':/SamsungBrowser/.test(ua)?'Samsung':/Chrome|CriOS/.test(ua)?'Chrome':/Safari/.test(ua)?'Safari':'';
+  return (os||br)?(os+(os&&br?' · ':'')+br):(ua.slice(0,34)||'—'); }
+function scWho(x){ return esc(x.full_name||x.email||(x.uid||x.user_id?'مستخدم':'زائر (غير مسجّل)')); }
+function scAgo(t){ var m=Math.max(0,Math.round((Date.now()-new Date(t).getTime())/60000)); return 'منذ '+(m<1?'لحظات':m<60?(m+' د'):m<1440?(Math.round(m/60)+' س'):(Math.round(m/1440)+' يوم')); }
+function scLeft(t){ var m=Math.round((new Date(t).getTime()-Date.now())/60000); return m<=0?'انتهى':m<60?(m+' د'):m<2880?(Math.round(m/60)+' س'):(Math.round(m/1440)+' يوم'); }
+
+function secBadge(n){ try{ var b=document.querySelector('.atb[data-t="fraud"]'); if(!b) return; b.innerHTML='🛡️ '+L('الحماية','Protection','Protection')+(n>0?'<b class="atb-n">'+(n>99?'99+':n)+'</b>':''); }catch(e){} }
+function secAdminPoll(){
+  try{
+    if(SC_POLL.busy||document.hidden||!SRV.on()||!isAdmin()) return; SC_POLL.busy=true;
+    Promise.resolve(SRV.rpc('admin_sec_unread',{})).then(function(r){
+      SC_POLL.busy=false; if(!r||typeof r.n!=='number') return;
+      secBadge(r.n);
+      if(SC_POLL.n>=0&&r.n>SC_POLL.n&&r.latest){ toast('🛡️ '+(r.latest.title||'حادث أمني جديد')); try{ if(ADM_TAB==='fraud'&&!ADM_SC_E) renderAdmFraud(true); }catch(e){} }
+      SC_POLL.n=r.n;
+    }).catch(function(){ SC_POLL.busy=false; });
+  }catch(e){ SC_POLL.busy=false; }
+}
+setInterval(secAdminPoll,60000); setTimeout(secAdminPoll,6000);
+
+function secCenterHtml(){
+  const sc=ADM_FR&&ADM_FR.sc;
+  if(!sc||!sc.ov||!sc.ov.cfg) return '<div class="hl-al warn">🛡️ مركز الأمان غير مفعّل بعد: شغّل ملفات 110a ثم 110b ثم 110c في Supabase (SQL Editor) وانشر دالة vpn-gate.</div>';
+  const o=sc.ov, c=o.cfg, f=function(n){ return Number(n||0).toLocaleString('en-US'); }, nb=o.new_by_risk||{};
+  secBadge(o.unread|0);
+  const mb=function(v,t,cl){ return '<button class="'+cl+(c.vpn_mode===v?' on':'')+'" onclick="scMode(\''+v+'\')">'+t+'</button>'; };
+  const modeNote=c.vpn_mode==='enforce'?'🔴 حجب فعلي: يُمنع من الدخول كل من تؤكد الخدمة أنه VPN/Proxy/Tor (عدا القائمة البيضاء والمدراء).':c.vpn_mode==='log'?'🟡 وضع التجربة: يُسجَّل ويصلك إشعار ولا يُحجب أحد. راجع الحوادث ثم فعّل الحجب.':'⚪ متوقف: لا فحص ولا حجب.';
+  const chips=['🔎 فحوص اليوم '+f(o.checks_today)+' / '+f(o.cap), o.beat?('📡 آخر نبضة للبوابة '+scAgo(o.beat)):'📡 البوابة لم تعمل بعد (انشر دالة vpn-gate)', o.last_error?('⚠️ آخر خطأ للخدمة: '+esc(SC_THREAT[o.last_error.error]||o.last_error.error)+' · '+scAgo(o.last_error.at)):'']
+    .filter(Boolean).map(function(t){ return '<span class="sc-chip">'+t+'</span>'; }).join('');
+  const card=function(v,t,cl){ return '<div class="adm-card '+(cl||'')+'"><b>'+f(v)+'</b><span>'+t+'</span></div>'; };
+  const cards='<div class="hl-cards">'+card(nb.critical,'🔴 خطير (جديد)','warn')+card(nb.high,'🟠 مرتفع (جديد)','warn')+card(nb.medium,'🟡 متوسط (جديد)','gold')+card(nb.low,'🟢 منخفض (جديد)')+
+    card(o.blocked_24h,'منع الدخول 24س')+card(o.logged_24h,'سُجّلت فقط 24س')+card(o.review_new,'قيد المراجعة','gold')+card(o.holds,'مهام معلّقة الآن','warn')+'</div>';
+  const nrow=function(n){ return '<div class="in-row sc-n'+(n.read_at?'':' unread')+'" onclick="scOpen('+(n.event_id|0)+','+(n.id|0)+')"><div><b>'+esc(n.title)+'</b><em>'+esc(n.body||'')+' · '+scAgo(n.at)+'</em></div>'+scRisk(n.risk)+'</div>'; };
+  const nt=(sc.nt||[]).map(nrow).join('')||'<div class="up-em">لا إشعارات بعد</div>';
+  const erow=function(e){ const who=e.uid?scWho(e):'زائر (غير مسجّل)';
+    return '<div class="in-row" onclick="scOpen('+(e.id|0)+',0)"><div><b>'+esc(SC_KIND[e.kind]||e.kind)+(e.threat&&e.kind!=='admin_action'?' · '+esc(SC_THREAT[e.threat]||e.threat):'')+'</b>'+
+      '<em>'+who+(e.ip?' · <span dir="ltr">'+esc(e.ip)+'</span>':'')+(e.country?' · '+esc(e.country):'')+' · '+esc(scUa(e.ua))+' · '+scAgo(e.at)+(e.hits>1?' · ×'+e.hits:'')+'</em>'+
+      '<small>'+esc(SC_ACT[e.action]||e.action||'')+' · '+esc(SC_ST[e.status]||e.status)+'</small></div>'+scRisk(e.risk)+'</div>'; };
+  const ev=(sc.ev||[]).map(erow).join('')||'<div class="up-em">لا حوادث بهذا الفلتر</div>';
+  const opt=function(v,t,cur){ return '<option value="'+v+'"'+(cur===v?' selected':'')+'>'+t+'</option>'; };
+  const filt='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px"><select class="sc-sel" onchange="scFilter(\'status\',this.value)">'+opt('','كل الحالات',SC_F.status)+opt('new','جديد',SC_F.status)+opt('confirmed','مؤكد',SC_F.status)+opt('dismissed','مُتجاهَل',SC_F.status)+opt('reviewed','تمت المراجعة',SC_F.status)+
+    '</select><select class="sc-sel" onchange="scFilter(\'risk\',this.value)">'+opt('','كل المستويات',SC_F.risk)+opt('critical','خطير',SC_F.risk)+opt('high','مرتفع',SC_F.risk)+opt('medium','متوسط',SC_F.risk)+opt('low','منخفض',SC_F.risk)+'</select></div>';
+  const hd=(sc.hd||[]).map(function(h){ return '<div class="in-row" style="cursor:default"><div><b>'+esc(h.full_name||h.email||'—')+'</b><em>ينتهي بعد '+scLeft(h.until)+' · '+(h.event_id?'<a href="#" onclick="scOpen('+(h.event_id|0)+',0);return false">الحادثة</a>':'')+'</em></div><button class="btn sc-btn" onclick="scLift(\''+esc(h.id)+'\')">رفع التعليق</button></div>'; }).join('')||'<div class="up-em">لا مهام معلّقة</div>';
+  const al=(sc.al||[]).map(function(a){ return '<div class="in-row" style="cursor:default"><div><b dir="ltr">'+(a.kind==='ip'?esc(a.value):esc(a.full_name||a.email||a.value))+'</b><em>'+(a.kind==='ip'?'IP':'مستخدم')+(a.note?' · '+esc(a.note):'')+' · '+scAgo(a.created_at)+'</em></div><button class="btn sc-btn" onclick="scAllowDel('+(a.id|0)+')">حذف</button></div>'; }).join('')||'<div class="up-em">القائمة فارغة (المدراء مستثنون دائماً)</div>';
+  const ac=(sc.ac||[]).map(function(a){ const d=a.evidence||{}; return '<div class="in-row" style="cursor:default"><div><b>'+esc(a.kind==='admin_action'?('مدير: '+(SC_ACT[a.action]||a.action)):(SC_KIND[a.kind]||a.kind)+' — '+(SC_ACT[a.action]||a.action))+'</b><em>'+(a.full_name||a.email?esc(a.full_name||a.email)+' · ':'')+(a.ip?'<span dir="ltr">'+esc(a.ip)+'</span> · ':'')+(d.key?esc(d.key)+' · ':'')+scAgo(a.at)+'</em></div></div>'; }).join('')||'<div class="up-em">—</div>';
+  const tg=function(k,t){ return '<label class="fr-set"><span>'+t+'</span><input type="checkbox" '+(c[k]?'checked':'')+' onchange="scSet(\''+k+'\',this.checked)"></label>'; };
+  const nm=function(k,t,mn,mx){ return '<label class="fr-set"><span>'+t+'</span><input type="number" min="'+mn+'" max="'+mx+'" value="'+esc(String(c[k]))+'" onchange="scSet(\''+k+'\',Number(this.value))"></label>'; };
+  return '<div class="up-box"><div class="up-h">🛡️ مركز الأمان — كشف VPN/Proxy/Tor والغش</div>'+
+      '<div class="sc-seg">'+mb('off','إيقاف','off')+mb('log','تجربة (تسجيل فقط)','')+mb('enforce','حجب فعلي','enf')+'</div>'+
+      '<div class="up-note">'+modeNote+'</div><div>'+chips+'</div></div>'+cards+
+    '<div class="up-box"><div class="up-h">🔔 إشعارات الأمان (محفوظة) '+(o.unread>0?'<span class="sc-r high">'+(o.unread|0)+' جديد</span>':'')+
+      (o.unread>0?'<button class="btn sc-btn" style="margin-inline-start:auto" onclick="scMarkAll()">تحديد الكل كمقروء</button>':'')+'</div>'+nt+'</div>'+
+    '<div class="up-box"><div class="up-h">🚨 الحوادث الأمنية</div>'+filt+ev+'</div>'+
+    '<div class="up-box"><div class="up-h">⏸️ مهام معلّقة مؤقتاً (اشتباه قوي)</div>'+hd+'<div class="up-note">التعليق للمهام فقط: لا خصم أرباح ولا حظر، والسحب والرصيد يعملان. ينتهي تلقائياً أو ترفعه أنت.</div></div>'+
+    '<div class="up-box"><details class="sc-d"><summary>✅ القائمة البيضاء (لا تُحجب أبداً) · '+(o.allow_n|0)+'</summary>'+al+
+      '<div style="display:flex;gap:6px;margin-top:8px"><select class="sc-sel" id="sc-al-k"><option value="ip">IP</option><option value="user">معرّف مستخدم</option></select><input class="sc-in" style="margin-top:0" id="sc-al-v" placeholder="IP أو معرّف المستخدم" dir="ltr"><button class="btn sc-btn" onclick="scAllowAdd()">إضافة</button></div></details></div>'+
+    '<div class="up-box"><details class="sc-d"><summary>📜 سجل الإجراءات (ما فعله النظام وما فعلته أنت)</summary>'+ac+'</details></div>'+
+    '<div class="up-box"><details class="sc-d"><summary>⚙️ إعدادات الكشف والحجب</summary>'+
+      tg('vpn_block_hosting','اعتبار مراكز البيانات (Datacenter) اتصالاً مؤكداً')+tg('vpn_block_relay','حجب iCloud Private Relay (غير مستحسن)')+tg('auto_hold','تعليق المهام عند اشتباه قوي من عدة مؤشرات')+
+      nm('vpn_cache_hours','مدة تذكّر نتيجة كل IP (ساعات)',1,168)+nm('vpn_risk_suspect','درجة خطر الخدمة التي تعني «مشتبه به»',10,100)+nm('hold_hours','مدة تعليق المهام (ساعات)',1,720)+nm('vpn_beat_min','فتح الدخول تلقائياً إن توقفت البوابة (دقائق)',5,240)+
+      '<label class="fr-set"><span>الحد اليومي لفحوص الخدمة</span><input type="number" min="0" max="50000" value="'+esc(String(c.intel_daily_cap))+'" onchange="admFrSet(\'intel_daily_cap\',Number(this.value))"></label>'+
+      '<div style="display:flex;gap:6px;margin-top:10px"><input class="sc-in" style="margin-top:0" id="sc-probe" placeholder="اختبر IP عبر الخدمة (مثال 8.8.8.8)" dir="ltr"><button class="btn sc-btn" onclick="scProbe()">اختبار</button></div><div class="up-note" id="sc-probe-out"></div></details></div>';
+}
+
+async function scLoad(){
+  const g=function(n,a){ return Promise.resolve(SRV.rpc(n,a)).catch(function(){ return null; }); };
+  const a=await Promise.all([g('admin_sec_overview',{}),g('admin_sec_events',{p_status:SC_F.status||null,p_risk:SC_F.risk||null,p_limit:40,p_before:null}),g('admin_sec_notifs',{p_limit:15}),g('admin_sec_holds',{}),g('admin_sec_allow_list',{}),g('admin_sec_actions',{p_limit:30})]);
+  if(!a[0]||!a[0].cfg) return null;
+  return {ov:a[0],ev:Array.isArray(a[1])?a[1]:[],nt:Array.isArray(a[2])?a[2]:[],hd:Array.isArray(a[3])?a[3]:[],al:Array.isArray(a[4])?a[4]:[],ac:Array.isArray(a[5])?a[5]:[]};
+}
+function scRefresh(){ ADM_FR_AT=0; try{ if(ADM_TAB==='fraud') renderAdmFraud(true); }catch(e){} try{ secAdminPoll(); }catch(e){} }
+function scFilter(k,v){ SC_F[k]=v; scRefresh(); }
+async function scSet(k,v){
+  try{ const r=await SRV.rpc('admin_sec_set',{p_key:k,p_value:v});
+    if(r&&r.ok){ toast('✅ تم الحفظ'); } else toast('قيمة غير صالحة'); }catch(e){ toast('تعذّر الحفظ'); }
+  scRefresh();
+}
+function scMode(v){
+  if(v==='enforce'){ ntfConfirm('تفعيل الحجب الفعلي','سيُمنع من الدخول كل من تؤكد الخدمة أنه يستخدم VPN أو Proxy أو Tor (عدا المدراء والقائمة البيضاء). هل راجعت نتائج وضع التجربة أولاً؟','تفعيل الحجب',true,function(){ scSet('vpn_mode',v); }); return; }
+  scSet('vpn_mode',v);
+}
+async function scMarkAll(){ try{ await SRV.rpc('admin_sec_mark_read',{p_ids:null}); }catch(e){} SC_POLL.n=0; scRefresh(); }
+async function scLift(uid){ try{ const r=await SRV.rpc('admin_sec_lift_hold',{p_user:uid,p_note:''}); toast(r&&r.ok?'✅ رُفع التعليق':'تعذّر'); }catch(e){} scRefresh(); }
+async function scAllowAdd(){
+  const k=(document.getElementById('sc-al-k')||{}).value, v=((document.getElementById('sc-al-v')||{}).value||'').trim(); if(!v) return;
+  try{ const r=await SRV.rpc('admin_sec_allow_add',{p_kind:k,p_value:v,p_note:null}); toast(r&&r.ok?'✅ أُضيف':(r&&r.why==='bad_ip'?'IP غير صالح':'معرّف غير صالح')); }catch(e){ toast('تعذّر'); }
+  scRefresh();
+}
+async function scAllowDel(id){ try{ await SRV.rpc('admin_sec_allow_del',{p_id:id}); toast('تم الحذف'); }catch(e){} scRefresh(); }
+async function scProbe(){
+  const el=document.getElementById('sc-probe-out'), v=((document.getElementById('sc-probe')||{}).value||'').trim(); if(!el||!v) return;
+  el.textContent='⏳ …';
+  try{
+    const tk=await RealAuth.tok();
+    const r=await fetch(RealAuth.base()+'/functions/v1/rapid-service?probe='+encodeURIComponent(v),{headers:{'apikey':RealAuth.key(),'Authorization':'Bearer '+tk},cache:'no-store'});
+    const j=await r.json().catch(function(){ return null; });
+    if(!j||!j.ok){ el.textContent='تعذّر الاختبار (انشر دالة vpn-gate وتأكد أنك مدير)'; return; }
+    if(!j.probe){ el.textContent='فشل الفحص: '+(SC_THREAT[j.err]||j.err||'؟')+(j.keyed?'':' — لا يوجد مفتاح PROXYCHECK_KEY (الحد 100 يومياً)'); return; }
+    const p=j.probe; const y=function(b){ return b?'نعم':'لا'; };
+    el.textContent='VPN: '+y(p.vpn)+' · Proxy: '+y(p.proxy)+' · Tor: '+y(p.tor)+' · مركز بيانات: '+y(p.hosting)+' · Relay: '+y(p.relay)+' · خطر: '+(p.risk==null?'—':p.risk)+' · النوع: '+(p.type||'—')+' · المزوّد: '+(p.provider||'—')+' · الدولة: '+(p.country||'—')+(j.keyed?'':' · (بلا مفتاح)');
+  }catch(e){ el.textContent='تعذّر الاختبار'; }
+}
+
+async function scOpen(eid,nid){
+  if(!eid) return;
+  ADM_SC_E={id:eid,d:null}; renderSecEvent();
+  try{ if(nid) SRV.rpc('admin_sec_mark_read',{p_ids:[nid]}); }catch(e){}
+  try{ const d=await SRV.rpc('admin_sec_event',{p_id:eid}); if(ADM_SC_E&&ADM_SC_E.id===eid&&d&&d.ok) ADM_SC_E.d=d; }catch(e){}
+  if(ADM_SC_E&&ADM_TAB==='fraud') renderSecEvent();
+  setTimeout(function(){ try{ secAdminPoll(); }catch(e){} },800);
+}
+function scBack(){ ADM_SC_E=null; scRefresh(); }
+function scToAcct(uid){ ADM_SC_E=null; admFrOpen(uid); }
+async function scReview(act){
+  if(!ADM_SC_E) return; const id=ADM_SC_E.id, note=((document.getElementById('sc-note')||{}).value||'').trim();
+  const go=async function(){
+    try{ const r=await SRV.rpc('admin_sec_review',{p_id:id,p_action:act,p_note:note||null});
+      toast(r&&r.ok?'✅ تم تسجيل قرارك':'تعذّر الحفظ'); }catch(e){ toast('تعذّر الحفظ'); }
+    ADM_FR_AT=0; scOpen(id,0);
+  };
+  if(act==='allow') ntfConfirm('إعادة السماح','سيُرفع التعليق (إن وُجد) ويُستثنى هذا المستخدم/الـIP من الحجب مستقبلاً حتى تحذفه من القائمة البيضاء.','إعادة السماح',false,go); else go();
+}
+function renderSecEvent(){
+  const box=document.getElementById('adm-body'); if(!box||!ADM_SC_E) return;
+  const back='<button class="btn sc-btn" onclick="scBack()">← رجوع</button>';
+  const D=ADM_SC_E.d; if(!D){ box.innerHTML='<div class="hl-wrap adm-pad">'+back+'<div class="adm-empty">⏳</div></div>'; return; }
+  const e=D.event, ev=e.evidence||{}, it=D.intel, pr=D.profile, rk=D.risk, hd=D.hold;
+  const kv=function(a){ return '<div class="sc-kv">'+a.filter(function(x){ return x[1]!=null&&x[1]!==''; }).map(function(x){ return '<i>'+x[0]+'</i><span>'+x[1]+'</span>'; }).join('')+'</div>'; };
+  const yn=function(b){ return b?'<b style="color:#f87171">نعم</b>':'لا'; };
+  const why={vpn_confirmed:'أكدت خدمة الكشف أن هذا الـIP يعود إلى VPN أو Proxy أو Tor أو مركز بيانات.',vpn_suspect:'الخدمة لم تؤكد، لكن درجة خطر الـIP مرتفعة أو نوعه مشبوه. لم يُحجب أحد؛ القرار لك.',
+    country_change:'ظهر الحساب من أكثر من دولة خلال 7 أيام. قد يكون سفراً حقيقياً أو VPN، ولا يُحجب بسببه وحده.',multi_account:'مؤشرات حسابات متعددة: نفس الـIP أو الجهاز أو موجة تسجيل.',
+    bot:'الطلب جاء بأداة آلية أو متصفح بلا واجهة (Headless) أو بلا User-Agent.',task_hold:'اشتباه قوي من عدة مؤشرات مستقلة علّق المهام مؤقتاً. لا خصم ولا حظر.',provider_error:'مشكلة في خدمة الفحص نفسها؛ الدخول مسموح للجميع إلى أن تُحلّ.'}[e.kind]||'';
+  const intel=it?kv([['نتيجة الخدمة','VPN: '+yn(it.vpn)+' · Proxy: '+yn(it.proxy)+' · Tor: '+yn(it.tor)+' · مركز بيانات: '+yn(it.hosting)+' · Relay: '+yn(it.relay)],['درجة الخطر',it.risk==null?'—':it.risk+' / 100'],['النوع',esc(it.type||'—')],['المزوّد',esc(it.provider||'—')],['دولة الـIP',esc(it.country||'—')],['وقت الفحص',scAgo(it.checked_at)]]):'<div class="up-em">لا نتيجة محفوظة لهذا الـIP</div>';
+  const hist=(D.history||[]).map(function(h){ return '<div class="in-row" onclick="scOpen('+(h.id|0)+',0)"><div><b>'+esc(SC_KIND[h.kind]||h.kind)+'</b><em>'+(h.ip?'<span dir="ltr">'+esc(h.ip)+'</span> · ':'')+scAgo(h.at)+' · '+esc(SC_ACT[h.action]||h.action||'')+'</em></div>'+scRisk(h.risk)+'</div>'; }).join('')||'<div class="up-em">لا حوادث أخرى مرتبطة</div>';
+  const holdOn=hd&&!hd.lifted_at&&new Date(hd.until).getTime()>Date.now();
+  box.innerHTML='<div class="hl-wrap adm-pad">'+back+
+    '<div class="up-box"><div class="up-h">'+scRisk(e.risk)+' '+esc(SC_KIND[e.kind]||e.kind)+(e.threat&&e.kind!=='admin_action'?' · '+esc(SC_THREAT[e.threat]||e.threat):'')+'</div>'+(why?'<div class="up-note">'+esc(why)+'</div>':'')+
+      kv([['الحالة',esc(SC_ST[e.status]||e.status)],['إجراء النظام',esc(SC_ACT[e.action]||e.action||'—')],['الوقت',new Date(e.at).toLocaleString()],['تكرّر',(ev.hits>1?'×'+ev.hits:'مرة واحدة')],['المستخدم',pr?esc(pr.full_name||pr.email||'—')+(pr.blocked?' 🚫':''):'زائر غير مسجّل'],['IP',e.ip?'<span dir="ltr">'+esc(e.ip)+'</span>':''],['الدولة',esc(e.country||'')],['الجهاز',esc(scUa(e.ua))+(e.device?' · '+esc(String(e.device).slice(0,8)):'')],['وضع الكشف',esc(ev.mode||'')],['القائمة البيضاء',D.allowed?'نعم (مستثنى)':'لا']])+
+      (e.note?'<div class="up-note">ملاحظتك: '+esc(e.note)+'</div>':'')+'</div>'+
+    '<div class="up-box"><div class="up-h">🔎 الأدلة ونتيجة خدمة الكشف</div>'+intel+'</div>'+
+    (rk?'<div class="up-box"><div class="up-h">🧠 أسباب تصنيف الحساب</div>'+riskPill(rk.score)+frReasons(rk.reasons)+'</div>':'')+
+    (hd?'<div class="up-box"><div class="up-h">⏸️ تعليق المهام</div>'+kv([['الحالة',holdOn?'<b style="color:#f87171">معلّقة حتى '+new Date(hd.until).toLocaleString()+'</b>':(hd.lifted_at?'رُفع التعليق':'انتهى')],['السبب',esc(hd.reason||'')],['بواسطة',esc(hd.by||'')]])+(holdOn?'<div class="sc-act"><button class="btn sc-btn" onclick="scLift(\''+esc(pr&&pr.id||e.user_id)+'\')">رفع التعليق الآن</button></div>':'')+'</div>':'')+
+    '<div class="up-box"><div class="up-h">🧾 قرارك</div><input class="sc-in" id="sc-note" maxlength="300" placeholder="ملاحظة (اختياري)">'+
+      '<div class="sc-act"><button class="btn sc-btn" onclick="scReview(\'confirm\')">✅ تأكيد الحادثة</button><button class="btn sc-btn" onclick="scReview(\'dismiss\')">❌ إنذار كاذب</button><button class="btn sc-btn" onclick="scReview(\'allow\')">🔓 إعادة السماح</button>'+(e.status!=='new'?'<button class="btn sc-btn" onclick="scReview(\'reopen\')">↩️ إعادة فتح</button>':'')+
+      (e.user_id?'<button class="btn sc-btn" onclick="scToAcct(\''+esc(e.user_id)+'\')">👤 الحساب والـIP</button>':'')+'</div>'+
+      '<div class="up-note">لا شيء هنا يخصم أرباحاً أو يغيّر رصيداً. «تأكيد» يُبقي القرار كما هو، و«إنذار كاذب» يسجّله فقط، و«إعادة السماح» يرفع التعليق ويستثني صاحبه من الحجب.</div></div>'+
+    '<div class="up-box"><div class="up-h">🕘 حوادث مرتبطة بنفس الحساب/الـIP</div>'+hist+'</div></div>';
+}
 
 /* ===== VIP: حالة المستخدم، الصفحة، الشراء ===== */
 var VIP={enabled:false,active:false,exp:null,plans:[],ok:false,at:0}, VIP_BUSY=false, VIP_ACT=false, VIP_SEL='', VIP_MODE='', VIP_METHOD='', VIP_NONCE='', VIP_MSG='';
@@ -9966,19 +10246,21 @@ function pdHtml(d,adm){
   var tot=Number(d.total||0), act=Number(d.active||0), ina=Math.max(0,tot-act), pct=tot?Math.round(100*act/tot):0;
   var bal=Number(d.balance||0), mn=Number(d.min_withdraw||5), wp=Math.max(0,Math.min(100,Math.round(100*bal/mn)));
   var link=d.ref_code?inviteLink(d.ref_code):'', inv=Array.isArray(d.invitees)?d.invitees:[];
+  var rt=Math.round(100*Number(d.rate||0.15)), ser=Array.isArray(d.series)?d.series:[];
   var h='<div class="pd">';
   if(adm) h+='<div class="pd-adm">👁 '+L('هذا بالضبط ما يراه الناشر في صفحته','This is exactly what the creator sees','Exactement ce que voit le créateur')+'</div>';
   h+='<div class="pd-hero"><div class="pd-orb"></div><div class="pd-tag">✦ '+L('برنامج الشركاء','Partner program','Programme partenaires')+'</div>'+
      '<h2>'+L('مرحبًا بك في شركاء PayLoop','Welcome to PayLoop Partners','Bienvenue chez PayLoop Partners')+'</h2>'+
      '<div class="pd-nm">'+esc(d.name||'')+'<span class="pub-badge">'+L('شريك ناشر','Creator partner','Partenaire')+'</span></div>'+
-     '<p>'+L('أنت تعمل معنا كشريك رسمي. ادعُ جمهورك عبر رابطك الخاص واربح عمولة 10% من أرباح كل من ينضم عبرك، وتُضاف لرصيدك تلقائيًا.','You work with us as an official partner. Invite your audience with your personal link and earn a 10% commission on everything each person earns.','Vous êtes partenaire officiel. Invitez votre audience avec votre lien et gagnez 10 % de leurs gains.')+'</p></div>';
+     '<p>'+L('أنت تعمل معنا كشريك رسمي. ادعُ جمهورك عبر رابطك الخاص واربح عمولة '+rt+'% من أرباح كل من ينضم عبرك، وتُضاف إلى رصيدك تلقائيًا.','You work with us as an official partner. Invite your audience with your personal link and earn a '+rt+'% commission on everything each person earns.','Vous êtes partenaire officiel. Invitez votre audience avec votre lien et gagnez '+rt+'% de leurs gains.')+'</p></div>';
   h+='<div class="pd-grid">'+
      '<div class="pd-c"><i>👥</i><b>'+f(tot)+'</b><span>'+L('إجمالي المدعوين','Total invited','Total invités')+'</span></div>'+
      '<div class="pd-c ok"><i>✅</i><b>'+f(act)+'</b><span>'+L('أنجزوا مهمة','Completed a task','Ont fait une tâche')+'</span></div>'+
      '<div class="pd-c wr"><i>⏳</i><b>'+f(ina)+'</b><span>'+L('لم ينجزوا شيئًا','Did nothing yet','Rien fait')+'</span></div>'+
      '<div class="pd-c gold"><i>💰</i><b>'+pdM(d.earned)+'</b><span>'+L('أرباحك من دعواتك','Your invite earnings','Vos gains')+'</span></div></div>';
   h+='<div class="pd-card"><div class="pd-row"><b>'+L('نسبة التفعيل','Activation rate','Taux d’activation')+'</b><span>'+pct+'%</span></div><div class="pd-bar"><i style="width:'+pct+'%"></i></div>'+
-     '<div class="pd-mini"><span>🆕 '+f(d.new24)+' '+L('اليوم','today','aujourd’hui')+'</span><span>📅 '+f(d.new7)+' '+L('هذا الأسبوع','this week','cette semaine')+'</span><span>💵 '+pdM(d.earned7)+' / 7 '+L('أيام','days','j')+'</span><span>📈 '+pdM(d.earned30)+' / 30 '+L('يومًا','days','j')+'</span></div></div>';
+     '<div class="pd-mini"><span>🆕 '+f(d.new24)+' '+L('اليوم','today','aujourd’hui')+'</span><span>📅 '+f(d.new7)+' '+L('هذا الأسبوع','this week','cette semaine')+'</span><span>☀️ '+pdM(d.earned_today)+' '+L('أرباح اليوم','earned today','gagné aujourd’hui')+'</span><span>💵 '+pdM(d.earned7)+' / 7 '+L('أيام','days','j')+'</span><span>📈 '+pdM(d.earned30)+' / 30 '+L('يومًا','days','j')+'</span><span>🏷 '+L('نسبتك','Your rate','Votre taux')+' '+rt+'%</span></div></div>';
+  if(ser.length){ var mx=Math.max.apply(null,ser.map(function(s){ return Number(s.e)||0; }).concat([0.0001])); h+='<div class="pd-card"><div class="pd-row"><b>📊 '+L('أرباحك آخر 14 يومًا','Your earnings, last 14 days','Vos gains sur 14 jours')+'</b><span>'+pdM(ser.reduce(function(a,s){ return a+(Number(s.e)||0); },0))+'</span></div><div class="pd-spark">'+ser.map(function(s){ var e=Number(s.e)||0, hgt=e>0?Math.max(6,Math.round(100*e/mx)):3; return '<div class="pd-sb" title="'+esc(s.d)+' — '+pdM(e)+' · +'+(Number(s.n)||0)+'"><i class="'+(e>0?'on':'')+'" style="height:'+hgt+'%"></i><small>'+esc(String(s.d).slice(8))+'</small></div>'; }).join('')+'</div></div>'; }
   h+='<div class="pd-card"><div class="pd-row"><b>💳 '+L('رصيدك','Your balance','Votre solde')+'</b><span class="pd-bal">'+pdM(bal)+'</span></div>'+
      '<div class="pd-row sm"><span>'+L('الحد الأدنى للسحب','Minimum withdrawal','Retrait minimum')+'</span><b dir="ltr">'+pdM(mn)+'</b></div><div class="pd-bar gold"><i style="width:'+wp+'%"></i></div>'+
      '<div class="pd-row sm"><span>'+L('تم سحبه','Withdrawn','Retiré')+': <b>'+pdM(d.withdrawn)+'</b></span><span>'+L('قيد المراجعة','Pending','En attente')+': <b>'+pdM(d.pending_wd)+'</b></span></div>'+
@@ -9986,7 +10268,7 @@ function pdHtml(d,adm){
   if(link) h+='<div class="pd-card"><div class="pd-row"><b>🔗 '+L('رابطك الخاص','Your personal link','Votre lien')+'</b></div>'+
      '<div class="pd-link" dir="ltr">'+esc(link)+'</div><div class="pd-row sm"><span>'+L('رمز الدعوة','Invite code','Code')+'</span><b dir="ltr">'+esc(d.ref_code)+'</b></div>'+
      '<div class="pd-acts"><button type="button" class="pd-btn" onclick="pdCopy(\''+esc(link)+'\')">📋 '+L('نسخ الرابط','Copy link','Copier')+'</button><button type="button" class="pd-btn ghost" onclick="pdShare(\''+esc(link)+'\')">📤 '+L('مشاركة','Share','Partager')+'</button></div></div>';
-  h+='<div class="pd-card pd-how"><b>'+L('كيف تربح؟','How it works','Comment ça marche')+'</b><ol><li>'+L('شارك رابطك مع جمهورك.','Share your link with your audience.','Partagez votre lien.')+'</li><li>'+L('كل من يسجّل عبره يظهر في القائمة أدناه.','Everyone who signs up appears below.','Chaque inscrit apparaît ci-dessous.')+'</li><li>'+L('تربح 10% من كل مكافأة يحصل عليها المدعو.','You earn 10% of every reward they receive.','Vous gagnez 10 % de chaque gain.')+'</li></ol></div>';
+  h+='<div class="pd-card pd-how"><b>'+L('كيف تربح؟','How it works','Comment ça marche')+'</b><ol><li>'+L('شارك رابطك مع جمهورك.','Share your link with your audience.','Partagez votre lien.')+'</li><li>'+L('كل من يسجّل عبره يظهر في القائمة أدناه.','Everyone who signs up appears below.','Chaque inscrit apparaît ci-dessous.')+'</li><li>'+L('تربح '+rt+'% من كل مكافأة مهمة يحصل عليها المدعو (بينما يربح المستخدم العادي 5% فقط).','You earn '+rt+'% of every task reward they receive (regular users earn only 5%).','Vous gagnez '+rt+' % de chaque gain de tâche (les utilisateurs normaux 5 %).')+'</li></ol></div>';
   var list=inv.filter(function(x){ return PUBD_F==='all'||(PUBD_F==='act'?x.active:!x.active); });
   h+='<div class="pd-h"><b>👥 '+L('المدعوون','Invited people','Invités')+'</b><span>'+f(inv.length)+'</span></div>'+
      '<div class="pd-flt">'+[['all',L('الكل','All','Tous'),inv.length],['act',L('أنجزوا مهمة','Active','Actifs'),act],['non',L('لم ينجزوا','Inactive','Inactifs'),ina]].map(function(t){ return '<button type="button" class="'+(PUBD_F===t[0]?'on':'')+'" onclick="pdFilter(\''+t[0]+'\')">'+t[1]+' <small>'+f(t[2])+'</small></button>'; }).join('')+'</div>';
@@ -9994,7 +10276,7 @@ function pdHtml(d,adm){
     var nm=x.name||'—';
     return '<div class="pd-p"><div class="pd-av'+(x.active?' ok':'')+'">'+esc(String(nm).charAt(0).toUpperCase())+'</div><div class="pd-pi"><b>'+esc(nm)+'</b><span dir="ltr">'+esc(x.pid||'')+(x.country?' · '+esc(x.country):'')+'</span><small>'+L('انضم','Joined','Inscrit')+' '+esc(pdD(x.joined))+'</small></div>'+
       '<div class="pd-ps"><em class="'+(x.active?'ok':'wr')+'">'+(x.active?'✅ '+L('أنجز '+f(x.tasks)+' مهمة','Did '+f(x.tasks)+' tasks',f(x.tasks)+' tâches'):'⏳ '+L('لم ينجز مهمة','No task yet','Aucune tâche'))+'</em><b>'+pdM(x.earned)+'</b></div></div>';
-  }).join(''):'<div class="up-em">'+(inv.length?L('لا أحد في هذه الفئة','No one in this group','Personne ici'):L('لم يسجّل أحد عبر رابطك بعد — شارك رابطك لتبدأ','No one has joined with your link yet — share it to start','Personne pour l’instant'))+'</div>';
+  }).join('')+(tot>inv.length?'<div class="up-em">'+L('تُعرض آخر '+f(inv.length)+' دعوة من أصل '+f(tot),'Showing the latest '+f(inv.length)+' of '+f(tot),'Affichage des '+f(inv.length)+' derniers sur '+f(tot))+'</div>':''):'<div class="up-em">'+(inv.length?L('لا أحد في هذه الفئة','No one in this group','Personne ici'):L('لم يسجّل أحد عبر رابطك بعد — شارك رابطك لتبدأ','No one has joined with your link yet — share it to start','Personne pour l’instant'))+'</div>';
   return h+'</div>';
 }
 function pdFilter(k){ PUBD_F=k; try{ if(PD_ADM){ if(typeof admPubViewPaint==='function') admPubViewPaint(); } else paintPubDash(); }catch(e){} }
@@ -13130,6 +13412,14 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     if(!ar) return e(raw);
     return e(ar)+'<small dir="ltr" style="display:block;font-size:11px;color:#7f93bb;margin-top:2px;text-align:left">'+e(raw)+'</small>';
   };
+  /* ترتيب مراحل لعبة Offerwall.me: تجميع حسب النوع (بداية/مستويات/نجوم/جواهر/عملات/نقاط/شراء) ثم تصاعديًا بالرقم؛ المتعادل يبقى بترتيب الشبكة */
+  window.plOrderSteps=function(steps){
+    var kind=function(t){ t=String(t||''); if(/purchase|spend|\bbuy\b|شراء|\$|usd|دولار/i.test(t)) return 'buy'; if(/star|نجم/i.test(t)) return 'stars'; if(/\bgem|diamond|جوهر|جواهر|ألماس/i.test(t)) return 'gems'; if(/coin|gold|\bcash\b|عملة|عملات|ذهب/i.test(t)) return 'coins'; if(/point|score|نقاط|نقطة/i.test(t)) return 'points'; if(/level|stage|chapter|world|rank|tier|مستوى|مرحلة|فصل|عالم/i.test(t)) return 'level'; if(/install|download|open|launch|تثبيت|تنزيل|تحميل|فتح/i.test(t)) return 'start'; return 'other'; };
+    var num=function(t){ var m=String(t||'').replace(/(\d),(?=\d{3})/g,'$1').match(/\d+(?:\.\d+)?/); return m?parseFloat(m[0]):0; };
+    var order=['start','level','stars','gems','coins','points','other','buy'], rk={}; order.forEach(function(k,i){ rk[k]=i; });
+    return (steps||[]).map(function(s,i){ var k=kind(s&&s.d); return {s:s,i:i,k:k,n:num(s&&s.d)}; })
+      .sort(function(a,b){ return (rk[a.k]-rk[b.k])||(a.n-b.n)||(a.i-b.i); }).map(function(x){ return x.s; });
+  };
 })();
 
 </script>
@@ -13290,10 +13580,19 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     x.onclick=function(){ ov.classList.remove('on'); try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} try{ if(SRV&&SRV.cycle) SRV.cycle(true); }catch(e){} };
     var img=g.image?'<img src="'+esc(g.image)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(g.kind==='survey'?'📝':'🎮');
     var h='<div class="oh"><div class="im">'+img+'</div><div><h3>'+esc(g.name||'')+'</h3><div style="font-size:13px;color:#9fb3d9">'+(g.multi?L('المجموع','Total','Total')+': ':L('المكافأة','Reward','Gain')+': ')+'<b style="color:#5df0a0">'+usd(g.usd)+'</b>'+(g.min?' · ⏱ '+g.min+' '+L('د','min','min'):'')+'</div></div></div>';
+    try{
+      var _ns=(g.multi&&g.steps)?g.steps.length:1, _st=(function(){ try{ return !!stGet()[g.id]; }catch(e){ return false; } })();
+      h+='<div class="sc owm-sum"><b>'+L('ملخص سريع','Quick summary','Résumé rapide')+(_st?' <span style="color:#fbbf24;font-weight:600">· 🕒 '+L('بدأتَ هذه اللعبة','You started this','Commencé')+'</span>':'')+'</b>'
+        +'<div class="owm-chips"><span>💰 '+L('تربح حتى','Earn up to','Gagnez jusqu’à')+' <b>'+usd(g.usd)+'</b></span>'
+        +'<span>🪜 '+(g.multi?_ns+' '+L('مراحل','steps','étapes'):L('مهمة واحدة','One task','Une tâche'))+'</span>'
+        +(g.min?'<span>⏱ '+g.min+' '+L('د','min','min')+'</span>':'')
+        +((g.plat==='android'||g.plat==='ios')?'<span>📱 '+ptxt(g.plat)+'</span>':'')+'</div>'
+        +'<ol class="owm-how"><li>'+L('اضغط «ابدأ» وثبّت اللعبة من المتجر.','Tap Start and install the game.','Appuyez sur Commencer et installez le jeu.')+'</li><li>'+(g.multi?L('أنجز المراحل المذكورة أدناه بالترتيب؛ تصلك مكافأة كل مرحلة بعد أن تؤكدها الشبكة.','Complete the steps below in order; each is paid once the network confirms it.','Terminez les étapes dans l’ordre.'):L('أنجز المهمة المطلوبة.','Complete the required task.','Accomplissez la tâche.'))+'</li><li>'+L('تُضاف المكافأة تلقائيًا لرصيدك (قد تتأخر دقائق أو أكثر).','The reward is added automatically (may take minutes or longer).','La récompense est ajoutée automatiquement.')+'</li></ol></div>';
+    }catch(e){}
     if(g.descr) h+='<div class="sc"><b>'+L('الوصف','About','Description')+'</b>'+esc(g.descr)+'</div>';
     if(g.task) h+='<div class="sc"><b>'+L('المهمة المطلوبة','Required task','Tâche requise')+'</b>'+esc(g.task)+'</div>';
     if(g.multi&&g.steps&&g.steps.length){
-      h+='<div class="sc"><b>'+L('المكافآت حسب المراحل','Rewards by step','Récompenses par étape')+' — '+g.steps.length+' '+L('مراحل','steps','étapes')+'</b>'+g.steps.map(function(s,n){ return '<div class="st"><div class="n">'+(n+1)+'</div><div class="d">'+(window.plStepHtml?window.plStepHtml(s.d||('#'+(n+1))):esc(s.d||('#'+(n+1))))+'</div><div class="r">'+usd(s.usd)+'</div></div>'; }).join('')
+      h+='<div class="sc"><b>'+L('المكافآت حسب المراحل','Rewards by step','Récompenses par étape')+' — '+g.steps.length+' '+L('مراحل','steps','étapes')+'</b>'+(window.plOrderSteps?window.plOrderSteps(g.steps):g.steps).map(function(s,n){ return '<div class="st"><div class="n">'+(n+1)+'</div><div class="d">'+(window.plStepHtml?window.plStepHtml(s.d||('#'+(n+1))):esc(s.d||('#'+(n+1))))+'</div><div class="r">'+usd(s.usd)+'</div></div>'; }).join('')
         +'<div style="margin-top:6px;font-size:12px;color:#9fb3d9">'+L('لا يُمنح المجموع كاملًا إلا بعد إكمال كل المراحل. تصلك كل مرحلة فقط بعد تأكيد الشبكة لها.','The total is paid only after every step is completed. Each step is paid only after the network confirms it.','Chaque étape est payée après confirmation du réseau.')+'</div></div>';
     }
     if(g.plat==='android'||g.plat==='ios'||g.plat==='all') h+='<div class="sc"><b>'+L('يعمل على','Works on','Fonctionne sur')+'</b>'+ptxt(g.plat)+'</div>';
