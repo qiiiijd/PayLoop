@@ -121,7 +121,7 @@ try{ var _vf=localStorage.getItem('pl-vpn'); if(_vf&&Date.now()-Number(_vf)<6*36
 }catch(e){} })();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.11-r156';
+window.PL_BUILD='2026.11.11-r158';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -10153,6 +10153,52 @@ function renderSecEvent(){
     '<div class="up-box"><div class="up-h">🕘 حوادث مرتبطة بنفس الحساب/الـIP</div>'+hist+'</div></div>';
 }
 
+/* ===== مواعيد انتهاء الألعاب (قراءة فقط من games_ends) ===== */
+window.PL_ENDS={gg:{},owm:{},at:0,busy:false};
+(function(){ try{ var c=JSON.parse(localStorage.getItem('pl-ends')||'null'); if(c&&c.gg&&c.owm){ window.PL_ENDS.gg=c.gg; window.PL_ENDS.owm=c.owm; } }catch(e){} })();
+window.plEndsLoad=function(force){
+  try{
+    var E=window.PL_ENDS; if(E.busy) return; if(!force&&Date.now()-E.at<300000) return; if(!SRV||!SRV.on||!SRV.on()) return;
+    E.busy=true;
+    Promise.resolve(SRV.rpc('games_ends',{})).then(function(r){
+      E.busy=false;
+      if(r&&r.ok===true&&r.gg&&r.owm){ E.gg=r.gg; E.owm=r.owm; E.at=Date.now(); try{ localStorage.setItem('pl-ends',JSON.stringify({gg:E.gg,owm:E.owm})); }catch(e){} try{ window.dispatchEvent(new Event('pl-ends')); }catch(e){} }
+      else E.at=Date.now()-240000;
+    }).catch(function(){ E.busy=false; E.at=Date.now()-240000; });
+  }catch(e){}
+};
+window.plEndInfo=function(d){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d||'')) return null; var t=new Date(d+'T23:59:59').getTime(); if(isNaN(t)) return null;
+  var ms=t-Date.now(); return {expired:ms<0, today:ms>=0&&ms<86400000, days:Math.ceil(ms/86400000), soon:ms>=0&&ms<=3*86400000, d:d};
+};
+window.plEndTxt=function(d){
+  var e=window.plEndInfo(d); if(!e) return null;
+  if(e.expired) return {c:'#f87171',t:'⛔ '+L('انتهت','Ended','Terminé')};
+  if(e.today) return {c:'#f59e0b',t:'⏳ '+L('تنتهي اليوم','Ends today','Fin aujourd’hui')};
+  return {c:e.soon?'#f59e0b':'#22c55e',t:'⏳ '+L('تنتهي بعد '+e.days+' يوم','Ends in '+e.days+' days','Fin dans '+e.days+' j')};
+};
+window.plEndBadge=function(d){ var x=window.plEndTxt(d); return x?'<span class="t-tag" style="background:rgba(255,255,255,.06);color:'+x.c+'">'+esc(x.t)+'</span>':''; };
+/* بعد كل رسم لقائمة المهام: شارة الموعد على بطاقات GG وme، وإزالة المنتهية التي لم يبدأها المستخدم */
+window.plEndsApply=function(){
+  try{
+    var E=window.PL_ENDS, box=document.getElementById('tlist'); if(!box) return;
+    box.querySelectorAll('.ow-row[data-gid],.owm-g[data-oid]').forEach(function(r){
+      var isG=r.hasAttribute('data-gid'), key=isG?r.getAttribute('data-gid'):r.getAttribute('data-oid'), d=(isG?E.gg:E.owm)[key]||'';
+      var sig=d||'-'; if(r.getAttribute('data-end')===sig) return; r.setAttribute('data-end',sig);
+      var old=r.querySelector('.pl-endb'); if(old) old.remove();
+      var inf=window.plEndInfo(d); if(!d||!inf) return;
+      var started=isG?!!r.querySelector('.t-cd.y,.t-ok'):!!(r.querySelector('.t-tag')&&/إكمال|Continue|Reprendre/.test(r.textContent));
+      if(inf.expired&&!started){ r.remove(); return; }
+      var m=r.querySelector('.meta'); if(m) m.insertAdjacentHTML('beforeend','<span class="pl-endb" style="color:'+window.plEndTxt(d).c+'">'+esc(window.plEndTxt(d).t)+'</span>');
+    });
+  }catch(e){}
+};
+(function(){ var q=0; function sch(){ if(q) return; q=requestAnimationFrame(function(){ q=0; try{ window.plEndsApply(); }catch(e){} }); }
+  try{ new MutationObserver(function(ms){ for(var i=0;i<ms.length;i++){ var n=ms[i].target; if(n&&n.id==='tlist'||(n&&n.closest&&n.closest('#tlist'))){ sch(); return; } } }).observe(document.documentElement,{childList:true,subtree:true}); }catch(e){}
+  window.addEventListener('pl-ends',function(){ try{ var b=document.getElementById('tlist'); if(b) b.querySelectorAll('[data-end]').forEach(function(r){ r.removeAttribute('data-end'); }); }catch(e){} sch(); });
+  setInterval(function(){ try{ if(!document.hidden&&typeof SESSION!=='undefined'&&SESSION) window.plEndsLoad(); }catch(e){} },120000);
+  setTimeout(function(){ try{ window.plEndsLoad(); }catch(e){} },4000);
+})();
 /* ===== VIP: حالة المستخدم، الصفحة، الشراء ===== */
 var VIP={enabled:false,active:false,exp:null,plans:[],ok:false,at:0}, VIP_BUSY=false, VIP_ACT=false, VIP_SEL='', VIP_MODE='', VIP_METHOD='', VIP_NONCE='', VIP_MSG='';
 function vipActive(){ try{ return !!(VIP&&VIP.active&&VIP.exp&&new Date(VIP.exp).getTime()>Date.now()); }catch(e){ return false; } }
@@ -13631,6 +13677,8 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
         +((g.plat==='android'||g.plat==='ios')?'<span>📱 '+ptxt(g.plat)+'</span>':'')+'</div>'
         +'<ol class="owm-how"><li>'+L('اضغط «ابدأ» وثبّت اللعبة من المتجر.','Tap Start and install the game.','Appuyez sur Commencer et installez le jeu.')+'</li><li>'+(g.multi?L('أنجز المراحل المذكورة أدناه بالترتيب؛ تصلك مكافأة كل مرحلة بعد أن تؤكدها الشبكة.','Complete the steps below in order; each is paid once the network confirms it.','Terminez les étapes dans l’ordre.'):L('أنجز المهمة المطلوبة.','Complete the required task.','Accomplissez la tâche.'))+'</li><li>'+L('تُضاف المكافأة تلقائيًا لرصيدك (قد تتأخر دقائق أو أكثر).','The reward is added automatically (may take minutes or longer).','La récompense est ajoutée automatiquement.')+'</li></ol></div>';
     }catch(e){}
+    var _oe=(window.PL_ENDS.owm||{})[String(g.id)]||'', _oi=window.plEndInfo?window.plEndInfo(_oe):null, _ot=window.plEndTxt?window.plEndTxt(_oe):null;
+    if(_ot) h+='<div class="sc" style="border:1px solid '+_ot.c+'55"><b style="color:'+_ot.c+'">'+esc(_ot.t)+'</b><span dir="ltr">'+esc(_oe)+'</span>'+(_oi&&_oi.expired?'<br><small style="color:#fca5a5">'+L('انتهت هذه اللعبة ولا يمكن بدؤها الآن.','This game has ended and cannot be started.','Terminé.')+'</small>':'')+'</div>';
     if(g.descr) h+='<div class="sc"><b>'+L('الوصف','About','Description')+'</b>'+esc(g.descr)+'</div>';
     if(g.task) h+='<div class="sc"><b>'+L('المهمة المطلوبة','Required task','Tâche requise')+'</b>'+esc(g.task)+'</div>';
     if(g.multi&&g.steps&&g.steps.length){
@@ -13642,7 +13690,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     try{ if(window.plDeviceWarn) h+=window.plDeviceWarn(); }catch(e){}
     d.innerHTML=h; d.scrollTop=0;
     var bar=document.createElement('div'); bar.className='gs'; bar.innerHTML=(window.plDeviceNote?window.plDeviceNote():'')+'<button type="button"></button>'; var _bt=bar.querySelector('button'); _bt.textContent=(g.btn&&String(g.btn).trim())||L('ابدأ','Start','Commencer');
-    _bt.onclick=function(){ go(g.id); }; try{ Array.prototype.forEach.call(ov.querySelectorAll('.gs'),function(e){ e.remove(); }); }catch(e){} ov.appendChild(bar);
+    _bt.onclick=function(){ go(g.id); }; if(_oi&&_oi.expired){ _bt.disabled=true; _bt.style.opacity='.5'; _bt.textContent=L('انتهت','Ended','Terminé'); } try{ Array.prototype.forEach.call(ov.querySelectorAll('.gs'),function(e){ e.remove(); }); }catch(e){} ov.appendChild(bar);
     ov.classList.add('on');
   };
   async function go(id){
@@ -13915,7 +13963,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
   window.owmMgAdd=function(i){ var it=M.pick[i]; if(!it) return; M.cur={ext:it.id,title:it.title,row:null,image:it.image||'',usd:it}; mForm(); };
   function mForm(){
     var c=M.cur, r=c.row||{}; M.imgUp='';
-    var opts=PL.map(function(p){ return '<option value="'+p[0]+'"'+((r.place||'games')===p[0]?' selected':'')+'>'+p[1]+' '+L(p[2],p[3],p[3])+'</option>'; }).join('');
+    var _pdef=r.place||(/daily|login|log in|check.?in|streak|every day|تسجيل دخول|يومي/i.test(String(c.title||''))?'daily':'games'); var opts=PL.map(function(p){ return '<option value="'+p[0]+'"'+(_pdef===p[0]?' selected':'')+'>'+p[1]+' '+L(p[2],p[3],p[3])+'</option>'; }).join('');
     var ta='width:100%;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none;resize:vertical;box-sizing:border-box';
     var im=(r.img!=null&&r.img!==''?r.img:(c.image||''));
     var h='<div class="au-f full" style="background:rgba(14,165,233,.08);border-radius:12px;padding:10px;font-size:13px;margin-bottom:10px">✅ <b dir="auto">'+esc(c.title||c.ext)+'</b>'+(c.usd?'<br>'+L('تدفع لك','pays you','vous paie')+' '+usd(c.usd.raw)+' · '+L('للمستخدم','user','user')+' <b style="color:#22c55e">'+usd(c.usd.usd)+'</b>'+(c.usd.multi?' · '+c.usd.nsteps+' '+L('مراحل','levels','niveaux'):''):'')+'</div>'
@@ -13926,6 +13974,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
       +'<div class="au-f full"><label>'+L('نصّ زر البدء (أنت تختاره، مثل: ابدأ اللعب / ثبّت اللعبة)','Start button text','Texte du bouton')+'</label><input id="owm-f-b" maxlength="30" value="'+esc(r.btn||'')+'" placeholder="'+esc(L('ابدأ اللعب','Start playing','Jouer'))+'"></div>'
       +'<div class="au-f full"><label>📱 '+L('الجهاز: أي هاتف تعمل عليه؟','Device','Appareil')+'</label><select id="owm-f-pf">'+[['auto','🔄 '+L('تلقائي (من الشبكة، موصى به)','Auto (from network, recommended)','Auto')],['android','🤖 '+L('أندرويد فقط','Android only','Android')],['ios','🍎 '+L('آيفون فقط','iPhone only','iPhone')],['all','📱 '+L('الاثنان','Both','Les deux')]].map(function(o){ return '<option value="'+o[0]+'"'+((r.platform||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select><span style="display:block;font-size:11.5px;color:#9fb3d9;margin-top:4px">'+L('لا نعرض اللعبة لمن جهازه مختلف، حتى لا تفتح له متجرًا خاطئًا.','Users on another device will not see this game.','Les autres appareils ne la voient pas.')+'</span></div>'
       +'<div class="au-f full"><label>'+L('📍 أين تظهر هذه اللعبة في التطبيق؟','📍 Where does it appear?','📍 Où ?')+'</label><select id="owm-f-p">'+opts+'</select></div>'
+      +'<div class="au-f full"><label>⏳ '+L('تاريخ انتهاء اللعبة (اختياري؛ بعده تختفي لمن لم يبدأها ويُعطَّل زر البدء)','End date (optional)','Date de fin (optionnel)')+'</label><input id="owm-f-e" type="date" dir="ltr" value="'+esc(r.ends_on||'')+'"></div>'
       +'<div class="au-f full"><label>⭐ '+L('الأكثر لعبًا / المفضلة','Favourite','Favori')+'</label><select id="owm-f-f"><option value="0">'+L('لا','No','Non')+'</option><option value="1"'+(r.featured?' selected':'')+'>'+L('نعم','Yes','Oui')+'</option></select></div>'
       +'<div style="display:flex;gap:10px"><div class="au-f" style="flex:1"><label>'+L('الترتيب (الأصغر أولًا)','Order','Ordre')+'</label><input id="owm-f-s" inputmode="numeric" dir="ltr" value="'+(r.sort!=null?r.sort:100)+'"></div>'
       +'<div class="au-f" style="flex:1"><label>'+L('الحالة','Status','Statut')+'</label><select id="owm-f-a"><option value="1">'+L('نشطة','Active','Active')+'</option><option value="0"'+(r.active===false?' selected':'')+'>'+L('متوقفة','Paused','Pause')+'</option></select></div></div>'
@@ -13951,7 +14000,10 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     var c=M.cur; if(!c) return; var g=function(id){ return String((document.getElementById(id)||{}).value||'').trim(); };
     var name=g('owm-f-n'); if(!name){ toast(L('اكتب اسم اللعبة بالعربية','Enter the game name','Entrez le nom')); return; }
     var o={ext:c.ext,name:name,descr:g('owm-f-d'),task:g('owm-f-t'),img:(M.imgUp||g('owm-f-i')),btn:g('owm-f-b'),platform:g('owm-f-pf')||'auto',place:g('owm-f-p')||'games',sort:parseInt(g('owm-f-s'),10)||100,featured:g('owm-f-f')==='1',active:g('owm-f-a')!=='0'};
-    mSave(o,function(ok){ if(ok){ try{ if(o.active&&o.active!==false&&typeof plAnnounceNew==='function') plAnnounceNew(o.place||'games',o.name,'owm:'+o.ext); }catch(e){} toast(L('✅ تم الحفظ','✅ Saved','✅ Enregistré')); window.owmMgOpen(); } });
+    var endv=g('owm-f-e'); if(endv&&!/^\d{4}-\d{2}-\d{2}$/.test(endv)) endv='';
+    mSave(o,function(ok){ if(ok){ try{ if(o.active&&o.active!==false&&typeof plAnnounceNew==='function') plAnnounceNew(o.place||'games',o.name,'owm:'+o.ext); }catch(e){}
+      Promise.resolve(SRV.rpc('owm_game_set_end',{p_ext:o.ext,p_end:endv||null})).then(function(r){ if(!(r&&r.ok===true)) toast(L('تم الحفظ لكن لم يُحفظ موعد الانتهاء: شغّل ملف 112 في Supabase','Saved, but the end date was not saved: run file 112','Enregistré sans date de fin')); try{ window.plEndsLoad(true); }catch(e){} }).catch(function(){});
+      toast(L('✅ تم الحفظ','✅ Saved','✅ Enregistré')); window.owmMgOpen(); } });
   };
 })();
 </script>
@@ -14198,7 +14250,8 @@ function openOfferwall(){
     if(d.length){ meta.push('✅ '+(n?L('أنجزت '+d.length,'Done '+d.length,'Fait '+d.length):L('مكتملة','Completed','Terminé'))); }
     if(!o.ready) meta.push(L('غير متاحة الآن','Unavailable now','Indisponible'));
     var img=o.img?'<img src="'+esc(o.img)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">':'🎮';
-    return '<div class="g-card" data-i="'+i+'"><div class="g-img">'+img+'</div><div class="g-in"><h4>'+esc(o.name)+'</h4><div class="g-meta">'+meta.map(function(x){return '<span>'+esc(x)+'</span>';}).join('')+'</div></div><div class="g-rw'+(o.reward==null?' v':'')+'"><div class="g-tot"><small>'+esc(L('المجموع','Total','Total'))+'</small>'+esc(money(o.reward))+'</div></div></div>';
+    var _et=window.plEndTxt?window.plEndTxt((window.PL_ENDS.gg||{})[String(o.gid)]||''):null, _pl=(function(){ var d=(o.devices||[]).map(function(x){ return String(x).toLowerCase(); }), a=d.indexOf('android')>=0, ip=d.indexOf('ios')>=0||d.indexOf('iphone')>=0; return a&&!ip?'Android':ip&&!a?'iPhone':''; })();
+    return '<div class="g-card" data-i="'+i+'"><div class="g-img">'+img+'</div><div class="g-in"><h4>'+esc(o.name)+'</h4><div class="g-meta">'+meta.map(function(x){return '<span>'+esc(x)+'</span>';}).join('')+(_pl?'<span>📱 '+_pl+'</span>':'')+(_et?'<span style="color:'+_et.c+'">'+esc(_et.t)+'</span>':'')+'</div></div><div class="g-rw'+(o.reward==null?' v':'')+'"><div class="g-tot"><small>'+esc(L('المجموع','Total','Total'))+'</small>'+esc(money(o.reward))+'</div></div></div>';
   }
   function paint(msg){
     var b=$('owg-body'); if(!b) return;
@@ -14219,6 +14272,7 @@ function openOfferwall(){
       if(!j||!j.ok){ paint(why(j&&j.why)); return; }
       if(j.share>0) S.share=j.share;
       S.items=Array.isArray(j.games)?j.games:[]; S.page=1; S.pages=1;
+      try{ S.items=S.items.filter(function(o){ var e=window.plEndInfo((window.PL_ENDS.gg||{})[String(o.gid)]||''); return !(e&&e.expired&&!doneOf(o).length); }); }catch(e){}
       paint();
       if(S.pend){ var _o=S.items.filter(function(x){ return x.gid===S.pend; })[0]; S.pend=null; if(_o) sheet(_o); }
     });
@@ -14283,6 +14337,8 @@ function openOfferwall(){
     var goals=o.goals||[], done=S.prog&&S.prog[o.ext]||{}, h='';
     h+='<div class="g-bar"><span>'+esc(o.name)+'</span><button type="button" id="owg-back">'+esc(L('رجوع','Back','Retour'))+'</button></div><div class="g-body">';
     h+='<div class="g-h"><div class="g-img">'+img+'</div><div class="g-in"><h4 style="white-space:normal">'+esc(o.name)+'</h4><div class="g-meta"><span>'+esc(L('المجموع','Total','Total'))+': '+esc(money(o.reward))+'</span>'+(goals.length?'<span>'+goals.length+' '+esc(L('خطوات','steps','étapes'))+'</span>':'')+'</div></div></div>';
+    var _e0=(window.PL_ENDS.gg||{})[String(o.gid)]||'', _ei=window.plEndInfo?window.plEndInfo(_e0):null, _et0=window.plEndTxt?window.plEndTxt(_e0):null;
+    if(_et0) h+='<div class="g-sec" style="border:1px solid '+_et0.c+'55"><b style="color:'+_et0.c+'">'+esc(_et0.t)+'</b><span dir="ltr">'+esc(_e0)+'</span>'+(_ei&&_ei.expired?'<br><small style="color:#fca5a5">'+esc(L('انتهت هذه اللعبة؛ لا يمكن بدؤها الآن. ما أنجزته قبل الانتهاء يبقى مسجّلًا.','This game has ended and cannot be started. Anything you completed before stays recorded.','Terminé. Ce que vous avez fait reste enregistré.'))+'</small>':'')+'</div>';
     /* عربي دائمًا: ما كتبه المدير يظهر كما هو؛ وما جاء إنجليزيًا من الشبكة يُترجم بقواعد ثابتة. الوصف الإنجليزي الذي لا يُترجم يُخفى (نص تسويقي)، أما شرط المهمة فيبقى كما هو كي لا يضيع الشرط */
     var _isAr=(L('ar','en','fr')==='ar'), _dsc=o.desc||'', _tsk=o.task||o.req||'', _tsrc='';
     if(_isAr&&window.plGgAr){
@@ -14326,6 +14382,7 @@ function openOfferwall(){
       var bar=document.createElement('div'); bar.className='g-start';
       bar.innerHTML=(window.plDeviceNote?window.plDeviceNote():'')+'<button type="button">'+esc(used?L('أنجزتها','Completed','Terminé'):(Object.keys(done).length?L('تابع اللعب','Continue','Continuer'):L('ابدأ اللعب','Start playing','Jouer')))+'</button>';
       var btn=bar.querySelector('button'); if(used){ btn.disabled=true; btn.style.opacity='.5'; }
+      if(_ei&&_ei.expired&&!used){ btn.disabled=true; btn.style.opacity='.5'; btn.textContent=L('انتهت','Ended','Terminé'); }
       btn.onclick=function(){ try{ window.owMarkStarted(o.ext); }catch(e){} try{ var w=window.open(o.url,'_blank','noopener'); if(!w) location.href=o.url; }catch(e){ location.href=o.url; } };
       sh.appendChild(bar);
     }
@@ -14339,6 +14396,7 @@ function openOfferwall(){
       x.onclick=function(){ S.gc=null; try{ window.dispatchEvent(new Event('ow-changed')); }catch(e){} ov.classList.remove('on'); $('owg-sheet').classList.remove('on'); S.cur=null; try{ SRV.pullState(); }catch(e){} try{ SRV.cycle(true); }catch(e){} };
       ov.classList.add('on');
       S.items=[]; S.page=0; S.pages=1; S.busy=false; paint(L('جارٍ التحميل…','Loading…','Chargement…'));
+      try{ window.plEndsLoad(); }catch(e){}
       loadProg().then(function(){ more(); });
     }catch(e){ try{ toast(L('حدث خطأ','Error','Erreur')); }catch(_){} }
   };
@@ -14464,6 +14522,7 @@ function openOfferwall(){
     var g=A.g; if(!g.steps||typeof g.steps!=='object') g.steps={};
     var tr={descBad:false,taskBad:false}, T=window.plGgAr||function(){ return null; }, goals=o.goals||[];
     if(!g.name_ar&&o.name) g.name_ar=String(o.name).slice(0,120);
+    try{ if(g.id==null&&(g.place||'games')==='games'&&/daily|login|log in|check.?in|streak|every day|تسجيل دخول|يومي/i.test(String(o.name||'')+' '+String(o.req||''))) g.place='daily'; }catch(e){}
     goals.forEach(function(x){ if(g.steps[x.id]) return; var t=T(x.d); if(t) g.steps[x.id]=String(t).slice(0,200); });
     if(!g.task_ar){
       var t='';
