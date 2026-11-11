@@ -121,7 +121,7 @@ try{ var _vf=localStorage.getItem('pl-vpn'); if(_vf&&Date.now()-Number(_vf)<6*36
 }catch(e){} })();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.11-r158';
+window.PL_BUILD='2026.11.11-r160';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -607,6 +607,13 @@ html.lite .pub-badge,html.pl-lite .pub-badge{animation:none}
 .owm-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}.owm-chips span{font-size:12.5px;padding:5px 11px;border-radius:99px;background:rgba(99,102,241,.14);color:#dbe4ff}.owm-chips b{color:#5df0a0}.owm-how{margin:6px 18px 0;padding:0;font-size:12.5px;line-height:1.8;color:#b6c4e4}
 .inv-pubnote-x{}
 #inv-pubnote{position:relative;margin-top:10px;align-items:center;padding:7px 14px;border-radius:99px;font-size:13px;font-weight:800;color:#3a2907;background:linear-gradient(135deg,#fde68a,#f59e0b);box-shadow:0 6px 18px rgba(245,158,11,.35)}
+#tlist .trow{content-visibility:auto;contain-intrinsic-size:auto 92px}
+.pl-lk-in{width:100%;box-sizing:border-box;margin-top:8px;padding:11px 13px;border-radius:12px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:13.5px;outline:none}
+.pl-lk{margin-top:10px;padding:11px;border-radius:14px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.22)}
+.pl-lk-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pl-lk-h a{flex:1;min-width:0;color:#7dd3fc;font-size:12.5px;word-break:break-all;text-decoration:none}.pl-lk-h em{font-style:normal;font-size:11.5px;font-weight:800}
+.pl-lk-n{margin-top:6px;font-size:12px;color:#b6c4e4}.pl-lk-f{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}.pl-lk-f small{opacity:.6;font-size:11px}
+.pl-lk-an{flex:1;min-width:120px;padding:7px 10px;border-radius:9px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:12px}
+.pl-lk-ok,.pl-lk-no,.pl-lk-del{border:0;border-radius:9px;padding:7px 12px;font-family:inherit;font-weight:800;font-size:13px}.pl-lk-ok{background:rgba(34,197,94,.2);color:#86efac}.pl-lk-no,.pl-lk-del{background:rgba(248,113,113,.16);color:#fca5a5}
 .pd-orb2{position:absolute;bottom:-70px;inset-inline-start:-40px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.22),rgba(167,139,250,0) 68%)}
 .pd-top{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .pd-ver{font-size:11px;font-weight:800;color:#86efac;padding:3px 10px;border-radius:99px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4)}
@@ -5065,7 +5072,7 @@ function updHeld(){
 function plIsPub(){ try{ const u=curUser(); return !!(u&&localStorage.getItem('pl-pub-'+u.id)==='1'); }catch(e){ return false; } }
 var _pubAt=0;
 function rpRefresh(){ try{ var pn=document.getElementById('inv-pubnote'); if(pn){ var ip=(typeof plIsPub==='function'&&plIsPub()); if(ip){ pn.style.display='inline-flex'; pn.textContent='🌟 '+L('أنت ناشر — تربح 15% من أرباح كل صديق تدعوه','You are a creator — you earn 15% of every friend’s earnings','Vous êtes créateur — vous gagnez 15 % des gains de chaque ami'); } else pn.style.display='none'; } document.querySelectorAll('.inv-illus img').forEach(function(im){ if(!im.__s0) im.__s0=im.getAttribute('src'); var s=im.__s0||''; var pub=(typeof plIsPub==='function'&&plIsPub()); var n=pub?s.split('%2B5%25').join('%2B15%25'):s; if(im.getAttribute('src')!==n) im.setAttribute('src',n); }); document.querySelectorAll('[data-i18n]').forEach(function(el){ const k=el.dataset.i18n; if(!/^(ref|inv)\./.test(k)) return; const d=T[LANG]||{}; const v=(d[k]!=null)?d[k]:T.ar[k]; if(v!=null&&String(v).indexOf('@RP@')>-1&&!el.querySelector('.ax-btn-t')) el.textContent=rp(v); }); }catch(e){} }
-function plPubPaint(){ try{ rpRefresh(); const on=plIsPub(); ['home-av','pf-av'].forEach(function(id){ const e=document.getElementById(id); if(e) e.classList.toggle('pub',on); }); const mc=document.getElementById('wd-minchip'); if(mc) mc.textContent=on?'$5.00':'$3.00'; }catch(e){} }
+function plPubPaint(){ try{ rpRefresh(); const on=plIsPub(); ['home-av','pf-av'].forEach(function(id){ const e=document.getElementById(id); if(e) e.classList.toggle('pub',on); }); const mc=document.getElementById('wd-minchip'); if(mc) mc.textContent=on?'$5.00':'$3.00'; try{ plWdProg(); }catch(e){} }catch(e){} }
 function plPubLoad(){
   try{
     plPubPaint();
@@ -5123,11 +5130,12 @@ function plHeroBadge(){
   b.removeAttribute('data-i18n');
   b.textContent=L('✦ منصة ربحية رقم 1 في '+n,'✦ #1 earning platform in '+n,'✦ Plateforme n°1 de gains · '+n);
 }
+function wdMinUsd(){ try{ return plIsPub()?5:3; }catch(e){ return 3; } }
 function plWdProg(){
-  try{ const b=Number(BAL)||0, el=document.getElementById('wv-prog'); if(!el) return;
-    const ok=b>=3, p=Math.max(0,Math.min(100,b/3*100));
+  try{ const b=Number(BAL)||0, el=document.getElementById('wv-prog'); if(!el) return; const M=wdMinUsd();
+    const ok=b>=M, p=Math.max(0,Math.min(100,b/M*100));
     document.getElementById('wv-prog-i').style.width=p+'%'; el.classList.toggle('ok',ok);
-    document.getElementById('wv-prog-l').textContent=ok?L('✅ يمكنك طلب السحب الآن','✅ You can withdraw now','✅ Vous pouvez retirer'):L('باقي $'+fm(3-b)+' للوصول للحد الأدنى','$'+fm(3-b)+' to reach the minimum','Encore '+fm(3-b)+' $ pour le minimum');
+    document.getElementById('wv-prog-l').textContent=ok?L('✅ يمكنك طلب السحب الآن','✅ You can withdraw now','✅ Vous pouvez retirer'):L('باقي $'+fm(M-b)+' للوصول للحد الأدنى','$'+fm(M-b)+' to reach the minimum','Encore '+fm(M-b)+' $ pour le minimum');
     document.getElementById('wv-prog-p').textContent=Math.floor(p)+'%';
   }catch(e){}
 }
@@ -5685,7 +5693,7 @@ function homeGuideDraw(){ try{
     +'<div style="display:flex;align-items:center;justify-content:space-between"><b style="font-size:16px">💡 '+L('كيف أربح؟ (3 خطوات بسيطة)','How do I earn? (3 easy steps)','Comment gagner ? (3 étapes)')+'</b><button type="button" onclick="try{localStorage.setItem(\'pl-guide-x\',\'1\')}catch(e){} homeGuideDraw()" aria-label="close" style="border:0;background:transparent;color:var(--muted);font-size:20px;cursor:pointer">✕</button></div>'
     +st(1,'👆',L('اضغط «المهام» من الأسفل','Tap “Tasks” below','Appuyez sur « Tâches »'),L('اختر أي مهمة (استطلاع، لعبة، تطبيق…) واقرأ المبلغ المكتوب عليها.','Pick any task (survey, game, app…) and check the reward.','Choisissez une tâche et vérifiez la récompense.'))
     +st(2,'✅',L('أنجز المهمة كما هي مكتوبة','Complete it as described','Terminez-la comme indiqué'),L('عند انتهائها يُضاف المبلغ إلى رصيدك تلقائيًا (قد يتأخر دقائق).','The reward is added to your balance automatically (may take minutes).','La récompense est ajoutée automatiquement (quelques minutes).'))
-    +st(3,'💸',L('اسحب أرباحك','Withdraw your money','Retirez vos gains'),(L('من «السحب» ابتداءً من $3.','From “Withdraw”, from $3.','Dès 3 $.')+(mr?L(' تحتاج أيضًا '+mr+' أصدقاء سجّلوا برابط دعوتك.',' You also need '+mr+' friends who joined with your invite link.',' Il faut aussi '+mr+' amis inscrits via votre lien.'):'')))
+    +st(3,'💸',L('اسحب أرباحك','Withdraw your money','Retirez vos gains'),(L('من «السحب» ابتداءً من $'+wdMinUsd()+'.','From “Withdraw”, from $'+wdMinUsd()+'.','Dès '+wdMinUsd()+' $.')+(mr?L(' تحتاج أيضًا '+mr+' أصدقاء سجّلوا برابط دعوتك.',' You also need '+mr+' friends who joined with your invite link.',' Il faut aussi '+mr+' amis inscrits via votre lien.'):'')))
     +'<button type="button" onclick="go(\'tasks\')" style="width:100%;margin-top:6px;border:0;border-radius:13px;padding:12px;font:900 15px inherit;background:#38bdf8;color:#082f49;cursor:pointer">'+L('ابدأ الآن ←','Start now →','Commencer →')+'</button></div>';
 }catch(e){} }
 try{ document.addEventListener('DOMContentLoaded',function(){ setTimeout(function(){ homeGuideDraw(); szDraw(); },1200); }); setInterval(function(){ if(document.hidden) return; homeGuideDraw(); szDraw(); },4000); }catch(e){}
@@ -5718,7 +5726,7 @@ function wdCheck(k){
   const help=document.getElementById('wd-help-'+k), btn=document.getElementById('wd-btn-'+k);
   const raw=(inp.value||'').trim(); const v=parseFloat(raw);
   let cls='', msg='';
-  if(raw && !(v>=3)){ cls='bad'; msg=L('الحد الأدنى للسحب $3.00','Minimum withdrawal is $3.00','Le minimum est 3,00 $'); }
+  if(raw && !(v>=wdMinUsd())){ cls='bad'; msg=L('الحد الأدنى للسحب $'+wdMinUsd()+'.00','Minimum withdrawal is $'+wdMinUsd()+'.00','Le minimum est '+wdMinUsd()+',00 $'); }
   else if(raw && v>BAL+1e-9){ cls='bad'; msg=L('رصيدك غير كافٍ — المتاح $'+BAL.toFixed(2),'Insufficient balance — available $'+BAL.toFixed(2),'Solde insuffisant'); }
   else if(raw && wdPendingBlock()){ cls='bad'; msg=L('لديك طلب سحب قيد المعالجة — انتظر مراجعة الطلب الحالي','You already have a pending request — wait for review','Une demande est déjà en cours'); }
   else if(raw && wdRefsLock()){ const _l=wdRefsLock(); cls='bad'; msg=L('🔒 تحتاج '+_l.need+' أصدقاء مسجّلين بدعوتك للسحب (لديك '+_l.have+')','🔒 You need '+_l.need+' friends joined via your link to withdraw (you have '+_l.have+')','🔒 Il faut '+_l.need+' amis inscrits via votre lien (vous : '+_l.have+')'); }
@@ -5789,7 +5797,7 @@ async function submitWD(k){
     if(ad.length<20){ toast(L('أدخل عنوان محفظة صحيح','Enter a valid wallet address','Adresse invalide')); document.getElementById('wd-addr').focus(); return; }
     det.network=net; det.address=ad;
   } else return;
-  if(!(v>=3)){ toast(L('الحد الأدنى للسحب $3.00','Minimum withdrawal is $3.00','Le minimum est 3,00 $')); wdCheck(k); return; }
+  if(!(v>=wdMinUsd())){ toast(L('الحد الأدنى للسحب $'+wdMinUsd()+'.00','Minimum withdrawal is $'+wdMinUsd()+'.00','Le minimum est '+wdMinUsd()+',00 $')); wdCheck(k); return; }
   try{ if(SRV.cfg()&&Date.now()-SRV._rulesAt>15000) await SRV.pullRules(); }catch(e){}
   { const _l=wdRefsLock(); if(_l){ toast(L('🔒 لا يمكن السحب قبل أن يسجّل '+_l.need+' أصدقاء عبر رابط دعوتك (لديك '+_l.have+')','🔒 Need '+_l.need+' friends via your link (you have '+_l.have+')','🔒 Il faut '+_l.need+' amis via votre lien (vous : '+_l.have+')')); wdCheck(k); try{ document.getElementById('wd-rules').scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} return; } }
   if(v>BAL+1e-9){ toast(L('رصيدك غير كافٍ — المتاح $'+BAL.toFixed(2),'Insufficient balance — available $'+BAL.toFixed(2),'Solde insuffisant')); wdCheck(k); return; }
@@ -6274,7 +6282,7 @@ function openInfo(kind){
       ]],
       [L('💵 السحب','💵 Withdrawals','💵 Retraits'),[
         [L('كيف أستلم أرباحي؟','How do I get paid?','Comment être payé ?'),L('من صفحة السحب يمكنك السحب عبر CCP أو USDT.','From the Withdraw page you can cash out via CCP or USDT.','Depuis la page Retrait via CCP ou USDT.')],
-        [L('كم الحد الأدنى للسحب؟','What is the minimum withdrawal?','Quel est le montant minimum ?'),L('الحد الأدنى 3$ فقط.','The minimum is only $3.','Le minimum est de seulement 3 $.')],
+        [L('كم الحد الأدنى للسحب؟','What is the minimum withdrawal?','Quel est le montant minimum ?'),L('الحد الأدنى 3$ للمستخدم العادي و5$ للناشرين.','The minimum is $3 for regular users and $5 for creators.','Le minimum est de 3 $ (5 $ pour les créateurs).')],
         [L('كم تستغرق معالجة طلبي؟','How long does a request take?','Combien de temps prend une demande ?'),L('من 48 ساعة إلى 72 ساعة لمعالجة طلب السحب ومراجعته.','From 48 to 72 hours to process and review your withdrawal.','De 48 à 72 heures pour traiter votre retrait.')]
       ]],
       [L('👥 الدعوات','👥 Invites','👥 Invitations'),[
@@ -6303,7 +6311,7 @@ function openInfo(kind){
       L('يُسمح بحساب واحد فقط لكل مستخدم وجهاز واحد.','One account per user and per device is allowed.','Un seul compte par utilisateur et par appareil.'),
       L('أنت مسؤول عن حماية حسابك؛ لا تشارك رمزك أو بياناتك مع أحد.','You are responsible for your account — never share your code or credentials.','Vous êtes responsable de votre compte — ne partagez jamais vos identifiants.'),
       L('تُضاف أرباحك مباشرة بالدولار ($) وقد تُراجع المكافآت عند الاشتباه في التلاعب.','Earnings are added directly in dollars ($) and rewards may be reviewed if manipulation is suspected.','Les gains sont ajoutés directement en dollars ($) et peuvent être révisés en cas de manipulation.'),
-      L('الحد الأدنى للسحب 3$ وتُراجع طلبات السحب قبل المعالجة.','Minimum withdrawal is $3 and requests are reviewed before processing.','Retrait minimum 3 $ et les demandes sont vérifiées avant traitement.'),
+      L('الحد الأدنى للسحب 3$ (5$ للناشرين) وتُراجع طلبات السحب قبل المعالجة.','Minimum withdrawal is $3 ($5 for creators) and requests are reviewed before processing.','Retrait minimum 3 $ (5 $ pour les créateurs) et les demandes sont vérifiées avant traitement.'),
       L('لا نبيع بياناتك. نشارك معرّفًا عشوائيًا فقط مع شبكات العروض لتسجيل مكافآتك، وتفاصيل ذلك في صفحة سياسة الخصوصية.','We never sell your data. We only share a random user ID with the offer networks so your rewards can be credited — details are in the Privacy Policy page.','Nous ne vendons pas vos données. Seul un identifiant aléatoire est transmis aux réseaux d\'offres pour créditer vos récompenses — voir la politique de confidentialité.'),
       L('يحق للمنصة تعديل المكافآت أو الشروط مع إشعار المستخدمين.','The platform may modify rewards or terms with notice to users.','La plateforme peut modifier les récompenses ou les conditions avec préavis.'),
       L('يُحق للمنصة إيقاف أي حساب مخالف لهذه الشروط.','The platform may suspend any account that violates these terms.','La plateforme peut suspendre tout compte non conforme.')
@@ -10153,6 +10161,26 @@ function renderSecEvent(){
     '<div class="up-box"><div class="up-h">🕘 حوادث مرتبطة بنفس الحساب/الـIP</div>'+hist+'</div></div>';
 }
 
+/* إدراج البطاقات على دفعات: أول 16 فوراً ثم الباقي على دفعات صغيرة حتى لا يتجمّد الهاتف عند القوائم الطويلة */
+window.plChunkInsert=function(box,parts,ids){
+  try{
+    if(!parts.length) return; var FIRST=16, STEP=20, P=(box.__pendLast&&box.__pendLast.parentNode===box&&box.__pend)||(box.__pend={});
+    ids.forEach(function(i){ P[i]=1; });
+    box.insertAdjacentHTML('afterbegin',parts.slice(0,FIRST).join(''));
+    ids.slice(0,FIRST).forEach(function(i){ delete P[i]; });
+    var rest=parts.slice(FIRST), rids=ids.slice(FIRST), last=box.children[Math.min(FIRST,parts.length)-1]; box.__pendLast=rest.length?last:null;
+    (function next(){
+      if(!rest.length) return;
+      if(!box.isConnected||!last||last.parentNode!==box){ rids.forEach(function(i){ delete P[i]; }); rest=[]; return; }
+      var n=rest.splice(0,STEP), ni=rids.splice(0,STEP), nx=last.nextElementSibling;
+      last.insertAdjacentHTML('afterend',n.join('')); last=nx?nx.previousElementSibling:box.lastElementChild; box.__pendLast=rest.length?last:null;
+      ni.forEach(function(i){ delete P[i]; });
+      (window.requestAnimationFrame||setTimeout)(next);
+    })();
+  }catch(e){ try{ box.insertAdjacentHTML('afterbegin',parts.join('')); }catch(_){} }
+};
+/* إعادة رسم المهام مدمجة: عدة شبكات قد تنتهي معاً فنرسم مرة واحدة فقط */
+window.plRedrawTasks=(function(){ var pend=0; return function(){ if(pend) return; pend=1; requestAnimationFrame(function(){ pend=0; try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }); }; })();
 /* ===== مواعيد انتهاء الألعاب (قراءة فقط من games_ends) ===== */
 window.PL_ENDS={gg:{},owm:{},at:0,busy:false};
 (function(){ try{ var c=JSON.parse(localStorage.getItem('pl-ends')||'null'); if(c&&c.gg&&c.owm){ window.PL_ENDS.gg=c.gg; window.PL_ENDS.owm=c.owm; } }catch(e){} })();
@@ -10194,7 +10222,7 @@ window.plEndsApply=function(){
   }catch(e){}
 };
 (function(){ var q=0; function sch(){ if(q) return; q=requestAnimationFrame(function(){ q=0; try{ window.plEndsApply(); }catch(e){} }); }
-  try{ new MutationObserver(function(ms){ for(var i=0;i<ms.length;i++){ var n=ms[i].target; if(n&&n.id==='tlist'||(n&&n.closest&&n.closest('#tlist'))){ sch(); return; } } }).observe(document.documentElement,{childList:true,subtree:true}); }catch(e){}
+  try{ var mo=new MutationObserver(function(){ sch(); }), hook=function(){ var pg=document.getElementById('tlist'); if(pg&&!pg.__plmo){ pg.__plmo=1; mo.observe(pg,{childList:true}); } }; hook(); setInterval(hook,3000); }catch(e){}
   window.addEventListener('pl-ends',function(){ try{ var b=document.getElementById('tlist'); if(b) b.querySelectorAll('[data-end]').forEach(function(r){ r.removeAttribute('data-end'); }); }catch(e){} sch(); });
   setInterval(function(){ try{ if(!document.hidden&&typeof SESSION!=='undefined'&&SESSION) window.plEndsLoad(); }catch(e){} },120000);
   setTimeout(function(){ try{ window.plEndsLoad(); }catch(e){} },4000);
@@ -10307,6 +10335,64 @@ function pdCopy(t){ try{ if(navigator.clipboard&&navigator.clipboard.writeText){
 function pdShare(link){ try{ var m=L('انضم إلى PayLoop واربح من المهام والألعاب والاستطلاعات:','Join PayLoop and earn from tasks, games and surveys:','Rejoignez PayLoop et gagnez avec des tâches, jeux et sondages :'); if(navigator.share){ navigator.share({title:'PayLoop',text:m,url:link}).catch(function(){}); } else { pdCopy(m+' '+link); } }catch(e){} }
 var PUBD_T='earn';
 function pdShareTo(k,link){ try{ var m=L('انضم إلى PayLoop واربح من المهام والألعاب والاستطلاعات:','Join PayLoop and earn from tasks, games and surveys:','Rejoignez PayLoop et gagnez avec des tâches, jeux et sondages :')+' '+link; var u=(k==='wa')?'https://wa.me/?text='+encodeURIComponent(m):'https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(m.replace(' '+link,'')); window.open(u,'_blank','noopener'); }catch(e){} }
+/* ===== روابط فيديوهات الناشر ===== */
+var PUBL=null, PL_LK_V=[''], PL_LK_BUSY=false, ADM_PVL=null, ADM_PLC={};
+var PL_LK_ICON={youtube:'▶️',tiktok:'🎵',instagram:'📸',facebook:'📘',x:'✖️',telegram:'✈️',snapchat:'👻',other:'🔗'};
+function lkSafe(u){ return typeof u==='string'&&/^https:\/\/[^\s<>"']+$/.test(u); }
+function lkStatus(s){ return s==='approved'?{c:'#22c55e',t:'✅ '+L('معتمد','Approved','Approuvé')}:s==='rejected'?{c:'#f87171',t:'❌ '+L('مرفوض','Rejected','Refusé')}:{c:'#f59e0b',t:'⏳ '+L('قيد المراجعة','Under review','En attente')}; }
+function lkCapture(){ try{ var els=document.querySelectorAll('#pubdash-body .pl-lk-in'); if(els.length){ PL_LK_V=Array.prototype.map.call(els,function(e){ return e.value; }); } }catch(e){} }
+async function plLinksLoad(force){
+  try{ if(!SRV||!SRV.on||!SRV.on()||PL_LK_BUSY) return; PL_LK_BUSY=true; var r=await SRV.rpc('publisher_links',{}); if(r&&r.ok===true) PUBL=r.rows||[]; }catch(e){} if(!PUBL) PUBL=[];
+  PL_LK_BUSY=false; try{ lkCapture(); paintPubDash(); }catch(e){}
+}
+function lkList(rows,adm){
+  if(!rows||!rows.length) return '<div class="up-em">'+L('لم تُضف أي رابط بعد','No links added yet','Aucun lien ajouté')+'</div>';
+  return rows.map(function(x){
+    var s=lkStatus(x.status), ok=lkSafe(x.url), ic=PL_LK_ICON[x.platform]||'🔗', id=Number(x.id)||0;
+    return '<div class="pl-lk"><div class="pl-lk-h"><span>'+ic+'</span><a '+(ok?'href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer nofollow"':'')+' dir="ltr">'+esc(x.url.length>60?x.url.slice(0,57)+'…':x.url)+'</a><em style="color:'+s.c+'">'+s.t+'</em></div>'+
+      (x.note?'<div class="pl-lk-n">📝 '+esc(x.note)+'</div>':'')+
+      (x.admin_note?'<div class="pl-lk-n" style="color:#fbbf24">💬 '+L('ملاحظة الإدارة','Admin note','Note')+': '+esc(x.admin_note)+'</div>':'')+
+      '<div class="pl-lk-f"><small>'+esc(pdD(x.created_at))+'</small>'+
+      (adm?'<input class="pl-lk-an" id="lkn-'+id+'" maxlength="200" placeholder="'+esc(L('ملاحظة للناشر (اختياري)','Note to creator (optional)','Note'))+'"><button type="button" class="pl-lk-ok" onclick="admLkReview('+id+',\'approved\')">✅</button><button type="button" class="pl-lk-no" onclick="admLkReview('+id+',\'rejected\')">❌</button>'
+           :(x.status!=='approved'?'<button type="button" class="pl-lk-del" onclick="pdLkDel('+id+')">🗑 '+L('حذف','Delete','Suppr.')+'</button>':''))+'</div></div>';
+  }).join('');
+}
+function pdLinksHtml(adm){
+  var rows=adm?(ADM_PVL&&ADM_PVL.rows):PUBL;
+  var h='<div class="pd-card"><div class="pd-row"><b>🎬 '+L(adm?'فيديوهات الناشر':'فيديوهاتك المنشورة','Published videos','Vidéos publiées')+'</b>'+(rows?'<span>'+rows.length+'</span>':'')+'</div>';
+  if(!adm){
+    var vals=PL_LK_V.length?PL_LK_V:[''];
+    h+='<div class="pd-note" style="margin:6px 0 10px">'+L('ضع هنا رابط كل فيديو نشرته على يوتيوب أو تيك توك أو إنستغرام أو فيسبوك ليراجعه فريقنا. الروابط يجب أن تبدأ بـ https://','Add the link of each video you published (YouTube, TikTok, Instagram, Facebook…) for our team to review. Links must start with https://','Ajoutez le lien de chaque vidéo publiée. Les liens doivent commencer par https://')+'</div>'+
+      vals.map(function(v,i){ return '<input class="pl-lk-in" dir="ltr" inputmode="url" autocomplete="off" maxlength="500" placeholder="https://..." value="'+esc(v)+'">'; }).join('')+
+      '<div class="pd-acts">'+(vals.length<5?'<button type="button" class="pd-btn ghost" onclick="pdLkMore()">＋ '+L('إضافة خانة أخرى','Add another field','Ajouter un champ')+'</button>':'')+'<button type="button" class="pd-btn" onclick="pdLkSend()">📤 '+L('إرسال الروابط','Submit links','Envoyer')+'</button></div>';
+  }
+  return h+'<div style="margin-top:12px">'+(rows?lkList(rows,adm):'<div class="up-em">⏳</div>')+'</div></div>';
+}
+function pdLkMore(){ lkCapture(); if(PL_LK_V.length<5) PL_LK_V.push(''); paintPubDash(true); }
+async function pdLkSend(){
+  lkCapture(); var vals=PL_LK_V.map(function(v){ return String(v||'').trim(); }), todo=vals.filter(Boolean);
+  if(!todo.length){ toast(L('اكتب رابطاً أولاً','Enter a link first','Saisissez un lien')); return; }
+  var bad=todo.filter(function(u){ return !/^https:\/\/[^\s<>"'`]{4,480}$/.test(u); });
+  if(bad.length){ toast(L('الرابط يجب أن يبدأ بـ https:// ولا يحتوي مسافات','Links must start with https:// and contain no spaces','Le lien doit commencer par https://')); return; }
+  if(PL_LK_BUSY) return; PL_LK_BUSY=true; var okN=0, why='', left=[];
+  try{
+    for(var i=0;i<vals.length;i++){ var u=vals[i]; if(!u) continue; var r=null; try{ r=await SRV.rpc('publisher_link_add',{p_url:u,p_note:null}); }catch(e){}
+      if(r&&r.ok===true) okN++; else { why=(r&&r.why)||'err'; left.push(u); } }
+  }catch(e){}
+  PL_LK_BUSY=false; PL_LK_V=left.length?left:['']; 
+  var msg={dup:L('بعض الروابط مضافة سابقاً','Some links were already added','Déjà ajouté'),bad_url:L('رابط غير صالح','Invalid link','Lien invalide'),limit:L('وصلت للحد الأقصى (60 رابطاً)','Limit reached (60 links)','Limite atteinte'),rate:L('تجاوزت الحد اليومي (20 رابطاً)','Daily limit reached (20 links)','Limite journalière'),not_publisher:L('هذه الميزة للناشرين فقط','Creators only','Réservé aux créateurs'),err:L('تعذّر الإرسال، حاول لاحقاً (شغّل ملف 113 إن لم تفعل)','Could not submit, try later','Échec')}[why]||'';
+  toast(okN?(L('✅ تم إرسال '+okN+' رابط للمراجعة','✅ '+okN+' link(s) submitted for review','✅ '+okN+' lien(s) envoyé(s)')+(msg?' — '+msg:'')):msg);
+  plLinksLoad(true);
+}
+function pdLkDel(id){ ntfConfirm(L('حذف الرابط','Delete link','Supprimer'),L('هل تريد حذف هذا الرابط؟','Delete this link?','Supprimer ce lien ?'),L('حذف','Delete','Supprimer'),true,async function(){ try{ await SRV.rpc('publisher_link_delete',{p_id:id}); }catch(e){} ntfConfirmClose(); plLinksLoad(true); }); }
+async function admLkReview(id,st){
+  var n=(document.getElementById('lkn-'+id)||{}).value||''; var r=null;
+  try{ r=await SRV.rpc('admin_publisher_link_review',{p_id:id,p_status:st,p_note:n}); }catch(e){}
+  if(!(r&&r.ok===true)){ toast(L('تعذّر الحفظ','Could not save','Échec')); return; }
+  toast(st==='approved'?L('✅ اعتُمد','✅ Approved','✅ Approuvé'):L('تم الرفض','Rejected','Refusé'));
+  try{ const x=await SRV.rpc('admin_publisher_links',{p_id:ADM_PVID}); if(x&&x.ok) ADM_PVL=x; }catch(e){}
+  try{ admPubViewPaint(); }catch(e){}
+}
 function pdTab(k){ PUBD_T=k; try{ if(PD_ADM){ if(typeof admPubViewPaint==='function') admPubViewPaint(); } else paintPubDash(); }catch(e){} }
 function pdSince(t){ var s=pdD(t); return s?s:''; }
 function pdHtml(d,adm){
@@ -10354,6 +10440,7 @@ function pdHtml(d,adm){
      '<div class="pd-link" dir="ltr">'+esc(link)+'</div><div class="pd-row sm"><span>'+L('رمز الدعوة','Invite code','Code')+'</span><b dir="ltr">'+esc(d.ref_code)+'</b></div>'+
      '<div class="pd-acts"><button type="button" class="pd-btn" onclick="pdCopy(\''+esc(link)+'\')">📋 '+L('نسخ الرابط','Copy link','Copier')+'</button><button type="button" class="pd-btn ghost" onclick="pdShare(\''+esc(link)+'\')">📤 '+L('مشاركة','Share','Partager')+'</button></div>'+
      '<div class="pd-acts"><button type="button" class="pd-btn wa" onclick="pdShareTo(\'wa\',\''+esc(link)+'\')">WhatsApp</button><button type="button" class="pd-btn tg" onclick="pdShareTo(\'tg\',\''+esc(link)+'\')">Telegram</button></div></div>';
+  h+=pdLinksHtml(!!adm);
   /* ===== للمشرف فقط: القائمة الكاملة ===== */
   if(adm&&inv){
     var list=inv.filter(function(x){ return PUBD_F==='all'||(PUBD_F==='act'?x.active:!x.active); });
@@ -10368,18 +10455,18 @@ function pdHtml(d,adm){
   return h+'</div>';
 }
 function pdFilter(k){ PUBD_F=k; try{ if(PD_ADM){ if(typeof admPubViewPaint==='function') admPubViewPaint(); } else paintPubDash(); }catch(e){} }
-function paintPubDash(){ var b=document.getElementById('pubdash-body'); if(!b) return; if(!PUBD){ b.innerHTML='<div class="adm-empty">⏳</div>'; return; } if(!PUBD.ok){ b.innerHTML='<div class="pd-no"><div style="font-size:42px">🌟</div><b>'+L('هذه الصفحة مخصّصة للناشرين فقط','This page is for creator partners only','Page réservée aux partenaires')+'</b></div>'; return; } PD_ADM=false; b.innerHTML=pdHtml(PUBD,false); }
+function paintPubDash(nc){ var b=document.getElementById('pubdash-body'); if(!b) return; if(!PUBD){ b.innerHTML='<div class="adm-empty">⏳</div>'; return; } if(!PUBD.ok){ b.innerHTML='<div class="pd-no"><div style="font-size:42px">🌟</div><b>'+L('هذه الصفحة مخصّصة للناشرين فقط','This page is for creator partners only','Page réservée aux partenaires')+'</b></div>'; return; } PD_ADM=false; if(!nc) lkCapture(); b.innerHTML=pdHtml(PUBD,false); }
 async function renderPubDash(force){
   paintPubDash();
   try{
     if(!SRV||!SRV.on||!SRV.on()||PUBD_BUSY) return; if(!force&&PUBD&&Date.now()-PUBD_AT<20000) return;
     PUBD_BUSY=true; const r=await SRV.rpc('publisher_dashboard',{}); if(r&&typeof r.ok==='boolean'){ PUBD=r; PUBD_AT=Date.now(); }
-  }catch(e){} PUBD_BUSY=false; paintPubDash();
+  }catch(e){} PUBD_BUSY=false; paintPubDash(); try{ if(PUBD&&PUBD.ok&&(force||!PUBL)) plLinksLoad(); }catch(e){}
 }
 
 /* ===== لوحة الإدارة > قسم الناشرين ===== */
 var ADM_PVID='', ADM_PV=null;
-async function admPubView(id){ ADM_PVID=id; ADM_PV=null; PUBD_F='all'; PD_ADM=true; admPubViewPaint(); try{ const r=await SRV.rpc('admin_publisher_detail',{p_id:id}); if(ADM_PVID===id) ADM_PV=r; }catch(e){} admPubViewPaint(); }
+async function admPubView(id){ ADM_PVID=id; ADM_PV=null; PUBD_F='all'; PD_ADM=true; admPubViewPaint(); try{ const r=await SRV.rpc('admin_publisher_detail',{p_id:id}); if(ADM_PVID===id) ADM_PV=r; }catch(e){} admPubViewPaint(); try{ ADM_PVL=null; const x=await SRV.rpc('admin_publisher_links',{p_id:id}); if(ADM_PVID===id) ADM_PVL=(x&&x.ok)?x:{rows:[]}; }catch(e){ ADM_PVL={rows:[]}; } admPubViewPaint(); }
 function admPubViewPaint(){
   const box=document.getElementById('adm-body'); if(!box||ADM_TAB!=='pub') return; PD_ADM=true;
   const back='<button type="button" class="pd-back" onclick="ADM_PVID=\'\'; renderAdmPub(true)">← '+L('كل الناشرين','All creators','Tous les créateurs')+'</button>';
@@ -10404,6 +10491,7 @@ async function renderAdmPub(force){
       let r=null; try{ r=await SRV.rpc('admin_publisher_report',{}); }catch(e){}
       if(r&&r.ok&&Array.isArray(r.rows)){ ADM_PB={ok:true,rows:r.rows,v2:true,sum:r}; }
       else { r=await SRV.rpc('admin_list_publishers',{}); if(r&&r.ok&&Array.isArray(r.rows)) ADM_PB=r; }
+      try{ const c=await SRV.rpc('admin_publisher_link_counts',{}); if(c&&typeof c==='object'&&!Array.isArray(c)&&c.ok!==false) ADM_PLC=c; }catch(e){}
       if(ADM_PB&&Array.isArray(ADM_PB.rows)){ ADM_PB_AT=Date.now(); const m={}; ADM_PB.rows.forEach(function(x){ m[String(x.id)]=1; }); ADM_PUBSET=m; }
     }catch(e){}
     ADM_PB_BUSY=false; if(ADM_TAB!=='pub') return;
@@ -10423,7 +10511,7 @@ async function renderAdmPub(force){
       '<span>👥 '+f(x.refs)+' '+L('دعاهم','invited','invités')+'</span><span>💰 $'+Number(x.earned!=null?x.earned:x.earned_usd||0).toFixed(4)+'</span>'+(ADM_PB.v2?'<span>✅ '+f(x.active)+' '+L('نشطون','active','actifs')+'</span><span>🆕 '+f(x.new24)+' '+L('اليوم','today','auj.')+'</span><span>💳 $'+Number(x.bal||0).toFixed(2)+'</span><span>🏦 '+L('سحب','withdrew','retiré')+' $'+Number(x.withdrawn||0).toFixed(2)+'</span>':'')+'<span>'+L('منذ','since','depuis')+' '+esc(String(x.since||'').slice(0,10))+'</span>'+
       (x.last_seen?'<span>'+L('آخر ظهور','last seen','vu')+' '+esc(String(x.last_seen).slice(0,10))+'</span>':'')+'</div>'+
       (x.note?'<div class="pb-note">📝 '+esc(x.note)+'</div>':'')+
-      (ADM_PB.v2?'<button type="button" class="pb-v" onclick="admPubView(\''+esc(x.id)+'\')">👁 '+L('عرض لوحته كما يراها','View his dashboard','Voir son tableau')+'</button>':'')+
+      ((ADM_PLC[x.id]&&ADM_PLC[x.id].total)?'<div class="pb-note" style="color:'+(ADM_PLC[x.id].pending?'#fbbf24':'#9fb3d9')+'">🎬 '+ADM_PLC[x.id].total+' '+L('فيديو','videos','vidéos')+(ADM_PLC[x.id].pending?' · ⏳ '+ADM_PLC[x.id].pending+' '+L('بانتظار مراجعتك','waiting for review','à vérifier'):'')+'</div>':'')+(ADM_PB.v2?'<button type="button" class="pb-v" onclick="admPubView(\''+esc(x.id)+'\')">👁 '+L('عرض لوحته كما يراها','View his dashboard','Voir son tableau')+'</button>':'')+
       '<button type="button" class="pb-x'+(armed?' armed':'')+'" onclick="admPubRemove(\''+esc(x.id)+'\')">'+(armed?'✓ '+L('اضغط مرة أخرى للتأكيد','Tap again to confirm','Confirmer'):'🗑️ '+L('إزالة صفة ناشر','Remove creator','Retirer'))+'</button></div>';
   }).join('')||'<div class="up-em">'+L('لا ناشرين بعد — أضف أول ناشر من الأعلى','No creators yet — add the first one above','Aucun créateur — ajoutez le premier')+'</div>';
   box.innerHTML=cards+intro+add+list;
@@ -13608,7 +13696,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
   function fn(q){ return RealAuth.base()+'/functions/v1/rapid-api?action='+q; }
   function usd(n){ n=Number(n)||0; return '$'+(n>=0.01?n.toFixed(2):n.toFixed(3)); }
   function hdr(t){ return {'Authorization':'Bearer '+t,'apikey':RealAuth.key()}; }
-  function redraw(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
+  function redraw(){ try{ window.plRedrawTasks(); }catch(e){} }
   function cKey(){ var u=''; try{ u=(RealAuth.getSession()||{}).uid||''; }catch(e){} return 'pl-owm-g:'+u; }
   function readCache(){ try{ var c=JSON.parse(localStorage.getItem(cKey())||'null'); if(c&&Array.isArray(c.items)&&Date.now()-c.t<86400000){ G=c.items; GT=0; } }catch(e){} }
   function saveCache(){ try{ var t=JSON.stringify({t:Date.now(),items:G}); if(t.length<400000) localStorage.setItem(cKey(),t); }catch(e){} }
@@ -13647,17 +13735,19 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
       var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
       var art=''; try{ art=artHTML('games'); }catch(e){}
       var html='';
+      var _ex={}; box.querySelectorAll('.owm-g[data-oid]').forEach(function(e){ _ex[e.getAttribute('data-oid')]=1; });
+      var parts=[], ids=[], _pd=(box.__pendLast&&box.__pendLast.parentNode===box&&box.__pend)||{};
       show.forEach(function(g){
-        if(box.querySelector('.owm-g[data-oid="'+esc(g.id)+'"]')) return;
+        if(_ex[String(g.id)]||_pd['o:'+g.id]) return;
         var img=g.image?'<img decoding="async" class="card-artwork" src="'+esc(g.image)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':art;
         var n=g.multi?g.nsteps:0;
-        html+='<div class="trow owm-g" data-oid="'+esc(g.id)+'" onclick="owmOpenGame(this.getAttribute(\'data-oid\'))">'
+        ids.push('o:'+g.id); parts.push('<div class="trow owm-g" data-oid="'+esc(g.id)+'" onclick="owmOpenGame(this.getAttribute(\'data-oid\'))">'
           +'<div class="t-icon art'+(g.image?' has-img':'')+'">'+img+'</div>'
           +'<div class="t-info"><div class="t-head"><b class="t-amt">'+usd(g.usd)+'</b><span class="t-amtl">'+(g.multi?L('المجموع','Total','Total'):L('المكافأة','Reward','Gain'))+'</span></div>'
           +'<h4>'+esc(g.name||'')+'</h4><span class="t-tag ext">🌐 '+L('خارجية','External','Externe')+'</span>'+(STM[g.id]?'<span class="t-tag" style="background:#f59e0b22;color:#f59e0b">'+L('إكمال','Continue','Reprendre')+'</span>':'<span class="t-tag" style="background:#22c55e22;color:#22c55e">'+L('جديد','New','Nouveau')+'</span>')+((g.plat==='android'||g.plat==='ios')?'<span class="t-tag" style="background:rgba(56,189,248,.14);color:#7dd3fc">'+ptxt(g.plat)+'</span>':'')
-          +'<div class="meta"><span>📶 '+(n?n+' '+L('خطوات','steps','étapes'):L('مهمة واحدة','Single task','Une tâche'))+'</span></div></div>'+go+'</div>';
+          +'<div class="meta"><span>📶 '+(n?n+' '+L('خطوات','steps','étapes'):L('مهمة واحدة','Single task','Une tâche'))+'</span></div></div>'+go+'</div>');
       });
-      if(html){ try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){} box.insertAdjacentHTML('afterbegin',html); }
+      if(parts.length){ try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){} window.plChunkInsert(box,parts,ids); }
     }catch(e){}
   };
   window.owmOpenGame=function(id){
@@ -14132,24 +14222,26 @@ function openOfferwall(){
       var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
       var art=''; try{ art=artHTML('games'); }catch(e){}
       var html='';
+      var _exg={}; box.querySelectorAll('.ow-row[data-gid]').forEach(function(e){ _exg[e.getAttribute('data-gid')]=1; });
+      var parts=[], ids=[], _pd=(box.__pendLast&&box.__pendLast.parentNode===box&&box.__pend)||{};
       show.forEach(function(g){
-        if(box.querySelector('.ow-row[data-gid="'+g.gid+'"]')) return;
+        if(_exg[String(g.gid)]||_pd['g:'+g.gid]) return;
         var n=(g.goals||[]).length, dn=0; try{ dn=window.owGameDone?window.owGameDone(g):0; }catch(e){}
         var st=gState(g);
         var amt=(g.reward==null)?L('يختلف','Varies','Variable'):'$'+Number(g.reward).toFixed(2);
         var img=g.img?'<img decoding="async" class="card-artwork" src="'+esc(g.img)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':art;
         var hot=(cat==='all'&&g.featured);
         var btn=(st==='done')?'<button class="go done" disabled>✓</button>':go;
-        html+='<div class="trow ow-row'+(hot?' has-hot':'')+'" data-gid="'+g.gid+'" onclick="openOwGame('+g.gid+')">'
+        ids.push('g:'+g.gid); parts.push('<div class="trow ow-row'+(hot?' has-hot':'')+'" data-gid="'+g.gid+'" onclick="openOwGame('+g.gid+')">'
           +(hot?'<span class="ow-hot" aria-hidden="true"></span>':'')
           +'<div class="t-icon art'+(g.img?' has-img':'')+'">'+img+'</div>'
           +'<div class="t-info"><div class="t-head"><b class="t-amt">'+amt+'</b><span class="t-amtl">'+L('المجموع','Total','Total')+'</span></div>'
           +'<h4>'+esc(g.name||'')+'</h4><span class="t-tag ext">🌐 '+L('خارجية','External','Externe')+'</span>'
           +'<div class="meta">'+(st==='started'?'<span class="t-cd y">▶ '+L('أكمل','Continue','Continuer')+'</span>':'')+(st==='done'?'<span class="t-ok">✓ '+L('تم الإكمال','Completed','Terminé')+'</span>':'')
           +(g.ready?'<span>📶 '+(n?n+' '+L('خطوات','steps','étapes'):L('مهمة واحدة','Single task','Une tâche'))+'</span>':'<span>'+L('غير متاحة الآن','Unavailable now','Indisponible')+'</span>')
-          +((dn&&st!=='done')?'<span>✅ '+L('أنجزت '+dn,'Done '+dn,'Fait '+dn)+'</span>':'')+'</div></div>'+btn+'</div>';
+          +((dn&&st!=='done')?'<span>✅ '+L('أنجزت '+dn,'Done '+dn,'Fait '+dn)+'</span>':'')+'</div></div>'+btn+'</div>');
       });
-      if(html){ try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){} box.insertAdjacentHTML('afterbegin',html); }
+      if(parts.length){ try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){} window.plChunkInsert(box,parts,ids); }
     }catch(e){}
   }
   window.renderTasks=function(cat){
@@ -15153,7 +15245,7 @@ function openOfferwall(){
   function usd(n){ n=Number(n)||0; return '$'+(n>=0.01?n.toFixed(2):n.toFixed(3)); }
   function nf(n){ try{ return Number(n).toLocaleString('en-US'); }catch(e){ return String(n); } }
   function httpsOk(u){ return /^https:\/\/[^\s]+$/i.test(String(u||'')); }
-  function redraw(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
+  function redraw(){ try{ window.plRedrawTasks(); }catch(e){} }
   function readCache(){ try{ var c=JSON.parse(localStorage.getItem(ck())||'null'); if(c&&Array.isArray(c.items)&&Date.now()-c.t<86400000){ C=c.items; CT=0; } }catch(e){} }
   function saveCache(){ try{ var t=JSON.stringify({t:Date.now(),items:C}); if(t.length<300000) localStorage.setItem(ck(),t); }catch(e){} }
   function load(force){
@@ -15200,7 +15292,7 @@ function openOfferwall(){
       var box=document.getElementById('tlist'); if(!box) return;
       var show=eligible(cat); if(!show.length) return;
       var html='';
-      show.forEach(function(c){ if(!box.querySelector('.camp-row[data-cid="'+String(c.id).replace(/"/g,'')+'"]')) html+=card(c); });
+      var _exc={}; box.querySelectorAll('.camp-row[data-cid]').forEach(function(e){ _exc[e.getAttribute('data-cid')]=1; }); show.forEach(function(c){ if(!_exc[String(c.id).replace(/"/g,'')]) html+=card(c); });
       if(!html) return;
       try{ var _e=box.querySelector('.te-wrap,.tempty'); if(_e&&(cat==='camps'||!box.querySelector('.trow'))) _e.remove(); }catch(e){}
       box.insertAdjacentHTML('afterbegin',html);
@@ -15451,7 +15543,7 @@ function openOfferwall(){
   function pm(k){ return PM[k]||PM.other; }
   function usd(n){ n=Number(n)||0; return '$'+(n>=0.01?n.toFixed(2):n.toFixed(4)); }
   function httpsOk(u){ return /^https:\/\/[^\s]+$/i.test(String(u||'')); }
-  function redraw(){ try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }
+  function redraw(){ try{ window.plRedrawTasks(); }catch(e){} }
   function load(force){
     if(LOADING) return; if(!force&&S&&Date.now()-ST<90000) return;
     try{ if(!SRV||!SRV.on()||!SESSION) return; }catch(e){ return; }
@@ -15483,7 +15575,7 @@ function openOfferwall(){
       load(false);
       var box=document.getElementById('tlist'); if(!box) return;
       var show=eligible(cat); if(!show.length) return; var html='';
-      show.forEach(function(t){ if(!box.querySelector('.soc-row[data-sid="'+String(t.id).replace(/"/g,'')+'"]')) html+=card(t); });
+      var _exs={}; box.querySelectorAll('.soc-row[data-sid]').forEach(function(e){ _exs[e.getAttribute('data-sid')]=1; }); show.forEach(function(t){ if(!_exs[String(t.id).replace(/"/g,'')]) html+=card(t); });
       if(!html) return;
       try{ var _e=box.querySelector('.te-wrap,.tempty'); if(_e&&!box.querySelector('.trow')) _e.remove(); }catch(e){}
       box.insertAdjacentHTML('afterbegin',html);
