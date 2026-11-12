@@ -121,7 +121,7 @@ try{ var _vf=localStorage.getItem('pl-vpn'); if(_vf&&Date.now()-Number(_vf)<6*36
 }catch(e){} })();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.11-r160';
+window.PL_BUILD='2026.11.12-r169';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -313,7 +313,61 @@ else if(_o!=='0'&&((_m&&_m<=4)||(_c&&_c<=4))) document.documentElement.classList
   var DIS=false; function dismissed(){ return DIS; } /* ✕ يخفي الشريط حتى تحديث الصفحة فقط، وليس نهائيًا */
   function mode(){ if(standalone()||inApp()) return ''; if(installed()) return ''; if(DEF) return 'prompt'; if(isIOS()) return 'ios'; if(CHK&&isAndroid()) return 'guide'; return ''; }  /* داخل متصفحات التطبيقات يتولّى شريط «افتح في المتصفح» الموجود مسبقًا الأمر */
   function hide(){ var b=document.getElementById('pl-inst'); if(b) b.remove(); document.documentElement.classList.remove('pl-inst'); shown=false; }
-  function sheet(m,cu){ var L=T[LGs()], el=document.createElement('div'); el.id='pl-inst-sh'; if(cu){ L={h:cu.h,ios:cu.st,x:L.x}; }
+
+  /* ===== r168: شرح تثبيت آيفون بالرسوم التوضيحية (رسوم SVG مرسومة داخل التطبيق تحاكي واجهة Safari؛ وليست لقطات شاشة حقيقية) ===== */
+  var IX={
+    ar:{h:'ثبّت PayLoop على آيفون',sub:'4 خطوات سريعة — بدون App Store',
+      st:[['افتح PayLoop في متصفح Safari','يجب أن يكون الموقع مفتوحًا في Safari نفسه (الأيقونة الزرقاء كالبوصلة).'],['اضغط زر المشاركة','الأيقونة ⬆️ في الشريط السفلي من Safari.'],['اختر «إضافة إلى الشاشة الرئيسية»','مرّر القائمة للأسفل إن لم تجدها.'],['اضغط «إضافة»','في أعلى الشاشة. هكذا يكتمل التثبيت.']],
+      done:'ستظهر أيقونة PayLoop بين تطبيقاتك — افتحها من هناك دائمًا (هكذا تعمل الإشعارات أيضًا).',lbl:'إضافة إلى الشاشة الرئيسية',add:'إضافة',cancel:'إلغاء',
+      sw:'أنت لا تستخدم Safari',swd:'على الآيفون يتم التثبيت من Safari. انسخ الرابط وافتحه هناك، أو افتح Safari والصقه.',cp:'📋 نسخ الرابط',cpd:'✅ تم نسخ الرابط — الصقه في Safari',close:'إغلاق'},
+    en:{h:'Install PayLoop on iPhone',sub:'4 quick steps — no App Store needed',
+      st:[['Open PayLoop in Safari','The site must be open in Safari itself (the blue compass icon).'],['Tap the Share button','The ⬆️ icon in Safari’s bottom bar.'],['Choose “Add to Home Screen”','Scroll the list down if you do not see it.'],['Tap “Add”','At the top of the screen. That completes the install.']],
+      done:'The PayLoop icon will appear among your apps — always open it from there (that is also how notifications work).',lbl:'Add to Home Screen',add:'Add',cancel:'Cancel',
+      sw:'You are not using Safari',swd:'On iPhone, installing is done from Safari. Copy the link and open it there, or open Safari and paste it.',cp:'📋 Copy link',cpd:'✅ Link copied — paste it in Safari',close:'Close'},
+    fr:{h:'Installer PayLoop sur iPhone',sub:'4 étapes rapides — sans App Store',
+      st:[['Ouvrez PayLoop dans Safari','Le site doit être ouvert dans Safari lui-même (l’icône boussole bleue).'],['Touchez le bouton Partager','L’icône ⬆️ dans la barre du bas de Safari.'],['Choisissez « Sur l’écran d’accueil »','Faites défiler la liste si besoin.'],['Touchez « Ajouter »','En haut de l’écran. L’installation est terminée.']],
+      done:'L’icône PayLoop apparaîtra parmi vos apps — ouvrez-la toujours depuis là (les notifications en dépendent).',lbl:'Sur l’écran d’accueil',add:'Ajouter',cancel:'Annuler',
+      sw:'Vous n’utilisez pas Safari',swd:'Sur iPhone, l’installation se fait depuis Safari. Copiez le lien et ouvrez-le là-bas.',cp:'📋 Copier le lien',cpd:'✅ Lien copié — collez-le dans Safari',close:'Fermer'}};
+  function isSafariIOS(){ return isIOS()&&!inApp()&&!/CriOS|FxiOS|EdgiOS|OPiOS|OPT\/|DuckDuckGo|GSA\/|YaBrowser|Brave/i.test(UA); }
+  function svgSteps(X){
+    var S='<svg viewBox="0 0 300 130" width="100%" role="img" aria-hidden="true" style="display:block;background:#0b1220;border-radius:14px">', E='</svg>';
+    var share=function(x,y,c){ return '<g transform="translate('+x+','+y+')" fill="none" stroke="'+c+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M-8 -1v11h16v-11"/><path d="M0 6v-17M-5 -6l5-5 5 5"/></g>'; };
+    var hl=function(x,y,r){ return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="none" stroke="#38bdf8" stroke-width="2.5"><animate attributeName="r" values="'+r+';'+(r+5)+';'+r+'" dur="1.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.35;1" dur="1.4s" repeatCount="indefinite"/></circle>'; };
+    var bar=function(){ return '<rect x="6" y="88" width="288" height="36" rx="12" fill="#1e293b"/><path d="M34 106l7-7m-7 7l7 7" stroke="#64748b" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M82 99l7 7-7 7" stroke="#64748b" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+share(150,106,'#e2e8f0')+'<rect x="212" y="98" width="18" height="16" rx="3" fill="none" stroke="#64748b" stroke-width="2"/><rect x="254" y="98" width="16" height="16" rx="3" fill="none" stroke="#64748b" stroke-width="2"/>'; };
+    var ico=function(x,y,s){ return '<image href="'+LOGO+'" x="'+x+'" y="'+y+'" width="'+s+'" height="'+s+'" />'; };
+    var a1=S+'<rect x="6" y="6" width="288" height="52" rx="12" fill="#1e293b"/><circle cx="30" cy="32" r="12" fill="#2563eb"/><path d="M30 24l4 9-9 3z" fill="#fff"/><rect x="52" y="19" width="232" height="26" rx="13" fill="#0f172a"/><text x="168" y="37" fill="#e2e8f0" font-size="13" text-anchor="middle" font-family="system-ui,sans-serif">'+(location.host+(location.pathname.split('/')[1]?'/'+location.pathname.split('/')[1]:'')).replace(/[<>&"]/g,'').slice(0,34)+'</text>'+hl(30,32,17)+'<text x="150" y="88" fill="#94a3b8" font-size="11" text-anchor="middle" font-family="system-ui,sans-serif">Safari</text>'+E;
+    var a2=S+'<rect x="6" y="6" width="288" height="76" rx="12" fill="#0f172a"/>'+ico(126,16,36)+'<rect x="80" y="62" width="140" height="7" rx="3.5" fill="#1e293b"/>'+bar()+hl(150,106,19)+E;
+    var row=function(y,t,on,ic){ return '<rect x="22" y="'+y+'" width="256" height="30" rx="9" fill="'+(on?'#1d4ed8':'#1e293b')+'"/><text x="40" y="'+(y+20)+'" fill="#f8fafc" font-size="12.5" font-family="system-ui,sans-serif" '+(on?'font-weight="700"':'')+'>'+t+'</text>'+(ic||''); };
+    var plus='<g transform="translate(258,0)" fill="none" stroke="#f8fafc" stroke-width="2" stroke-linecap="round"><rect x="-9" y="-9" width="18" height="18" rx="4" transform="translate(0,'+0+')" /></g>';
+    var a3=S+'<rect x="6" y="6" width="288" height="118" rx="14" fill="#0f172a"/>'+row(14,'Copy',false)+row(48,'Add to Bookmarks',false)+row(82,X.lbl,true,'<g transform="translate(260,97)" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="-9" y="-9" width="18" height="18" rx="4"/><path d="M0 -4v8M-4 0h8"/></g>')+'<rect x="18" y="78" width="264" height="38" rx="11" fill="none" stroke="#38bdf8" stroke-width="2.5"><animate attributeName="opacity" values="1;.35;1" dur="1.4s" repeatCount="indefinite"/></rect>'+E;
+    var a4=S+'<rect x="6" y="6" width="288" height="118" rx="14" fill="#0f172a"/><text x="24" y="30" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">'+X.cancel+'</text><text x="150" y="30" fill="#f8fafc" font-size="12.5" font-weight="700" text-anchor="middle" font-family="system-ui,sans-serif">'+X.lbl+'</text><text x="276" y="30" fill="#38bdf8" font-size="13" font-weight="800" text-anchor="end" font-family="system-ui,sans-serif">'+X.add+'</text>'+hl(262,26,22)+ico(26,52,50)+'<rect x="92" y="58" width="150" height="16" rx="8" fill="#1e293b"/><text x="102" y="70" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">PayLoop</text><rect x="92" y="84" width="170" height="8" rx="4" fill="#1e293b"/>'+E;
+    var cells=''; for(var i=0;i<8;i++){ if(i!==5) cells+='<rect x="'+(34+(i%4)*60)+'" y="'+(16+Math.floor(i/4)*54)+'" width="40" height="40" rx="10" fill="#1e293b"/>'; }
+    var a5=S+'<rect x="6" y="6" width="288" height="118" rx="14" fill="#0f172a"/>'+cells+ico(34+60,16+54-0,40).replace('x="94" y="70"','x="154" y="70"')+'<text x="174" y="118" fill="#e2e8f0" font-size="10" text-anchor="middle" font-family="system-ui,sans-serif">PayLoop</text>'+E;
+    a5=S+'<rect x="6" y="6" width="288" height="118" rx="14" fill="#0f172a"/>'+cells+ico(154,70,40)+'<text x="174" y="118" fill="#e2e8f0" font-size="10" text-anchor="middle" font-family="system-ui,sans-serif">PayLoop</text>'+hl(174,90,27)+E;
+    return [a1,a2,a3,a4,a5];
+  }
+  function iosSheet(){ try{
+    var lg=LGs(), X=IX[lg]||IX.ar, rtl=lg==='ar', old=document.getElementById('pl-inst-sh'); if(old) old.remove();
+    var im=svgSteps(X), safari=isSafariIOS(), el=document.createElement('div'); el.id='pl-inst-sh'; el.setAttribute('dir',rtl?'rtl':'ltr');
+    el.style.cssText='position:fixed;inset:0;z-index:2147483100;background:rgba(2,6,23,.82);display:flex;align-items:flex-end;justify-content:center;font-family:Tajawal,system-ui,sans-serif';
+    var cards=X.st.map(function(s,i){ return '<div style="background:#111b30;border:1px solid #1f2d4a;border-radius:16px;padding:12px;margin-top:12px"><div style="display:flex;gap:10px;align-items:center;margin-bottom:9px"><span style="flex:none;width:28px;height:28px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px">'+(i+1)+'</span><div style="min-width:0"><b style="font-size:14.5px;display:block;line-height:1.4">'+s[0]+'</b><span style="font-size:12.2px;color:#9fb3d9;line-height:1.5;display:block">'+s[1]+'</span></div></div>'+im[i]+'</div>'; }).join('');
+    var sw=safari?'':'<div style="background:linear-gradient(135deg,#7c2d12,#9a3412);border-radius:16px;padding:12px;margin-top:12px"><b style="font-size:14.5px;display:block">⚠️ '+X.sw+'</b><span style="font-size:12.8px;line-height:1.6;display:block;margin:4px 0 10px;color:#ffedd5">'+X.swd+'</span><button id="pl-inst-cp" type="button" style="width:100%;border:0;border-radius:12px;padding:12px;font:900 14px inherit;background:#fff;color:#7c2d12">'+X.cp+'</button></div>';
+    el.innerHTML='<div style="width:100%;max-width:460px;max-height:94vh;overflow:auto;-webkit-overflow-scrolling:touch;background:#0f172a;color:#f2f5ff;border-radius:22px 22px 0 0;padding:16px 16px calc(22px + env(safe-area-inset-bottom,0px))"><div style="display:flex;align-items:center;gap:10px"><img src="'+LOGO+'" alt="" width="44" height="44" style="border-radius:11px;flex:none"><div style="flex:1;min-width:0"><b style="font-size:17px;display:block">'+X.h+'</b><span style="font-size:12.5px;color:#9fb3d9">'+X.sub+'</span></div><button id="pl-inst-cl0" type="button" aria-label="'+X.close+'" style="flex:none;border:0;background:#1e293b;color:#cbd5e1;border-radius:50%;width:34px;height:34px;font-size:18px">✕</button></div>'+sw+cards+'<div style="background:#052e1c;border:1px solid #14532d;border-radius:16px;padding:12px;margin-top:12px"><span style="font-size:13.2px;line-height:1.7;display:block;color:#bbf7d0">✅ '+X.done+'</span>'+im[4]+'</div><button id="pl-inst-cl" type="button" style="width:100%;margin-top:14px;border:1px solid #334155;border-radius:13px;padding:13px;font:800 14px inherit;background:transparent;color:#cbd5e1">'+X.close+'</button></div>';
+    el.addEventListener('click',function(e){ if(e.target===el||e.target.id==='pl-inst-cl'||e.target.id==='pl-inst-cl0') el.remove(); });
+    document.body.appendChild(el);
+    var cp=document.getElementById('pl-inst-cp'); if(cp) cp.onclick=function(){ var u=location.href.split('#')[0], ok=function(){ cp.textContent=X.cpd; }; try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(u).then(ok,function(){ legacy(); }); } else legacy(); }catch(e){ legacy(); } function legacy(){ try{ var ta=document.createElement('textarea'); ta.value=u; ta.style.cssText='position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); ok(); }catch(e){ cp.textContent=u; } } };
+  }catch(e){} }
+  /* رسالة نجاح حقيقية: فقط عند حدث appinstalled من المتصفح (أندرويد) أو عند أول تشغيل فعلي للتطبيق من الشاشة الرئيسية */
+  function okBanner(){ try{
+    if(!document.body||document.getElementById('pl-inst-ok')) return;
+    var lg=LGs(), tx={ar:['✅ تم تثبيت التطبيق بنجاح','أنت تستخدم PayLoop كتطبيق الآن'],en:['✅ App installed successfully','You are now using PayLoop as an app'],fr:['✅ Application installée avec succès','Vous utilisez maintenant PayLoop comme une appli']}[lg];
+    var b=document.createElement('div'); b.id='pl-inst-ok'; b.setAttribute('dir',lg==='ar'?'rtl':'ltr');
+    b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:2147483200;display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top)) 14px 10px;background:linear-gradient(135deg,#065f46,#0e7490);color:#fff;box-shadow:0 4px 18px rgba(0,0,0,.4);font-family:Tajawal,system-ui,sans-serif';
+    b.innerHTML='<img src="'+LOGO+'" alt="" width="38" height="38" style="border-radius:10px;flex:none"><div style="flex:1;min-width:0;line-height:1.35"><b style="font-size:14.5px;display:block">'+tx[0]+'</b><span style="font-size:12px;opacity:.9">'+tx[1]+'</span></div>';
+    document.body.appendChild(b); setTimeout(function(){ try{ b.remove(); }catch(e){} },6500);
+  }catch(e){} }
+  function welcomeOnce(){ try{ if(!standalone()) return; if(localStorage.getItem('pl-inst-welcome')) return; localStorage.setItem('pl-inst-welcome','1'); okBanner(); }catch(e){} }
+  function sheet(m,cu){ if(m==='ios'&&!cu) return iosSheet(); var L=T[LGs()], el=document.createElement('div'); el.id='pl-inst-sh'; if(cu){ L={h:cu.h,ios:cu.st,x:L.x}; }
     el.style.cssText='position:fixed;inset:0;z-index:2147483100;background:rgba(2,6,23,.78);display:flex;align-items:flex-end;justify-content:center;direction:'+(LGs()==='ar'?'rtl':'ltr');
     var st=L.ios.map(function(x,i){ return '<div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0"><span style="flex:none;width:30px;height:30px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900">'+(i+1)+'</span><span style="line-height:1.6;font-size:14.5px">'+x+'</span></div>'; }).join('');
     el.innerHTML='<div style="width:100%;max-width:460px;background:#0f172a;color:#f2f5ff;border-radius:22px 22px 0 0;padding:20px 20px 26px;font-family:Tajawal,system-ui,sans-serif"><b style="font-size:17px">'+L.h+'</b><div style="margin-top:8px">'+st+'</div>'
@@ -336,9 +390,9 @@ else if(_o!=='0'&&((_m&&_m<=4)||(_c&&_c<=4))) document.documentElement.classList
       else if(mm==='ios') sheet('ios'); else if(mm==='guide'){ if(isAndroid()&&!/[?&]pl_chrome=1/.test(location.search)){ try{ location.href=chromeIntent(); return; }catch(e){} } sheet('guide',GD[LGs()]||GD.ar); } };
   }catch(e){} }
   window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); DEF=e; setInstalled(false); CHK=true; try{ sessionStorage.removeItem('pl-ins-note'); }catch(x){} var n=document.getElementById('pl-inst-note'); if(n) n.remove(); document.documentElement.classList.remove('pl-inst'); if(document.readyState!=='loading') render(); try{ plInstRow(); }catch(x){} });
-  window.addEventListener('appinstalled',function(){ DEF=null; prompting=false; setInstalled(true); try{ localStorage.removeItem(KEY); }catch(e){} hide(); try{ plInstRow(); }catch(e){} });
+  window.addEventListener('appinstalled',function(){ DEF=null; prompting=false; setInstalled(true); try{ localStorage.removeItem(KEY); }catch(e){} hide(); try{ plInstRow(); }catch(e){} try{ okBanner(); }catch(e){} });
   try{ matchMedia('(display-mode: standalone)').addEventListener('change',function(){ if(standalone()) hide(); }); }catch(e){}
-  document.addEventListener('DOMContentLoaded',function(){ var st=document.createElement('style'); st.textContent='html.pl-inst body{padding-top:58px} html.pl-inst #auth-gate{top:58px}'; document.head.appendChild(st); setTimeout(function(){ detect(); render(); try{ plInstRow(); }catch(e){} },1200); });
+  document.addEventListener('DOMContentLoaded',function(){ var st=document.createElement('style'); st.textContent='html.pl-inst body{padding-top:58px} html.pl-inst #auth-gate{top:58px}'; document.head.appendChild(st); setTimeout(function(){ detect(); render(); try{ plInstRow(); }catch(e){} try{ welcomeOnce(); }catch(e){} },1200); });
   var GD={ar:{h:'تثبيت PayLoop على هاتفك',st:['افتح الموقع في تطبيق Chrome نفسه (وليس من داخل تطبيق آخر أو نافذة مصغّرة).','اضغط قائمة النقاط الثلاث ⋮ في Chrome.','اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» ثم «تثبيت».','إن لم يظهر هذا الخيار فغالبًا التطبيق مثبّت عندك: ابحث عن أيقونة PayLoop في هاتفك وافتحها منها.']},
     en:{h:'Install PayLoop on your phone',st:['Open the site in the Chrome app itself (not inside another app or a mini window).','Tap the three-dot menu ⋮ in Chrome.','Choose “Install app” or “Add to Home screen”, then “Install”.','If you do not see it, the app is probably installed already: look for the PayLoop icon on your phone.']},
     fr:{h:'Installer PayLoop sur votre téléphone',st:['Ouvrez le site dans l’appli Chrome elle-même.','Touchez le menu ⋮ de Chrome.','Choisissez « Installer l’application » puis « Installer ».','Sinon, l’appli est sûrement déjà installée : cherchez l’icône PayLoop.']}};
@@ -608,6 +662,7 @@ html.lite .pub-badge,html.pl-lite .pub-badge{animation:none}
 .inv-pubnote-x{}
 #inv-pubnote{position:relative;margin-top:10px;align-items:center;padding:7px 14px;border-radius:99px;font-size:13px;font-weight:800;color:#3a2907;background:linear-gradient(135deg,#fde68a,#f59e0b);box-shadow:0 6px 18px rgba(245,158,11,.35)}
 #tlist .trow{content-visibility:auto;contain-intrinsic-size:auto 92px}
+.pl-ph{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:48px;font-size:30px;border-radius:inherit;background:linear-gradient(135deg,#1d3f7a,#0f1a31)}
 .pl-lk-in{width:100%;box-sizing:border-box;margin-top:8px;padding:11px 13px;border-radius:12px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:13.5px;outline:none}
 .pl-lk{margin-top:10px;padding:11px;border-radius:14px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.22)}
 .pl-lk-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pl-lk-h a{flex:1;min-width:0;color:#7dd3fc;font-size:12.5px;word-break:break-all;text-decoration:none}.pl-lk-h em{font-style:normal;font-size:11.5px;font-weight:800}
@@ -3749,6 +3804,7 @@ html.lite .vip-hero:before{display:none}
   <div class="adm-tabs" id="adm-tabs">
     <button class="atb active" data-t="users" onclick="admTab('users')">👥 المستخدمون</button>
     <button class="atb" data-t="stats" onclick="admTab('stats')">📈 الإحصائيات</button>
+    <button class="atb" data-t="activity" onclick="admTab('activity')">📊 النشاط</button>
     <button class="atb" data-t="ai" onclick="admTab('ai')">🤖 المساعد الذكي</button>
     <button class="atb" data-t="tasks" onclick="admTab('tasks')">🧩 إدارة المهام</button>
     <button class="atb" data-t="wd" onclick="admTab('wd')">💸 السحب</button>
@@ -7569,7 +7625,7 @@ const SRV={
     try{ window.addEventListener('focus', function(){ self.cycle(false); }); }catch(e){}
     try{ document.addEventListener('visibilitychange', function(){ if(document.hidden){ self._hidAt=Date.now(); } else { if(self._hidAt&&Date.now()-self._hidAt>120000) self._needFull=true; self.cycle(false); } }); }catch(e){}
   },
-  afterLogin(){ if(this.cfg()&&this.uid()){ this.cycle(true); try{ setTimeout(function(){ if(typeof cpxWatch==='function') cpxWatch(); },6000); }catch(e){} try{ Push.sync(); }catch(e){} try{ setTimeout(function(){ Push.offer(); },9000); }catch(e){} try{ if(_pendingGo){ const g=_pendingGo; _pendingGo=null; setTimeout(function(){ pushGo(g); },600); } }catch(e){} } },
+  afterLogin(){ if(this.cfg()&&this.uid()){ this.cycle(true); try{ setTimeout(function(){ if(typeof cpxWatch==='function') cpxWatch(); },6000); }catch(e){} try{ Push.sync(); }catch(e){} try{ setTimeout(function(){ Push.offer(); },4000); }catch(e){} try{ if(_pendingGo){ const g=_pendingGo; _pendingGo=null; setTimeout(function(){ pushGo(g); },600); } }catch(e){} } },
   pushSoon(){ if(!this.on()) return; clearTimeout(this._pT); this._pT=setTimeout(function(){ try{ DataGateway.push(); }catch(e){} },2500); },
   /* ---------- المهام ---------- */
   async taskGate(ti,btn,fromDetail){
@@ -8101,7 +8157,8 @@ const Push={
     if(!SRV.on()) msg=L('متاحة بعد تسجيل الدخول بحسابك','Available after you sign in','Disponible après connexion');
     else if(!this.ok()) msg=L('هذا المتصفح لا يدعمها. على الآيفون: أضف التطبيق إلى الشاشة الرئيسية أولًا','Not supported by this browser. On iPhone: add the app to your Home Screen first','Non pris en charge. Sur iPhone : ajoutez d’abord l’app à l’écran d’accueil');
     else if(Notification.permission==='denied') msg=L('الإذن مرفوض — فعّله من إعدادات المتصفح للموقع','Permission denied — allow it in the browser’s site settings','Autorisation refusée — activez-la dans les réglages du navigateur');
-    else { const s=await this.current(); on=!!(s&&this.want()&&Notification.permission==='granted'); msg=on?L('مفعّلة على هذا الهاتف ✅','Enabled on this phone ✅','Activées sur ce téléphone ✅'):L('غير مفعّلة','Off','Désactivées'); }
+    else { const s=await this.current(); on=!!(s&&this.want()&&Notification.permission==='granted'); msg=on?L('مفعّلة على هذا الهاتف ✅','Enabled on this phone ✅','Activées sur ce téléphone ✅'):L('غير مفعّلة','Off','Désactivées');
+      if(!on){ try{ const pe=JSON.parse(localStorage.getItem('pl-push-err')||'null'); if(pe&&Date.now()-pe.t<86400000) msg+=' — '+L('آخر محاولة فشلت عند: ','Last attempt failed at: ','Dernier échec : ')+String(pe.e||pe.s).slice(0,90); }catch(e){} } }
     if(sw) sw.checked=on; if(st) st.textContent=msg; if(sub) sub.style.display=(msg?'flex':'none'); if(tb) tb.style.display=(on&&isAdmin())?'':'none';
     try{ const dr=document.getElementById('push-diagrow'), dt=document.getElementById('push-diag'), lb=document.getElementById('push-local');
       if(dr){ dr.style.display=(on&&isAdmin())?'flex':'none'; if(on&&isAdmin()){ if(lb) lb.textContent=L('اختبار العرض على هذا الهاتف','Local display test','Test d’affichage'); if(dt) dt.textContent=await this.diag(); } } }catch(e){}
@@ -8126,7 +8183,7 @@ const Push={
     }catch(e){ toast('⚠️ '+((e&&e.name)||'')+' '+((e&&e.message)||'')); }
   },
   toggle:async function(on){
-    if(this._busy) return; this._busy=true; const sw=document.getElementById('sw-push');
+    if(this._busy) return; this._busy=true; const sw=document.getElementById('sw-push'); let step='start';
     try{
       if(!on){
         const s=await this.current(); this.setWant(false);
@@ -8135,16 +8192,19 @@ const Push={
       }
       if(!SRV.on()||!SESSION){ toast(L('سجّل الدخول بحسابك أولًا','Sign in first','Connectez-vous d’abord')); return; }
       if(!this.ok()){ toast(L('متصفحك لا يدعم إشعارات الهاتف. على الآيفون أضف التطبيق إلى الشاشة الرئيسية','Your browser does not support phone notifications','Navigateur non compatible')); try{ if(/iPhone|iPad|iPod/i.test(navigator.userAgent||'')&&!navigator.standalone&&typeof plInstallNow==='function') setTimeout(plInstallNow,700); }catch(e){} return; }
-      let perm=Notification.permission; if(perm==='default') perm=await Notification.requestPermission();
-      if(perm!=='granted'){ toast(L('لم تمنح الإذن — لن تصلك إشعارات خارج التطبيق','Permission not granted','Autorisation non accordée')); return; }
-      const s=await this.subscribe();
-      if(!(await this.saveServer(s))) throw new Error('save');
-      const n=await this.count(); if(!(n>=1)) throw new Error('verify');       // لا نعتبره ناجحًا قبل رؤيته في قاعدة البيانات
+      step='perm'; let perm=Notification.permission; if(perm==='default') perm=await Notification.requestPermission();
+      if(perm!=='granted'){ try{ localStorage.setItem('pl-push-err',JSON.stringify({s:'perm',e:String(perm),t:Date.now()})); }catch(e){} toast(L('لم تمنح الإذن — لن تصلك إشعارات خارج التطبيق','Permission not granted','Autorisation non accordée')); return; }
+      step='subscribe'; const s=await this.subscribe();
+      step='save'; if(!(await this.saveServer(s))) throw new Error('save');
+      step='verify'; const n=await this.count(); if(!(n>=1)) throw new Error('verify');
+      try{ localStorage.removeItem('pl-push-err'); }catch(e){}       // لا نعتبره ناجحًا قبل رؤيته في قاعدة البيانات
       this.setWant(true);
       toast(L('✅ تم تفعيل إشعارات الهاتف — جرّب الزر «إرسال إشعار تجريبي»','✅ Phone notifications enabled — try “Send a test”','✅ Activées — essayez « Envoyer un test »'));
     }catch(e){
       this.setWant(false);
-      toast(L('⚠️ تعذّر تفعيل إشعارات الهاتف — حاول لاحقًا','⚠️ Could not enable phone notifications','⚠️ Activation impossible'));
+      const why=step+':'+String((e&&e.name)||'')+(e&&e.message&&e.name!==e.message?' '+String(e.message).slice(0,60):'');
+      try{ localStorage.setItem('pl-push-err',JSON.stringify({s:step,e:why,t:Date.now()})); }catch(x){}
+      toast(L('⚠️ تعذّر تفعيل إشعارات الهاتف ('+why+')','⚠️ Could not enable phone notifications ('+why+')','⚠️ Activation impossible ('+why+')'));
     }finally{ this._busy=false; try{ await this.render(); }catch(e){} }
   },
   test:async function(){
@@ -8161,8 +8221,10 @@ const Push={
   offer:function(){
     try{
       if(!this.ok()||!SRV.on()||!SESSION||this.want()) return;
+      /* الإذن ممنوح مسبقًا لكن الجهاز غير مسجّل لهذا الحساب: نسجّله بصمت (لا يحتاج أي نافذة) */
+      if(Notification.permission==='granted'){ if(this._auto||this._busy) return; this._auto=true; (async function(){ try{ const s=await Push.subscribe(); if(await Push.saveServer(s)){ const n=await Push.count(); if(n>=1){ Push.setWant(true); try{ toast(L('✅ فُعّلت إشعارات الهاتف','✅ Phone notifications enabled','✅ Notifications activées')); }catch(e){} } } }catch(e){} finally{ Push._auto=false; try{ await Push.render(); }catch(e){} } })(); return; }
       if(Notification.permission!=='default') return;
-      const k='pl-push-offer:'+SESSION; const t=Number(localStorage.getItem(k)||0); if(t&&Date.now()-t<3*86400000) return;
+      const k='pl-push-offer:'+SESSION; const t=Number(localStorage.getItem(k)||0); if(t&&Date.now()-t<86400000) return;
       if(document.getElementById('pl-poffer')||document.getElementById('pl-inst')) return;
       const d=document.createElement('div'); d.id='pl-poffer';
       d.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:2147482000;max-width:456px;margin:0 auto;background:linear-gradient(135deg,#102040,#0b3b4a);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px;color:#fff;box-shadow:0 14px 40px rgba(0,0,0,.55);display:flex;gap:12px;align-items:center;font-family:inherit';
@@ -8199,7 +8261,7 @@ const Push={
     }catch(e){}
   }
 };
-try{ document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ Push.heal(); }catch(e){} } }); setTimeout(function(){ try{ Push.heal(); }catch(e){} },9000); }catch(e){}
+try{ document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible'){ try{ Push.heal(); }catch(e){} try{ setTimeout(function(){ Push.offer(); },2500); }catch(e){} } }); setTimeout(function(){ try{ Push.heal(); }catch(e){} },9000); }catch(e){}
 /* فتح الصفحة المرتبطة بالإشعار عند الضغط عليه (من الخلفية أو والتطبيق مفتوح) */
 let _pendingGo=null;
 let _pbT=null;
@@ -8224,7 +8286,7 @@ function plPushBanner(d){
 }
 function pushGo(g){ if(!g) return; if(!SESSION){ _pendingGo=g; return; } try{ ntfNavigate(g); }catch(e){} }
 try{ const _m=String(location.hash||'').match(/^#go=([a-z_]{2,24})$/); if(_m){ _pendingGo=_m[1]; history.replaceState(null,'',location.pathname+location.search); } }catch(e){}
-try{ if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',function(ev){ const d=ev&&ev.data||{}; if(d.type==='build'){ try{ plBuildSeen(d.build); }catch(e){} } else if(d.type==='go') pushGo(d.go); else if(d.type==='push'){ try{ if(d.banner) plPushBanner(d); }catch(e){} try{ setTimeout(function(){ SRV.cycle(true); },Math.floor(Math.random()*6000)); SRV._needFull=true; }catch(e){} try{ setTimeout(function(){ Push.render(); },800); }catch(e){} } }); }catch(e){}
+try{ if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',function(ev){ const d=ev&&ev.data||{}; if(d.type==='build'){ try{ plBuildSeen(d.build); }catch(e){} } else if(d.type==='go') pushGo(d.go); else if(d.type==='subchange'){ try{ Push.sync(); }catch(e){} } else if(d.type==='push'){ try{ if(d.banner) plPushBanner(d); }catch(e){} try{ setTimeout(function(){ SRV.cycle(true); },Math.floor(Math.random()*6000)); SRV._needFull=true; }catch(e){} try{ setTimeout(function(){ Push.render(); },800); }catch(e){} } }); }catch(e){}
 
 function doLogout(){
   try{ localStorage.removeItem('r7-adm-rev'); }catch(e){}   /* بعد الخروج تختفي لوحة التحكم حتى تُفتح من جديد بالنقرات + كلمة السر */
@@ -8783,6 +8845,7 @@ function renderAdmin(t){
     renderAdmStats();
     if(ADM_TAB==='users'){ if(ADM_UID){ try{ admPubLoad(); }catch(e){} admUserDetail(); } else renderAdmUserList(); }
     else if(ADM_TAB==='stats') renderAdmAnalytics();
+    else if(ADM_TAB==='activity') renderAdmActivity();
     else if(ADM_TAB==='tasks') renderAdmTasks();
     else if(ADM_TAB==='wd'||ADM_TAB==='ff') renderAdmWd();
     else if(ADM_TAB==='help') renderAdmHelp();
@@ -8800,6 +8863,53 @@ function renderAdmin(t){
   }catch(e){ try{ console.warn('[adm-err]', e); }catch(_){} }
 }
 
+
+
+/* ===== تبويب «النشاط»: من يدخل ومن ينجز مهام ومن دخل مرة ولم يعد (كل الأرقام من الخادم، ملف 117) ===== */
+const ACT={d:null,at:0,busy:false,err:false,kind:'',rows:[],off:0,total:0,lbusy:false};
+async function renderAdmActivity(noFetch){
+  const box=document.getElementById('adm-body'); if(!box) return;
+  const f=function(n){ return Number(n||0).toLocaleString('en-US'); };
+  const pc=function(a,b){ return b>0?(Math.round(1000*a/b)/10)+'%':'—'; };
+  if(!SRV.on()){ box.innerHTML='<div class="adm-empty">'+L('هذه الصفحة تعمل مع قاعدة البيانات الحقيقية فقط','This page works with the live database only','Cette page nécessite la base de données réelle')+'</div>'; return; }
+  if(!noFetch&&!ACT.busy&&Date.now()-ACT.at>30000){
+    ACT.busy=true; if(!ACT.d) box.innerHTML='<div class="adm-empty">⏳ '+L('جارٍ الحساب…','Loading…','Chargement…')+'</div>';
+    try{ const r=await SRV.rpc('admin_activity',{}); if(r&&r.ok){ ACT.d=r; ACT.at=Date.now(); ACT.err=false; } else ACT.err=true; }catch(e){ ACT.err=true; }
+    ACT.busy=false; if(ADM_TAB!=='activity') return;
+  }
+  const d=ACT.d;
+  if(!d){ box.innerHTML='<div class="adm-empty">'+(ACT.err?L('⚠️ تعذّر التحميل. شغّل ملف 117_activity.sql في Supabase ثم أعد المحاولة.','⚠️ Could not load. Run 117_activity.sql in Supabase and retry.','⚠️ Échec. Exécutez 117_activity.sql puis réessayez.'):'')+'</div>'; return; }
+  const card=function(c,n,l,sub){ return '<div class="adm-card '+c+'"><b>'+n+'</b><span>'+l+(sub?'<br><small style="opacity:.75">'+sub+'</small>':'')+'</span></div>'; };
+  const days=d.days||[]; const mx=Math.max(1,...days.map(function(x){ return Math.max(x.visited||0,x.did||0,x['new']||0); }));
+  const bars=days.map(function(x){ const h=function(v){ return Math.max(2,Math.round(70*(v||0)/mx)); };
+    return '<div style="flex:1;min-width:0;text-align:center"><div style="display:flex;gap:2px;align-items:flex-end;justify-content:center;height:74px"><i title="'+L('زاروا','Visited','Visites')+' '+(x.visited||0)+'" style="width:30%;height:'+h(x.visited)+'px;background:#38bdf8;border-radius:3px 3px 0 0"></i><i title="'+L('أنجزوا مهام','Did tasks','Tâches')+' '+(x.did||0)+'" style="width:30%;height:'+h(x.did)+'px;background:#22c55e;border-radius:3px 3px 0 0"></i><i title="'+L('جدد','New','Nouveaux')+' '+(x['new']||0)+'" style="width:30%;height:'+h(x['new'])+'px;background:#f59e0b;border-radius:3px 3px 0 0"></i></div><span style="font-size:9.5px;opacity:.7">'+String(x.d).slice(8)+'</span></div>'; }).join('');
+  const chips=[['active_today',L('نشيطون اليوم','Active today','Actifs aujourd’hui'),d.active_today],['doers_today',L('أنجزوا مهمة اليوم','Did a task today','Tâche aujourd’hui'),d.doers_today],['lost2d',L('دخلوا مرة ولم يعودوا (بعد يومين)','Came once, gone (2+ days)','Venus 1 fois, partis (2 j+)'),d.lost2d],['once',L('دخلوا مرة فقط','Came only once','Venus une seule fois'),d.once_total],['never_task',L('لم ينجزوا أي مهمة','Never did a task','Aucune tâche')  ,d.never_task]];
+  const chipHtml=chips.map(function(c){ return '<button class="adm-new" style="margin:4px 4px 0 0;padding:9px 12px;font-size:12.5px;'+(ACT.kind===c[0]?'background:#2563eb;color:#fff':'')+'" onclick="actLoad(\''+c[0]+'\',0)">'+c[1]+' ('+f(c[2])+')</button>'; }).join('');
+  const lst=ACT.kind?('<div class="adm-insight" style="margin-top:12px"><b>'+(chips.filter(function(c){ return c[0]===ACT.kind; })[0]||[0,''])[1]+' — '+f(ACT.total)+'</b><div style="margin-top:8px">'+
+     (ACT.rows.length?ACT.rows.map(function(u){ const ago=function(x){ if(!x) return '—'; const m=Math.floor((Date.now()-new Date(x).getTime())/60000); return m<60?m+L(' د',' min',' min'):m<1440?Math.floor(m/60)+L(' س',' h',' h'):Math.floor(m/1440)+L(' يوم',' d',' j'); };
+        return '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.08);font-size:12.5px;line-height:1.7"><b>'+esc(u.name||'—')+'</b> <span style="opacity:.7">'+esc(u.pid||'')+'</span><br><span dir="ltr" style="opacity:.85">'+esc(u.email||'')+'</span> '+(u.country?'· '+esc(u.country):'')+'<br><span style="opacity:.75">'+L('سجّل منذ ','Joined ','Inscrit il y a ')+ago(u.created_at)+' · '+L('آخر ظهور ','Last seen ','Vu il y a ')+ago(u.last_seen)+'</span></div>'; }).join(''):'<div class="adm-empty">'+(ACT.lbusy?'⏳':L('لا أحد','Nobody','Personne'))+'</div>')+
+     (ACT.rows.length<ACT.total?'<button class="adm-new" style="width:100%;margin-top:8px" onclick="actLoad(\''+ACT.kind+'\','+ACT.rows.length+')">'+L('عرض المزيد','Show more','Voir plus')+'</button>':'')+'</div></div>'):'';
+  box.innerHTML='<div class="adm-cards">'+
+    card('blue',f(d.active_today),L('نشيطون اليوم','Active today','Actifs aujourd’hui'),pc(d.active_today,d.total)+' '+L('من الكل','of all','du total'))+
+    card('blue',f(d.active_7d),L('نشيطون آخر 7 أيام','Active 7 days','Actifs 7 jours'),pc(d.active_7d,d.total))+
+    card('blue',f(d.active_30d),L('نشيطون آخر 30 يومًا','Active 30 days','Actifs 30 jours'),pc(d.active_30d,d.total))+
+    card('green',f(d.doers_today),L('أنجزوا مهمة اليوم','Did a task today','Tâche aujourd’hui'),pc(d.active_and_did_today,d.active_today)+' '+L('من نشيطي اليوم','of today’s active','des actifs'))+
+    card('green',f(d.doers_total),L('أنجزوا مهمة يومًا ما','Ever did a task','Ont fait une tâche'),pc(d.doers_total,d.total))+
+    card('warn',f(d.never_task),L('لم ينجزوا أي مهمة','Never did a task','Aucune tâche'),pc(d.never_task,d.total))+
+    card('warn',f(d.lost2d),L('دخلوا مرة ولم يعودوا بعد يومين','Came once, gone after 2 days','Venus 1 fois, partis'),pc(d.lost2d,d.total))+
+    card('gold',f(d.returned),L('عادوا للتطبيق','Came back','Revenus'),pc(d.returned,d.total))+
+    card('blue',f(d.total),L('إجمالي المستخدمين','All users','Total'),'+'+f(d.new_today)+' '+L('اليوم','today','aujourd’hui')+' · +'+f(d.new_7d)+' '+L('هذا الأسبوع','this week','cette semaine'))+
+    '</div>'+
+    '<div class="adm-insight" style="margin-top:12px"><b>'+L('آخر 14 يومًا','Last 14 days','14 derniers jours')+'</b><div style="display:flex;gap:3px;margin-top:10px">'+bars+'</div><div style="font-size:11.5px;margin-top:8px;opacity:.85"><span style="color:#38bdf8">■</span> '+L('زاروا','Visited','Visites')+' &nbsp;<span style="color:#22c55e">■</span> '+L('أنجزوا مهامًا','Did tasks','Tâches')+' &nbsp;<span style="color:#f59e0b">■</span> '+L('مستخدمون جدد','New users','Nouveaux')+
+      '<br>'+(d.activity_since?L('سجل الزيارات اليومي يبدأ من '+d.activity_since+'؛ قبل ذلك يظهر فقط من أنجز مهامًا.','Daily visits are recorded from '+d.activity_since+'; before that only task activity is shown.','Visites enregistrées depuis '+d.activity_since+'.'):L('سجل الزيارات اليومي يبدأ بالتجمع من الآن.','Daily visit history starts accumulating now.','L’historique commence maintenant.'))+'</div></div>'+
+    '<div style="margin-top:12px">'+chipHtml+'</div>'+lst+
+    '<div style="font-size:11.5px;opacity:.7;margin-top:10px;line-height:1.7">'+L('«دخل مرة ولم يعد» = لم يفتح التطبيق في أي يوم بعد يوم تسجيله. الأيام بتوقيت UTC. تُحدَّث الأرقام كل دقيقتين تقريبًا. حساب المدير غير محسوب.','“Came once” = never opened the app on a day after signup day. Days are UTC. Numbers refresh about every 2 minutes. The admin account is excluded.','« Venu une fois » = jamais revenu après le jour d’inscription. Jours en UTC.')+'</div>';
+}
+async function actLoad(kind,off){
+  if(ACT.lbusy) return; ACT.lbusy=true; if(off===0){ ACT.kind=kind; ACT.rows=[]; ACT.total=0; } renderAdmActivity(true);
+  try{ const r=await SRV.rpc('admin_activity_list',{p_kind:kind,p_limit:50,p_offset:off}); if(r&&r.ok){ ACT.total=r.total||0; ACT.rows=(off===0?[]:ACT.rows).concat(r.rows||[]); } }catch(e){}
+  ACT.lbusy=false; if(ADM_TAB==='activity') renderAdmActivity(true);
+}
 
 /* ===== ملف المستخدم الكامل + رؤى ذكية (كل الأرقام من الخادم) ===== */
 const ADM_UPROF={};
@@ -10180,6 +10290,7 @@ window.plChunkInsert=function(box,parts,ids){
   }catch(e){ try{ box.insertAdjacentHTML('afterbegin',parts.join('')); }catch(_){} }
 };
 /* إعادة رسم المهام مدمجة: عدة شبكات قد تنتهي معاً فنرسم مرة واحدة فقط */
+window.plImgFail=function(im){ try{ var p=im&&im.parentNode; if(!p) return; var s=document.createElement('span'); s.className='pl-ph'; s.setAttribute('aria-hidden','true'); s.textContent=im.getAttribute('data-ph')||'🎮'; p.replaceChild(s,im); }catch(e){ try{ im.remove(); }catch(_){} } };
 window.plRedrawTasks=(function(){ var pend=0; return function(){ if(pend) return; pend=1; requestAnimationFrame(function(){ pend=0; try{ var pg=document.getElementById('page-tasks'); if(pg&&pg.classList.contains('active')&&typeof curCat!=='undefined') window.renderTasks(curCat); }catch(e){} }); }; })();
 /* ===== مواعيد انتهاء الألعاب (قراءة فقط من games_ends) ===== */
 window.PL_ENDS={gg:{},owm:{},at:0,busy:false};
@@ -13535,7 +13646,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
 <script>
 /* ترجمة تلقائية آمنة لوصف مراحل الألعاب (إنجليزي → عربي) بقواعد ثابتة، بلا خدمة خارجية. ما لا يطابق قاعدة يبقى كما هو بالإنجليزية (لا تخمين). */
 (function(){
-  var V={pass:'اجتز',reach:'اصل إلى',complete:'أكمل',clear:'أنهِ',finish:'أنهِ',unlock:'افتح',win:'اربح',collect:'اجمع',earn:'اكسب',spend:'أنفق',upgrade:'طوّر',buy:'اشترِ',purchase:'اشترِ',play:'العب',open:'افتح',install:'ثبّت',defeat:'اهزم',kill:'اقتل',obtain:'احصل على',get:'احصل على',join:'انضم إلى',create:'أنشئ',register:'سجّل',score:'سجّل',watch:'شاهد',use:'استخدم',build:'ابنِ',train:'درّب',summon:'استدعِ',deposit:'اشحن',login:'سجّل الدخول'};
+  var V={pass:'اجتز',reach:'صِل إلى',complete:'أكمل',clear:'أنهِ',finish:'أنهِ',unlock:'افتح',win:'اربح',collect:'اجمع',earn:'اكسب',spend:'أنفق',upgrade:'طوّر',buy:'اشترِ',purchase:'اشترِ',play:'العب',open:'افتح',install:'ثبّت',defeat:'اهزم',kill:'اقتل',obtain:'احصل على',get:'احصل على',join:'انضم إلى',create:'أنشئ',register:'سجّل',score:'سجّل',watch:'شاهد',use:'استخدم',build:'ابنِ',train:'درّب',summon:'استدعِ',deposit:'اشحن',login:'سجّل الدخول'};
   var ONE={level:'المستوى','player level':'مستوى اللاعب','hero level':'مستوى البطل','vip level':'مستوى VIP',vip:'VIP',chapter:'الفصل',stage:'المرحلة',rank:'الرتبة',world:'العالم',quest:'المهمة',mission:'المهمة',round:'الجولة','town hall':'قاعة المدينة','town hall level':'مستوى قاعة المدينة',castle:'القلعة','castle level':'مستوى القلعة',day:'اليوم',season:'الموسم',tier:'المستوى',league:'الدوري',wave:'الموجة',floor:'الطابق',episode:'الحلقة'};
   var PL={levels:'مستويات',chapters:'فصول',stages:'مراحل',quests:'مهام',missions:'مهام',tasks:'مهام',matches:'مباريات',games:'ألعاب',battles:'معارك',rounds:'جولات',days:'أيام',wins:'انتصارات',gems:'جواهر',coins:'عملات',diamonds:'ألماسات',gold:'ذهب',stars:'نجوم',points:'نقاط',crystals:'بلورات',keys:'مفاتيح',tickets:'تذاكر',cash:'نقد',trophies:'كؤوس',enemies:'أعداء',monsters:'وحوش',bosses:'زعماء',heroes:'أبطال',cards:'بطاقات',buildings:'مباني',towers:'أبراج',units:'وحدات',items:'عناصر',lines:'خطوط',waves:'موجات',kills:'قتلى',ads:'إعلانات',videos:'فيديوهات',minutes:'دقائق',hours:'ساعات',gold_coins:'عملات ذهبية',trophy:'كؤوس'};
   var ITEM={diamonds:'الألماس',gems:'الجواهر',coins:'العملات',gold:'الذهب',crystals:'البلورات',pack:'الحزمة','starter pack':'حزمة البداية','vip pass':'تذكرة VIP','battle pass':'تذكرة المعركة',subscription:'الاشتراك','no ads':'إزالة الإعلانات'};
@@ -13585,6 +13696,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     var e=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
     var raw=String(txt==null?'':txt), ar=null;
     try{ if(typeof L==='function'&&L('ar','en','fr')==='ar') ar=window.plStepAr(raw); }catch(x){}
+    try{ if(ar) ar=ar.replace(/(^|[^\d.,])(\d{4,})(?![\d.,])/g,function(m,a,b){ return (b.length===4&&+b>=1900&&+b<=2100)?m:a+b.replace(/\B(?=(\d{3})+(?!\d))/g,','); }); }catch(x){}
     if(!ar) return e(raw);
     return e(ar)+'<small dir="ltr" style="display:block;font-size:11px;color:#7f93bb;margin-top:2px;text-align:left">'+e(raw)+'</small>';
   };
@@ -13595,6 +13707,26 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     var order=['start','level','stars','gems','coins','points','other','buy'], rk={}; order.forEach(function(k,i){ rk[k]=i; });
     return (steps||[]).map(function(s,i){ var k=kind(s&&s.d); return {s:s,i:i,k:k,n:num(s&&s.d)}; })
       .sort(function(a,b){ return (rk[a.k]-rk[b.k])||(a.n-b.n)||(a.i-b.i); }).map(function(x){ return x.s; });
+  };
+  /* تعبئة عربية تلقائية (اسم/وصف/مهمة/زر) من بيانات الشبكة الحقيقية. أسماء الألعاب علامات تجارية فتبقى كما هي. لا تخمين: ما لا يُترجم بقاعدة يُعوَّض بنص عام صحيح */
+  window.plAutoAr=function(o){
+    try{
+      o=o||{}; var hasAr=function(s){ return /[؀-ۿ]/.test(String(s||'')); };
+      var title=String(o.title||o.name||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+      for(var k=0;k<2;k++) title=title.replace(/\s*[-–—|:]?\s*[\[(]?\s*(?:android|ios|iphone|ipad)(?:\s+only)?\s*[\])]?\s*$/i,'').trim();
+      var sv=(o.kind==='survey');
+      var name=title||(sv?'استطلاع رأي':'');
+      var nst=(o.steps||[]).length, multi=!!o.multi&&nst>1, mins=Number(o.min)>0?Math.round(Number(o.min)):0;
+      var dv=o.plat==='android'?' (أندرويد)':o.plat==='ios'?' (آيفون)':'';
+      var raw=String(o.desc||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(), descr='';
+      if(raw){ if(hasAr(raw)) descr=raw; else { try{ descr=(window.plGgAr&&window.plGgAr(raw))||window.plStepAr(raw)||''; }catch(e){ descr=''; } } }
+      if(!descr){
+        if(sv) descr='استطلاع رأي قصير'+(mins?' مدّته نحو '+(mins===1?'دقيقة':mins===2?'دقيقتين':mins+(mins<=10?' دقائق':' دقيقة')):'')+'. أجب عن الأسئلة بصدق وتركيز، وتُضاف المكافأة لرصيدك بعد أن تؤكد الشبكة إكمالك للاستطلاع.';
+        else descr='ثبّت لعبة «'+name+'»'+dv+' من المتجر، '+(multi?'ثم أنجز المراحل المذكورة بالترتيب لتحصل على مكافأة كل مرحلة.':'ثم أنجز المهمة المطلوبة داخلها لتحصل على المكافأة.')+' تُضاف المكافأة تلقائيًا بعد تأكيد الشبكة.';
+      }
+      var task=multi?'أنجز المراحل المذكورة أدناه بالترتيب، من الأولى إلى الأخيرة.':(sv?'أكمل الاستطلاع حتى النهاية.':'ثبّت اللعبة وافتحها، ثم أنجز المهمة المطلوبة داخلها.');
+      return {name:name.slice(0,80),descr:descr.slice(0,600),task:task.slice(0,400),btn:sv?'ابدأ الاستطلاع':'ابدأ اللعب'};
+    }catch(e){ return null; }
   };
 })();
 
@@ -13683,6 +13815,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     var e=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
     var raw=String(txt==null?'':txt), ar=null;
     try{ if(typeof L==='function'&&L('ar','en','fr')==='ar'&&!/[؀-ۿ]/.test(raw)){ ar=window.plGgAr(raw); if(!ar&&window.plStepAr) ar=window.plStepAr(raw); } }catch(x){}
+    try{ if(ar) ar=ar.replace(/(^|[^\d.,])(\d{4,})(?![\d.,])/g,function(m,a,b){ return (b.length===4&&+b>=1900&&+b<=2100)?m:a+b.replace(/\B(?=(\d{3})+(?!\d))/g,','); }); }catch(x){}
     if(!ar) return e(raw);
     return e(ar)+'<small dir="ltr" style="display:block;font-size:11px;color:#7f93bb;margin-top:2px;text-align:left">'+e(raw)+'</small>';
   };
@@ -13739,13 +13872,13 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
       var parts=[], ids=[], _pd=(box.__pendLast&&box.__pendLast.parentNode===box&&box.__pend)||{};
       show.forEach(function(g){
         if(_ex[String(g.id)]||_pd['o:'+g.id]) return;
-        var img=g.image?'<img decoding="async" class="card-artwork" src="'+esc(g.image)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':art;
+        var img=g.image?'<img decoding="async" class="card-artwork" src="'+esc(g.image)+'" alt="" loading="lazy" referrerpolicy="no-referrer" data-ph="'+(g.kind==='survey'?'📝':'🎮')+'" onerror="plImgFail(this)">':art;
         var n=g.multi?g.nsteps:0;
         ids.push('o:'+g.id); parts.push('<div class="trow owm-g" data-oid="'+esc(g.id)+'" onclick="owmOpenGame(this.getAttribute(\'data-oid\'))">'
           +'<div class="t-icon art'+(g.image?' has-img':'')+'">'+img+'</div>'
           +'<div class="t-info"><div class="t-head"><b class="t-amt">'+usd(g.usd)+'</b><span class="t-amtl">'+(g.multi?L('المجموع','Total','Total'):L('المكافأة','Reward','Gain'))+'</span></div>'
-          +'<h4>'+esc(g.name||'')+'</h4><span class="t-tag ext">🌐 '+L('خارجية','External','Externe')+'</span>'+(STM[g.id]?'<span class="t-tag" style="background:#f59e0b22;color:#f59e0b">'+L('إكمال','Continue','Reprendre')+'</span>':'<span class="t-tag" style="background:#22c55e22;color:#22c55e">'+L('جديد','New','Nouveau')+'</span>')+((g.plat==='android'||g.plat==='ios')?'<span class="t-tag" style="background:rgba(56,189,248,.14);color:#7dd3fc">'+ptxt(g.plat)+'</span>':'')
-          +'<div class="meta"><span>📶 '+(n?n+' '+L('خطوات','steps','étapes'):L('مهمة واحدة','Single task','Une tâche'))+'</span></div></div>'+go+'</div>');
+          +'<h4>'+esc(g.name||'')+'</h4><span class="t-tag ext">'+(g.kind==='survey'?'📝 '+L('استطلاع','Survey','Sondage'):'🎮 '+L('لعبة','Game','Jeu'))+'</span>'+(STM[g.id]?'<span class="t-tag" style="background:#f59e0b22;color:#f59e0b">'+L('إكمال','Continue','Reprendre')+'</span>':'<span class="t-tag" style="background:#22c55e22;color:#22c55e">'+L('جديد','New','Nouveau')+'</span>')+((g.plat==='android'||g.plat==='ios')?'<span class="t-tag" style="background:rgba(56,189,248,.14);color:#7dd3fc">'+ptxt(g.plat)+'</span>':'')
+          +'<div class="meta"><span>📶 '+(n?n+' '+L('خطوات','steps','étapes'):L('مهمة واحدة','Single task','Une tâche'))+'</span>'+(g.min?'<span>⏱ '+g.min+' '+L('د','min','min')+'</span>':'')+'</div></div>'+go+'</div>');
       });
       if(parts.length){ try{ if(!box.querySelector('.trow')){ var _e=box.querySelector('.te-wrap,.tempty'); if(_e) _e.remove(); } }catch(e){} window.plChunkInsert(box,parts,ids); }
     }catch(e){}
@@ -13756,7 +13889,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     document.getElementById('owm-t').textContent=g.name||'';
     var x=document.getElementById('owm-x'); x.textContent=L('رجوع','Back','Retour');
     x.onclick=function(){ ov.classList.remove('on'); try{ if(SRV&&SRV.pullState) SRV.pullState(); }catch(e){} try{ if(SRV&&SRV.cycle) SRV.cycle(true); }catch(e){} };
-    var img=g.image?'<img src="'+esc(g.image)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(g.kind==='survey'?'📝':'🎮');
+    var img=g.image?'<img src="'+esc(g.image)+'" alt="" referrerpolicy="no-referrer" data-ph="'+(g.kind==='survey'?'📝':'🎮')+'" onerror="plImgFail(this)">':(g.kind==='survey'?'📝':'🎮');
     var h='<div class="oh"><div class="im">'+img+'</div><div><h3>'+esc(g.name||'')+'</h3><div style="font-size:13px;color:#9fb3d9">'+(g.multi?L('المجموع','Total','Total')+': ':L('المكافأة','Reward','Gain')+': ')+'<b style="color:#5df0a0">'+usd(g.usd)+'</b>'+(g.min?' · ⏱ '+g.min+' '+L('د','min','min'):'')+'</div></div></div>';
     try{
       var _ns=(g.multi&&g.steps)?g.steps.length:1, _st=(function(){ try{ return !!stGet()[g.id]; }catch(e){ return false; } })();
@@ -13769,8 +13902,10 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     }catch(e){}
     var _oe=(window.PL_ENDS.owm||{})[String(g.id)]||'', _oi=window.plEndInfo?window.plEndInfo(_oe):null, _ot=window.plEndTxt?window.plEndTxt(_oe):null;
     if(_ot) h+='<div class="sc" style="border:1px solid '+_ot.c+'55"><b style="color:'+_ot.c+'">'+esc(_ot.t)+'</b><span dir="ltr">'+esc(_oe)+'</span>'+(_oi&&_oi.expired?'<br><small style="color:#fca5a5">'+L('انتهت هذه اللعبة ولا يمكن بدؤها الآن.','This game has ended and cannot be started.','Terminé.')+'</small>':'')+'</div>';
-    if(g.descr) h+='<div class="sc"><b>'+L('الوصف','About','Description')+'</b>'+esc(g.descr)+'</div>';
-    if(g.task) h+='<div class="sc"><b>'+L('المهمة المطلوبة','Required task','Tâche requise')+'</b>'+esc(g.task)+'</div>';
+    var _au2=null; try{ if(window.plAutoAr&&L('ar','en','fr')==='ar') _au2=window.plAutoAr({kind:g.kind,title:g.name,steps:g.steps,multi:g.multi,plat:g.plat,min:g.min}); }catch(e){}
+    var _dd=g.descr||(_au2&&_au2.descr)||'', _tt=g.task||((_au2&&!g.multi)?_au2.task:'');
+    if(_dd) h+='<div class="sc"><b>'+L('الوصف','About','Description')+'</b>'+esc(_dd)+'</div>';
+    if(_tt) h+='<div class="sc"><b>'+L('المهمة المطلوبة','Required task','Tâche requise')+'</b>'+esc(_tt)+'</div>';
     if(g.multi&&g.steps&&g.steps.length){
       h+='<div class="sc"><b>'+L('المكافآت حسب المراحل','Rewards by step','Récompenses par étape')+' — '+g.steps.length+' '+L('مراحل','steps','étapes')+'</b>'+(window.plOrderSteps?window.plOrderSteps(g.steps):g.steps).map(function(s,n){ return '<div class="st"><div class="n">'+(n+1)+'</div><div class="d">'+(window.plStepHtml?window.plStepHtml(s.d||('#'+(n+1))):esc(s.d||('#'+(n+1))))+'</div><div class="r">'+usd(s.usd)+'</div></div>'; }).join('')
         +'<div style="margin-top:6px;font-size:12px;color:#9fb3d9">'+L('لا يُمنح المجموع كاملًا إلا بعد إكمال كل المراحل. تصلك كل مرحلة فقط بعد تأكيد الشبكة لها.','The total is paid only after every step is completed. Each step is paid only after the network confirms it.','Chaque étape est payée après confirmation du réseau.')+'</div></div>';
@@ -14046,7 +14181,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
       var it=p[0], i=p[1], im=it.image?'<img src="'+esc(it.image)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(it.kind==='survey'?'📝':'🎮');
       var warn=(M.newSet&&M.newSet[it.id]?' · <b style="color:#4ade80">🆕</b>':'')+(it.kind==='survey'?' · 📝':'')+(it.flag==='blocked'?' · 🚫':it.flag==='over_cap'?' · ⚠️ >$20':'');
       return '<div class="owm-r"><div class="im">'+im+'</div><div class="tx"><b dir="auto">'+esc(it.title)+'</b>'+L('تدفع لك','pays you','vous paie')+' '+usd(it.raw)+' · '+L('للمستخدم','user','user')+' '+usd(it.usd)+(it.multi?' · 🎯'+it.nsteps:'')+' · '+ptxt(it.plat||'all')+warn+'</div>'
-        +(it.added?'<span style="font-size:12px;color:#34d399">✅</span>':'<button class="adm-new sm" style="margin:0;flex:none" onclick="owmMgAdd('+i+')">'+L('إضافة','Add','Ajouter')+'</button>')+'</div>';
+        +(it.added?'<span style="font-size:12px;color:#34d399">✅</span>':'<button class="adm-new sm" style="margin:0;flex:none;background:rgba(34,197,94,.18);color:#4ade80" onclick="owmMgQuick('+i+')">⚡ '+L('إضافة سريعة','Quick add','Ajout rapide')+'</button><button class="adm-new sm" style="margin:0 4px 0 0;flex:none;padding-inline:10px" title="'+L('مراجعة وتعديل قبل الإضافة','Review first','')+'" onclick="owmMgAdd('+i+')">✏️</button>')+'</div>';
     }).join('');
     if(!list.length) el.innerHTML='<div style="padding:14px;text-align:center;color:#9fb3d9">'+(M.pf==='new'?L('لا توجد عروض جديدة منذ آخر مرة.','No new offers since last time.','Rien de nouveau.'):M.pf==='survey'?L('لا استطلاعات في هذه القائمة الآن.','No surveys in this list now.','Aucun sondage.'):L('لا نتائج.','No results.','Aucun résultat.'))+'</div>';
   }
@@ -14056,12 +14191,15 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     var _pdef=r.place||(/daily|login|log in|check.?in|streak|every day|تسجيل دخول|يومي/i.test(String(c.title||''))?'daily':'games'); var opts=PL.map(function(p){ return '<option value="'+p[0]+'"'+(_pdef===p[0]?' selected':'')+'>'+p[1]+' '+L(p[2],p[3],p[3])+'</option>'; }).join('');
     var ta='width:100%;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none;resize:vertical;box-sizing:border-box';
     var im=(r.img!=null&&r.img!==''?r.img:(c.image||''));
-    var h='<div class="au-f full" style="background:rgba(14,165,233,.08);border-radius:12px;padding:10px;font-size:13px;margin-bottom:10px">✅ <b dir="auto">'+esc(c.title||c.ext)+'</b>'+(c.usd?'<br>'+L('تدفع لك','pays you','vous paie')+' '+usd(c.usd.raw)+' · '+L('للمستخدم','user','user')+' <b style="color:#22c55e">'+usd(c.usd.usd)+'</b>'+(c.usd.multi?' · '+c.usd.nsteps+' '+L('مراحل','levels','niveaux'):''):'')+'</div>'
-      +'<div class="au-f full"><label>'+L('اسم اللعبة (بالعربية، أنت تكتبه)','Game name (you write it)','Nom du jeu')+'</label><input id="owm-f-n" maxlength="80" value="'+esc(r.name||'')+'" placeholder="'+esc(L('مثال: فقاعات الأساطير','e.g. Bubble Legends','ex'))+'"></div>'
+    var _it=c.usd||((M.pick||[]).filter(function(x){ return x.id===c.ext; })[0])||null, _au=null; try{ if(_it&&window.plAutoAr) _au=window.plAutoAr({kind:_it.kind,title:_it.title||c.title,desc:_it.desc,steps:_it.steps,multi:_it.multi,plat:_it.plat,min:_it.min}); }catch(e){} M.au=_au;
+    var _sp=''; try{ if(_it&&_it.multi&&_it.steps&&_it.steps.length&&window.plOrderSteps){ var _bad=0; _sp='<div style="margin-top:8px;font-size:12.5px;line-height:1.7"><b>'+L('المراحل كما ستظهر للمستخدم (مرتبة)','Steps as users will see them','Étapes')+'</b>'+window.plOrderSteps(_it.steps).map(function(s,n){ var a=window.plStepAr?window.plStepAr(s.d):null; if(!a) _bad++; return '<div>'+(n+1)+'. '+(a?esc(a):'<span dir="ltr" style="color:#fbbf24">'+esc(s.d||'')+'</span>')+'</div>'; }).join('')+(_bad?'<div style="color:#fbbf24;margin-top:4px">'+L(_bad+' مرحلة لا تُترجم بقاعدة ثابتة فتظهر بنصها الأصلي (الأرقام والمبالغ صحيحة).',_bad+' step(s) stay in the original text.','')+'</div>':'<div style="color:#4ade80;margin-top:4px">✅ '+L('كل المراحل بالعربية','All steps in Arabic','')+'</div>')+'</div>'; } }catch(e){}
+    var h='<div class="au-f full" style="background:rgba(14,165,233,.08);border-radius:12px;padding:10px;font-size:13px;margin-bottom:10px">✅ <b dir="auto">'+esc(c.title||c.ext)+'</b>'+(c.usd?'<br>'+L('تدفع لك','pays you','vous paie')+' '+usd(c.usd.raw)+' · '+L('للمستخدم','user','user')+' <b style="color:#22c55e">'+usd(c.usd.usd)+'</b>'+(c.usd.multi?' · '+c.usd.nsteps+' '+L('مراحل','levels','niveaux'):''):'')+_sp+'</div>'
+      +(_au?'<div class="au-f full"><button type="button" class="adm-new" style="width:100%;background:rgba(34,197,94,.14);color:#4ade80" onclick="owmMgAuto()">🪄 '+L('تعبئة تلقائية بالعربية (الاسم والوصف والمهمة والزر)','Auto-fill in Arabic','Remplir')+'</button><span style="display:block;font-size:11.5px;color:#9fb3d9;margin-top:4px">'+L('الخانات أدناه مملوءة تلقائيًا من بيانات الشبكة. اسم اللعبة علامة تجارية فيبقى كما هو، وعدّل أي شيء تريده قبل الحفظ.','Fields are pre-filled from network data; edit anything before saving.','')+'</span></div>':'')
+      +'<div class="au-f full"><label>'+L('اسم اللعبة (يُملأ تلقائيًا، عدّله إن شئت)','Game name (auto-filled)','Nom du jeu')+'</label><input id="owm-f-n" maxlength="80" value="'+esc(r.name||(_au&&_au.name)||'')+'" placeholder="'+esc(L('مثال: فقاعات الأساطير','e.g. Bubble Legends','ex'))+'"></div>'
       +'<div class="au-f full"><label>'+L('الصورة (تُؤخذ تلقائيًا من الشبكة، أو ضع رابط https)','Image (auto from network, or https link)','Image')+'</label><div style="display:flex;align-items:center;gap:10px">'+(im?'<img class="at-prev" src="'+esc(im)+'" alt="" referrerpolicy="no-referrer" style="width:54px;height:54px;border-radius:10px;object-fit:cover" onerror="this.remove()">':'')+'<input id="owm-f-i" dir="ltr" value="'+esc(/^data:/.test(im)?'':im)+'" placeholder="https://..." style="flex:1;min-width:0"></div><input type="file" accept="image/*" onchange="owmMgImg(this)" style="margin-top:8px;max-width:100%"><span id="owm-f-iu" style="display:block;font-size:11.5px;color:#9fb3d9;margin-top:4px">'+(/^data:/.test(im)?L('صورة مرفوعة محفوظة','Uploaded image saved','Image enregistrée'):L('ارفع صورة من هاتفك أو ضع رابطًا. إن تركتها فارغة تُستعمل صورة الشبكة.','Upload a photo or paste a link. If empty, the network image is used.','Image du réseau par défaut.'))+'</span></div>'
-      +'<div class="au-f full"><label>'+L('وصف اللعبة (بالعربية)','Description (Arabic)','Description')+'</label><textarea id="owm-f-d" rows="3" maxlength="600" style="'+ta+'">'+esc(r.descr||'')+'</textarea></div>'
-      +'<div class="au-f full"><label>'+L('المهمة المطلوبة (مثال: صِل إلى المستوى 10)','Required task','Tâche')+'</label><textarea id="owm-f-t" rows="3" maxlength="400" style="'+ta+'">'+esc(r.task||'')+'</textarea></div>'
-      +'<div class="au-f full"><label>'+L('نصّ زر البدء (أنت تختاره، مثل: ابدأ اللعب / ثبّت اللعبة)','Start button text','Texte du bouton')+'</label><input id="owm-f-b" maxlength="30" value="'+esc(r.btn||'')+'" placeholder="'+esc(L('ابدأ اللعب','Start playing','Jouer'))+'"></div>'
+      +'<div class="au-f full"><label>'+L('وصف اللعبة (بالعربية)','Description (Arabic)','Description')+'</label><textarea id="owm-f-d" rows="3" maxlength="600" style="'+ta+'">'+esc(r.descr||(_au&&_au.descr)||'')+'</textarea></div>'
+      +'<div class="au-f full"><label>'+L('المهمة المطلوبة (مثال: صِل إلى المستوى 10)','Required task','Tâche')+'</label><textarea id="owm-f-t" rows="3" maxlength="400" style="'+ta+'">'+esc(r.task||(_au&&_au.task)||'')+'</textarea></div>'
+      +'<div class="au-f full"><label>'+L('نصّ زر البدء (أنت تختاره، مثل: ابدأ اللعب / ثبّت اللعبة)','Start button text','Texte du bouton')+'</label><input id="owm-f-b" maxlength="30" value="'+esc(r.btn||(_au&&_au.btn)||'')+'" placeholder="'+esc(L('ابدأ اللعب','Start playing','Jouer'))+'"></div>'
       +'<div class="au-f full"><label>📱 '+L('الجهاز: أي هاتف تعمل عليه؟','Device','Appareil')+'</label><select id="owm-f-pf">'+[['auto','🔄 '+L('تلقائي (من الشبكة، موصى به)','Auto (from network, recommended)','Auto')],['android','🤖 '+L('أندرويد فقط','Android only','Android')],['ios','🍎 '+L('آيفون فقط','iPhone only','iPhone')],['all','📱 '+L('الاثنان','Both','Les deux')]].map(function(o){ return '<option value="'+o[0]+'"'+((r.platform||'auto')===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select><span style="display:block;font-size:11.5px;color:#9fb3d9;margin-top:4px">'+L('لا نعرض اللعبة لمن جهازه مختلف، حتى لا تفتح له متجرًا خاطئًا.','Users on another device will not see this game.','Les autres appareils ne la voient pas.')+'</span></div>'
       +'<div class="au-f full"><label>'+L('📍 أين تظهر هذه اللعبة في التطبيق؟','📍 Where does it appear?','📍 Où ?')+'</label><select id="owm-f-p">'+opts+'</select></div>'
       +'<div class="au-f full"><label>⏳ '+L('تاريخ انتهاء اللعبة (اختياري؛ بعده تختفي لمن لم يبدأها ويُعطَّل زر البدء)','End date (optional)','Date de fin (optionnel)')+'</label><input id="owm-f-e" type="date" dir="ltr" value="'+esc(r.ends_on||'')+'"></div>'
@@ -14071,6 +14209,18 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
       +'<div style="display:flex;gap:10px;margin-top:6px"><button class="adm-new" style="flex:1" onclick="owmMgSave()">💾 '+L('حفظ','Save','Enregistrer')+'</button><button class="adm-new" style="flex:1;background:rgba(255,255,255,.08)" onclick="owmMgOpen()">'+L('رجوع','Back','Retour')+'</button></div>';
     mcard(h,(c.row?'✏️ ':'+ ')+L('لعبة','Game','Jeu'));
   }
+  var _qb={};
+  window.owmMgQuick=function(i){
+    var it=M.pick[i]; if(!it||_qb[it.id]) return;
+    if(it.flag==='blocked'||it.flag==='over_cap'){ toast(L('هذا العرض محظور أو مبلغه فوق الحد، افتحه بزر ✏️ للمراجعة','Blocked/over cap: open it with ✏️','')); return; }
+    var a=window.plAutoAr&&window.plAutoAr({kind:it.kind,title:it.title,desc:it.desc,steps:it.steps,multi:it.multi,plat:it.plat,min:it.min}); if(!a||!a.name){ M.cur={ext:it.id,title:it.title,row:null,image:it.image||'',usd:it}; mForm(); return; }
+    var place=it.kind==='survey'?'survey':(/daily|login|log in|check.?in|streak|every day|تسجيل دخول|يومي/i.test(String(it.title||''))?'daily':'games');
+    _qb[it.id]=1;
+    mSave({ext:it.id,name:a.name,descr:a.descr,task:a.task,img:'',btn:a.btn,platform:'auto',place:place,sort:100,featured:false,active:true},function(ok){
+      _qb[it.id]=0; if(ok){ it.added=true; toast('✅ '+L('أُضيفت «'+a.name+'» وظهرت للمستخدمين','Added','Ajouté')); try{ mPickRows(); }catch(e){} }
+    });
+  };
+  window.owmMgAuto=function(){ var a=M.au; if(!a) return; var s=function(id,v){ var e=document.getElementById(id); if(e) e.value=v; }; s('owm-f-n',a.name); s('owm-f-d',a.descr); s('owm-f-t',a.task); s('owm-f-b',a.btn); toast(L('✅ تمت التعبئة بالعربية','✅ Filled','✅ Rempli')); };
   window.owmMgImg=function(inp){
     var f=inp.files&&inp.files[0]; if(!f) return;
     if(!/^image\//.test(f.type)){ toast(L('الملف ليس صورة','Not an image','Pas une image')); return; }
@@ -14229,14 +14379,14 @@ function openOfferwall(){
         var n=(g.goals||[]).length, dn=0; try{ dn=window.owGameDone?window.owGameDone(g):0; }catch(e){}
         var st=gState(g);
         var amt=(g.reward==null)?L('يختلف','Varies','Variable'):'$'+Number(g.reward).toFixed(2);
-        var img=g.img?'<img decoding="async" class="card-artwork" src="'+esc(g.img)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':art;
+        var img=g.img?'<img decoding="async" class="card-artwork" src="'+esc(g.img)+'" alt="" loading="lazy" referrerpolicy="no-referrer" data-ph="🎮" onerror="plImgFail(this)">':art;
         var hot=(cat==='all'&&g.featured);
         var btn=(st==='done')?'<button class="go done" disabled>✓</button>':go;
         ids.push('g:'+g.gid); parts.push('<div class="trow ow-row'+(hot?' has-hot':'')+'" data-gid="'+g.gid+'" onclick="openOwGame('+g.gid+')">'
           +(hot?'<span class="ow-hot" aria-hidden="true"></span>':'')
           +'<div class="t-icon art'+(g.img?' has-img':'')+'">'+img+'</div>'
           +'<div class="t-info"><div class="t-head"><b class="t-amt">'+amt+'</b><span class="t-amtl">'+L('المجموع','Total','Total')+'</span></div>'
-          +'<h4>'+esc(g.name||'')+'</h4><span class="t-tag ext">🌐 '+L('خارجية','External','Externe')+'</span>'
+          +'<h4>'+esc(g.name||'')+'</h4><span class="t-tag ext">🎮 '+L('لعبة','Game','Jeu')+'</span>'
           +'<div class="meta">'+(st==='started'?'<span class="t-cd y">▶ '+L('أكمل','Continue','Continuer')+'</span>':'')+(st==='done'?'<span class="t-ok">✓ '+L('تم الإكمال','Completed','Terminé')+'</span>':'')
           +(g.ready?'<span>📶 '+(n?n+' '+L('خطوات','steps','étapes'):L('مهمة واحدة','Single task','Une tâche'))+'</span>':'<span>'+L('غير متاحة الآن','Unavailable now','Indisponible')+'</span>')
           +((dn&&st!=='done')?'<span>✅ '+L('أنجزت '+dn,'Done '+dn,'Fait '+dn)+'</span>':'')+'</div></div>'+btn+'</div>');
@@ -14291,6 +14441,11 @@ function openOfferwall(){
 #owg-ov .g-step .g-r{flex:none;min-width:62px;text-align:center;font-weight:800;color:#5df0a0;background:rgba(93,240,160,.10);border:1px solid rgba(93,240,160,.28);border-radius:99px;padding:4px 10px;font-size:13.5px}
 #owg-ov .g-step .g-r.z{color:#7f93bb;background:transparent;border-color:#22304f;font-weight:600}
 #owg-ov .g-step.done .g-r:not(.z){background:rgba(93,240,160,.18)}
+#owg-ov .g-step.nx{border-color:rgba(56,189,248,.55);background:linear-gradient(135deg,#0f2238,#0f1a31)}
+#owg-ov .g-stt{display:inline-block;margin-top:3px;font-size:11.5px;font-weight:800;border-radius:99px;padding:1px 9px}
+#owg-ov .g-stt.ok{color:#5df0a0;background:rgba(93,240,160,.14)}#owg-ov .g-stt.nx{color:#7dd3fc;background:rgba(56,189,248,.14)}
+#owg-ov .g-rem{margin:-4px 0 12px;font-size:13px;font-weight:700;color:#9fe3ff}
+#owg-ov .g-step.done .g-d{color:#d7ffe9}
 #owg-ov .g-tot{flex:none;text-align:center;line-height:1.2}
 #owg-ov .g-tot small{display:block;font-size:11px;color:#9fb3d9;font-weight:400}
 #owg-ov .g-start{flex:none;position:static;padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));background:#0b1220;border-top:1px solid #1f2d4a}
@@ -14341,7 +14496,7 @@ function openOfferwall(){
     meta.push(n? (n+' '+L('خطوات','steps','étapes')) : L('مهمة واحدة','Single task','Une tâche'));
     if(d.length){ meta.push('✅ '+(n?L('أنجزت '+d.length,'Done '+d.length,'Fait '+d.length):L('مكتملة','Completed','Terminé'))); }
     if(!o.ready) meta.push(L('غير متاحة الآن','Unavailable now','Indisponible'));
-    var img=o.img?'<img src="'+esc(o.img)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">':'🎮';
+    var img=o.img?'<img src="'+esc(o.img)+'" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-ph="🎮" onerror="plImgFail(this)">':'🎮';
     var _et=window.plEndTxt?window.plEndTxt((window.PL_ENDS.gg||{})[String(o.gid)]||''):null, _pl=(function(){ var d=(o.devices||[]).map(function(x){ return String(x).toLowerCase(); }), a=d.indexOf('android')>=0, ip=d.indexOf('ios')>=0||d.indexOf('iphone')>=0; return a&&!ip?'Android':ip&&!a?'iPhone':''; })();
     return '<div class="g-card" data-i="'+i+'"><div class="g-img">'+img+'</div><div class="g-in"><h4>'+esc(o.name)+'</h4><div class="g-meta">'+meta.map(function(x){return '<span>'+esc(x)+'</span>';}).join('')+(_pl?'<span>📱 '+_pl+'</span>':'')+(_et?'<span style="color:'+_et.c+'">'+esc(_et.t)+'</span>':'')+'</div></div><div class="g-rw'+(o.reward==null?' v':'')+'"><div class="g-tot"><small>'+esc(L('المجموع','Total','Total'))+'</small>'+esc(money(o.reward))+'</div></div></div>';
   }
@@ -14425,7 +14580,7 @@ function openOfferwall(){
   }
   function sheet(o){
     S.cur=o; var sh=$('owg-sheet'); sh.classList.add('on'); sh.scrollTop=0;
-    var img=o.img?'<img src="'+esc(o.img)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':'🎮';
+    var img=o.img?'<img src="'+esc(o.img)+'" alt="" referrerpolicy="no-referrer" data-ph="🎮" onerror="plImgFail(this)">':'🎮';
     var goals=o.goals||[], done=S.prog&&S.prog[o.ext]||{}, h='';
     h+='<div class="g-bar"><span>'+esc(o.name)+'</span><button type="button" id="owg-back">'+esc(L('رجوع','Back','Retour'))+'</button></div><div class="g-body">';
     h+='<div class="g-h"><div class="g-img">'+img+'</div><div class="g-in"><h4 style="white-space:normal">'+esc(o.name)+'</h4><div class="g-meta"><span>'+esc(L('المجموع','Total','Total'))+': '+esc(money(o.reward))+'</span>'+(goals.length?'<span>'+goals.length+' '+esc(L('خطوات','steps','étapes'))+'</span>':'')+'</div></div></div>';
@@ -14437,6 +14592,7 @@ function openOfferwall(){
       if(_dsc&&!window.plGgHasAr(_dsc)){ _dsc=window.plGgAr(_dsc)||''; }
       if(_tsk&&!window.plGgHasAr(_tsk)){ var _ta=window.plGgAr(_tsk); if(_ta){ _tsrc=_tsk; _tsk=_ta; } }
     }
+    if(!_dsc&&_isAr&&window.plAutoAr){ try{ var _gau=window.plAutoAr({kind:'game',title:o.name,steps:goals,multi:goals.length>1}); if(_gau) _dsc=_gau.descr; }catch(e){} }
     if(_dsc) h+='<div class="g-sec"><b>'+esc(L('الوصف','About','Description'))+'</b>'+esc(_dsc)+'</div>';
     if(_tsk) h+='<div class="g-sec"><b>'+esc(L('المهمة المطلوبة','Required task','Tâche requise'))+'</b>'+esc(_tsk)+(_tsrc?'<small dir="ltr" style="display:block;font-size:11px;color:#7f93bb;margin-top:2px;text-align:left">'+esc(_tsrc)+'</small>':'')+'</div>';
     var cs=o.countries||[], ds=o.devices||[];
@@ -14449,11 +14605,13 @@ function openOfferwall(){
     } else if(goals.length){
       var nd=goals.filter(function(g){ return done[g.id]!==undefined; }).length;
       h+='<div class="g-sec"><b>'+esc(L('المكافآت','Rewards','Récompenses'))+' — '+esc(L('أنجزت '+nd+' من '+goals.length,nd+' of '+goals.length+' done',nd+' sur '+goals.length))+'</b><div class="g-prog"><i style="width:'+Math.round(100*nd/goals.length)+'%"></i></div>';
+      try{ var _rem=0, _tot=0; goals.forEach(function(g){ var r=Number(g.r)||0; _tot+=r; if(done[g.id]===undefined) _rem+=r; }); if(_tot>0&&nd>0) h+='<div class="g-rem">'+esc(nd>=goals.length?L('🎉 أكملت كل المراحل','🎉 All stages completed','🎉 Toutes les étapes terminées'):L('المتبقي لك: '+money(_rem)+' من '+money(_tot),'Remaining: '+money(_rem)+' of '+money(_tot),'Reste : '+money(_rem)+' sur '+money(_tot)))+'</div>'; }catch(e){}
       var _og=orderGoals(goals), _kinds={}; _og.forEach(function(x){ _kinds[x.k]=1; }); var _multi=Object.keys(_kinds).length>1, _last='', _gl={}; GRP.forEach(function(x){ _gl[x[0]]=x; });
+      var _nxi=-1; for(var _q=0;_q<_og.length;_q++){ if(done[_og[_q].g.id]===undefined){ _nxi=_q; break; } }
       _og.forEach(function(x,n){
-        var g=x.g, dn=done[g.id]!==undefined;
+        var g=x.g, dn=done[g.id]!==undefined, isNx=(n===_nxi&&nd>0);
         if(_multi&&x.k!==_last){ _last=x.k; var gg=_gl[x.k]; h+='<div class="g-grp"><span>'+gg[1]+'</span>'+esc(L(gg[2][0],gg[2][1],gg[2][2]))+'</div>'; }
-        h+='<div class="g-step'+(dn?' done':'')+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+(window.plGgStepHtml?window.plGgStepHtml(g.d||('#'+(n+1))):esc(g.d||('#'+(n+1))))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+'</div><div class="g-r'+((Number(g.r)>0)?'':' z')+'">'+((Number(g.r)>0)?esc(money(g.r)):'—')+'</div></div>';
+        h+='<div class="g-step'+(dn?' done':(isNx?' nx':''))+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+(window.plGgStepHtml?window.plGgStepHtml(g.d||('#'+(n+1))):esc(g.d||('#'+(n+1))))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+(dn?'<span class="g-stt ok">✓ '+esc(L('تم الإنجاز','Completed','Terminé'))+'</span>':(isNx?'<span class="g-stt nx">'+esc(L('المرحلة التالية','Next stage','Prochaine étape'))+'</span>':''))+'</div><div class="g-r'+((Number(g.r)>0)?'':' z')+'">'+((Number(g.r)>0)?esc(money(g.r)):'—')+'</div></div>';
       });
       h+='</div>';
       try{ var nx=goals.filter(function(g){ return done[g.id]===undefined&&Number(g.r)>0; })[0];
@@ -14499,6 +14657,13 @@ function openOfferwall(){
   document.addEventListener('visibilitychange',function(){
     try{ if(!document.hidden&&$('owg-ov').classList.contains('on')){ loadProg().then(function(){ if(S.cur) sheet(S.cur); else paint(); }); } }catch(e){}
   });
+  /* تحديث حيّ: أثناء فتح تفاصيل لعبة نسأل الخادم كل 30 ثانية، ونعيد الرسم فقط إن تغيّر ما أكدته الشبكة (بلا وميض ولا فقدان موضع التمرير) */
+  setInterval(function(){
+    try{ var sh=$('owg-sheet'); if(document.hidden||!S.cur||!sh||!sh.classList.contains('on')) return;
+      var before=JSON.stringify(S.prog||{});
+      loadProg().then(function(){ try{ if(!S.cur||!sh.classList.contains('on')||JSON.stringify(S.prog||{})===before) return; var st=sh.scrollTop; sheet(S.cur); sh.scrollTop=st; try{ toast(L('✅ تم تأكيد مرحلة جديدة','✅ A new stage was confirmed','✅ Nouvelle étape confirmée')); }catch(e){} }catch(e){} });
+    }catch(e){}
+  },30000);
 })();
 </script>
 <script>
@@ -14627,6 +14792,8 @@ function openOfferwall(){
       if(t) g.task_ar=String(t).slice(0,400); else tr.taskBad=!!(o.req||o.desc||goals.length);
     }
     if(!g.desc_ar&&o.desc){ var d=T(o.desc); if(d) g.desc_ar=String(d).slice(0,600); else tr.descBad=true; }
+    try{ var au=window.plAutoAr&&window.plAutoAr({kind:'game',title:o.name,desc:'',steps:goals,multi:goals.length>1,plat:(o.devices&&o.devices.length===1&&/^(android|ios)$/.test(o.devices[0]))?o.devices[0]:''});
+      if(au){ if(!g.desc_ar){ g.desc_ar=au.descr; tr.descBad=false; tr.descGen=true; } if(!g.task_ar){ g.task_ar=au.task; tr.taskBad=false; tr.taskGen=true; } } }catch(e){}
     A.tr=tr;
   }
   function missCount(){
@@ -14689,10 +14856,10 @@ function openOfferwall(){
       h+='<div class="au-f full" style="background:'+((badN||tr.descBad||tr.taskBad)?'rgba(245,158,11,.10)':'rgba(34,197,94,.08)')+';border-radius:12px;padding:10px;font-size:13px;line-height:1.8">🌐 <b>'+L('الترجمة التلقائية للعربية','Auto Arabic translation','Traduction auto')+'</b><br>'+
         (gl.length?'• '+L('المراحل: ','Levels: ','Niveaux : ')+okN+' / '+gl.length+' '+L('مكتوبة بالعربية','in Arabic','en arabe')+(badN?' — <span style="color:#fbbf24">'+badN+' '+L('لم أستطع ترجمتها، اكتبها أنت (الأصل ظاهر فوق كل خانة)','could not be translated, please write them','à écrire')+'</span>':' ✅')+'<br>':'')+
         '• '+L('المهمة المطلوبة: ','Task: ','Tâche : ')+(g.task_ar?'✅':'<span style="color:#fbbf24">'+L('تعذّرت الترجمة، اكتبها بالعربية','not translated, write it','à écrire')+'</span>')+
-        (tr.descBad&&!g.desc_ar?'<br>• '+L('الوصف: نص حرّ لا يُترجم تلقائيًا، اكتبه بالعربية.','Description is free text; write it in Arabic.','Description à écrire.')+(o.desc?'<span dir="ltr" style="display:block;font-size:11px;color:var(--muted);text-align:left">'+esc(String(o.desc).slice(0,220))+'</span>':''):'')+
+        ((tr.descGen||tr.taskGen)?'<br>• '+L('الوصف/المهمة: وُضع نص عربي عام صحيح لأن نص الشبكة الأصلي حرّ؛ عدّله إن أردت.','Description/task: a generic Arabic text was used; edit if you like.','')+'':'')+(tr.descBad&&!g.desc_ar?'<br>• '+L('الوصف: نص حرّ لا يُترجم تلقائيًا، اكتبه بالعربية.','Description is free text; write it in Arabic.','Description à écrire.')+(o.desc?'<span dir="ltr" style="display:block;font-size:11px;color:var(--muted);text-align:left">'+esc(String(o.desc).slice(0,220))+'</span>':''):'')+
         '<br><span style="font-size:11px;color:var(--muted)">'+L('تُملأ الخانات الفارغة فقط من بيانات الشبكة الحقيقية، وما كتبته أنت لا يُستبدل. أسماء الألعاب تبقى كما هي.','Only empty fields are filled from the real network data; your own text is never replaced. Game names stay as is.','')+'</span></div>';
     }
-    h+='<div class="au-f full"><label>'+L('اسم اللعبة (بالعربية، أنت تكتبه)','Game name (you write it)','Nom du jeu')+'</label><input id="owa-name" value="'+v(g.name_ar)+'" maxlength="120" placeholder="'+v(o?o.name:L('مثال: فقاعات الأساطير','e.g. Bubble Legends','ex'))+'"></div>'+
+    h+='<div class="au-f full"><label>'+L('اسم اللعبة (يُملأ تلقائيًا، عدّله إن شئت)','Game name (auto-filled)','Nom du jeu')+'</label><input id="owa-name" value="'+v(g.name_ar)+'" maxlength="120" placeholder="'+v(o?o.name:L('مثال: فقاعات الأساطير','e.g. Bubble Legends','ex'))+'"></div>'+
        '<div class="au-f full"><label>'+L('الصورة: ارفع صورة أو ضع رابطها (https)','Image: upload or paste https link','Image')+'</label><div style="display:flex;align-items:center;gap:10px"><span id="owa-imgp">'+(A.img?'<img class="at-prev" src="'+v(A.img)+'" alt="">':(o&&o.img?'<img class="at-prev" src="'+v(o.img)+'" alt="" style="opacity:.55">':''))+'</span><input type="file" accept="image/*" onchange="owAdmImg(this)" style="max-width:210px"></div>'+
        '<input id="owa-imgurl" dir="ltr" placeholder="https://..." value="'+v(/^https:/.test(A.img)?A.img:'')+'" style="margin-top:8px"><span class="sec-cap">'+L('إن تركتها فارغة تُستعمل صورة الشبكة.','If empty, the network image is used.','Image du réseau par défaut.')+'</span></div>'+
        '<div class="au-f full"><label>'+L('وصف اللعبة (بالعربية)','Description (Arabic)','Description')+'</label><textarea id="owa-desc" rows="3" style="width:100%;padding:12px 14px;border-radius:13px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);color:var(--text);font-family:inherit;font-size:14px;outline:none;resize:vertical" maxlength="600">'+esc(g.desc_ar)+'</textarea></div>'+
@@ -14916,7 +15083,7 @@ function openOfferwall(){
     var pl=gPlat(x), add=gAdded(x.id), et=x.exp?endTxt(x.exp):null;
     return '<div class="pk-i" style="width:44px;height:44px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.06);flex:none;position:relative"><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.35">🎮</span>'+(x.img?'<img src="'+v(x.img)+'" width="44" height="44" decoding="async" loading="lazy" referrerpolicy="no-referrer" onerror="owAdmPkBad('+Number(x.id)+')" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">':'')+'</div>'+
       '<div class="pk-tx" style="flex:1;min-width:0">'+pkTxHtml(x,E,pl,add,et)+'</div>'+
-      '<button class="adm-new pk-b" style="flex:none;width:auto;padding:10px 14px" onclick="owAdmPickUse('+Number(x.id)+')">'+(add?L('فتح','Open','Ouvrir'):L('اختيار','Select','Choisir'))+'</button>';
+      '<button class="adm-new pk-b" style="flex:none;width:auto;padding:10px 14px" onclick="owAdmPickGo('+Number(x.id)+')">'+(add?L('فتح','Open','Ouvrir'):'⚡ '+L('إضافة سريعة','Quick add','Ajout rapide'))+'</button>'+(add?'':'<button class="adm-new" title="'+L('مراجعة وتعديل قبل الإضافة','Review first','')+'" style="flex:none;width:auto;padding:10px 12px" onclick="owAdmPickUse('+Number(x.id)+')">✏️</button>');
   }
   function pkTxHtml(x,E,pl,add,et){
     return '<div dir="ltr" style="font-weight:700;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(x.name)+'</div><div style="font-size:12px;color:var(--muted)">#'+x.id+' · '+(x.type==='multistep'?L('عدة مراحل','multi-level','multi'):L('مهمة واحدة','single','simple'))+' · '+L('للمستخدم','user gets','utilisateur')+' '+mon(x.reward)+' · '+(pl==='ios'?'🍎 iPhone':pl==='android'?'🤖 Android':'📱 '+L('الاثنان','Both','Les deux'))+(E.newIds[x.id]?' · 🆕':'')+(add?' · ✅ '+L('مضافة','added','ajouté'):'')+((!x.img||x.bad)?' · 🖼️ '+L('بلا صورة','no image','sans image'):'')+(x.reward===0?' · ⚠️ '+L('مكافأة 0','reward 0','0'):'')+(et?' · <b style="color:'+et.c+'">'+et.t+'</b>':'')+'</div>';
@@ -14934,7 +15101,7 @@ function openOfferwall(){
     Array.prototype.forEach.call(host.children,function(el){ have[el.getAttribute('data-k')]=el; });
     rows.forEach(function(x,ix){
       var k=String(x.id), el=have[k], pl=gPlat(x), add=gAdded(x.id), et=x.exp?endTxt(x.exp):null, sig=[add?1:0,E.newIds[x.id]?1:0,x.exp||'',x.reward,x.bad?1:0].join('|');
-      if(el){ delete have[k]; if(el.getAttribute('data-s')!==sig){ el.setAttribute('data-s',sig); el.querySelector('.pk-tx').innerHTML=pkTxHtml(x,E,pl,add,et); el.querySelector('.pk-b').textContent=add?L('فتح','Open','Ouvrir'):L('اختيار','Select','Choisir'); } }
+      if(el){ delete have[k]; if(el.getAttribute('data-s')!==sig){ el.setAttribute('data-s',sig); el.querySelector('.pk-tx').innerHTML=pkTxHtml(x,E,pl,add,et); el.querySelector('.pk-b').textContent=add?L('فتح','Open','Ouvrir'):'⚡ '+L('إضافة سريعة','Quick add','Ajout rapide'); } }
       else { el=document.createElement('div'); el.setAttribute('data-k',k); el.setAttribute('data-s',sig); el.style.cssText='display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--border);content-visibility:auto;contain-intrinsic-size:auto 62px'; el.innerHTML=pkRowHtml(x,E); }
       if(host.children[ix]!==el) host.insertBefore(el,host.children[ix]||null);
     });
@@ -14990,6 +15157,23 @@ function openOfferwall(){
         h+='<div dir="ltr" style="text-align:left;border-top:1px solid var(--border);padding:4px 0">'+v(d.v)+' → HTTP '+d.http+' · success='+d.success+' · returned='+d.returned+' · shown='+d.shown+' · total='+d.total+(d.msg?' · msg='+v(d.msg):'')+(d.raw?' · raw='+v(d.raw):'')+(dr?' · dropped: '+dr:'')+(d.cats&&d.cats.length?' · cats: '+v(d.cats.join(',')):'')+'</div>'; });
       P.diag=h; pkPaint();
     });
+  };
+  window.owAdmPickGo=function(id){ var x=null, E=A.pick&&pkCur(); if(E) x=E.items.filter(function(y){ return Number(y.id)===Number(id); })[0]||null; if(x&&gAdded(x.id)) return window.owAdmPickUse(id); return window.owAdmPickQuick(id); };
+  var _gq={};
+  window.owAdmPickQuick=function(id){
+    var x=null, E=A.pick&&pkCur(); if(E) x=E.items.filter(function(y){ return Number(y.id)===Number(id); })[0]||null; if(!x||_gq[id]) return;
+    _gq[id]=1; toast(L('جارٍ الجلب والترجمة…','Fetching…','…'));
+    var place=A.pick.cat||'games';
+    A.g={id:null,offer_id:Number(x.id),name_ar:'',image_url:'',desc_ar:'',task_ar:'',steps:{},sort:100,active:true,place:place,featured:false}; A.nf=false; A.off=null; A.img=''; A.end=''; A.err=''; A.skipMiss=false; A.tr=null;
+    call('action=ow_admin_offer&id='+x.id).then(function(j){
+      _gq[id]=0;
+      if(!(j&&j.ok&&j.offer)){ A.err=why(j&&j.why); owAdmFormDraw(); return; }
+      A.off=j.offer; ggFill(A.off);
+      var ex=String(x.exp||'').slice(0,10); if(/^\d{4}-\d{2}-\d{2}$/.test(ex)){ A.end=ex; A.g.steps.__end=ex; }
+      if(!A.g.image_url&&!(A.off.img||x.img)){ A.err=L('هذه اللعبة بلا صورة من الشبكة: أضف صورة ثم احفظ.','No image from the network: add one then save.',''); owAdmFormDraw(); return; }
+      if(missCount()>0){ toast(L('بعض المراحل لم تُترجم: اكتبها ثم احفظ','Some steps need translation','')); owAdmFormDraw(); ggDetail(String(x.id)); return; }
+      window.owAdmSave();
+    }).catch(function(){ _gq[id]=0; A.err=why('net'); owAdmFormDraw(); });
   };
   window.owAdmPickUse=function(id){
     var x=null, E=A.pick&&pkCur(); if(E) x=E.items.filter(function(y){ return Number(y.id)===Number(id); })[0]||null;

@@ -1,6 +1,6 @@
 /* v11 — PayLoop — Service Worker: إشعارات الهاتف (Web Push) + شاشة «لا يوجد إنترنت» عند فتح التطبيق بدون شبكة. لا يخزّن أي صفحات ولا بيانات: التطبيق يعمل أونلاين فقط. */
 /* رقم الإصدار: يجب أن يطابق window.PL_BUILD في index.html. عند تغييره يحذف الـ SW نسخة الصفحة القديمة المحفوظة ويبلّغ الصفحات المفتوحة بوجود تحديث. */
-var BUILD = '2026.11.11-r160';
+var BUILD = '2026.11.12-r169';
 var SHELL = 'pl-shell-' + BUILD;
 self.addEventListener('install', function () { self.skipWaiting(); });
 self.addEventListener('activate', function (e) {
@@ -117,19 +117,22 @@ self.addEventListener('push', function (e) {
     /* أولًا: اعرض الإشعار فورًا (لا شيء قبله يؤخّره). بعدها فقط نسجّل التشخيص ونخبر الصفحة المفتوحة. */
     /* العنوان كما كتبته أنت تمامًا (بدون إضافة اسم التطبيق: أندرويد يعرض اسم التطبيق أصلًا في أعلى الإشعار) */
     var title = String(d.title || '').trim() || 'PayLoop';
+    var isIos0 = false; try { isIos0 = /iphone|ipad|ipod/i.test(self.navigator.userAgent || ''); } catch (x) {}
+    /* بلا tag من الخادم نولّد واحدًا من المحتوى: إن وصل الإشعار نفسه مرتين يستبدل أحدهما الآخر بدل أن يظهر مكررًا (ولا نتجاهل أي push: آيفون يشترط عرض إشعار لكل push) */
+    var autoTag = ''; if (!d.tag) { try { var hs = 0, src = String(d.title || '') + '|' + String(d.body || '') + '|' + String(d.go || ''); for (var hi = 0; hi < src.length; hi++) { hs = ((hs << 5) - hs + src.charCodeAt(hi)) | 0; } autoTag = 'pl-' + (hs >>> 0).toString(36); } catch (x) {} }
     var opt = {
-      body: String(d.body || '').slice(0, 300), tag: d.tag || undefined, icon: 'payloop-192.png', badge: 'badge-96.png?v=7',
+      body: String(d.body || '').slice(0, 300), tag: d.tag || autoTag || undefined, icon: 'payloop-192.png', badge: 'badge-96.png?v=7',
       data: { go: d.go || null }, dir: 'auto', lang: 'ar',
       silent: false, vibrate: [300, 120, 300, 120, 300], timestamp: Date.now(), renotify: !!d.tag,
       actions: [{ action: 'open', title: '\u0641\u062a\u062d' }, { action: 'dismiss', title: '\u062a\u062c\u0627\u0647\u0644' }]
     };
     try { if (typeof d.image === 'string' && /^https:\/\//.test(d.image)) opt.image = d.image.slice(0, 500); } catch (x) {}
     /* بانر كبير فخم يناسب نوع الإشعار (إن لم يُرسل الأدمن صورة خاصة) */
-    if (!opt.image) {
+    if (!opt.image && !isIos0) {   /* آيفون لا يعرض الصور الكبيرة ويحتاج عرضًا فوريًا: لا نبني بانرًا هناك */
       try {
         var stat = bannerFor(d, title, opt.body);
         var rich = null;
-        try { rich = await Promise.race([richBanner(stat, title, opt.body), new Promise(function (ok) { setTimeout(function () { ok(null); }, 2500); })]); } catch (x) {}
+        try { rich = await Promise.race([richBanner(stat, title, opt.body), new Promise(function (ok) { setTimeout(function () { ok(null); }, 1500); })]); } catch (x) {}
         opt.image = rich || stat;
       } catch (x) {}
     }
@@ -142,10 +145,28 @@ self.addEventListener('push', function (e) {
       await diag('last-show', 'inapp'); await diag('last-push', Date.now());
       return;
     }
-    var shown = self.registration.showNotification(title.slice(0, 120), opt);
-    try { await shown; await diag('last-show', 'ok'); } catch (err) { await diag('last-show', String((err && err.name) || 'error') + ':' + String((err && err.message) || '').slice(0, 80)); }
+    if (isIos) { try { delete opt.image; delete opt.actions; delete opt.vibrate; delete opt.renotify; } catch (x) {} }   /* خيارات لا يدعمها WebKit: حذفها يمنع رفض العرض */
+    try { await self.registration.showNotification(title.slice(0, 120), opt); await diag('last-show', 'ok'); }
+    catch (err) {
+      var why1 = String((err && err.name) || 'error') + ':' + String((err && err.message) || '').slice(0, 80);
+      /* محاولة ثانية بخيارات بسيطة جدًا حتى لا يضيع الإشعار بسبب صورة/زر غير مدعوم */
+      try { await self.registration.showNotification(title.slice(0, 120), { body: opt.body, icon: opt.icon, tag: opt.tag, data: opt.data, lang: 'ar', dir: 'auto' }); await diag('last-show', 'ok-retry'); await diag('last-err', why1); }
+      catch (err2) { await diag('last-show', why1 + ' | retry:' + String((err2 && err2.name) || 'error')); }
+    }
     await diag('last-push', Date.now());
     try { var cs = await self.clients.matchAll({ type: 'window', includeUncontrolled: true }); cs.forEach(function (c) { try { c.postMessage({ type: 'push', go: d.go || null }); } catch (x) {} }); } catch (x) {}
+  })());
+});
+
+/* اشتراك الإشعارات قد يتجدّد/يُلغى من النظام (خصوصًا آيفون): نعيد الاشتراك ونُخبر الصفحة لتحفظ العنوان الجديد في الخادم فلا يبقى العنوان القديم ميتًا */
+self.addEventListener('pushsubscriptionchange', function (e) {
+  e.waitUntil((async function () {
+    try {
+      var old = e.oldSubscription, key = old && old.options && old.options.applicationServerKey, ns = e.newSubscription || null;
+      if (!ns && key) { try { ns = await self.registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key }); } catch (x) { await diag('sub-change', 'resub-fail:' + String((x && x.name) || '')); } }
+      await diag('sub-change', ns ? 'ok:' + Date.now() : 'none:' + Date.now());
+      var cs = await self.clients.matchAll({ type: 'window', includeUncontrolled: true }); cs.forEach(function (c) { try { c.postMessage({ type: 'subchange' }); } catch (x) {} });
+    } catch (x) {}
   })());
 });
 
