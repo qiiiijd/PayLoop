@@ -121,7 +121,7 @@ try{ var _vf=localStorage.getItem('pl-vpn'); if(_vf&&Date.now()-Number(_vf)<6*36
 }catch(e){} })();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.12-r170';
+window.PL_BUILD='2026.11.12-r171';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -3805,6 +3805,7 @@ html.lite .vip-hero:before{display:none}
     <button class="atb active" data-t="users" onclick="admTab('users')">👥 المستخدمون</button>
     <button class="atb" data-t="stats" onclick="admTab('stats')">📈 الإحصائيات</button>
     <button class="atb" data-t="activity" onclick="admTab('activity')">📊 النشاط</button>
+    <button class="atb" data-t="i18n" onclick="admTab('i18n')">🌐 الترجمات</button>
     <button class="atb" data-t="ai" onclick="admTab('ai')">🤖 المساعد الذكي</button>
     <button class="atb" data-t="tasks" onclick="admTab('tasks')">🧩 إدارة المهام</button>
     <button class="atb" data-t="wd" onclick="admTab('wd')">💸 السحب</button>
@@ -8850,6 +8851,7 @@ function renderAdmin(t){
     if(ADM_TAB==='users'){ if(ADM_UID){ try{ admPubLoad(); }catch(e){} admUserDetail(); } else renderAdmUserList(); }
     else if(ADM_TAB==='stats') renderAdmAnalytics();
     else if(ADM_TAB==='activity') renderAdmActivity();
+    else if(ADM_TAB==='i18n') renderAdmI18n();
     else if(ADM_TAB==='tasks') renderAdmTasks();
     else if(ADM_TAB==='wd'||ADM_TAB==='ff') renderAdmWd();
     else if(ADM_TAB==='help') renderAdmHelp();
@@ -8868,6 +8870,53 @@ function renderAdmin(t){
 }
 
 
+
+/* ===== تبويب «الترجمات»: النص الأصلي من الشبكة + الترجمة العربية + تعديل يدوي + مراجعة غير المكتمل + إعادة الترجمة التلقائية ===== */
+const TRX={items:[],man:[],filter:'miss',q:'',busy:false,loaded:false,pg:0};
+function trxScan(){
+  const seen={}, out=[];
+  const KEYS={d:1,desc:1,descr:1,description:1,task:1,req:1,instructions:1,text:1};
+  const add=function(s,net){ if(typeof s!=='string') return; const raw=s.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(); if(raw.length<3||raw.length>600||/[؀-ۿ]/.test(raw)) return; const k=window.plNk(raw); if(seen[k]) return; seen[k]=1; out.push({src:raw,net:net}); };
+  const walk=function(o,net,dep){ if(!o||dep>5) return; if(Array.isArray(o)){ o.forEach(function(x){ walk(x,net,dep+1); }); return; } if(typeof o!=='object') return; Object.keys(o).forEach(function(k){ const v=o[k]; if(KEYS[k]&&typeof v==='string') add(v,net); else if(v&&typeof v==='object') walk(v,net,dep+1); }); };
+  try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i)||''; const net=k.indexOf('pl-owm-g:')===0?'Offerwall.me':k.indexOf('pl-ow-gc:')===0?'Offerwall.GG':''; if(!net) continue; try{ const j=JSON.parse(localStorage.getItem(k)||'null'); walk(j&&(j.items||j.games)||j,net,0); }catch(e){} } }catch(e){}
+  return out;
+}
+function trxRows(){
+  const m={}; TRX.man.forEach(function(r){ m[window.plNk(r.src)]=r; });
+  const all=[], seen={};
+  TRX.items.forEach(function(it){ const k=window.plNk(it.src); seen[k]=1; const man=m[k]; const au=window.plAutoOnly(it.src); all.push({src:it.src,net:it.net,man:man?man.ar:'',auto:au||'',st:man?'man':(au?'auto':'miss')}); });
+  TRX.man.forEach(function(r){ const k=window.plNk(r.src); if(!seen[k]) all.push({src:r.src,net:r.net||'',man:r.ar,auto:window.plAutoOnly(r.src)||'',st:'man'}); });
+  return all;
+}
+async function renderAdmI18n(noFetch){
+  const box=document.getElementById('adm-body'); if(!box) return;
+  if(!SRV.on()){ box.innerHTML='<div class="adm-empty">'+L('هذه الصفحة تعمل مع قاعدة البيانات الحقيقية فقط','Live database only','Base réelle uniquement')+'</div>'; return; }
+  if(!noFetch&&!TRX.busy){ TRX.busy=true; TRX.items=trxScan(); try{ const r=await SRV.rpc('i18n_admin_list',{p_limit:200,p_offset:0}); if(r&&r.ok){ TRX.man=r.rows||[]; TRX.loaded=true; } }catch(e){} TRX.busy=false; if(ADM_TAB!=='i18n') return; }
+  const rows=trxRows(); const q=window.plNk(TRX.q);
+  const cnt={miss:0,auto:0,man:0}; rows.forEach(function(r){ cnt[r.st]++; });
+  let list=rows.filter(function(r){ return (TRX.filter==='all'||r.st===TRX.filter)&&(!q||window.plNk(r.src+' '+(r.man||r.auto)).indexOf(q)>=0); });
+  const tot=list.length; list=list.slice(TRX.pg*30,TRX.pg*30+30);
+  window.__trxList=list;
+  const chip=function(f,l,n){ return '<button class="adm-new" style="margin:4px 4px 0 0;padding:8px 12px;font-size:12.5px;'+(TRX.filter===f?'background:#2563eb;color:#fff':'')+'" onclick="trxFilter(\''+f+'\')">'+l+' ('+n+')</button>'; };
+  const stl={miss:'⚠️ '+L('بلا ترجمة','Untranslated','Non traduit'),auto:'🤖 '+L('تلقائية','Auto','Auto'),man:'✍️ '+L('يدوية','Manual','Manuel')};
+  box.innerHTML='<div class="adm-insight"><b>🌐 '+L('الترجمات','Translations','Traductions')+'</b><div style="font-size:12px;opacity:.85;line-height:1.8;margin-top:4px">'+L('تُعرض هنا نصوص الألعاب والمهام التي وصلت من الشبكات إلى هذا المتصفح (افتح صفحة المهام أولًا لتظهر). ما تحفظه هنا يظهر لكل المستخدمين بدل الترجمة التلقائية، ولا يغيّر أي رابط أو معرّف أو مكافأة.','Texts from the networks seen in this browser. Saved translations replace auto ones for all users and never change links, IDs or rewards.','Textes vus dans ce navigateur. Aucune modification des liens ni des récompenses.')+'</div></div>'+
+   '<div style="margin-top:8px">'+chip('miss',L('تحتاج مراجعة','Need review','À revoir'),cnt.miss)+chip('auto',L('تلقائية','Auto','Auto'),cnt.auto)+chip('man',L('يدوية','Manual','Manuel'),cnt.man)+chip('all',L('الكل','All','Tout'),rows.length)+'</div>'+
+   '<input id="trx-q" class="inp" style="margin-top:8px;width:100%" placeholder="'+L('ابحث في النصوص…','Search…','Rechercher…')+'" value="'+esc(TRX.q)+'" oninput="trxSearch(this.value)">'+
+   (list.length?list.map(function(r,i){ return '<div class="adm-card" style="margin-top:10px;text-align:start;display:block"><div style="font-size:11px;opacity:.75">'+esc(r.net||'')+' · '+stl[r.st]+' · '+L('اللغة الأصلية: الإنجليزية','Source: English','Source : anglais')+'</div><div dir="ltr" style="text-align:left;font-size:13px;margin:6px 0;line-height:1.6">'+esc(r.src)+'</div><textarea id="trx-a'+i+'" class="inp" dir="rtl" rows="3" style="width:100%" placeholder="'+L('اكتب الترجمة العربية','Arabic translation','Traduction arabe')+'">'+esc(r.man||r.auto||'')+'</textarea><div style="display:flex;gap:6px;margin-top:6px"><button class="adm-new" style="flex:1" onclick="trxSave('+i+')">💾 '+L('حفظ','Save','Enregistrer')+'</button>'+(r.st==='man'?'<button class="adm-new" style="flex:1" onclick="trxReset('+i+')">🔁 '+L('إعادة الترجمة التلقائية','Re-translate (auto)','Retraduire (auto)')+'</button>':'')+'</div></div>'; }).join(''):'<div class="adm-empty" style="margin-top:10px">'+L('لا توجد نصوص هنا','Nothing here','Rien ici')+'</div>')+
+   (tot>(TRX.pg+1)*30?'<button class="adm-new" style="width:100%;margin-top:10px" onclick="trxMore()">'+L('عرض المزيد','Show more','Voir plus')+'</button>':'');
+}
+function trxFilter(f){ TRX.filter=f; TRX.pg=0; renderAdmI18n(true); }
+function trxMore(){ TRX.pg++; renderAdmI18n(true); }
+function trxSearch(v){ TRX.q=v; TRX.pg=0; clearTimeout(window.__trxT); window.__trxT=setTimeout(function(){ renderAdmI18n(true); const el=document.getElementById('trx-q'); if(el){ el.focus(); try{ el.setSelectionRange(v.length,v.length); }catch(e){} } },250); }
+async function trxSave(i){
+  const r=(window.__trxList||[])[i]; const el=document.getElementById('trx-a'+i); if(!r||!el) return; const ar=el.value.trim();
+  if(!ar){ toast(L('اكتب الترجمة أولًا','Type the translation first','Saisissez la traduction')); return; }
+  try{ const x=await SRV.rpc('i18n_save',{p_src:r.src,p_ar:ar,p_net:r.net||null}); if(x&&x.ok===true){ window.plOvSet(r.src,ar); const mm=TRX.man.filter(function(q){ return window.plNk(q.src)!==window.plNk(r.src); }); mm.unshift({src:r.src,ar:ar,net:r.net}); TRX.man=mm; toast(L('✅ تم الحفظ','✅ Saved','✅ Enregistré')); try{ window.plRedrawTasks&&window.plRedrawTasks(); }catch(e){} renderAdmI18n(true); } else toast(L('تعذّر الحفظ. شغّل ملف 118_translations.sql أولًا.','Could not save. Run 118_translations.sql first.','Échec. Exécutez 118_translations.sql.')); }catch(e){ toast(L('تعذّر الحفظ','Could not save','Échec')); }
+}
+async function trxReset(i){
+  const r=(window.__trxList||[])[i]; if(!r) return;
+  try{ const x=await SRV.rpc('i18n_delete',{p_src:r.src}); if(x&&x.ok===true){ window.plOvSet(r.src,''); TRX.man=TRX.man.filter(function(q){ return window.plNk(q.src)!==window.plNk(r.src); }); toast(L('✅ عادت الترجمة التلقائية','✅ Back to auto','✅ Retour auto')); try{ window.plRedrawTasks&&window.plRedrawTasks(); }catch(e){} renderAdmI18n(true); } }catch(e){ toast(L('تعذّر التنفيذ','Failed','Échec')); }
+}
 
 /* ===== تبويب «النشاط»: من يدخل ومن ينجز مهام ومن دخل مرة ولم يعد (كل الأرقام من الخادم، ملف 117) ===== */
 const ACT={d:null,at:0,busy:false,err:false,kind:'',rows:[],off:0,total:0,lbusy:false};
@@ -13823,6 +13872,32 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     if(!ar) return e(raw);
     return e(ar)+'<small dir="ltr" style="display:block;font-size:11px;color:#7f93bb;margin-top:2px;text-align:left">'+e(raw)+'</small>';
   };
+})();
+
+/* ===== محرك الترجمة المركزي (واجهة العرض فقط): ترجمات المدير المحفوظة في قاعدة البيانات لها الأولوية على الترجمة التلقائية.
+   لا يلمس معرّفات العروض ولا روابط التتبع ولا الأحداث؛ يعمل فقط على النص المعروض. التحميل مرة واحدة ويُخزَّن في المتصفح. ===== */
+(function(){
+  var KEY='pl-i18n-ov', OV={}, TS=0, busy=false;
+  window.plNk=function(s){ return String(s==null?'':s).toLowerCase().replace(/\s+/g,' ').trim(); };
+  try{ var c=JSON.parse(localStorage.getItem(KEY)||'null'); if(c&&c.m){ OV=c.m; TS=c.t||0; } }catch(e){}
+  var oPS=window.plStepAr, oPG=window.plGgAr;
+  window.plAutoOnly=function(txt){ var r=null; try{ r=(oPG&&oPG(txt))||(oPS&&oPS(txt))||null; }catch(e){} return r; };
+  window.plOvGet=function(txt){ var k=window.plNk(txt); return k&&Object.prototype.hasOwnProperty.call(OV,k)?OV[k]:null; };
+  window.plStepAr=function(txt){ var o=window.plOvGet(txt); if(o) return o; return oPS?oPS(txt):null; };
+  window.plGgAr=function(txt){ var o=window.plOvGet(txt); if(o) return o; return oPG?oPG(txt):null; };
+  window.plOvSet=function(src,ar){ var k=window.plNk(src); if(!k) return; if(ar) OV[k]=ar; else delete OV[k]; try{ localStorage.setItem(KEY,JSON.stringify({t:Date.now(),m:OV})); }catch(e){} };
+  window.plOvCount=function(){ return Object.keys(OV).length; };
+  function load(force){
+    if(busy) return; if(!force&&TS&&Date.now()-TS<600000) return;
+    try{ if(typeof SRV==='undefined'||!SRV.on||!SRV.on()) return; }catch(e){ return; }
+    busy=true;
+    Promise.resolve(SRV.rpc('i18n_overrides',{})).then(function(r){
+      if(r&&r.ok===true&&r.m&&typeof r.m==='object'){ var ch=JSON.stringify(r.m)!==JSON.stringify(OV); OV=r.m; TS=Date.now(); try{ localStorage.setItem(KEY,JSON.stringify({t:TS,m:OV})); }catch(e){} if(ch){ try{ window.plRedrawTasks&&window.plRedrawTasks(); }catch(e){} } }
+    }).catch(function(){}).then(function(){ busy=false; });
+  }
+  window.plOvLoad=load;
+  setTimeout(function(){ load(false); },3500);
+  setInterval(function(){ if(!document.hidden) load(false); },120000);
 })();
 </script>
 <div id="owm-ov"><div class="ob"><span id="owm-t"></span><button class="ox" id="owm-x" type="button"></button></div><div class="od" id="owm-d"></div></div>
