@@ -121,7 +121,7 @@ try{ var _vf=localStorage.getItem('pl-vpn'); if(_vf&&Date.now()-Number(_vf)<6*36
 }catch(e){} })();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.12-r169';
+window.PL_BUILD='2026.11.12-r170';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -4152,7 +4152,10 @@ const NAVMAP={pubdash:'more',vip:'more',admin:'more',invite:'invite',ff:'withdra
 function _pg(f){ try{ f(); }catch(e){ try{ console.warn('[page-err]', e); }catch(_){} } }
 /* حركة ظهور البطاقات تُشغَّل فقط عند فتح الصفحة أو تغيير القسم؛ إعادة الرسم الصامتة (مزامنة/فحص شبكات) لا تعيدها فلا يحدث «رمش» */
 function tkAnim(){ try{ var pg=document.getElementById('page-tasks'); if(!pg) return; pg.classList.add('tk-in'); clearTimeout(window.__tkT); window.__tkT=setTimeout(function(){ try{ pg.classList.remove('tk-in'); }catch(e){} },700); }catch(e){} }
+var _PGSCR={}, _PGPREV='';
 function go(p){
+  var _cur=''; try{ var _ap=document.querySelector('.page.active'); _cur=_ap?String(_ap.id||'').replace(/^page-/,''):''; if(_cur==='tasks'&&p!=='tasks') _PGSCR.tasks=window.scrollY||0; }catch(e){}
+  var _back=(p==='tasks'&&_cur==='task'&&_PGSCR.tasks>0);
   if(p==='tasks'){ try{ taskAutoTab(); }catch(e){} try{ tkAnim(); }catch(e){} }
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
   const pg=document.getElementById('page-'+p); if(!pg) return;
@@ -4170,7 +4173,8 @@ function go(p){
   if(p==='admin'){ _pg(function(){ renderAdmin(ADM_TAB); try{ loadEarnings(); }catch(e){} }); }
   if(p==='withdraw'){ _pg(function(){ wdmApply(); wdmLoad(true); renderWDReq(); wrSeenMark('wd'); try{ renderWDHistory(); }catch(e){} try{ applyGrants(); }catch(e){} try{ wrSyncNotify(); }catch(e){} }); }
   if(p==='ff'){ _pg(function(){ renderFFReq(); wrSeenMark('ff'); }); }
-  if(window.scrollY){ window.scrollTo(0,0); }
+  if(_back){ var _y=_PGSCR.tasks; try{ window.scrollTo(0,_y); requestAnimationFrame(function(){ window.scrollTo(0,_y); setTimeout(function(){ if(Math.abs((window.scrollY||0)-_y)>4) window.scrollTo(0,_y); },120); }); }catch(e){} }
+  else if(window.scrollY){ window.scrollTo(0,0); }
   try{ blockedSync(); }catch(e){}
 }
 function toast(msg, sub){
