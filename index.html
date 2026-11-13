@@ -121,7 +121,7 @@ try{ var _vf=localStorage.getItem('pl-vpn'); if(_vf&&Date.now()-Number(_vf)<6*36
 }catch(e){} })();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.12-r175';
+window.PL_BUILD='2026.11.13-r181';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -1017,6 +1017,7 @@ html.lite .pd-orb{display:none}
 [data-theme=light] .step p{color:#334155;}
 [data-theme=light] .step{background:rgba(59,130,246,.06);}
 [data-theme=light] .tab:not(.active){background:#f9fafb;}
+.tst.rich{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 10px;white-space:normal}.tst.rich img{width:42px;height:42px;border-radius:10px;object-fit:cover;flex:none}
 [data-theme=light] .tst{background:#111827;}
 [data-theme=light] .promo h4{text-shadow:0 1px 4px rgba(0,0,0,.9);}
 [data-theme=light] .inv-banner .tx span{color:#e2e8f0;}
@@ -3797,6 +3798,7 @@ html.lite .vip-hero:before{display:none}
     <button class="atb" data-t="stats" onclick="admTab('stats')">📈 الإحصائيات</button>
     <button class="atb" data-t="activity" onclick="admTab('activity')">📊 النشاط</button>
     <button class="atb" data-t="i18n" onclick="admTab('i18n')">🌐 الترجمات</button>
+    <button class="atb" data-t="netchk" onclick="admTab('netchk')">🔎 فحص الشبكات</button>
     <button class="atb" data-t="ai" onclick="admTab('ai')">🤖 المساعد الذكي</button>
     <button class="atb" data-t="tasks" onclick="admTab('tasks')">🧩 إدارة المهام</button>
     <button class="atb" data-t="wd" onclick="admTab('wd')">💸 السحب</button>
@@ -4184,6 +4186,18 @@ function toast(msg, sub){
         setTimeout(function(){ try{ if(c&&c.parentNode) c.parentNode.removeChild(c); }catch(e){} },260);
       }catch(e){}
     }, sub?3400:2200);
+  }catch(e){}
+}
+function toastImg(msg, img, sub){
+  try{
+    const wrap=document.getElementById('toast'); if(!wrap) return toast(msg,sub);
+    while(wrap.children.length>=1){ wrap.removeChild(wrap.lastElementChild); }
+    const c=document.createElement('div'); c.className='tst rich';
+    if(img&&/^https:\/\//.test(img)){ const im=document.createElement('img'); im.src=img; im.alt=''; im.referrerPolicy='no-referrer'; im.onerror=function(){ try{ im.remove(); }catch(e){} }; c.appendChild(im); }
+    const t=document.createElement('span'); t.textContent=sub?(msg+' — '+sub):msg; c.appendChild(t);
+    wrap.insertBefore(c, wrap.firstElementChild);
+    requestAnimationFrame(function(){ c.classList.add('show'); });
+    setTimeout(function(){ try{ c.classList.remove('show'); setTimeout(function(){ try{ if(c.parentNode) c.parentNode.removeChild(c); }catch(e){} },260); }catch(e){} }, 3600);
   }catch(e){}
 }
 function newsBellCount(){ try{ return SESSION?NotificationService.unread(SESSION):0; }catch(e){ return 0; } }
@@ -8865,6 +8879,7 @@ function renderAdmin(t){
     else if(ADM_TAB==='stats') renderAdmAnalytics();
     else if(ADM_TAB==='activity') renderAdmActivity();
     else if(ADM_TAB==='i18n') renderAdmI18n();
+    else if(ADM_TAB==='netchk') renderAdmNetChk();
     else if(ADM_TAB==='tasks') renderAdmTasks();
     else if(ADM_TAB==='wd'||ADM_TAB==='ff') renderAdmWd();
     else if(ADM_TAB==='help') renderAdmHelp();
@@ -8883,6 +8898,83 @@ function renderAdmin(t){
 }
 
 
+
+/* ===== تبويب «فحص الشبكات»: يفحص الألعاب كما تصل للمستخدم فعلًا (Offerwall.me و Offerwall.GG): المراحل، المبالغ، المجموع، التكرار، الترجمة. قراءة فقط. ===== */
+function netChkRun(){
+  const hasAr=function(s){ return /[؀-ۿ]/.test(String(s||'')); };
+  const near=function(a,b){ return Math.abs(a-b)<=Math.max(0.01,0.02*Math.max(a,b)); };
+  const fm=function(v){ return '$'+(Number(v)||0).toFixed(Number(v)<0.1&&Number(v)>0?3:2); };
+  const out=[]; const trOk=function(s){ s=String(s||''); if(!s||hasAr(s)) return true; try{ return !!(window.plOvGet(s)||window.plAutoOnly(s)); }catch(e){ return false; } };
+  (window.plOwmList?window.plOwmList():[]).forEach(function(g){
+    const P=[], steps=Array.isArray(g.steps)?g.steps:[]; let sum=0; const seen={}; let bad=0, unt=0;
+    if(!String(g.name||'').trim()) P.push(['err','بلا اسم']);
+    if(!(Number(g.usd)>0)) P.push(['err','المكافأة الإجمالية صفر أو غير صالحة']);
+    if(g.multi){
+      if(steps.length<2) P.push(['err','لعبة متعددة المراحل لكن المراحل أقل من 2']);
+      if(g.nsteps&&g.nsteps!==steps.length) P.push(['warn','عدد المراحل المعلن ('+g.nsteps+') ≠ المعروض ('+steps.length+')']);
+      steps.forEach(function(s){ const u=Number(s.usd); if(!(u>0)) bad++; else sum+=u; const k=String(s.d||'').trim().toLowerCase(); if(!k) P.push(['warn','مرحلة بلا وصف']); else if(seen[k]) P.push(['warn','وصف مرحلة مكرر: '+s.d]); seen[k]=1; if(!trOk(s.d)) unt++; });
+      if(bad) P.push(['err',bad+' مرحلة بمكافأة صفر/غير صالحة']);
+      if(steps.length&&!near(sum,Number(g.usd))) P.push(['warn','مجموع المراحل '+fm(sum)+' ≠ المجموع المعروض '+fm(g.usd)+' (قد يكون طبيعيًا إن كانت الشبكة تحسب المجموع بطريقة أخرى؛ قارنه بلوحة الشبكة)']);
+    }
+    try{ const kk=window.plOwmKey?window.plOwmKey(g):''; const sib=(window.plOwmList?window.plOwmList():[]).filter(function(x){ return x!==g&&kk&&window.plOwmKey(x)===kk; }); if(sib.length){ const top=Math.max(Number(g.usd)||0,...sib.map(function(x){ return Number(x.usd)||0; })); P.push(['warn','نسخة مكررة ×'+(sib.length+1)+' من نفس اللعبة في Offerwall.me — '+((Number(g.usd)||0)>=top?'هذه الأعلى مكافأة وتظهر للمستخدم':'تُخفى تلقائيًا عند المستخدم')]); } }catch(e){}
+    try{ const nm=String(g.name||'').toLowerCase().replace(/[^a-z0-9؀-ۿ]+/g,''); const og=(window.plGgList?window.plGgList():[]).filter(function(o){ return nm&&String(o.name||'').toLowerCase().replace(/[^a-z0-9؀-ۿ]+/g,'')===nm; }); if(og.length) P.push(['warn','نفس اللعبة موجودة أيضًا في Offerwall.GG (مجموعها '+fm(og[0].reward)+') — ستظهر مرتين للمستخدم؛ أخفِ إحداهما إن لم ترد التكرار']); }catch(e){}
+    if(unt) P.push(['info',unt+' مرحلة بلا ترجمة عربية بعد']);
+    out.push({net:'Offerwall.me',name:g.name||'—',total:g.usd,n:g.multi?steps.length:1,steps:steps.map(function(s){ return {d:s.d,r:s.usd}; }),P:P});
+  });
+  (window.plGgList?window.plGgList():[]).forEach(function(o){
+    const P=[], goals=Array.isArray(o.goals)?o.goals:[]; let sum=0, bad=0, unt=0; const ids={}; let dup=0;
+    if(!String(o.name||'').trim()) P.push(['err','بلا اسم']);
+    if(!goals.length) P.push(['warn','لا توجد مراحل/أهداف']);
+    goals.forEach(function(x){ const r=Number(x.r); if(!x.opt){ if(r>0) sum+=r; else bad++; } const k=String(x.id); if(ids[k]) dup++; ids[k]=1; if(!trOk(x.d)) unt++; });
+    if(dup) P.push(['err',dup+' مرحلة بمعرّف مكرر']);
+    if(bad) P.push(['warn',bad+' مرحلة بمكافأة صفر']);
+    if(o.reward!=null&&goals.length&&!near(sum,Number(o.reward))) P.push(['warn','مجموع المراحل '+fm(sum)+' ≠ المجموع المعروض '+fm(o.reward)+' (قد يشمل المجموع مراحل إضافية)']);
+    if(unt) P.push(['info',unt+' مرحلة بلا ترجمة عربية بعد']);
+    out.push({net:'Offerwall.GG',name:o.name||'—',total:o.reward,n:goals.length,steps:goals.map(function(x){ return {d:x.d,r:x.r,opt:x.opt}; }),P:P});
+  });
+  return out;
+}
+function renderAdmNetChk(){
+  const box=document.getElementById('adm-body'); if(!box) return;
+  const f=function(v){ return v==null?'—':'$'+Number(v).toFixed(2); };
+  const res=netChkRun(); let e=0,w=0,ok=0; res.forEach(function(r){ const h=r.P.some(function(p){ return p[0]==='err'; }), m=r.P.some(function(p){ return p[0]==='warn'; }); if(h) e++; else if(m) w++; else ok++; });
+  const col={err:'#f87171',warn:'#fbbf24',info:'#9fb3d9'}, ic={err:'❌',warn:'⚠️',info:'ℹ️'};
+  const sorted=res.slice().sort(function(a,b){ const s=function(r){ return r.P.some(function(p){ return p[0]==='err'; })?0:r.P.some(function(p){ return p[0]==='warn'; })?1:2; }; return s(a)-s(b); });
+  box.innerHTML='<div class="adm-insight"><b>🔎 '+L('فحص الشبكات','Network check','Contrôle réseaux')+'</b><div style="font-size:12px;opacity:.85;line-height:1.8;margin-top:4px">'+L('يفحص الألعاب كما تصل للمستخدم فعلًا. افتح صفحة المهام أولًا لتُحمَّل الألعاب ثم اضغط «تحديث». لا يعدّل أي شيء. للتحقق من الأموال المدفوعة فعلًا شغّل ملف 119_verify_networks.sql.','Checks games as users receive them. Read-only.','Contrôle en lecture seule.')+'</div></div>'+
+   '<div class="adm-cards" style="margin-top:8px"><div class="adm-card green"><b>'+ok+'</b><span>'+L('سليمة','OK','OK')+'</span></div><div class="adm-card warn"><b>'+w+'</b><span>'+L('تنبيه','Warnings','Alertes')+'</span></div><div class="adm-card"><b>'+e+'</b><span>'+L('أخطاء','Errors','Erreurs')+'</span></div><div class="adm-card blue"><b>'+res.length+'</b><span>'+L('ألعاب مفحوصة','Checked','Vérifiés')+'</span></div></div>'+
+   '<button class="adm-new" style="width:100%;margin-top:10px" onclick="netChkRefresh()">🔄 '+L('تحديث','Refresh','Actualiser')+'</button>'+
+   '<button class="adm-new" style="width:100%;margin-top:8px" onclick="netChkOwmConn()">🔌 '+L('فحص اتصال Offerwall.me (المفاتيح والتتبع)','Test Offerwall.me connection','Tester Offerwall.me')+'</button><div id="nc-owm" style="margin-top:8px"></div>'+
+   (sorted.length?sorted.map(function(r){ return '<div class="adm-card" style="margin-top:10px;text-align:start;display:block"><div style="font-size:11px;opacity:.75">'+esc(r.net)+' · '+r.n+' '+L('مراحل','steps','étapes')+' · '+L('المجموع','Total','Total')+' '+f(r.total)+'</div><div style="font-weight:800;margin:4px 0">'+esc(r.name)+'</div>'+
+     (r.P.length?r.P.map(function(p){ return '<div style="font-size:12.5px;line-height:1.7;color:'+col[p[0]]+'">'+ic[p[0]]+' '+esc(p[1])+'</div>'; }).join(''):'<div style="font-size:12.5px;color:#4ade80">✅ '+L('لا ملاحظات','No issues','Aucun problème')+'</div>')+
+     (r.steps.length?'<details style="margin-top:6px"><summary style="cursor:pointer;font-size:12px;opacity:.85">'+L('عرض المراحل','Show steps','Voir les étapes')+'</summary>'+r.steps.map(function(s,i){ let ar=''; try{ ar=window.plStepAr(s.d)||''; }catch(e){} return '<div style="font-size:12px;padding:5px 0;border-top:1px solid rgba(255,255,255,.08);line-height:1.6"><b>'+(i+1)+'.</b> <span dir="ltr">'+esc(s.d)+'</span>'+(ar&&ar!==s.d?'<br><span style="color:#5df0a0">'+esc(ar)+'</span>':'')+' <b style="float:inline-end">'+f(s.r)+(s.opt?' ('+L('إضافية','bonus','bonus')+')':'')+'</b></div>'; }).join('')+'</details>':'')+'</div>'; }).join(''):'<div class="adm-empty" style="margin-top:10px">'+L('لا توجد ألعاب محمّلة بعد. افتح صفحة المهام ثم اضغط تحديث.','No games loaded yet. Open the tasks page, then refresh.','Aucun jeu chargé.')+'</div>');
+}
+function netChkRefresh(){ try{ window.owmGamesLoad&&window.owmGamesLoad(true); }catch(e){} setTimeout(function(){ if(ADM_TAB==='netchk') renderAdmNetChk(); },1800); renderAdmNetChk(); }
+
+/* فحص اتصال Offerwall.me الحيّ (قراءة فقط، لا يعرض أي سر): المفاتيح موجودة؟ الشبكة تردّ؟ رابط التتبع يحمل معرّف المستخدم وتوقيعًا؟ */
+async function netChkOwmConn(){
+  const el=document.getElementById('nc-owm'); if(!el) return; el.innerHTML='<div class="adm-empty">⏳ '+L('جارٍ الفحص…','Testing…','Test…')+'</div>';
+  const row=function(ok,txt,sub){ return '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.08);font-size:13px;line-height:1.7">'+(ok===true?'✅':ok===false?'❌':'ℹ️')+' <b>'+txt+'</b>'+(sub?'<br><span style="opacity:.8;font-size:12px">'+sub+'</span>':'')+'</div>'; };
+  try{
+    const t=await SRV.tok(); if(!t){ el.innerHTML=row(false,L('لا توجد جلسة دخول','No session','Pas de session')); return; }
+    const base=RealAuth.base()+'/functions/v1/rapid-api?action=', h={'Authorization':'Bearer '+t,'apikey':RealAuth.key()};
+    const get=async function(q){ try{ const r=await fetch(base+q,{headers:h}); return await r.json(); }catch(e){ return null; } };
+    const R=await Promise.all([get('offerwallme_link&probe=1'),get('offerwallme_admin_list&country=DZ'),get('offerwallme_link')]);
+    const pr=R[0], ls=R[1], lk=R[2]; let uid=''; try{ uid=String((RealAuth.getSession()||{}).uid||'').toLowerCase(); }catch(e){}
+    let h2='';
+    h2+=row(!!(pr&&pr.on), L('المفاتيح (Public + Secret) والشبكة مفعّلة','Keys (Public + Secret) set & network enabled','Clés et réseau activés'), pr&&pr.on?'':L('ناقصة أو الشبكة مغلقة: راجع Secrets الدالة rapid-api وجدول networks','Missing or network off','Manquant'));
+    h2+=row(!!(pr&&pr.list), L('رمز قائمة العروض (TOKEN)','Offers list token','Jeton de liste'), '');
+    if(ls&&ls.ok===true&&Array.isArray(ls.items)){
+      const it=ls.items, fl={}; it.forEach(function(x){ const k=x.flag||'ok'; fl[k]=(fl[k]||0)+1; });
+      h2+=row(it.length>0, L('الشبكة ردّت بقائمة العروض','Network returned offers','Le réseau a répondu'), it.length+' '+L('عرضًا','offers','offres')+' · '+L('النسبة','share','part')+' '+Math.round((ls.share||0)*100)+'% · '+L('متعدد المراحل','multi-step','multi')+' '+it.filter(function(x){ return x.multi; }).length+' · '+L('مضاف عندك','added','ajoutés')+' '+it.filter(function(x){ return x.added; }).length+' · '+Object.keys(fl).map(function(k){ return k+':'+fl[k]; }).join(' '));
+    } else h2+=row(false, L('الشبكة لم تردّ بقائمة','Network did not answer','Pas de réponse'), esc((ls&&ls.why)||'no_reply'));
+    if(lk&&lk.ok===true&&typeof lk.url==='string'){
+      const m=lk.url.match(/^https:\/\/offerwall\.me\/offerwall\/([^\/?]+)\/([^\/?]+)\?identityExpires=(\d+)&identitySignature=([0-9a-f]{64})$/);
+      h2+=row(!!m, L('رابط التتبع موقَّع','Tracking link is signed','Lien signé'), m?L('معرّفك داخل الرابط: ','Your ID inside the link: ','Votre ID: ')+(m[2]===uid?'✅ '+L('مطابق لحسابك','matches your account','correspond'):'❌ '+L('غير مطابق','mismatch','différent'))+' · '+L('ينتهي بعد ساعة','expires in 1h','expire dans 1h'):L('شكل الرابط غير متوقع','Unexpected link format','Format inattendu'));
+    } else h2+=row(false, L('تعذّر توليد رابط التتبع','Could not build tracking link','Échec'), esc((lk&&lk.why)||''));
+    h2+=row(null, L('ما لا يمكن فحصه من هنا','Not testable here','Non testable'), L('وصول الـPostback وصحّة التوقيع وسر الشبكة يُفحصان من جدول المعاملات (ملف 120) أو بإكمال مرحلة حقيقية.','Postback delivery is verified from the transactions table (file 120) or by completing a real step.','Vérifiez via le fichier 120.'));
+    el.innerHTML='<div class="adm-card" style="display:block;text-align:start">'+h2+'</div>';
+  }catch(e){ el.innerHTML=row(false,L('تعذّر الفحص','Test failed','Échec')); }
+}
 
 /* ===== تبويب «الترجمات»: النص الأصلي من الشبكة + الترجمة العربية + تعديل يدوي + مراجعة غير المكتمل + إعادة الترجمة التلقائية ===== */
 const TRX={items:[],man:[],filter:'miss',q:'',busy:false,loaded:false,pg:0};
@@ -13781,17 +13873,20 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
       var title=String(o.title||o.name||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
       for(var k=0;k<2;k++) title=title.replace(/\s*[-–—|:]?\s*[\[(]?\s*(?:android|ios|iphone|ipad)(?:\s+only)?\s*[\])]?\s*$/i,'').trim();
       var sv=(o.kind==='survey');
-      var name=title||(sv?'استطلاع رأي':'');
+      var _st=(o.steps||[]).map(function(x){ return String((x&&x.d)||''); }).join(' ');
+      var rg=!sv&&(o.kind==='reg'||(/sign.?up|register|registration|create (?:an? )?account|open (?:an? )?account|free trial|subscribe|submit (?:your )?email|verify (?:your )?(?:email|phone|identity)|\bkyc\b|\bdeposit\b|تسجيل|إنشاء حساب/i.test(title+' '+String(o.desc||'')+' '+_st)&&!/\blevel\b|reach|install|chapter|stage|\bplay\b|lvl/i.test(title+' '+_st)));
+      var name=title||(sv?'استطلاع رأي':(rg?'مهمة تسجيل':''));
       var nst=(o.steps||[]).length, multi=!!o.multi&&nst>1, mins=Number(o.min)>0?Math.round(Number(o.min)):0;
       var dv=o.plat==='android'?' (أندرويد)':o.plat==='ios'?' (آيفون)':'';
       var raw=String(o.desc||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(), descr='';
       if(raw){ if(hasAr(raw)) descr=raw; else { try{ descr=(window.plGgAr&&window.plGgAr(raw))||window.plStepAr(raw)||''; }catch(e){ descr=''; } } }
       if(!descr){
-        if(sv) descr='استطلاع رأي قصير'+(mins?' مدّته نحو '+(mins===1?'دقيقة':mins===2?'دقيقتين':mins+(mins<=10?' دقائق':' دقيقة')):'')+'. أجب عن الأسئلة بصدق وتركيز، وتُضاف المكافأة لرصيدك بعد أن تؤكد الشبكة إكمالك للاستطلاع.';
+        if(rg) descr='سجّل في «'+name+'» بإنشاء حساب جديد بمعلوماتك الصحيحة، وأكمل الخطوات المطلوبة من الموقع حتى النهاية. تُضاف المكافأة تلقائيًا بعد أن تؤكد الشبكة إكمالك للمهمة.';
+        else if(sv) descr='استطلاع رأي قصير'+(mins?' مدّته نحو '+(mins===1?'دقيقة':mins===2?'دقيقتين':mins+(mins<=10?' دقائق':' دقيقة')):'')+'. أجب عن الأسئلة بصدق وتركيز، وتُضاف المكافأة لرصيدك بعد أن تؤكد الشبكة إكمالك للاستطلاع.';
         else descr='ثبّت لعبة «'+name+'»'+dv+' من المتجر، '+(multi?'ثم أنجز المراحل المذكورة بالترتيب لتحصل على مكافأة كل مرحلة.':'ثم أنجز المهمة المطلوبة داخلها لتحصل على المكافأة.')+' تُضاف المكافأة تلقائيًا بعد تأكيد الشبكة.';
       }
-      var task=multi?'أنجز المراحل المذكورة أدناه بالترتيب، من الأولى إلى الأخيرة.':(sv?'أكمل الاستطلاع حتى النهاية.':'ثبّت اللعبة وافتحها، ثم أنجز المهمة المطلوبة داخلها.');
-      return {name:name.slice(0,80),descr:descr.slice(0,600),task:task.slice(0,400),btn:sv?'ابدأ الاستطلاع':'ابدأ اللعب'};
+      var task=rg?'أنشئ الحساب وأكمل الخطوات المطلوبة في الموقع.':multi?'أنجز المراحل المذكورة أدناه بالترتيب، من الأولى إلى الأخيرة.':(sv?'أكمل الاستطلاع حتى النهاية.':'ثبّت اللعبة وافتحها، ثم أنجز المهمة المطلوبة داخلها.');
+      return {name:name.slice(0,80),descr:descr.slice(0,600),task:task.slice(0,400),btn:sv?'ابدأ الاستطلاع':(rg?'ابدأ التسجيل':'ابدأ اللعب'),reg:rg};
     }catch(e){ return null; }
   };
 })();
@@ -14006,6 +14101,10 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
 .badge span{font-size:11.5px}
 .badge.on i{filter:drop-shadow(0 0 8px rgba(245,185,66,.55))}
 @media (max-width:360px){#page-profile .avg-r{grid-template-columns:repeat(4,1fr)}}
+#adm-modal .owm-r{flex-wrap:wrap;align-items:flex-start}
+#adm-modal .owm-r .tx{flex:1 1 55%}
+#adm-modal .owm-r .tx b{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.45;margin-bottom:3px}
+#adm-modal .owm-r>.adm-new{flex:1 1 40%}
 </style>
 <div id="owm-ov"><div class="ob"><span id="owm-t"></span><button class="ox" id="owm-x" type="button"></button></div><div class="od" id="owm-d"></div></div>
 <script>
@@ -14017,8 +14116,12 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
   function hdr(t){ return {'Authorization':'Bearer '+t,'apikey':RealAuth.key()}; }
   function redraw(){ try{ window.plRedrawTasks(); }catch(e){} }
   function cKey(){ var u=''; try{ u=(RealAuth.getSession()||{}).uid||''; }catch(e){} return 'pl-owm-g:'+u; }
-  function readCache(){ try{ var c=JSON.parse(localStorage.getItem(cKey())||'null'); if(c&&Array.isArray(c.items)&&Date.now()-c.t<86400000){ G=c.items; GT=0; } }catch(e){} }
-  function saveCache(){ try{ var t=JSON.stringify({t:Date.now(),items:G}); if(t.length<400000) localStorage.setItem(cKey(),t); }catch(e){} }
+  /* نسخ العرض المكرر (نفس اللعبة والجهاز بمعرّفين مختلفين عند الشبكة): يُعرض للمستخدم نسخة واحدة فقط، الأعلى مكافأة */
+  function nkey(it){ return String((it&&(it.name||it.title))||'').toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]+/g,'')+'|'+((it&&it.plat)||'all'); }
+  function dedupe(a){ var best={}, out=[]; (a||[]).forEach(function(it){ var k=nkey(it); if(k.charAt(0)==='|'){ out.push(it); return; } var b=best[k]; if(!b){ best[k]=it; out.push(it); return; } var u=Number(it.usd)||0, v=Number(b.usd)||0; if(u>v||(u===v&&(it.nsteps||0)>(b.nsteps||0))){ out[out.indexOf(b)]=it; best[k]=it; } }); return out; }
+  window.plOwmKey=nkey;
+  function readCache(){ try{ var c=JSON.parse(localStorage.getItem(cKey())||'null'); if(c&&Array.isArray(c.items)&&Date.now()-c.t<86400000){ window.__owmRaw=c.items; G=dedupe(c.items); GT=0; } }catch(e){} }
+  function saveCache(){ try{ var t=JSON.stringify({t:Date.now(),items:window.__owmRaw||G}); if(t.length<400000) localStorage.setItem(cKey(),t); }catch(e){} }
   function load(force){
     if(busy||!window.__owmList) return;
     if(!force){ if(G&&Date.now()-GT<60000+JIT) return; if(!G&&Date.now()-LT<15000) return; }
@@ -14026,11 +14129,12 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     Promise.resolve(SRV.tok()).then(function(t){
       if(!t) return;
       return fetch(fn('offerwallme_offers'+(window.plCC&&window.plCC()?'&country='+window.plCC():'')),{headers:hdr(t)}).then(function(r){ return r.json(); }).then(function(j){
-        if(j&&j.ok===true&&Array.isArray(j.items)){ G=j.items; GT=Date.now(); saveCache(); redraw(); }
+        if(j&&j.ok===true&&Array.isArray(j.items)){ window.__owmRaw=j.items; G=dedupe(j.items); GT=Date.now(); saveCache(); redraw(); }
       });
     }).catch(function(){}).then(function(){ busy=false; if(LOADING){ LOADING=false; redraw(); } });
   }
   window.owmGamesLoad=load;
+  window.plOwmList=function(){ return window.__owmRaw||G||[]; };
   function ptxt(p){ return p==='android'?'🤖 '+L('أندرويد','Android','Android'):p==='ios'?'🍎 '+L('آيفون','iPhone','iPhone'):p==='all'?'📱 '+L('أندرويد وآيفون','Android & iPhone','Android et iPhone'):'🔄 '+L('تلقائي','Auto','Auto'); }
   function stKey(){ var u=''; try{ u=(RealAuth.getSession()||{}).uid||''; }catch(e){} return 'pl-owm-st:'+u; }
   function stGet(){ try{ return JSON.parse(localStorage.getItem(stKey())||'{}')||{}; }catch(e){ return {}; } }
@@ -14078,13 +14182,14 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     var img=g.image?'<img src="'+esc(g.image)+'" alt="" referrerpolicy="no-referrer" data-ph="'+(g.kind==='survey'?'📝':'🎮')+'" onerror="plImgFail(this)">':(g.kind==='survey'?'📝':'🎮');
     var h='<div class="oh"><div class="im">'+img+'</div><div><h3>'+esc(window.plNameAr?window.plNameAr(g.name||''):(g.name||''))+'</h3><div style="font-size:13px;color:#9fb3d9">'+(g.multi?L('المجموع','Total','Total')+': ':L('المكافأة','Reward','Gain')+': ')+'<b style="color:#5df0a0">'+usd(g.usd)+'</b>'+(g.min?' · ⏱ '+g.min+' '+L('د','min','min'):'')+'</div></div></div>';
     try{
+      var _rg=false; try{ var _a0=window.plAutoAr&&window.plAutoAr({kind:g.kind,title:g.name,desc:'',steps:g.steps,multi:g.multi,plat:g.plat,min:g.min}); _rg=!!(_a0&&_a0.reg); }catch(e){}
       var _ns=(g.multi&&g.steps)?g.steps.length:1, _st=(function(){ try{ return !!stGet()[g.id]; }catch(e){ return false; } })();
       h+='<div class="sc owm-sum"><b>'+L('ملخص سريع','Quick summary','Résumé rapide')+(_st?' <span style="color:#fbbf24;font-weight:600">· 🕒 '+L('بدأتَ هذه اللعبة','You started this','Commencé')+'</span>':'')+'</b>'
         +'<div class="owm-chips"><span>💰 '+L('تربح حتى','Earn up to','Gagnez jusqu’à')+' <b>'+usd(g.usd)+'</b></span>'
         +'<span>🪜 '+(g.multi?_ns+' '+L('مراحل','steps','étapes'):L('مهمة واحدة','One task','Une tâche'))+'</span>'
         +(g.min?'<span>⏱ '+g.min+' '+L('د','min','min')+'</span>':'')
         +((g.plat==='android'||g.plat==='ios')?'<span>📱 '+ptxt(g.plat)+'</span>':'')+'</div>'
-        +'<ol class="owm-how"><li>'+L('اضغط «ابدأ» وثبّت اللعبة من المتجر.','Tap Start and install the game.','Appuyez sur Commencer et installez le jeu.')+'</li><li>'+(g.multi?L('أنجز المراحل المذكورة أدناه بالترتيب؛ تصلك مكافأة كل مرحلة بعد أن تؤكدها الشبكة.','Complete the steps below in order; each is paid once the network confirms it.','Terminez les étapes dans l’ordre.'):L('أنجز المهمة المطلوبة.','Complete the required task.','Accomplissez la tâche.'))+'</li><li>'+L('تُضاف المكافأة تلقائيًا لرصيدك (قد تتأخر دقائق أو أكثر).','The reward is added automatically (may take minutes or longer).','La récompense est ajoutée automatiquement.')+'</li></ol></div>';
+        +'<ol class="owm-how"><li>'+(g.kind==='survey'?L('اضغط «ابدأ» وأجب عن أسئلة الاستطلاع بصدق وتركيز.','Tap Start and answer the survey honestly.','Appuyez sur Commencer et répondez au sondage.'):(_rg?L('اضغط «ابدأ» وأنشئ حسابًا جديدًا في الموقع بمعلوماتك الصحيحة.','Tap Start and create a new account with your real details.','Appuyez sur Commencer et créez un compte.'):L('اضغط «ابدأ» وثبّت اللعبة من المتجر.','Tap Start and install the game.','Appuyez sur Commencer et installez le jeu.')))+'</li><li>'+(g.kind==='survey'?L('أكمل الاستطلاع حتى النهاية؛ قد يُستبعد من لا تنطبق عليه الشروط ولا مكافأة له حينها.','Finish the survey; if you do not qualify you may be screened out with no reward.','Terminez le sondage.'):g.multi?L('أنجز المراحل المذكورة أدناه بالترتيب؛ تصلك مكافأة كل مرحلة بعد أن تؤكدها الشبكة.','Complete the steps below in order; each is paid once the network confirms it.','Terminez les étapes dans l’ordre.'):L('أنجز المهمة المطلوبة.','Complete the required task.','Accomplissez la tâche.'))+'</li><li>'+L('تُضاف المكافأة تلقائيًا لرصيدك (قد تتأخر دقائق أو أكثر).','The reward is added automatically (may take minutes or longer).','La récompense est ajoutée automatiquement.')+'</li></ol></div>';
     }catch(e){}
     var _oe=(window.PL_ENDS.owm||{})[String(g.id)]||'', _oi=window.plEndInfo?window.plEndInfo(_oe):null, _ot=window.plEndTxt?window.plEndTxt(_oe):null;
     if(_ot) h+='<div class="sc" style="border:1px solid '+_ot.c+'55"><b style="color:'+_ot.c+'">'+esc(_ot.t)+'</b><span dir="ltr">'+esc(_oe)+'</span>'+(_oi&&_oi.expired?'<br><small style="color:#fca5a5">'+L('انتهت هذه اللعبة ولا يمكن بدؤها الآن.','This game has ended and cannot be started.','Terminé.')+'</small>':'')+'</div>';
@@ -14347,31 +14452,51 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
   function mPickList(keep){
     var b=document.getElementById('owm-pl'); if(!b) return;
     if(!M.pick.length){ b.textContent=L('لا عروض لهذا البلد الآن.','No offers for this country now.','Aucune offre.'); return; }
-    b.innerHTML='<input id="owm-q" type="text" placeholder="'+esc(L('بحث بالاسم…','Search…','Rechercher…'))+'" value="'+esc(M.q)+'" oninput="owmMgQ(this.value)" style="width:100%;box-sizing:border-box;padding:9px;border-radius:10px;border:1px solid #243252;background:#0d1627;color:#fff;margin-bottom:6px"><div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">'+[['','📱 '+L('الكل','All','Tous')],['new','🆕 '+L('جديد','New','Nouveau')],['survey','📝 '+L('استطلاعات','Surveys','Sondages')],['ios','🍎 '+L('آيفون','iPhone','iPhone')],['android','🤖 '+L('أندرويد','Android','Android')]].map(function(o){ return '<button class="adm-new sm" style="margin:0;flex:1;min-width:30%;'+(M.pf===o[0]?'':'opacity:.55')+'" onclick="owmMgPf(\''+o[0]+'\')">'+o[1]+'</button>'; }).join('')+'</div><div id="owm-pr"></div>';
+    b.innerHTML='<input id="owm-q" type="text" placeholder="'+esc(L('بحث بالاسم…','Search…','Rechercher…'))+'" value="'+esc(M.q)+'" oninput="owmMgQ(this.value)" style="width:100%;box-sizing:border-box;padding:9px;border-radius:10px;border:1px solid #243252;background:#0d1627;color:#fff;margin-bottom:6px"><div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">'+[['','📱 '+L('الكل','All','Tous')],['new','🆕 '+L('جديد','New','Nouveau')],['survey','📝 '+L('استطلاعات','Surveys','Sondages')],['reg','📋 '+L('تسجيل','Sign-up','Inscription')],['game','🎮 '+L('ألعاب','Games','Jeux')],['ios','🍎 '+L('آيفون','iPhone','iPhone')],['android','🤖 '+L('أندرويد','Android','Android')]].map(function(o){ return '<button class="adm-new sm" style="margin:0;flex:1;min-width:30%;'+(M.pf===o[0]?'':'opacity:.55')+'" onclick="owmMgPf(\''+o[0]+'\')">'+o[1]+'</button>'; }).join('')+'</div><div id="owm-bulk"></div><div id="owm-pr"></div>';
     if(!keep){ try{ var sv=seenGet(); M.newSet={}; if(sv){ var ss={}; sv.forEach(function(x){ ss[x]=1; }); M.pick.forEach(function(it){ if(!ss[it.id]&&!it.added) M.newSet[it.id]=1; }); } seenSet(M.pick.map(function(it){ return it.id; })); }catch(e){} }
     mPickRows();
   }
+  function bulkList(){ return (M.pick||[]).filter(function(it){ return it.kind==='survey'&&!it.added&&it.flag!=='blocked'&&it.flag!=='over_cap'&&it.flag!=='hidden'; }); }
+  function bulkBtn(){ var b=document.getElementById('owm-bulk'); if(!b) return; var n=bulkList().length; b.innerHTML=n?'<button class="adm-new" style="width:100%;margin:0 0 6px;background:rgba(34,197,94,.18);color:#4ade80" onclick="owmMgAllSv()">📝 '+L('إضافة كل الاستطلاعات الجديدة دفعة واحدة','Add all new surveys at once','Ajouter tous les sondages')+' ('+n+')</button>':''; }
+  var _bulkBusy=false;
+  window.owmMgAllSv=function(){
+    if(_bulkBusy) return; var L0=bulkList(); if(!L0.length) return;
+    if(!confirm(L('ستُضاف '+L0.length+' استطلاعًا إلى قسم «الاستطلاعات» وتظهر لكل المستخدمين فورًا (ما عدا المحظور والمخفي). متابعة؟','Add '+L0.length+' surveys to the Surveys section now?','Ajouter ?'))) return;
+    _bulkBusy=true; var i=0, ok=0, bad=0;
+    var next=function(){
+      if(i>=L0.length){ _bulkBusy=false; toast('✅ '+L('أُضيف '+ok+' استطلاعًا'+(bad?(' · فشل '+bad):''),'Added '+ok+(bad?(' · failed '+bad):''),'Ajoutés '+ok)); try{ mPickRows(); bulkBtn(); }catch(e){} return; }
+      var it=L0[i++]; var a=window.plAutoAr&&window.plAutoAr({kind:'survey',title:it.title,desc:it.desc,steps:it.steps,multi:it.multi,plat:it.plat,min:it.min});
+      if(!a||!a.name){ bad++; return next(); }
+      mSave({ext:it.id,name:a.name,descr:a.descr,task:a.task,img:(/^https:\/\//.test(it.image||'')&&it.image.length<400?it.image:''),btn:a.btn,platform:'auto',place:'survey',sort:100,featured:false,active:true},function(r){ if(r){ it.added=true; ok++; } else bad++; if(i%5===0){ toast('⏳ '+ok+' / '+L0.length); } next(); });
+    };
+    next();
+  };
   window.owmMgPf=function(v){ M.pf=v; mPickList(true); };
   window.owmMgQ=function(v){ M.q=String(v||'').toLowerCase(); mPickRows(); };
   function mPickRows(){
-    var el=document.getElementById('owm-pr'); if(!el) return;
+    var el=document.getElementById('owm-pr'); if(!el) return; try{ bulkBtn(); }catch(e){}
+    var kOf=function(it){ var a=window.plAutoAr&&window.plAutoAr({kind:it.kind,title:it.title,desc:it.desc,steps:it.steps,multi:it.multi,plat:it.plat,min:it.min}); return a||{}; };
     var q=M.q, list=[], SVR=/survey|poll|questionnaire|استطلاع|استبيان|sondage/i;
+    var _dg={}; M.pick.forEach(function(it){ var k=window.plOwmKey?window.plOwmKey({title:it.title,plat:it.plat}):''; if(k&&k.charAt(0)!=='|'){ (_dg[k]=_dg[k]||[]).push(it); } });
     M.pick.forEach(function(it,i){
       if(M.pf==='new'){ if(!(M.newSet&&M.newSet[it.id])) return; }
       else if(M.pf==='survey'){ if(!(it.kind==='survey'||SVR.test(String(it.title||'')+' '+String(it.desc||'')))) return; }
+      else if(M.pf==='reg'){ if(!kOf(it).reg) return; }
+      else if(M.pf==='game'){ if(it.kind==='survey'||kOf(it).reg) return; }
       else if(M.pf&&it.plat&&it.plat!=='all'&&it.plat!==M.pf) return;
-      if(!q||String(it.title||'').toLowerCase().indexOf(q)>=0) list.push([it,i]);
+      if(!q||(String(it.title||'')+' '+String(it.desc||'')).toLowerCase().indexOf(q)>=0) list.push([it,i]);
     });
     if(M.newSet) list.sort(function(a,b){ return (M.newSet[b[0].id]?1:0)-(M.newSet[a[0].id]?1:0); });
-    el.innerHTML=list.slice(0,80).map(function(p){
-      var it=p[0], i=p[1], im=it.image?'<img src="'+esc(it.image)+'" alt="" referrerpolicy="no-referrer" onerror="this.remove()">':(it.kind==='survey'?'📝':'🎮');
-      var warn=(M.newSet&&M.newSet[it.id]?' · <b style="color:#4ade80">🆕</b>':'')+(it.kind==='survey'?' · 📝':'')+(it.flag==='blocked'?' · 🚫':it.flag==='over_cap'?' · ⚠️ >$20':'');
+    el.innerHTML='<div style="font-size:11.5px;color:#9fb3d9;margin-bottom:2px">'+L('النتائج','Results','Résultats')+': '+list.length+' / '+M.pick.length+'</div>'+list.slice(0,200).map(function(p){
+      var it=p[0], i=p[1], im=it.image?'<img src="'+esc(it.image)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">':(it.kind==='survey'?'📝':(kOf(it).reg?'📋':'🎮'));
+      var _g=_dg[window.plOwmKey?window.plOwmKey({title:it.title,plat:it.plat}):'']||[]; var _dup=_g.length>1?(' · <b style="color:#fbbf24">🔁 '+L('مكرر ×'+_g.length+(Math.max.apply(null,_g.map(function(x){ return Number(x.raw)||0; }))===Number(it.raw)?' (الأعلى ربحًا)':''),'duplicate ×'+_g.length,'doublon ×'+_g.length)+'</b>'):'';
+      var warn=_dup+(M.newSet&&M.newSet[it.id]?' · <b style="color:#4ade80">🆕</b>':'')+(it.kind==='survey'?' · 📝 '+L('استطلاع','survey','sondage'):(kOf(it).reg?' · 📋 '+L('تسجيل','sign-up','inscription'):''))+(it.flag==='blocked'?' · 🚫':it.flag==='over_cap'?' · ⚠️ >$20':'');
       return '<div class="owm-r"><div class="im">'+im+'</div><div class="tx"><b dir="auto">'+esc(it.title)+'</b>'+L('تدفع لك','pays you','vous paie')+' '+usd(it.raw)+' · '+L('للمستخدم','user','user')+' '+usd(it.usd)+(it.multi?' · 🎯'+it.nsteps:'')+' · '+ptxt(it.plat||'all')+warn+'</div>'
         +(it.added?'<span style="font-size:12px;color:#34d399">✅</span>':'<button class="adm-new sm" style="margin:0;flex:none;background:rgba(34,197,94,.18);color:#4ade80" onclick="owmMgQuick('+i+')">⚡ '+L('إضافة سريعة','Quick add','Ajout rapide')+'</button><button class="adm-new sm" style="margin:0 4px 0 0;flex:none;padding-inline:10px" title="'+L('مراجعة وتعديل قبل الإضافة','Review first','')+'" onclick="owmMgAdd('+i+')">✏️</button>')+'</div>';
     }).join('');
     if(!list.length) el.innerHTML='<div style="padding:14px;text-align:center;color:#9fb3d9">'+(M.pf==='new'?L('لا توجد عروض جديدة منذ آخر مرة.','No new offers since last time.','Rien de nouveau.'):M.pf==='survey'?L('لا استطلاعات في هذه القائمة الآن.','No surveys in this list now.','Aucun sondage.'):L('لا نتائج.','No results.','Aucun résultat.'))+'</div>';
   }
-  window.owmMgAdd=function(i){ var it=M.pick[i]; if(!it) return; M.cur={ext:it.id,title:it.title,row:null,image:it.image||'',usd:it}; mForm(); };
+  window.owmMgAdd=function(i){ var it=M.pick[i]; if(!it) return; if(!dupAsk(it)) return; M.cur={ext:it.id,title:it.title,row:null,image:it.image||'',usd:it}; mForm(); };
   function mForm(){
     var c=M.cur, r=c.row||{}; M.imgUp='';
     var _pdef=r.place||(/daily|login|log in|check.?in|streak|every day|تسجيل دخول|يومي/i.test(String(c.title||''))?'daily':'games'); var opts=PL.map(function(p){ return '<option value="'+p[0]+'"'+(_pdef===p[0]?' selected':'')+'>'+p[1]+' '+L(p[2],p[3],p[3])+'</option>'; }).join('');
@@ -14396,14 +14521,17 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     mcard(h,(c.row?'✏️ ':'+ ')+L('لعبة','Game','Jeu'));
   }
   var _qb={};
+  function dupAdded(it){ var k=window.plOwmKey?window.plOwmKey({title:it.title,plat:it.plat}):''; if(!k||k.charAt(0)==='|') return false; return M.pick.some(function(x){ return x.added&&x.id!==it.id&&window.plOwmKey({title:x.title,plat:x.plat})===k; }); }
+  function dupAsk(it){ return !dupAdded(it)||confirm(L('هذه اللعبة مضافة عندك بنسخة أخرى. إضافة نسخة ثانية ستُخفى تلقائيًا عند المستخدم (تظهر الأعلى ربحًا فقط). متابعة؟','This game is already added as another copy. A second copy is auto-hidden from users. Continue?','Déjà ajouté. Continuer ?')); }
   window.owmMgQuick=function(i){
     var it=M.pick[i]; if(!it||_qb[it.id]) return;
+    if(!dupAsk(it)) return;
     if(it.flag==='blocked'||it.flag==='over_cap'){ toast(L('هذا العرض محظور أو مبلغه فوق الحد، افتحه بزر ✏️ للمراجعة','Blocked/over cap: open it with ✏️','')); return; }
     var a=window.plAutoAr&&window.plAutoAr({kind:it.kind,title:it.title,desc:it.desc,steps:it.steps,multi:it.multi,plat:it.plat,min:it.min}); if(!a||!a.name){ M.cur={ext:it.id,title:it.title,row:null,image:it.image||'',usd:it}; mForm(); return; }
-    var place=it.kind==='survey'?'survey':(/daily|login|log in|check.?in|streak|every day|تسجيل دخول|يومي/i.test(String(it.title||''))?'daily':'games');
+    var place=it.kind==='survey'?'survey':(a.reg?'apps':/daily|login|log in|check.?in|streak|every day|تسجيل دخول|يومي/i.test(String(it.title||''))?'daily':'games');
     _qb[it.id]=1;
-    mSave({ext:it.id,name:a.name,descr:a.descr,task:a.task,img:'',btn:a.btn,platform:'auto',place:place,sort:100,featured:false,active:true},function(ok){
-      _qb[it.id]=0; if(ok){ it.added=true; toast('✅ '+L('أُضيفت «'+a.name+'» وظهرت للمستخدمين','Added','Ajouté')); try{ mPickRows(); }catch(e){} }
+    mSave({ext:it.id,name:a.name,descr:a.descr,task:a.task,img:(/^https:\/\//.test(it.image||'')&&it.image.length<400?it.image:''),btn:a.btn,platform:'auto',place:place,sort:100,featured:false,active:true},function(ok){
+      _qb[it.id]=0; if(ok){ it.added=true; toastImg('✅ '+L('أُضيفت «'+a.name+'» وظهرت للمستخدمين','Added','Ajouté'),it.image,(it.kind==='survey'?L('استطلاع','Survey','Sondage'):(a.reg?L('تسجيل','Sign-up','Inscription'):L('لعبة','Game','Jeu')))+' · '+usd(it.usd)); try{ mPickRows(); }catch(e){} }
     });
   };
   window.owmMgAuto=function(){ var a=M.au; if(!a) return; var s=function(id,v){ var e=document.getElementById(id); if(e) e.value=v; }; s('owm-f-n',a.name); s('owm-f-d',a.descr); s('owm-f-t',a.task); s('owm-f-b',a.btn); toast(L('✅ تمت التعبئة بالعربية','✅ Filled','✅ Rempli')); };
@@ -14764,6 +14892,7 @@ function openOfferwall(){
     arr.sort(function(a,b){ return (rank[a.k]-rank[b.k])||(a.n-b.n)||(a.i-b.i); });
     return arr;
   }
+  window.plGgList=function(){ return S.items||[]; };
   window.plGgSheetRe=function(){ try{ var sh=$('owg-sheet'); if(S.cur&&sh&&sh.classList.contains('on')){ var st=sh.scrollTop; sheet(S.cur); sh.scrollTop=st; } }catch(e){} };
   function sheet(o){
     S.cur=o; var sh=$('owg-sheet'); sh.classList.add('on'); sh.scrollTop=0;
@@ -14798,7 +14927,7 @@ function openOfferwall(){
       _og.forEach(function(x,n){
         var g=x.g, dn=done[g.id]!==undefined, isNx=(n===_nxi&&nd>0);
         if(_multi&&x.k!==_last){ _last=x.k; var gg=_gl[x.k]; h+='<div class="g-grp"><span>'+gg[1]+'</span>'+esc(L(gg[2][0],gg[2][1],gg[2][2]))+'</div>'; }
-        h+='<div class="g-step'+(dn?' done':(isNx?' nx':''))+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+(window.plGgStepHtml?window.plGgStepHtml(g.d||('#'+(n+1))):esc(g.d||('#'+(n+1))))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+(dn?'<span class="g-stt ok">✓ '+esc(L('تم الإنجاز','Completed','Terminé'))+'</span>':(isNx?'<span class="g-stt nx">'+esc(L('المرحلة التالية','Next stage','Prochaine étape'))+'</span>':''))+'</div><div class="g-r'+((Number(g.r)>0)?'':' z')+'">'+((Number(g.r)>0)?esc(money(g.r)):'—')+'</div></div>';
+        h+='<div class="g-step'+(dn?' done':(isNx?' nx':''))+'"><div class="g-ck">'+(dn?'✓':(n+1))+'</div><div class="g-d">'+(window.plGgStepHtml?window.plGgStepHtml(g.d||('#'+(n+1))):esc(g.d||('#'+(n+1))))+(g.opt?' <small style="color:#9fb3d9">('+esc(L('إضافية','bonus','bonus'))+')</small>':'')+(dn?'<span class="g-stt ok">✓ '+esc(L('تم الإنجاز','Completed','Terminé'))+'</span>':(isNx?'<span class="g-stt nx">'+esc(L('المرحلة التالية','Next stage','Prochaine étape'))+'</span>':''))+'</div><div class="g-r'+((Number(g.r)>0)?'':' z')+'">'+((Number(g.r)>0)?esc(money(g.r)):esc((g.r===0)?L('أقل من $0.01','under $0.01','moins de 0,01 $'):L('غير معلن','n/a','n/d')))+'</div></div>';
       });
       h+='</div>';
       try{ var nx=goals.filter(function(g){ return done[g.id]===undefined&&Number(g.r)>0; })[0];
