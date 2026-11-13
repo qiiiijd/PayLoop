@@ -121,7 +121,7 @@ try{ var _vf=localStorage.getItem('pl-vpn'); if(_vf&&Date.now()-Number(_vf)<6*36
 }catch(e){} })();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.13-r185';
+window.PL_BUILD='2026.11.13-r189';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -8974,6 +8974,20 @@ function renderAdmNetChk(){
 function netChkRefresh(){ try{ window.owmGamesLoad&&window.owmGamesLoad(true); }catch(e){} setTimeout(function(){ if(ADM_TAB==='netchk') renderAdmNetChk(); },1800); renderAdmNetChk(); }
 
 /* فحص اتصال Offerwall.me الحيّ (قراءة فقط، لا يعرض أي سر): المفاتيح موجودة؟ الشبكة تردّ؟ رابط التتبع يحمل معرّف المستخدم وتوقيعًا؟ */
+window.netChkVerify=async function(){
+  var r=document.getElementById('nv-res'); if(!r) return; var body={}, any=false;
+  ['public','token','secret'].forEach(function(k){ var v=((document.getElementById('nv-'+k)||{}).value||'').trim(); if(v){ body[k]=v; any=true; } });
+  if(!any){ r.style.color='#fbbf24'; r.textContent=L('الصق قيمة واحدة على الأقل','Paste at least one value','Collez une valeur'); return; }
+  r.style.color='#93c5fd'; r.textContent='⏳ …';
+  try{
+    var t=await SRV.tok(); var res=await fetch(RealAuth.base()+'/functions/v1/rapid-api?action=offerwallme_verify',{method:'POST',headers:{'Authorization':'Bearer '+t,'apikey':RealAuth.key(),'Content-Type':'application/json'},body:JSON.stringify(body)}); var j=await res.json().catch(function(){ return null; });
+    if(!j||j.ok!==true){ r.style.color='#f87171'; r.textContent='❌ '+L('تعذّر الفحص (تأكد أن الدالة محدّثة r189)','Failed (function must be r189)','Échec')+(j&&j.why?' · '+j.why:''); return; }
+    var nm={public:L('المفتاح العام','Public key','Clé publique'),token:L('الرمز (Token)','Token','Jeton'),secret:L('كلمة السر (Secret)','Secret','Secret')};
+    r.innerHTML=['public','token','secret'].filter(function(k){ return j[k]!==null&&j[k]!==undefined; }).map(function(k){ return (j[k]?'<span style="color:#4ade80">✅ ':'<span style="color:#f87171">❌ ')+nm[k]+': '+(j[k]?L('مطابق للمحفوظ في Supabase','matches Supabase','identique'):L('لا يطابق المحفوظ في Supabase — حدّثه في Secrets','does NOT match — update it in Secrets','différent'))+'</span>'; }).join('<br>');
+    ['public','token','secret'].forEach(function(k){ var e=document.getElementById('nv-'+k); if(e) e.value=''; });
+  }catch(e){ r.style.color='#f87171'; r.textContent='❌ '+L('تعذّر الاتصال','Connection failed','Échec'); }
+};
+window.netChkCmp=function(){ var v=(document.getElementById('nk-cmp')||{}).value||'', r=document.getElementById('nk-res'); if(!r) return; v=String(v).trim(); if(!v){ r.textContent=''; return; } var ok=v===window.__nkPub; r.style.color=ok?'#4ade80':'#f87171'; r.textContent=ok?'✅ '+L('مطابق تمامًا لما في الخادم','Exact match with server','Identique'):'❌ '+L('غير مطابق لما في الخادم','Does not match the server','Différent'); };
 async function netChkOwmConn(){
   const el=document.getElementById('nc-owm'); if(!el) return; el.innerHTML='<div class="adm-empty">⏳ '+L('جارٍ الفحص…','Testing…','Test…')+'</div>';
   const row=function(ok,txt,sub){ return '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.08);font-size:13px;line-height:1.7">'+(ok===true?'✅':ok===false?'❌':'ℹ️')+' <b>'+txt+'</b>'+(sub?'<br><span style="opacity:.8;font-size:12px">'+sub+'</span>':'')+'</div>'; };
@@ -8993,6 +9007,10 @@ async function netChkOwmConn(){
     if(lk&&lk.ok===true&&typeof lk.url==='string'){
       const m=lk.url.match(/^https:\/\/offerwall\.me\/offerwall\/([^\/?]+)\/([^\/?]+)\?identityExpires=(\d+)&identitySignature=([0-9a-f]{64})$/);
       h2+=row(!!m, L('رابط التتبع موقَّع','Tracking link is signed','Lien signé'), m?L('معرّفك داخل الرابط: ','Your ID inside the link: ','Votre ID: ')+(m[2]===uid?'✅ '+L('مطابق لحسابك','matches your account','correspond'):'❌ '+L('غير مطابق','mismatch','différent'))+' · '+L('ينتهي بعد ساعة','expires in 1h','expire dans 1h'):L('شكل الرابط غير متوقع','Unexpected link format','Format inattendu'));
+      if(m){ window.__nkPub=m[1]; h2+='<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.08);font-size:13px;line-height:1.8">🔑 <b>'+L('المفتاح العام (Public Key) المحفوظ في الخادم','Public key stored on server','Clé publique')+'</b><br><code dir="ltr" style="display:block;word-break:break-all;color:#93c5fd">'+esc(m[1])+'</code><span style="opacity:.8;font-size:12px">'+L('قارنه بالمفتاح في لوحة Offerwall.me، أو الصق مفتاحك هنا للمقارنة (لا يُرسل لأي مكان):','Compare with the dashboard key, or paste yours below (stays on your device):','Comparez:')+'</span><br><input id="nk-cmp" dir="ltr" autocomplete="off" spellcheck="false" placeholder="API key" style="width:100%;margin-top:6px;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff" oninput="netChkCmp()"><div id="nk-res" style="margin-top:6px;font-weight:700"></div></div>'; }
+    h2+='<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.08);font-size:13px;line-height:1.8">🛡️ <b>'+L('تحقق من الأسرار الثلاثة (تُقارن في خادمك فقط)','Verify the 3 secrets (compared on your server only)','Vérifier les 3 secrets')+'</b><br><span style="opacity:.8;font-size:12px">'+L('الصق القيمة بالنسخ من لوحة Offerwall.me. تُرسل بالتشفير إلى دالتك وتُقارن بالمحفوظ ثم تُنسى؛ لا أحد غيرك يراها.','Paste from the dashboard. Sent encrypted to your function, compared and discarded.','Collez depuis le tableau de bord.')+'</span>'
+      +['public','token','secret'].map(function(k){ return '<input id="nv-'+k+'" type="password" dir="ltr" autocomplete="off" spellcheck="false" placeholder="'+(k==='public'?'API Key (Public)':k==='token'?'Bearer Token':'Secret Key')+'" style="width:100%;margin-top:6px;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff">'; }).join('')
+      +'<button class="adm-new" style="margin-top:8px" onclick="netChkVerify()">🔍 '+L('تحقق الآن','Verify now','Vérifier')+'</button><div id="nv-res" style="margin-top:6px;font-weight:700;line-height:1.9"></div></div>';
     } else h2+=row(false, L('تعذّر توليد رابط التتبع','Could not build tracking link','Échec'), esc((lk&&lk.why)||''));
     h2+=row(null, L('ما لا يمكن فحصه من هنا','Not testable here','Non testable'), L('وصول الـPostback وصحّة التوقيع وسر الشبكة يُفحصان من جدول المعاملات (ملف 120) أو بإكمال مرحلة حقيقية.','Postback delivery is verified from the transactions table (file 120) or by completing a real step.','Vérifiez via le fichier 120.'));
     el.innerHTML='<div class="adm-card" style="display:block;text-align:start">'+h2+'</div>';
@@ -13865,6 +13883,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     if((m=s.match(re2))){ var v2=m[1].toLowerCase(), p=PL[m[3].toLowerCase()]; var tl3=tail(m[4]); if(V[v2]&&p&&tl3!==null) return V[v2]+' '+m[2]+' من ال'+p+(tl3?' '+tl3:''); return null; }
     return null;
   }
+  window.plNormU=function(t){ try{ return String(t==null?'':t).replace(/([A-Za-z0-9])_+(?=[A-Za-z0-9])/g,'$1 ').replace(/[ \t]{2,}/g,' ').trim(); }catch(e){ return t; } };
   window.plStepAr=function(txt){
     try{
       var raw=String(txt==null?'':txt); if(!raw||raw.length>200) return null;
@@ -13883,8 +13902,8 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     var raw=String(txt==null?'':txt), ar=null;
     try{ if(typeof L==='function'&&L('ar','en','fr')==='ar') ar=window.plStepAr(raw); }catch(x){}
     try{ if(ar) ar=ar.replace(/(^|[^\d.,])(\d{4,})(?![\d.,])/g,function(m,a,b){ return (b.length===4&&+b>=1900&&+b<=2100)?m:a+b.replace(/\B(?=(\d{3})+(?!\d))/g,','); }); }catch(x){}
-    if(!ar) return e(raw);
-    return e(ar)+'<small dir="ltr" style="display:block;font-size:11px;color:#7f93bb;margin-top:2px;text-align:left">'+e(raw)+'</small>';
+    if(!ar) return e(window.plNormU?window.plNormU(raw):raw);
+    return e(ar)+'<small dir="ltr" style="display:block;font-size:11px;color:#7f93bb;margin-top:2px;text-align:left">'+e(window.plNormU?window.plNormU(raw):raw)+'</small>';
   };
   /* ترتيب مراحل لعبة Offerwall.me: تجميع حسب النوع (بداية/مستويات/نجوم/جواهر/عملات/نقاط/شراء) ثم تصاعديًا بالرقم؛ المتعادل يبقى بترتيب الشبكة */
   window.plOrderSteps=function(steps){
@@ -14005,8 +14024,8 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     var raw=String(txt==null?'':txt), ar=null;
     try{ if(typeof L==='function'&&L('ar','en','fr')==='ar'&&!/[؀-ۿ]/.test(raw)){ ar=window.plGgAr(raw); if(!ar&&window.plStepAr) ar=window.plStepAr(raw); } }catch(x){}
     try{ if(ar) ar=ar.replace(/(^|[^\d.,])(\d{4,})(?![\d.,])/g,function(m,a,b){ return (b.length===4&&+b>=1900&&+b<=2100)?m:a+b.replace(/\B(?=(\d{3})+(?!\d))/g,','); }); }catch(x){}
-    if(!ar) return e(raw);
-    return e(ar)+'<small dir="ltr" style="display:block;font-size:11px;color:#7f93bb;margin-top:2px;text-align:left">'+e(raw)+'</small>';
+    if(!ar) return e(window.plNormU(raw));
+    return e(ar)+'<small dir="ltr" style="display:block;font-size:11px;color:#7f93bb;margin-top:2px;text-align:left">'+e(window.plNormU(raw))+'</small>';
   };
 })();
 
@@ -14025,6 +14044,9 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
   function extra(raw){
     var s=String(raw||'').trim().replace(/\s+/g,' ').replace(/[.!]+$/,''), m;
     if((m=s.match(/^(?:reach|get to|pass|complete)\s+(?:the\s+)?level\s*#?\s*(\d[\d,]*)$/i))) return 'الوصول إلى المستوى '+m[1].replace(/,/g,'');
+    if((m=s.match(/^install(?: the game)? and (?:complete|finish|reach) (?:stage|level)?\s*#?(\d[\d,]*)(?: stages?| levels?)?$/i)||s.match(/^install(?: the game)? and (?:complete|finish|reach) #?(\d[\d,]*) (?:stages?|levels?)$/i))) return 'ثبّت اللعبة وأكمل المرحلة '+m[1].replace(/,/g,'');
+    if((m=s.match(/^(?:complete|finish) #?(\d[\d,]*) stages?$/i)||s.match(/^(?:complete|finish) stage #?(\d[\d,]*)$/i))) return 'إكمال المرحلة '+m[1].replace(/,/g,'');
+    if((m=s.match(/^(?:complete|finish|reach) #?(\d[\d,]*) levels?$/i))) return 'الوصول إلى المستوى '+m[1].replace(/,/g,'');
     if(/^sign ?-?up$/i.test(s)||/^registration$|^register$/i.test(s)) return 'التسجيل';
     if(/^(?:create an? account|sign ?up for an? account)$/i.test(s)) return 'أنشئ حسابًا';
     if((m=s.match(/^complete any (offer|survey|offer or survey|survey or offer)$/i))) return 'أكمل أي '+(/offer or survey/i.test(m[1])?'عرض أو استطلاع':/survey or offer/i.test(m[1])?'استطلاع أو عرض':/offer/i.test(m[1])?'عرض':'استطلاع');
@@ -14034,7 +14056,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     if((m=s.match(/^pass the battle \[(\w+)\]\s*-\s*\[level (\d+)\]$/i))&&DIF[m[1].toLowerCase()]) return 'اجتز المعركة ['+DIF[m[1].toLowerCase()]+']-[المستوى '+m[2]+']';
     return null;
   }
-  function rules(txt){ var a=null; try{ a=(oPG&&oPG(txt))||(oPS&&oPS(txt))||null; }catch(e){} if(a) return a; return extra(txt); }
+  function rules(txt){ txt=window.plNormU(txt); var a=null; try{ a=(oPG&&oPG(txt))||(oPS&&oPS(txt))||null; }catch(e){} if(a) return a; return extra(txt); }
   window.plAutoOnly=function(txt){ return rules(txt); };
   window.plOvGet=function(txt){ var k=window.plNk(txt); if(!k||!Object.prototype.hasOwnProperty.call(OV,k)) return null; var v=String(OV[k]||''); return v.length>=3?v:null; };
   /* ترجمة آلية فورية (للنص الذي لا تعرفه القواعد): خدمة ترجمة مجانية تُستدعى من الجهاز، والنتيجة تُحفظ في المتصفح، ومتى فتح المدير التطبيق تُحفظ في قاعدة البيانات لتظهر للجميع دون استدعاء.
@@ -14066,7 +14088,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     raw=String(raw||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(); if(raw.length<3||raw.length>400||hasAr(raw)||!/[A-Za-z]{3}/.test(raw)) return;
     var k=nk(raw); if(MT[k]||BAD[k]||MQ[k]) return; MQ[k]=raw; if(!mTimer&&!mBusy) mTimer=setTimeout(mFlush,350);
   }
-  function resolve(txt){ var o=window.plOvGet(txt); if(o) return o; var a=rules(txt); if(a) return a; var raw=String(txt==null?'':txt).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(); if(!raw||hasAr(raw)) return null; a=MT[nk(raw)]; if(a) return a; mQueue(raw); return null; }
+  function resolve(txt){ txt=window.plNormU(txt); var o=window.plOvGet(txt); if(o) return o; var a=rules(txt); if(a) return a; var raw=String(txt==null?'':txt).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(); if(!raw||hasAr(raw)) return null; a=MT[nk(raw)]; if(a) return a; mQueue(raw); return null; }
   window.plStepAr=function(txt){ return resolve(txt); };
   window.plGgAr=function(txt){ return resolve(txt); };
   /* اسم اللعبة: علامة تجارية تبقى كما هي؛ والعنوان التسويقي الطويل بعد « | » يُترجم */
