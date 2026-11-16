@@ -121,7 +121,7 @@ try{ var _vf=localStorage.getItem('pl-vpn'); if(_vf&&Date.now()-Number(_vf)<6*36
 }catch(e){} })();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.16-r194';
+window.PL_BUILD='2026.11.16-r196';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -7310,9 +7310,6 @@ function renderAuth(){
   box.innerHTML=
     '<div class="ax-form">'+
     '<div class="au-hello">'+L('أنشئ حسابك خلال دقيقة — وابدأ الربح من اليوم','Create your account in a minute — start earning today','Créez votre compte en une minute')+'</div>'+
-    '<div class="au-how"><div><i>💰</i><span>'+L('تختار المهمة وترى مكافأتها قبل أن تبدأ.','You pick a task and see its reward before you start.','Vous choisissez une tâche et voyez sa récompense avant de commencer.')+'</span></div>'+
-      '<div><i>⏳</i><span>'+L('تُضاف المكافأة بعد تأكيد الشبكة (من دقائق إلى عدة أيام).','The reward is added after the network confirms it (minutes to several days).','La récompense est ajoutée après confirmation du réseau (de quelques minutes à plusieurs jours).')+'</span></div>'+
-      '<div><i>💳</i><span>'+L('السحب يتطلب تسجيل 5 أصدقاء عبر رابط دعوتك، وحدًّا أدنى للرصيد يظهر في تبويب السحب.','Withdrawals need 5 friends to join with your invite link, plus a minimum balance shown in the Withdraw tab.','Le retrait nécessite 5 amis inscrits via votre lien et un solde minimum indiqué dans l\'onglet Retrait.')+'</span></div></div>'+
 
     '<div class="ax-field"><label>👤 '+L('الاسم الكامل','Full name','Nom complet')+' <span style="color:#f87171">*</span></label>'+
       '<div class="ax-in"><input id="au-name" type="text" placeholder="'+L('اسمك الكامل','Your full name','Votre nom complet')+'" autocomplete="name" oninput="auNameLive()" onkeydown="if(event.key===\'Enter\'){doRegister()}"><span class="ax-ic">'+IC_USER+'</span></div>'+
@@ -13931,14 +13928,15 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     finally{ window.__owmBusy=false; }
   };
   window.owmFullCard=function(cat){
+    var adm=false; try{ adm=(typeof isAdmin==='function')&&isAdmin()===true; }catch(e){}
+    if(!adm) return;   /* r195: للمدير فقط */
     var box=document.getElementById('tlist'); if(!box||box.querySelector('.owm-full')) return;
     if(cat!=='all'&&cat!=='games'&&cat!=='survey') return;
     var tb='new'; try{ if(typeof taskTab!=='undefined') tb=taskTab; }catch(e){}
     if(tb!=='new') return;
-    var art=''; try{ art=artHTML('games'); }catch(e){}
     var go='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
     var card='<div class="trow owm-full" onclick="openOfferwallFull()">'
-      +'<div class="t-icon art">'+art+'</div>'
+      +'<div class="t-icon art" style="background:linear-gradient(135deg,#0ea5e9,#6366f1);display:flex;align-items:center;justify-content:center"><span style="font-size:28px">🧩</span></div>'
       +'<div class="t-info"><h4>'+L('كل أقسام Offerwall.me','All Offerwall.me sections','Toutes les sections Offerwall.me')+'</h4>'
       +'<div class="meta"><span>🔓 '+L('فتح الجدار الكامل','Open the full wall','Ouvrir le mur complet')+'</span><span>'+L('عروض، استطلاعات، مهام، PTC وروابط','Offers, surveys, tasks, PTC and links','Offres, sondages, tâches, PTC et liens')+'</span></div>'
       +'<div class="meta"><span>'+L('المبالغ المعروضة هناك هي مبالغ الشبكة كاملة؛ ما يُضاف لرصيدك أقل حسب نسبة PayLoop.','Amounts shown there are the network\'s full amounts; what is added to your balance is lower, per PayLoop\'s share.','Les montants affichés sont ceux du réseau ; ce qui est ajouté à votre solde est inférieur, selon la part de PayLoop.')+'</span></div></div>'
@@ -14081,7 +14079,7 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
   window.plDeviceNote=function(){
     var e=function(x){ return String(x).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
     try{ if(!document.getElementById('pl-pre-css')){ var st=document.createElement('style'); st.id='pl-pre-css';
-      st.textContent='.pl-pre{margin:0 0 8px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,#1b1606,#14110a);border:1px solid rgba(251,191,36,.30);box-shadow:0 2px 10px rgba(0,0,0,.28)}.pl-pre>b{display:block;font-size:13px;color:#fbbf24;margin:0 0 6px}.pl-pre ul{list-style:none;margin:0;padding:0;display:grid;gap:5px}.pl-pre li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.55;color:#e6edf8}.pl-pre li i{flex:none;font-style:normal;width:20px;text-align:center}.pl-pre li.k{color:#fecaca}.pl-pre li.k b{color:#fca5a5}.au-how{display:grid;gap:6px;margin:0 0 12px;padding:10px 12px;border-radius:14px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.22)}.au-how div{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.55;color:#dbe7f7}.au-how i{flex:none;font-style:normal;width:20px;text-align:center}';
+      st.textContent='.pl-pre{margin:0 0 8px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,#1b1606,#14110a);border:1px solid rgba(251,191,36,.30);box-shadow:0 2px 10px rgba(0,0,0,.28)}.pl-pre>b{display:block;font-size:13px;color:#fbbf24;margin:0 0 6px}.pl-pre ul{list-style:none;margin:0;padding:0;display:grid;gap:5px}.pl-pre li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.55;color:#e6edf8}.pl-pre li i{flex:none;font-style:normal;width:20px;text-align:center}.pl-pre li.k{color:#fecaca}.pl-pre li.k b{color:#fca5a5}.owm-sum{padding:16px 14px!important;border:1px solid rgba(251,191,36,.35)!important;background:linear-gradient(160deg,#16213f,#0f1830)!important;box-shadow:0 6px 22px rgba(0,0,0,.35)}.owm-sum>b{display:block;font-size:19px!important;color:#fde68a!important;margin:0 0 10px}.owm-sum .owm-chips span{font-size:15px!important;font-weight:700;padding:8px 14px!important}.owm-sum .owm-chips b{font-size:17px!important}.owm-sum .owm-how{font-size:15px!important;line-height:2!important;color:#e6edf8!important;margin:10px 20px 0!important}.owm-sum .owm-how li::marker{color:#fbbf24;font-weight:800}.pl-pre{margin:14px 0 4px!important}.au-how{display:grid;gap:6px;margin:0 0 12px;padding:10px 12px;border-radius:14px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.22)}.au-how div{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.55;color:#dbe7f7}.au-how i{flex:none;font-style:normal;width:20px;text-align:center}';
       document.head.appendChild(st); } }catch(x){}
     var li=function(ic,t,k){ return '<li'+(k?' class="k"':'')+'><i>'+ic+'</i><span>'+t+'</span></li>'; };
     return '<div class="pl-pre"><b>'+e(L('قبل أن تبدأ','Before you start','Avant de commencer'))+'</b><ul>'
@@ -14476,8 +14474,8 @@ window.plNetLogo=function(f){ return '<img class="net-logo" src="'+f+'" alt="" d
     if(g.plat==='android'||g.plat==='ios'||g.plat==='all') h+='<div class="sc"><b>'+L('يعمل على','Works on','Fonctionne sur')+'</b>'+ptxt(g.plat)+'</div>';
     h+='<div class="sc" style="font-size:13px;color:#9fb3d9">'+L('المكافأة تصل تلقائيًا بعد أن تؤكد الشبكة تقدّمك، وقد يستغرق ذلك من دقائق إلى عدة أيام حسب اللعبة. لتُحتسب مراحلك: افتح اللعبة دائمًا من هذا التطبيق وبهذا الحساب فقط، بدون VPN، ولا تحذف اللعبة، وأكمل الشروط كما هي مكتوبة. اللعبة المثبّتة مسبقًا على هاتفك غالبًا لا تُحتسب.','The reward is added automatically once the network confirms your progress. This can take from a few minutes to several days depending on the game. To be counted: always open the game from this app, with this account only, without a VPN; do not uninstall the game; complete the steps exactly as written. A game that was already installed on your phone is usually not counted.','La récompense est ajoutée automatiquement après confirmation du réseau, ce qui peut prendre de quelques minutes à plusieurs jours selon le jeu. Pour être comptée : ouvrez toujours le jeu depuis cette application, avec ce compte uniquement, sans VPN ; ne désinstallez pas le jeu ; suivez les étapes exactement. Un jeu déjà installé sur votre téléphone n’est généralement pas compté.')+'</div>';
     try{ if(window.plDeviceWarn) h+=window.plDeviceWarn(); }catch(e){}
-    d.innerHTML=h; d.scrollTop=0;
-    var bar=document.createElement('div'); bar.className='gs'; bar.innerHTML=(window.plDeviceNote?window.plDeviceNote():'')+'<button type="button"></button>'; var _bt=bar.querySelector('button'); _bt.textContent=((g.btn&&String(g.btn).trim()&&!(L('ar','en','fr')!=='ar'&&/[\u0600-\u06FF]/.test(String(g.btn))))?String(g.btn).trim():'')||L('ابدأ','Start','Commencer');
+    d.innerHTML=h+(window.plDeviceNote?window.plDeviceNote():''); d.scrollTop=0;
+    var bar=document.createElement('div'); bar.className='gs'; bar.innerHTML='<button type="button"></button>'; var _bt=bar.querySelector('button'); _bt.textContent=((g.btn&&String(g.btn).trim()&&!(L('ar','en','fr')!=='ar'&&/[\u0600-\u06FF]/.test(String(g.btn))))?String(g.btn).trim():'')||L('ابدأ','Start','Commencer');
     _bt.onclick=function(){ go(g.id); }; if(_oi&&_oi.expired){ _bt.disabled=true; _bt.style.opacity='.5'; _bt.textContent=L('انتهت','Ended','Terminé'); } try{ Array.prototype.forEach.call(ov.querySelectorAll('.gs'),function(e){ e.remove(); }); }catch(e){} ov.appendChild(bar);
     ov.classList.add('on');
   };
@@ -15224,7 +15222,8 @@ function openOfferwall(){
     if(o.ready&&o.url){
       var used=!o.multi&&!goals.length&&done['']!==undefined;
       var bar=document.createElement('div'); bar.className='g-start';
-      bar.innerHTML=(window.plDeviceNote?window.plDeviceNote():'')+'<button type="button">'+esc(used?L('أنجزتها','Completed','Terminé'):(Object.keys(done).length?L('تابع اللعب','Continue','Continuer'):L('ابدأ اللعب','Start playing','Jouer')))+'</button>';
+      try{ sh.insertAdjacentHTML('beforeend',window.plDeviceNote?window.plDeviceNote():''); }catch(e){}
+      bar.innerHTML='<button type="button">'+esc(used?L('أنجزتها','Completed','Terminé'):(Object.keys(done).length?L('تابع اللعب','Continue','Continuer'):L('ابدأ اللعب','Start playing','Jouer')))+'</button>';
       var btn=bar.querySelector('button'); if(used){ btn.disabled=true; btn.style.opacity='.5'; }
       if(_ei&&_ei.expired&&!used){ btn.disabled=true; btn.style.opacity='.5'; btn.textContent=L('انتهت','Ended','Terminé'); }
       btn.onclick=function(){ try{ window.owMarkStarted(o.ext); }catch(e){} try{ var w=window.open(o.url,'_blank','noopener'); if(!w) location.href=o.url; }catch(e){ location.href=o.url; } };
@@ -16339,9 +16338,9 @@ function openOfferwall(){
   }
   var GO='<button class="go" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
   function card(t){
-    var m=pm(t.platform);
+    var m=pm(t.platform), hasI=!!(t.img&&imgOk(t.img));
     return '<div class="trow soc-row" data-sid="'+esc(t.id)+'" onclick="socOpen(this.getAttribute(\'data-sid\'))">'
-      +'<div class="t-icon art" style="background:linear-gradient(135deg,'+m[1]+');display:flex;align-items:center;justify-content:center"><span style="font-size:28px">'+m[0]+'</span></div>'
+      +'<div class="t-icon art'+(hasI?' has-img':'')+'" style="background:linear-gradient(135deg,'+m[1]+');display:flex;align-items:center;justify-content:center;overflow:hidden">'+(hasI?'<img decoding="async" src="'+esc(t.img)+'" alt="" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()">':'<span style="font-size:28px">'+m[0]+'</span>')+'</div>'
       +'<div class="t-info"><div class="t-head"><b class="t-amt">'+(t.reward>0?usd(t.reward):'—')+'</b><span class="t-amtl">'+L('المكافأة','Reward','Gain')+'</span></div>'
       +'<h4>'+esc(t.title||'')+'</h4>'
       +(t.done?'<span class="t-tag" style="background:#22c55e22;color:#22c55e">✅ '+L('تم الاستلام','Claimed','Reçu')+'</span>':'<span class="t-tag" style="background:#22c55e22;color:#22c55e">'+L('جديد','New','Nouveau')+'</span>')
@@ -16425,7 +16424,8 @@ function openOfferwall(){
   try{ document.addEventListener('visibilitychange',function(){ if(!document.hidden&&S&&Date.now()-ST>180000) load(true); }); }catch(e){}
 
   /* ---------- لوحة الإدارة ---------- */
-  var AD=null, ADT=0, EDIT=null, ARM='';
+  var AD=null, ADT=0, EDIT=null, ARM='', SOC_IMG;
+  function imgOk(u){ u=String(u||''); return u.length<=60000&&(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(u)||/^https:\/\/[^\s"'<>]{1,500}$/.test(u)); }
   var PLACES=[['all','كل الأقسام','All sections'],['survey','الاستطلاعات','Surveys'],['games','الألعاب','Games'],['ads','الإعلانات','Ads'],['apps','التطبيقات','Apps'],['camps','حملات الربح','Campaigns'],['daily','المهام اليومية','Daily']];
   function opt(list,sel,fi){ return list.map(function(o){ return '<option value="'+o[0]+'"'+(o[0]===sel?' selected':'')+'>'+esc(L(o[1],o[fi||2]||o[1],o[fi||2]||o[1]))+'</option>'; }).join(''); }
   window.renderAdmSoc=async function(force){
@@ -16437,11 +16437,15 @@ function openOfferwall(){
     listDraw();
   };
   function formDraw(box){
+    SOC_IMG=undefined;
     var e=(EDIT&&typeof EDIT==='object')?EDIT:{platform:'telegram',title:'',descr:'',url:'',reward:0.01,place:'all',promo:false,active:true,sort:100};
     var PF=[['telegram','تلغرام','Telegram'],['tiktok','تيك توك','TikTok'],['youtube','يوتيوب','YouTube'],['instagram','إنستغرام','Instagram'],['facebook','فيسبوك','Facebook'],['x','إكس','X'],['other','رابط آخر','Other']];
     box.innerHTML='<div style="margin:0 0 10px"><button class="admt-vtab" onclick="admTab(\'tasks\')">← '+L('إدارة المهام','Task management','Gestion des tâches')+'</button></div><div class="pb-intro">🔗 '+L('أنشئ مهمة متابعة (تلغرام، تيك توك، يوتيوب…). المستخدم يضغط فيُفتح الرابط ثم يستلم المكافأة مرة واحدة لكل حساب (بعد 8 ثوانٍ كحماية). لا يمكن التأكد أنه تابع فعلاً، فاجعل المكافآت صغيرة.','Create a follow task. The user taps, the link opens, then claims the reward once per account (8s safety delay). We cannot verify the follow, so keep rewards small.','Créez une tâche. Une récompense par compte.')+'</div>'
       +'<div class="pb-add" id="soc-form"><b>'+(e.id?'✏️ '+L('تعديل مهمة','Edit task','Modifier'):'➕ '+L('مهمة جديدة','New task','Nouvelle tâche'))+'</b>'
       +'<select id="sf-pf">'+opt(PF,e.platform,2)+'</select>'
+      +'<div style="display:flex;align-items:center;gap:10px;margin:2px 0"><span id="sf-imgp" style="width:56px;height:56px;border-radius:14px;background:#0b1220;border:1px solid #243457;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none;font-size:11px;color:#7c8aa3">'+((e.img&&imgOk(e.img))?'<img src="'+esc(e.img)+'" alt="" style="width:100%;height:100%;object-fit:cover">':L('بلا','None','Aucune'))+'</span>'
+      +'<label style="flex:1;text-align:center;padding:10px;border-radius:12px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.4);color:#7dd3fc;font-weight:700;cursor:pointer">🖼 '+L('اختر صورة للمهمة','Choose a task image','Choisir une image')+'<input type="file" id="sf-file" accept="image/*" hidden onchange="socPick(this)"></label>'
+      +'<button type="button" style="background:rgba(255,255,255,.1);color:inherit;padding:10px 12px;border-radius:12px" onclick="socImgClear()">✖</button></div>'
       +'<input id="sf-title" dir="auto" maxlength="80" placeholder="'+L('العنوان: مثل «تابع قناتنا الرسمية»','Title','Titre')+'" value="'+esc(e.title)+'">'
       +'<textarea id="sf-descr" dir="auto" maxlength="600" rows="3" placeholder="'+L('وصف فخم قصير يشجّع المستخدم','Short premium description','Description')+'">'+esc(e.descr)+'</textarea>'
       +'<input id="sf-url" dir="ltr" placeholder="https://t.me/yourchannel" value="'+esc(e.url)+'">'
@@ -16456,7 +16460,7 @@ function openOfferwall(){
   function listDraw(){
     var el=document.getElementById('soc-list'); if(!el) return; var rows=AD||[];
     el.innerHTML=rows.map(function(t){ var m=pm(t.platform), armed=ARM===String(t.id);
-      return '<div class="pb-row"><div class="pb-top"><b>'+m[0]+' '+esc(t.title)+'</b><span class="pub-badge" style="margin:0;'+(t.active?'':'filter:grayscale(1);animation:none')+'">'+(t.active?L('فعّالة','Active','Active'):L('مخفية','Hidden','Masquée'))+'</span></div>'
+      return '<div class="pb-row"><div class="pb-top"><b>'+((t.img&&imgOk(t.img))?'<img src="'+esc(t.img)+'" alt="" style="width:26px;height:26px;border-radius:8px;object-fit:cover;vertical-align:middle">':m[0])+' '+esc(t.title)+'</b><span class="pub-badge" style="margin:0;'+(t.active?'':'filter:grayscale(1);animation:none')+'">'+(t.active?L('فعّالة','Active','Active'):L('مخفية','Hidden','Masquée'))+'</span></div>'
         +'<div class="pb-meta"><span>💰 '+usd(t.reward)+'</span><span>📍 '+esc(L((PLACES.filter(function(p){ return p[0]===t.place; })[0]||[0,t.place])[1],(PLACES.filter(function(p){ return p[0]===t.place; })[0]||[0,t.place,t.place])[2],t.place))+'</span>'
         +'<span>👆 '+Number(t.opens||0)+' '+L('ضغطة','opened','ouvert')+'</span><span>✅ '+Number(t.claims||0)+' '+L('استلموا','claimed','reçu')+'</span>'+(t.promo?'<span>⭐ '+L('نافذة ترحيب','Welcome popup','Popup')+'</span>':'')+'</div>'
         +'<div class="pb-note" dir="ltr">'+esc(t.url)+'</div>'
@@ -16465,9 +16469,28 @@ function openOfferwall(){
       ||'<div class="up-em">'+L('لا مهام بعد — أنشئ أول مهمة من الأعلى','No tasks yet','Aucune tâche')+'</div>';
   }
   window.socEdit=function(id){ EDIT=id?((AD||[]).filter(function(t){ return String(t.id)===String(id); })[0]||null):null; var b=document.getElementById('adm-body'); if(b) formDraw(b); try{ b.scrollIntoView({block:'start'}); }catch(e){} listDraw(); };
+  window.socPick=function(inp){
+    try{
+      var f=inp&&inp.files&&inp.files[0]; if(!f) return;
+      if(!/^image\//.test(f.type)||f.size>8*1024*1024){ toast(L('اختر صورة صالحة (حتى 8 ميغابايت)','Choose a valid image (up to 8 MB)','Image invalide')); inp.value=''; return; }
+      var rd=new FileReader();
+      rd.onload=function(){ var im=new Image(); im.onload=function(){
+        try{
+          var S=160, c=document.createElement('canvas'); c.width=S; c.height=S; var x=c.getContext('2d');
+          var w=im.naturalWidth, h=im.naturalHeight, m=Math.min(w,h); x.drawImage(im,(w-m)/2,(h-m)/2,m,m,0,0,S,S);
+          var u=c.toDataURL('image/webp',0.82); if(u.indexOf('data:image/webp')!==0) u=c.toDataURL('image/jpeg',0.82);
+          if(!imgOk(u)){ toast(L('الصورة كبيرة، جرّب أخرى','Image too large, try another','Image trop grande')); return; }
+          SOC_IMG=u; var pv=document.getElementById('sf-imgp'); if(pv) pv.innerHTML='<img src="'+u+'" alt="" style="width:100%;height:100%;object-fit:cover">';
+        }catch(e){ toast(L('تعذّرت معالجة الصورة','Could not process the image','Échec')); }
+      }; im.onerror=function(){ toast(L('ملف الصورة غير صالح','Invalid image file','Fichier invalide')); }; im.src=String(rd.result); };
+      rd.readAsDataURL(f);
+    }catch(e){}
+  };
+  window.socImgClear=function(){ SOC_IMG=''; var pv=document.getElementById('sf-imgp'); if(pv) pv.textContent=L('بلا','None','Aucune'); var fi=document.getElementById('sf-file'); if(fi) fi.value=''; };
   window.socSave=async function(id){
     var g=function(k){ return document.getElementById(k); };
     var p={id:id||null,platform:g('sf-pf').value,title:g('sf-title').value.trim(),descr:g('sf-descr').value.trim(),url:g('sf-url').value.trim(),reward:g('sf-rw').value,place:g('sf-place').value,promo:g('sf-promo').checked,active:g('sf-act').checked,sort:g('sf-sort').value};
+    if(SOC_IMG!==undefined) p.img=SOC_IMG;   /* undefined = لم يتغيّر · '' = إزالة · نص = صورة جديدة */
     if(p.title.length<3){ toast(L('اكتب عنواناً (3 أحرف على الأقل)','Enter a title','Titre requis')); return; }
     if(!httpsOk(p.url)){ toast(L('الرابط يجب أن يبدأ بـ https://','Link must start with https://','Le lien doit commencer par https://')); return; }
     var rw=Number(p.reward); if(!(rw>=0&&rw<=5)){ toast(L('السعر بين 0 و 5 دولار','Reward must be 0–5 USD','Prix 0–5 USD')); return; }
