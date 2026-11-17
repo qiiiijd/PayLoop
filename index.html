@@ -121,7 +121,7 @@ try{ var _vf=localStorage.getItem('pl-vpn'); if(_vf&&Date.now()-Number(_vf)<6*36
 }catch(e){} })();
 </script>
 <script>/* بصمة الإصدار + حارس التحميل: إن لم يكتمل تشغيل التطبيق (ملف مقصوص عند الرفع، أو نسخة قديمة مخزّنة، أو خطأ برمجي) يظهر شريط واضح بدل شاشة صامتة */
-window.PL_BUILD='2026.11.17-r197';
+window.PL_BUILD='2026.11.17-r199';
 (function(){
   var errs=[]; window.__plErrs=errs;
   window.addEventListener('error',function(e){ try{ errs.push(String(e.message||'error')+(e.lineno?' (سطر '+e.lineno+')':'')); }catch(_){} });
@@ -16061,8 +16061,7 @@ function openOfferwall(){
       +'<div class="t-icon art'+(c.img?' has-img':'')+'">'+img+'</div>'
       +'<div class="t-info"><div class="t-head"><b class="t-amt">'+usd(c.reward)+'</b><span class="t-amtl">'+L('المكافأة','Reward','Gain')+'</span></div>'
       +'<h4>'+esc(c.title||'')+'</h4>'+tag(st,c)+'<span class="t-tag" style="background:#6366f122;color:#a5b4fc">🎬 '+L('حملة','Campaign','Campagne')+'</span>'
-      +'<div class="meta"><span>👁 '+nf(c.goal)+' '+L('مشاهدة مطلوبة','views needed','vues requises')+'</span><span>👥 '+L('للجميع','Open to all','Pour tous')+'</span></div>'
-      +(c.featured&&st!=='pending'&&st!=='approved'?'<div class="camp-cta">🚀 '+L('ابدأ الآن واربح','Start now & earn','Commencez et gagnez')+' '+usd(c.reward)+'</div>':'')+'</div>'+GO+'</div>';
+      +'<div class="meta"><span>👁 '+nf(c.goal)+' '+L('مشاهدة مطلوبة','views needed','vues requises')+'</span><span>👥 '+L('للجميع','Open to all','Pour tous')+'</span></div></div>'+GO+'</div>';
   }
   window.campInject=function(cat){
     try{
@@ -16748,12 +16747,27 @@ window.plCCSet=function(v){ try{ if(v) localStorage.setItem('pl_cc',v); else loc
   try{ toast('تم — سيتم تحديث العروض'); }catch(e){} };
 (function(){ function init(){ var e=document.getElementById('pl-cc'); if(e) e.value=window.plCC(); } if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init(); setTimeout(init,1500); })();
 </script>
+<style id="r199-css">
+.ct-card.ct2{background:linear-gradient(160deg,#2a1d05 0%,#14100a 55%,#1d1405 100%); border:1.5px solid rgba(251,191,36,.65); box-shadow:0 0 0 1px rgba(251,191,36,.18),0 22px 46px -22px rgba(245,158,11,.55), inset 0 1px 0 rgba(255,236,170,.25);}
+[data-theme=light] .ct-card.ct2{background:linear-gradient(160deg,#fff7df,#ffeab0); border-color:#d9a21b;}
+.ct-card.ct2::before{height:4px; background:linear-gradient(90deg,#b45309,#fbbf24,#fff3b0,#fbbf24,#b45309); background-size:200% 100%; animation:ctGold 4s linear infinite;}
+@keyframes ctGold{to{background-position:-200% 0}}
+.ct-card.ct2::after{content:''; position:absolute; top:-40%; left:-60%; width:40%; height:180%; background:linear-gradient(100deg,transparent,rgba(255,240,170,.16),transparent); transform:rotate(12deg); animation:ctSheen 5s ease-in-out infinite; pointer-events:none; z-index:0;}
+@keyframes ctSheen{0%,60%{left:-60%}100%{left:130%}}
+.ct-card.ct2 .ct-title{background:linear-gradient(90deg,#fde68a,#fbbf24,#fff3b0); -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:900;}
+[data-theme=light] .ct-card.ct2 .ct-title{background:none; color:#7c4a03;}
+.ct-card.ct2 .ct-prize{padding:14px; border:1.5px solid rgba(251,191,36,.7); background:radial-gradient(circle at 85% 20%,rgba(251,191,36,.28),transparent 60%),linear-gradient(135deg,rgba(180,83,9,.35),rgba(251,191,36,.12)); box-shadow:inset 0 0 22px rgba(251,191,36,.12);}
+.ct-card.ct2 .ct-pic{width:56px; height:56px; font-size:30px; border-radius:16px; background:linear-gradient(135deg,#fff3b0,#fbbf24 45%,#b45309); box-shadow:0 0 0 3px rgba(251,191,36,.25),0 12px 26px -8px rgba(245,158,11,.9);}
+.ct-card.ct2 .ct-pt b{font-size:21px; color:#fde68a; text-shadow:0 2px 14px rgba(245,158,11,.55);}
+[data-theme=light] .ct-card.ct2 .ct-pt b{color:#8a4b00; text-shadow:none;}
+.ct-card.ct2 .ct-btn{background:linear-gradient(135deg,#fff3b0,#fbbf24 50%,#d97706); color:#2a1700; font-weight:900; box-shadow:0 14px 30px -12px rgba(251,191,36,.95);}
+</style>
 <style id="r197-css">
 .trow.camp-feat{border:1.5px solid transparent!important;background:linear-gradient(#141b30,#0e1426) padding-box,linear-gradient(135deg,#fde68a,#f59e0b 45%,#ef4444) border-box!important;box-shadow:0 0 0 1px rgba(245,158,11,.25),0 10px 30px rgba(245,158,11,.22)!important;overflow:hidden}
 .trow.camp-feat::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.10) 50%,transparent 65%);transform:translateX(-120%);animation:campShine 3.6s ease-in-out infinite;pointer-events:none}
 @keyframes campShine{0%,55%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
 @media (prefers-reduced-motion:reduce){.trow.camp-feat::after{animation:none}}
-.trow.camp-feat .t-amt{font-size:1.15em}
+.trow.camp-feat .meta span+span{display:none}   /* r198: بنفس ارتفاع بطاقة اللعبة */
 .camp-cta{margin-top:8px;display:inline-block;background:linear-gradient(135deg,#fde68a,#f59e0b);color:#2b1b00;font-weight:900;font-size:13.5px;padding:7px 14px;border-radius:99px;box-shadow:0 4px 14px rgba(245,158,11,.4)}
 </style>
 <script>
